@@ -1,9 +1,9 @@
 <?php
+  include_once ROOT_PATH . "system/config.php";
+
   session_start();
   define("PROTOCAL", isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on" ? "https" : "http");
-  define("BASE_URL", PROTOCAL . "://localhost/~john-wong/inventory-control/");
   define("CURRENT_URL", PROTOCAL . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
-  define("RELATIVE_URL", str_replace(BASE_URL, "", CURRENT_URL));
 
   define("COLUMN_TYPES", array(
     "INT",
