@@ -20,6 +20,11 @@
   width: 250px;
   background-color: #111111;
   transition: 0.3s;
+  overflow: auto;
+}
+
+#sidebar.show {
+  left: 0px;
 }
 
 #sidebar .close-button {

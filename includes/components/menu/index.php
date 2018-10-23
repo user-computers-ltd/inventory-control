@@ -7,29 +7,6 @@
 <html>
   <head>
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>includes/components/menu/style.css">
-    <script>
-      function openNav() {
-        document.getElementById("sidebar").style.left = "0px";
-      }
-
-      function closeNav() {
-        document.getElementById("sidebar").style.left = "-250px";
-      }
-
-      function toggleMenu(event) {
-        var expanded = event.target.className.indexOf("expanded") !== -1;
-        var toggles = document.querySelectorAll(".toggle");
-
-        for (var i = 0; i < toggles.length; i++) {
-          var element = toggles[i];
-          element.className = element.className.replace(/\bexpanded\b/g, "");
-        }
-
-        if (!expanded) {
-          event.target.className += " expanded";
-        }
-      }
-    </script>
   </head>
   <body>
     <div id="menu-wrapper" class="web-only">
@@ -55,5 +32,30 @@
         ?>
       </div>
     </div>
+    <script>
+      var sidebar = document.getElementById("sidebar");
+      
+      function openNav() {
+        sidebar.className += " show";
+      }
+
+      function closeNav() {
+        sidebar.className = sidebar.className.replace(" show", "");
+      }
+
+      function toggleMenu(event) {
+        var expanded = event.target.className.indexOf("expanded") !== -1;
+        var toggles = document.querySelectorAll(".toggle");
+
+        for (var i = 0; i < toggles.length; i++) {
+          var element = toggles[i];
+          element.className = element.className.replace(/\bexpanded\b/g, "");
+        }
+
+        if (!expanded) {
+          event.target.className += " expanded";
+        }
+      }
+    </script>
   </body>
 </html>
