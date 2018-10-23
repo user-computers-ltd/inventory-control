@@ -1,0 +1,54 @@
+#table-wrapper {
+  width: 100%;
+  height: 100%;
+}
+
+#table-tab {
+  max-width: 500px;
+  margin: auto;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+#table-tab > .tablink {
+  display: inline-block;
+  padding: 10px 0px;
+  width: 50%;
+  text-align: center;
+  box-sizing: border-box;
+  background-color: white;
+  cursor: pointer;
+}
+
+#table-tab > .tablink.active {
+  background-color: darkgray;
+  color: white;
+  font-weight: bold;
+}
+
+.tabcontent {
+  display: none;
+}
+
+.tabcontent.show {
+  display: block;
+}
+
+#content {
+  overflow: auto;
+}
+
+#structure-table td {
+  padding: 0px 5px;
+}
+
+#structure-table th:last-child,
+#structure-table td:last-child {
+  border-color: transparent;
+  background-color: transparent;
+}
+
+#structure-table td .delete-button {
+  padding: 0px;
+}

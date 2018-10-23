@@ -1,0 +1,24 @@
+li > .list-item-right > .count {
+  display: inline-block;
+  padding: 0px 10px;
+  font-size: 12px;
+  vertical-align: middle;
+}
+
+#ajax-error-bar {
+  position: fixed;
+  width: 100%;
+  padding: 10px;
+  bottom: -100%;
+  color: #aa0000;
+  background-color: #ff8888;
+  border-top: 1px solid #aa0000;
+  border-bottom: 1px solid #aa0000;
+  box-sizing: border-box;
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+#ajax-error-bar.show {
+  bottom: 10px;
+}

@@ -1,0 +1,14 @@
+.query-table-input {
+  margin-bottom: 10px;
+}
+
+.query-table-input textarea {
+  width: 100%;
+  height: 60px;
+  box-sizing: border-box;
+}
+
+.query-table-input button {
+  float: left;
+  margin: 10px 0px;
+}

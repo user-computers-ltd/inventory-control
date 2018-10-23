@@ -1,0 +1,72 @@
+#import-overlay {
+  display: none;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+#import-overlay.show {
+  display: block;
+}
+
+#import-overlay > form {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  max-width: 100%;
+  max-height: 100%;
+  padding: 20px;
+  border-radius: 5px;
+  border-bottom: 2px solid darkgray;
+  box-sizing: border-box;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  overflow: auto;
+}
+
+#import-overlay > form > #import-table-wrapper {
+  overflow: auto;
+}
+
+#import-overlay > form > #import-close {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 20px;
+  height: 20px;
+  font-size: 24px;
+  text-align: center;
+  line-height: 20px;
+  cursor: pointer;
+}
+
+#import-overlay > form > input,
+#import-overlay > form > select {
+  margin-bottom: 10px;
+  height: 25px;
+  box-sizing: border-box;
+}
+
+#import-overlay > form > #column-count,
+#import-overlay > form > #data-count {
+  font-size: 12px;
+  line-height: 16px;
+}
+
+#import-overlay > form > #column-count {
+  margin-top: 10px;
+}
+
+#import-overlay > form > #data-count {
+  margin-bottom: 10px;
+}
+
+#import-table input,
+#import-table select {
+  width: 100%;
+  height: 25px;
+  box-sizing: border-box;
+}
