@@ -20,11 +20,11 @@
   }
 
   function createDatabase($database) {
-    query("CREATE DATABASE $database");
+    query("CREATE DATABASE `$database`");
   }
 
   function copyDatabase($database1, $database2) {
-    query("CREATE DATABASE $database1");
+    query("CREATE DATABASE `$database1`");
 
     $tables = listTables($database2);
 
@@ -37,7 +37,7 @@
   }
 
   function dropDatabase($database) {
-    query("DROP DATABASE $database");
+    query("DROP DATABASE `$database`");
   }
 
   function listTables($database) {
@@ -54,7 +54,7 @@
   function createTable($database, $table, $columns) {
     selectDatabase($database);
     $columnString = join(", ", array_map(function ($c) { return getColumnString($c); }, $columns));
-    query("CREATE TABLE $table ($columnString)");
+    query("CREATE TABLE `$table` ($columnString)");
   }
 
   function createAndImportTable($database, $table, $columns, $file) {
@@ -133,25 +133,25 @@
 
     execute(array(
       "SET SESSION sql_mode = ''",
-      "INSERT INTO $table ($insertColumnString) VALUES ($values)"
+      "INSERT INTO `$table` ($insertColumnString) VALUES ($values)"
     ));
   }
 
   function copyTable($table1, $table2) {
     execute(array(
-      "CREATE TABLE $table1 LIKE $table2",
-      "INSERT $table1 SELECT * FROM $table2;"
+      "CREATE TABLE `$table1` LIKE $table2",
+      "INSERT `$table1` SELECT * FROM $table2;"
     ));
   }
 
   function dropTable($database, $table) {
     selectDatabase($database);
-    query("DROP TABLE $table");
+    query("DROP TABLE `$table`");
   }
 
   function clearTable($database, $table) {
     selectDatabase($database);
-    query("TRUNCATE TABLE $table");
+    query("TRUNCATE TABLE `$table`");
   }
 
   function listColumns($database, $table) {
@@ -168,16 +168,16 @@
 
   function createColumn($database, $table, $field, $type, $extra) {
     selectDatabase($database);
-    query("ALTER TABLE $table ADD $field $type $extra");
+    query("ALTER TABLE `$table` ADD $field $type $extra");
   }
 
   function updateColumn($database, $table, $column, $type, $extra) {
     selectDatabase($database);
-    query("ALTER TABLE $table MODIFY COLUMN $field $type $extra");
+    query("ALTER TABLE `$table` MODIFY COLUMN $field $type $extra");
   }
 
   function dropColumn($database, $table, $column) {
     selectDatabase($database);
-    query("ALTER TABLE $table DROP COLUMN $column");
+    query("ALTER TABLE `$table` DROP COLUMN $column");
   }
 ?>

@@ -36,7 +36,12 @@ function ajax(settings = {}) {
   xhttp.onreadystatechange = function() {
     if (xhttp.readyState == 4) {
       if (xhttp.status === 200) {
-        resolve(JSON.parse(xhttp.responseText));
+        var response = true;
+        try {
+          response = JSON.parse(xhttp.responseText);
+        } catch (error) {}
+
+        resolve(response);
       } else {
         reject(xhttp.responseText);
       }
