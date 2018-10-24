@@ -1,7 +1,7 @@
 <?php
   include_once ROOT_PATH . "includes/php/utils.php";
 
-  $menuItems = listDirectory("system/menu");
+  $menuItems = listDirectory("system");
 ?>
 
 <html>
@@ -34,7 +34,7 @@
     </div>
     <script>
       var sidebar = document.getElementById("sidebar");
-      
+
       function openNav() {
         sidebar.className += " show";
       }
