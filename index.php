@@ -1,7 +1,5 @@
 <?php
   define("ROOT_PATH", "");
-  include_once ROOT_PATH . "includes/php/utils.php";
-  include_once ROOT_PATH . "system/config.php";
 ?>
 
 <!DOCTYPE html>
@@ -11,5 +9,6 @@
   </head>
   <body>
     <?php include_once ROOT_PATH . "includes/components/menu/index.php"; ?>
+    <h1>Inentory Control</h1>
   </body>
 </html>

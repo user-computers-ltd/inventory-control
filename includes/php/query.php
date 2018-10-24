@@ -1,7 +1,6 @@
 <?php
   define("ROOT_PATH", "../../");
   include_once "admin.php";
-  include_once ROOT_PATH . "system/config.php";
 
   if (!isset($_GET["database"])) {
     throwError("Missing database");

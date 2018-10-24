@@ -1,8 +1,7 @@
 <?php
   define("ROOT_PATH", "");
-  include_once ROOT_PATH . "includes/php/utils.php";
-  include_once ROOT_PATH . "system/config.php";
 
+  session_start();
   $error = $_SESSION["error"];
   $title = isset($error["title"]) ? $error["title"] : "Unknown Error";
   $content = isset($error["content"]) ? $error["content"] : "

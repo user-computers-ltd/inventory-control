@@ -1,6 +1,6 @@
 <?php
   include_once "utils.php";
-  include_once ROOT_PATH . "system/config.php";
+  include_once "config.php";
 
   if (!defined("MYSQL_HOST") || !defined("MYSQL_USER") || !defined("MYSQL_PASSWORD")) {
     sendErrorPage(array(
@@ -8,7 +8,13 @@
       content => "
         The configuration for connecting the database is either missing or incomplete.
         Please contact your administrator to resolve this in following path:
-        <pre>system/config.php</pre>
+        <pre>includes/php/config.php</pre>
+        Note: Please make sure the followings are set:
+        <ul>
+          <li><code>MYSQL_HOST</code></li>
+          <li><code>MYSQL_USER</code></li>
+          <li><code>MYSQL_PASSWORD</code></li>
+        </ul>
       "
     ));
   }

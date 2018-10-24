@@ -19,6 +19,7 @@
         </div>
         <div id="column-count"></div>
         <div id="data-count"></div>
+        <div id="create-import-error"></div>
         <button type="submit">create & import</button>
       </form>
     </div>
@@ -30,6 +31,7 @@
       var createImportForm = createImportOverlay.querySelector("form");
       var createImportTableHead = createImportForm.querySelector("#create-import-table thead");
       var createImportTableBody = createImportForm.querySelector("#create-import-table tbody");
+      var createImportError = createImportForm.querySelector("#create-import-error");
       var columnCount = createImportForm.querySelector("#column-count");
       var dataCount = createImportForm.querySelector("#data-count");
       var columnTypes = <?php echo json_encode(COLUMN_TYPES); ?>;
@@ -74,24 +76,24 @@
               var headers = lines[0].split(",");
               createImportTableHead.innerHTML = "<tr>" + headers.map(function (h) {
                 var html = "<th>"
-                  + "<input type=\"checkbox\" checked onchange=\"disableColumnHandler(event)\" />"
-                  + "<input type=\"text\" name=\"field[]\" value=\"" + h + "\" required class=\"column\" />"
-                  + "<input type=\"text\" name=\"name[]\" value=\"" + h + "\" required hidden class=\"column\" />"
-                  + "<select name=\"type[]\" required class=\"column\">";
+                  + "<input type=\"checkbox\" onchange=\"disableColumnHandler(event)\" />"
+                  + "<input type=\"text\" name=\"field[]\" value=\"" + h + "\" disabled required class=\"column\" />"
+                  + "<input type=\"text\" name=\"name[]\" value=\"" + h + "\" required disabled hidden class=\"column\" />"
+                  + "<select name=\"type[]\" disabled required class=\"column\">";
                 for (var i = 0; i < columnTypes.length; i++) {
                   html += "<option value=\"" + columnTypes[i] + "\">" + columnTypes[i] + "</option>";
                 }
                 html += "</select>"
-                  + "<input type=\"text\" name=\"length[]\" placeholder=\"length\" class=\"column\" />"
-                  + "<input type=\"text\" name=\"extra[]\" placeholder=\"extra\" class=\"column\" />"
+                  + "<input type=\"text\" name=\"length[]\" placeholder=\"length\" disabled class=\"column\" />"
+                  + "<input type=\"text\" name=\"extra[]\" placeholder=\"extra\" disabled class=\"column\" />"
                   + "</th>";
 
                 return html;
-              }).join("") + "</tr>";
+              }).join("") + "</tr><tr>" + headers.map(function (h) { return "<th>" + h + "</th>"; }).join("") + "</tr>";
 
               createImportTableBody.innerHTML = "";
 
-              for (var i = 0; i <= 3; i++) {
+              for (var i = 1; i <= 5; i++) {
                 var values = lines[i].split(",");
                 createImportTableBody.innerHTML += "<tr>" + values.map(function (v) { return "<td>" + v + "</td>"; }).join("") + "</tr>";
               }
@@ -125,7 +127,8 @@
           method: "post",
           contentType: false,
           data: data,
-          resolve: function () { window.location.reload(); }
+          resolve: function () { window.location.reload(); },
+          reject: function (message) { createImportError.innerHTML = message; }
         });
 
         return false;

@@ -80,10 +80,10 @@
     while (($row = fgets($fp)) !== false) {
       $rowValues = array();
 
-      $row = explode(",", str_replace("\"", "'", $row));
+      $row = explode(",", $row);
 
       for ($i = 0; $i < count($columnIndexes); $i++) {
-        array_push($rowValues, "\"" . $row[$columnIndexes[$i]] . "\"");
+        array_push($rowValues, $row[$columnIndexes[$i]]);
       }
 
       array_push($rows, join(",", $rowValues));
@@ -120,10 +120,10 @@
     while (($row = fgets($fp)) !== false) {
       $rowValues = array();
 
-      $row = explode(",", str_replace("\"", "'", $row));
+      $row = explode(",", $row);
 
       for ($i = 0; $i < count($columnIndexes); $i++) {
-        array_push($rowValues, "\"" . $row[$columnIndexes[$i]] . "\"");
+        array_push($rowValues, $row[$columnIndexes[$i]]);
       }
 
       array_push($rows, join(",", $rowValues));

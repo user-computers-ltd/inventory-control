@@ -1,7 +1,6 @@
 <?php
-  include_once ROOT_PATH . "system/config.php";
+  include_once "config.php";
 
-  session_start();
   define("PROTOCAL", isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on" ? "https" : "http");
   define("CURRENT_URL", PROTOCAL . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
 
@@ -33,6 +32,7 @@
   }
 
   function sendErrorPage($error) {
+    session_start();
     unset($_SESSION["error"]);
 
     $_SESSION["error"] = $error;

@@ -18,6 +18,7 @@
         </div>
         <div id="column-count"></div>
         <div id="data-count"></div>
+        <div id="import-error"></div>
         <button type="submit">import</button>
       </form>
     </div>
@@ -30,6 +31,7 @@
       var importTableInput = importForm.querySelector("input[name=\"table\"]");
       var importTableHead = importForm.querySelector("#import-table thead");
       var importTableBody = importForm.querySelector("#import-table tbody");
+      var importError = createImportForm.querySelector("#import-error");
       var columnCount = importForm.querySelector("#column-count");
       var dataCount = importForm.querySelector("#data-count");
       var url = "<?php echo BASE_URL; ?>admin/ajax.php";
@@ -80,11 +82,11 @@
                   + "</th>";
 
                 return html;
-              }).join("") + "</tr>";
+              }).join("") + "</tr><tr>" + headers.map(function (h) { return "<th>" + h + "</th>"; }).join("") + "</tr>";
 
               importTableBody.innerHTML = "";
 
-              for (var i = 0; i <= 3; i++) {
+              for (var i = 1; i <= 5; i++) {
                 var values = lines[i].split(",");
                 importTableBody.innerHTML += "<tr>" + values.map(function (v) { return "<td>" + v + "</td>"; }).join("") + "</tr>";
               }
@@ -118,7 +120,8 @@
           method: "post",
           contentType: false,
           data: data,
-          resolve: function () { window.location.reload(); }
+          resolve: function () { window.location.reload(); },
+          reject: function (message) { importError.innerHTML = message; }
         });
 
         return false;
