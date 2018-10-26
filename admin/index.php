@@ -9,6 +9,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <title>Inventory Control | Databases</title>
     <?php include_once ROOT_PATH . "includes/php/head.php"; ?>
     <link rel="stylesheet" href="admin.css">
   </head>

@@ -6,8 +6,6 @@
     throwError("Missing database");
   } else if (!isset($_GET["sql"])) {
     throwError("Missing SQL");
-  } else if (strpos($_GET["sql"], "SELECT") !== 0) {
-    throwError("Only selective query is allowed");
   }
 
   selectDatabase($_GET["database"]);

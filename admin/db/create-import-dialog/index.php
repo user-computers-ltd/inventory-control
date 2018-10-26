@@ -54,7 +54,7 @@
         createImportOverlay.addEventListener("click", closeCreateImportHandler);
       }
 
-      function disableColumnHandler(event) {
+      function disableCreateImportColumnHandler(event) {
         var inputs = event.target.parentNode.querySelectorAll(".column");
 
         for (var i = 0; i < inputs.length; i++) {
@@ -76,7 +76,7 @@
               var headers = lines[0].split(",");
               createImportTableHead.innerHTML = "<tr>" + headers.map(function (h) {
                 var html = "<th>"
-                  + "<input type=\"checkbox\" onchange=\"disableColumnHandler(event)\" />"
+                  + "<input type=\"checkbox\" onchange=\"disableCreateImportColumnHandler(event)\" />"
                   + "<input type=\"text\" name=\"field[]\" value=\"" + h + "\" disabled required class=\"column\" />"
                   + "<input type=\"text\" name=\"name[]\" value=\"" + h + "\" required disabled hidden class=\"column\" />"
                   + "<select name=\"type[]\" disabled required class=\"column\">";
@@ -93,14 +93,17 @@
 
               createImportTableBody.innerHTML = "";
 
-              for (var i = 1; i <= 5; i++) {
+              for (var i = 1; i <= 5 && i < lines.length; i++) {
                 var values = lines[i].split(",");
                 createImportTableBody.innerHTML += "<tr>" + values.map(function (v) { return "<td>" + v + "</td>"; }).join("") + "</tr>";
               }
 
-              createImportTableBody.innerHTML += "<tr>" + headers.map(function (h) { return "<td>...</td>"; }).join("") + "</tr>";
+              if (lines.length > 4) {
+                createImportTableBody.innerHTML += "<tr>" + headers.map(function (h) { return "<td>...</td>"; }).join("") + "</tr>";
+              }
+
               columnCount.innerHTML = headers.length + " columns";
-              dataCount.innerHTML = (lines.length - 2) + " rows";
+              dataCount.innerHTML = (lines.length - 1) + " rows";
 
               showCreateImportDialog();
             }

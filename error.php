@@ -13,6 +13,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <title>Inventory Control | Error</title>
     <?php include_once ROOT_PATH . "includes/php/head.php"; ?>
     <style>
       body {

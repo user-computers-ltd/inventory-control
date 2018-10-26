@@ -75,6 +75,11 @@
       }
 
       function loadTable<?php echo $tId; ?>() {
+        if (!sql.toLowercase().startWith("select")) {
+          showErrorOnTable<?php echo $tId; ?>("Only select queries are allowed.");
+          return;
+        }
+
         dataCount<?php echo $tId; ?>.innerHTML = "";
         headerRow<?php echo $tId; ?>.innerHTML = "";
         tableBody<?php echo $tId; ?>.innerHTML = "";

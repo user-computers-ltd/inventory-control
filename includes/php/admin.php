@@ -46,6 +46,7 @@
       $name = $table["Tables_in_$database"];
       return array(
         "name" => $name,
+        "columns" => array_map(function ($column) { return $column["Field"]; }, query("DESCRIBE $name")),
         "count" => query("SELECT COUNT(*) FROM $name")[0]["COUNT(*)"]
       );
     }, query("SHOW TABLES"));
@@ -57,83 +58,69 @@
     query("CREATE TABLE `$table` ($columnString)");
   }
 
-  function createAndImportTable($database, $table, $columns, $file) {
-    selectDatabase($database);
-    $columnString = join(", ", array_map(function ($c) { return getColumnString($c); }, $columns));
+  function generateInsertStatment($table, $columns, $file) {
+    $statement = "";
+
     $insertColumnString = join(", ", array_map(function ($c) { return $c["field"]; }, $columns));
+    $handle = fopen($file["tmp_name"], "r");
+    $contents = fread($handle, filesize($file["tmp_name"]));
+    $lines = preg_split("/\"(\r\n|\n)\"/", substr($contents, strpos($contents, "\"") + 1, strrpos($contents, "\"") - 1));
+    echo json_encode($lines);
+    if (count($lines) > 0) {
+      $firstLine = $lines[0];
+      $columnValues = explode("\",\"", $firstLine);
 
-    $fp = fopen($file["tmp_name"], "r");
+      $columnIndexes = array();
 
-    $columnValues = explode(",", preg_replace("/\"|\n/", "", fgets($fp)));
-    $columnIndexes = array();
-
-    for ($i = 0; $i < count($columns); $i++) {
-      for ($j = 0; $j < count($columnValues); $j++) {
-        if ($columns[$i]["name"] == $columnValues[$j]) {
-          array_push($columnIndexes, $j);
+      for ($i = 0; $i < count($columns); $i++) {
+        for ($j = 0; $j < count($columnValues); $j++) {
+          if ($columns[$i]["name"] == $columnValues[$j]) {
+            array_push($columnIndexes, $j);
+          }
         }
       }
-    }
 
-    $rows = array();
+      $rows = array();
 
-    while (($row = fgets($fp)) !== false) {
-      $rowValues = array();
+      for ($i = 1; $i < count($lines); $i++) {
+        $rowValues = array();
 
-      $row = explode(",", $row);
+        $line = preg_replace("/,,/", ",\"\",", preg_replace("/,,/", ",\"\",", $lines[$i]));
+        $row = explode("\",\"", $line);
 
-      for ($i = 0; $i < count($columnIndexes); $i++) {
-        array_push($rowValues, $row[$columnIndexes[$i]]);
+        for ($j = 0; $j < count($columnIndexes); $j++) {
+          array_push($rowValues, $row[$columnIndexes[$j]]);
+        }
+
+        array_push($rows, "\"" . join("\",\"", $rowValues) . "\"");
       }
 
-      array_push($rows, join(",", $rowValues));
+      $values = join("), (", $rows);
+
+      $statement = "INSERT INTO `$table` ($insertColumnString) VALUES ($values)";
     }
 
-    $values = join("), (", $rows);
+    fclose($handle);
+
+    return $statement;
+  }
+
+  function createAndImportTable($database, $table, $columns, $file) {
+    selectDatabase($database);
 
     execute(array(
       "SET SESSION sql_mode = ''",
       "CREATE TABLE $table ($columnString)",
-      "INSERT INTO $table ($insertColumnString) VALUES ($values)"
+      generateInsertStatment($table, $columns, $file)
     ));
   }
 
   function importTable($database, $table, $columns, $file) {
     selectDatabase($database);
-    $insertColumnString = join(", ", array_map(function ($c) { return $c["field"]; }, $columns));
-
-    $fp = fopen($file["tmp_name"], "r");
-
-    $columnValues = explode(",", preg_replace("/\"|\n/", "", fgets($fp)));
-    $columnIndexes = array();
-
-    for ($i = 0; $i < count($columns); $i++) {
-      for ($j = 0; $j < count($columnValues); $j++) {
-        if ($columns[$i]["name"] == $columnValues[$j]) {
-          array_push($columnIndexes, $j);
-        }
-      }
-    }
-
-    $rows = array();
-
-    while (($row = fgets($fp)) !== false) {
-      $rowValues = array();
-
-      $row = explode(",", $row);
-
-      for ($i = 0; $i < count($columnIndexes); $i++) {
-        array_push($rowValues, $row[$columnIndexes[$i]]);
-      }
-
-      array_push($rows, join(",", $rowValues));
-    }
-
-    $values = join("), (", $rows);
 
     execute(array(
       "SET SESSION sql_mode = ''",
-      "INSERT INTO `$table` ($insertColumnString) VALUES ($values)"
+      generateInsertStatment($table, $columns, $file)
     ));
   }
 

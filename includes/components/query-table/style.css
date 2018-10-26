@@ -5,6 +5,7 @@
 .query-table-input textarea {
   width: 100%;
   height: 60px;
+  padding: 5px;
   box-sizing: border-box;
 }
 

@@ -2,7 +2,7 @@
   include_once ROOT_PATH . "includes/php/utils.php";
 
   if (defined(MENU_DIRECTORY)) {
-    $menuDirectory = "system/" . MENU_DIRECTORY;
+    $menuDirectory = MENU_DIRECTORY;
     $menuItems = listDirectory($menuDirectory);
   }
 ?>

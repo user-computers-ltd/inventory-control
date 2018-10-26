@@ -20,6 +20,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <title>Inventory Control | <?php echo "$database - $table"; ?></title>
     <?php include_once ROOT_PATH . "includes/php/head.php"; ?>
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>admin/admin.css">
     <link rel="stylesheet" href="style.css">

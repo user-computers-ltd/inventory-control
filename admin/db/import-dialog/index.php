@@ -31,12 +31,14 @@
       var importTableInput = importForm.querySelector("input[name=\"table\"]");
       var importTableHead = importForm.querySelector("#import-table thead");
       var importTableBody = importForm.querySelector("#import-table tbody");
-      var importError = createImportForm.querySelector("#import-error");
+      var importError = importForm.querySelector("#import-error");
       var columnCount = importForm.querySelector("#column-count");
       var dataCount = importForm.querySelector("#data-count");
       var url = "<?php echo BASE_URL; ?>admin/ajax.php";
+      var tableColumns = [];
 
-      function importTable(table) {
+      function importTable(table, columns) {
+        tableColumns = columns;
         importTableInput.setAttribute("value", table);
         importButton.click();
       }
@@ -54,7 +56,7 @@
         importOverlay.addEventListener("click", closeImportHandler);
       }
 
-      function disableColumnHandler(event) {
+      function disableImportColumnHandler(event) {
         var inputs = event.target.parentNode.querySelectorAll(".column");
 
         for (var i = 0; i < inputs.length; i++) {
@@ -70,15 +72,25 @@
           var reader = new FileReader();
 
           reader.onload = function(event) {
-            var lines = event.target.result.split(/\r\n|\n/);
+            var result = event.target.result;
+            var lines = result.substring(result.indexOf("\"") + 1, result.lastIndexOf("\"")).split(/\"(\r\n|\n)\"/);
 
             if (lines.length > 0) {
-              var headers = lines[0].split(",");
+              var firstLine = lines[0];
+              var headers = firstLine.split("\",\"");
+
               importTableHead.innerHTML = "<tr>" + headers.map(function (h) {
+                var containsColumn = tableColumns.indexOf(h) !== -1;
                 var html = "<th>"
-                  + "<input type=\"checkbox\" checked onchange=\"disableColumnHandler(event)\" />"
-                  + "<input type=\"text\" name=\"field[]\" value=\"" + h + "\" required class=\"column\" />"
-                  + "<input type=\"text\" name=\"name[]\" value=\"" + h + "\" required hidden class=\"column\" />"
+                  + "<input type=\"checkbox\" onchange=\"disableImportColumnHandler(event)\"" + (containsColumn && "checked") + " />"
+                  + "<input type=\"text\" name=\"field[]\" value=\"" + (containsColumn ? h : "") + "\" " + (!containsColumn && "disabled") + " required hidden class=\"column\" />"
+                  + "<select " + (!containsColumn && "disabled") + " required class=\"column fieldset\" onchange=\"onImportColumnSelected(event)\">"
+                  + "<option value=\"\"></option>";
+                for (var i = 0; i < tableColumns.length; i++) {
+                  html += "<option value=\"" + tableColumns[i] + "\"" + (h === tableColumns[i] && "selected") + ">" + tableColumns[i] + "</option>";
+                }
+                html += "</select>"
+                  + "<input type=\"text\" name=\"name[]\" " + (!containsColumn && "disabled") + " value=\"" + h + "\" required hidden class=\"column\" />"
                   + "</th>";
 
                 return html;
@@ -86,16 +98,25 @@
 
               importTableBody.innerHTML = "";
 
-              for (var i = 1; i <= 5; i++) {
-                var values = lines[i].split(",");
+              for (var i = 1; i <= 5 && i < lines.length; i++) {
+                var line = lines[i].replace(/,,/g, ",\"\",").replace(/,,/g, ",\"\",");
+                var values = line.split("\",\"");
+
                 importTableBody.innerHTML += "<tr>" + values.map(function (v) { return "<td>" + v + "</td>"; }).join("") + "</tr>";
               }
 
-              importTableBody.innerHTML += "<tr>" + headers.map(function (h) { return "<td>...</td>"; }).join("") + "</tr>";
-              columnCount.innerHTML = headers.length + " columns";
-              dataCount.innerHTML = (lines.length - 2) + " rows";
+              if (lines.length > 4) {
+                importTableBody.innerHTML += "<tr>" + headers.map(function (h) { return "<td>...</td>"; }).join("") + "</tr>";
+              }
 
-              showImportDialog();
+              columnCount.innerHTML = headers.length + " columns";
+              dataCount.innerHTML = (lines.length - 1) + " rows";
+
+              if (importForm.querySelectorAll(".column:disabled").length > 0) {
+                showImportDialog();
+              } else {
+                importSubmitHandler();
+              }
             }
           };
 
@@ -103,8 +124,25 @@
         }
       }
 
+      function onImportColumnSelected(event) {
+        event.target.parentNode.querySelector("input[name=\"field[]\"]").value = event.target.value;
+        var fieldset = document.querySelectorAll(".fieldset");
+        var allOptions = document.querySelectorAll(".fieldset option");
+        var selectedColumns = [];
+
+        for (var i = 0; i < fieldset.length; i++) {
+          selectedColumns.push(fieldset[i].value);
+        }
+
+        for (var i = 0; i < allOptions.length; i++) {
+          allOptions[i].disabled = allOptions[i].value && selectedColumns.indexOf(allOptions[i].value) !== -1;
+        }
+      }
+
       function importSubmitHandler(event) {
-        event.preventDefault();
+        if (event) {
+          event.preventDefault();
+        }
 
         var data = new FormData(importForm);
 

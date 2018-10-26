@@ -16,6 +16,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <title>Inventory Control | <?php echo $database; ?></title>
     <?php include_once ROOT_PATH . "includes/php/head.php"; ?>
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>admin/admin.css">
     <link rel="stylesheet" href="style.css">
@@ -28,6 +29,11 @@
       </h4>
       <h2><?php echo $database; ?></h2>
       <div class="card">
+        <div id="database-query">
+          <textarea name="table" onchange="changeQuery(event)"></textarea>
+          <button onclick="queryDatabase()">query</button>
+          <pre></pre>
+        </div>
         <button onclick="createTable()">create</button>
         <button onclick="createAndImportTable()">create & import</button>
         <ul>
@@ -35,6 +41,7 @@
             foreach ($tables as &$table) {
               $name = $table["name"];
               $count = $table["count"];
+              $columns = str_replace("\"", "'", json_encode($table["columns"]));
 
               echo "<li data-table=\"$name\">"
               . "<div class=\"list-item-left\">"
@@ -42,7 +49,7 @@
               . "</div>"
               . "<div class=\"list-item-right\">"
               . "<div class=\"count\">$count rows</div>"
-              . "<div class=\"import-button\" onclick=\"importTable('$name')\"></div>"
+              . "<div class=\"import-button\" onclick=\"importTable('$name', $columns)\"></div>"
               . "<div class=\"export-button\"></div>"
               . "<div class=\"copy-button\" onclick=\"copyTable('$name')\"></div>"
               . "<div class=\"clear-button\" onclick=\"clearTable('$name')\"></div>"
@@ -63,6 +70,25 @@
     <script>
       var database = "<?php echo $database; ?>";
       var url = "<?php echo BASE_URL; ?>admin/ajax.php";
+      var queryInput = document.querySelector("#database-query");
+      var textarea = queryInput.querySelector("textarea");
+      var statusText = queryInput.querySelector("pre");
+
+      function updateStatus(message) {
+        statusText.innerHTML = JSON.stringify(message);
+      }
+
+      function queryDatabase() {
+        get({
+          url: "<?php echo BASE_URL; ?>includes/php/query.php",
+          params: {
+            database: database,
+            sql: textarea.value
+          },
+          resolve: updateStatus,
+          reject: updateStatus
+        });
+      }
 
       function reloadPage() {
         window.location.reload();
