@@ -73,7 +73,7 @@
 
           reader.onload = function(event) {
             var result = event.target.result;
-            var lines = result.substring(result.indexOf("\"") + 1, result.lastIndexOf("\"")).split(/\"(\r\n|\n)\"/);
+            var lines = result.substring(result.indexOf("\"") + 1, result.lastIndexOf("\"")).split(/\"\r\n\"|\"\n\"/);
 
             if (lines.length > 0) {
               var firstLine = lines[0];

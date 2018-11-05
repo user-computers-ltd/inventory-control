@@ -62,10 +62,11 @@
     $statement = "";
 
     $insertColumnString = join(", ", array_map(function ($c) { return $c["field"]; }, $columns));
+
     $handle = fopen($file["tmp_name"], "r");
     $contents = fread($handle, filesize($file["tmp_name"]));
-    $lines = preg_split("/\"(\r\n|\n)\"/", substr($contents, strpos($contents, "\"") + 1, strrpos($contents, "\"") - 1));
-    echo json_encode($lines);
+    $lines = preg_split("/\"\r\n\"|\"\n\"/", substr($contents, strpos($contents, "\"") + 1, strrpos($contents, "\"") - 1));
+
     if (count($lines) > 0) {
       $firstLine = $lines[0];
       $columnValues = explode("\",\"", $firstLine);
@@ -107,6 +108,8 @@
 
   function createAndImportTable($database, $table, $columns, $file) {
     selectDatabase($database);
+
+    $columnString = join(", ", array_map(function ($c) { return getColumnString($c); }, $columns));
 
     execute(array(
       "SET SESSION sql_mode = ''",
@@ -166,5 +169,23 @@
   function dropColumn($database, $table, $column) {
     selectDatabase($database);
     query("ALTER TABLE `$table` DROP COLUMN $column");
+  }
+
+  function executeSQLFiles($database, $files) {
+    selectDatabase($database);
+
+    $sql = array("SET SESSION sql_mode = ''");
+
+    for ($i = 0; $i < count($files); $i++) {
+      $file = $files[$i];
+      $handle = fopen($file, "r");
+      $contents = fread($handle, filesize($file));
+
+      array_push($sql, $contents);
+
+      fclose($handle);
+    }
+
+    execute($sql);
   }
 ?>

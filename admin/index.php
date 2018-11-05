@@ -3,7 +3,8 @@
   include_once ROOT_PATH . "includes/php/utils.php";
   include_once ROOT_PATH . "includes/php/admin.php";
 
-  $dbs = listDatabases();
+  $systems = listDirectory(ROOT_PATH . "systems");
+  $databases = listDatabases();
 ?>
 
 <!DOCTYPE html>
@@ -12,22 +13,40 @@
     <title>Inventory Control | Databases</title>
     <?php include_once ROOT_PATH . "includes/php/head.php"; ?>
     <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="style.css">
   </head>
   <body>
-    <div class="page-wrapper">
-      <h2>Databases</h2>
-      <div class="card">
+    <div id="admin-wrapper">
+      <div id="systems">
+        <h2>Systems</h2>
+        <ul>
+          <?php
+            foreach ($systems as $system) {
+              $name = $system["name"];
+              echo "<li>"
+              . "<div class=\"list-item-left\">"
+              . "<a href='" . BASE_URL . "admin/sys?sys=$name'>$name</a>"
+              . "</div>"
+              . "<div class=\"list-item-right\">"
+              . "</div>"
+              . "</li>";
+            }
+          ?>
+        </ul>
+      </div>
+      <div id="databases">
+        <h2>Databases</h2>
         <button onclick="createDatabase()">create</button>
         <ul>
           <?php
-            foreach ($dbs as &$db) {
+            foreach ($databases as $database) {
               echo "<li>"
               . "<div class=\"list-item-left\">"
-              . "<a href='" . BASE_URL . "admin/db?db=$db'>$db</a>"
+              . "<a href='" . BASE_URL . "admin/db?db=$database'>$database</a>"
               . "</div>"
               . "<div class=\"list-item-right\">"
-              . "<div class=\"copy-button\" onclick=\"copyDatabase('$db')\"></div>"
-              . "<div class=\"delete-button\" onclick=\"deleteDatabase('$db')\"></div>"
+              . "<div class=\"copy-button\" onclick=\"copyDatabase('$database')\"></div>"
+              . "<div class=\"delete-button\" onclick=\"deleteDatabase('$database')\"></div>"
               . "</div>"
               . "</li>";
             }

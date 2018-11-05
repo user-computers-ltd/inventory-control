@@ -1,0 +1,8 @@
+#system-header {
+  padding: 5px;
+  border: 2px solid black;
+  font: bold 22px Helvetica, sans-serif;
+  text-align: center;
+  letter-spacing: 1px;
+  line-height: 25px;
+}

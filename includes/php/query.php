@@ -10,7 +10,5 @@
 
   selectDatabase($_GET["database"]);
 
-  echo json_encode(array_map(function ($row) {
-    return array_filter($row, function ($column) { return !is_numeric($column); }, ARRAY_FILTER_USE_KEY);
-  }, query($_GET["sql"])));
+  echo json_encode(query($_GET["sql"]));
 ?>

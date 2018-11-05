@@ -20,28 +20,30 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Inventory Control | <?php echo "$database - $table"; ?></title>
+    <title>Inventory Control | Systems > <?php echo "$database > Database > $table"; ?></title>
     <?php include_once ROOT_PATH . "includes/php/head.php"; ?>
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>admin/admin.css">
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
-    <div id="table-wrapper" class="page-wrapper">
-      <h4>
-        <?php echo "<a href='" . BASE_URL . "admin'>Databases</a>"; ?>
-        <span>></span>
-        <?php echo "<a href='" . BASE_URL . "admin/db?db=$database'>$database</a>"; ?>
-        <span>></span>
-      </h4>
-      <h2><?php echo $table; ?></h2>
-      <div id="table-tab">
-        <div class="tablink<?php echo !$showData ? " active" : ""; ?>" onclick="openTab(event, 'structure')">
-          structure
-        </div><div class="tablink<?php echo $showData ? " active" : ""; ?>" onclick="openTab(event, 'content')">
-          content
+    <div id="table-wrapper">
+      <div id="table">
+        <h4>
+          <?php echo "<a href='" . BASE_URL . "admin'>Systems</a>"; ?>
+          <span>></span>
+          <?php echo "<a href='" . BASE_URL . "admin/sys?sys=$database'>$database</a>"; ?>
+          <span>></span>
+          <?php echo "<a href='" . BASE_URL . "admin/db?db=$database'>Database</a>"; ?>
+          <span>></span>
+        </h4>
+        <h2><?php echo $table; ?></h2>
+        <div id="table-tab">
+          <div class="tablink<?php echo !$showData ? " active" : ""; ?>" onclick="openTab(event, 'structure')">
+            structure
+          </div><div class="tablink<?php echo $showData ? " active" : ""; ?>" onclick="openTab(event, 'content')">
+            content
+          </div>
         </div>
-      </div>
-      <div class="card">
         <div id="structure" class="tabcontent<?php echo !$showData ? " show" : ""; ?>">
           <button onclick="showCreateDialog()">create column</button>
           <table id="structure-table">

@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>includes/components/query-table/style.css">
   </head>
   <body>
-    <?php if(!isset($hideInput) || $hideInput == false): ?>
+    <?php if(!isset($hideQueryInput) || $hideQueryInput == false): ?>
       <div class="query-table-input" >
         <textarea name="table" onchange="changeQuery<?php echo $tId; ?>(event)"><?php echo $query; ?></textarea>
         <button onclick="loadTable<?php echo $tId; ?>()">query</button>
@@ -27,7 +27,7 @@
     <div id="query-table-<?php echo $tableId; ?>-count"></div>
     <div id="query-table-<?php echo $tableId; ?>-status"></div>
     <script src="<?php echo BASE_URL; ?>includes/js/utils.js"></script>
-    <script>
+    <script async defer>
       var database<?php echo $tId; ?> = <?php echo json_encode($database); ?>;
       var sql<?php echo $tId; ?> = <?php echo json_encode($query); ?>;
       var tableElement<?php echo $tId; ?> = document.querySelector("#query-table-<?php echo $tableId; ?>");
@@ -75,7 +75,7 @@
       }
 
       function loadTable<?php echo $tId; ?>() {
-        if (!sql.toLowercase().startWith("select")) {
+        if (!sql<?php echo $tId; ?>.toLowerCase().trim().startsWith("select")) {
           showErrorOnTable<?php echo $tId; ?>("Only select queries are allowed.");
           return;
         }

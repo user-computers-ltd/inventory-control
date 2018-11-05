@@ -16,21 +16,23 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Inventory Control | <?php echo $database; ?></title>
+    <title>Inventory Control | Systems > <?php echo "$database > Database"; ?></title>
     <?php include_once ROOT_PATH . "includes/php/head.php"; ?>
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>admin/admin.css">
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
-    <div class="page-wrapper">
-      <h4>
-        <?php echo "<a href='" . BASE_URL . "admin'>Databases</a>"; ?>
-        <span>></span>
-      </h4>
-      <h2><?php echo $database; ?></h2>
-      <div class="card">
+    <div id="database-wrapper">
+      <div id="database">
+        <h4>
+          <?php echo "<a href='" . BASE_URL . "admin'>Systems</a>"; ?>
+          <span>></span>
+          <?php echo "<a href='" . BASE_URL . "admin/sys?sys=$database'>$database</a>"; ?>
+          <span>></span>
+        </h4>
+        <h2>Database</h2>
         <div id="database-query">
-          <textarea name="table" onchange="changeQuery(event)"></textarea>
+          <textarea></textarea>
           <button onclick="queryDatabase()">query</button>
           <pre></pre>
         </div>
@@ -38,7 +40,7 @@
         <button onclick="createAndImportTable()">create & import</button>
         <ul>
           <?php
-            foreach ($tables as &$table) {
+            foreach ($tables as $table) {
               $name = $table["name"];
               $count = $table["count"];
               $columns = str_replace("\"", "'", json_encode($table["columns"]));
@@ -75,7 +77,11 @@
       var statusText = queryInput.querySelector("pre");
 
       function updateStatus(message) {
-        statusText.innerHTML = JSON.stringify(message);
+        if (message === true) {
+          window.location.reload();
+        } else {
+          statusText.innerHTML = JSON.stringify(message);
+        }
       }
 
       function queryDatabase() {

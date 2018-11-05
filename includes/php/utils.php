@@ -2,7 +2,7 @@
   include_once "config.php";
 
   define("PROTOCAL", isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on" ? "https" : "http");
-  define("CURRENT_URL", PROTOCAL . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
+  define("CURRENT_URL", urldecode(PROTOCAL . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]"));
 
   define("COLUMN_TYPES", array(
     "INT",
@@ -18,6 +18,10 @@
     "TIMESTAMP",
     "ENUM"
   ));
+
+  function assigned($data) {
+    return isset($data) && $data != "";
+  }
 
   function consoleLog($data) {
     echo "<script>";
@@ -58,5 +62,22 @@
     }
 
     return $dirs;
+  }
+
+  function listFile($directory) {
+    $results = array_filter(glob("$directory/*"), "is_file");
+
+    $files = array();
+
+    foreach ($results as $result) {
+      array_push($files, str_replace("$directory/", "", $result));
+    }
+
+    return $files;
+  }
+
+  function getURLParentLocation() {
+    $locations = explode("/", $_SERVER["PHP_SELF"]);
+    return $locations[count($locations) - 2];
   }
 ?>

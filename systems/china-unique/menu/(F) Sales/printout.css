@@ -1,0 +1,42 @@
+#so-header {
+  width: 50%;
+  font-size: 13px;
+}
+
+#so-header td {
+  border: none;
+}
+
+#so-header td:nth-child(2n + 1) {
+  font-weight: bold;
+}
+
+#so-models th,
+#so-models td {
+  background-color: transparent;
+  border: none;
+  padding: 4px;
+  font-size: 13px;
+}
+
+#so-models .number {
+  display: inline-block;
+  width: 100%;
+  text-align: right;
+}
+
+#so-models thead th {
+  border-bottom: 1px solid;
+}
+
+#so-models tfoot th {
+  border-top: 1px solid;
+}
+
+#so-not-found {
+  margin: 100px 0px;
+  text-align: center;
+  font-size: 40px;
+  font-weight: bold;
+  opacity: 0.3;
+}

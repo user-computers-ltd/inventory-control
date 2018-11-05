@@ -47,13 +47,19 @@
       throwError("Error in query - $sql: " . mysqli_error($GLOBALS["connection"]));
     }
 
-    $resultArray = array();
+    if (is_bool($result)) {
+      return $result;
+    } else {
+      $resultArray = array();
 
-    while ($row = mysqli_fetch_array($result)) {
-      array_push($resultArray, $row);
+      while ($row = mysqli_fetch_array($result)) {
+        array_push($resultArray, $row);
+      }
+
+      return array_map(function ($row) {
+        return array_filter($row, function ($column) { return !is_numeric($column); }, ARRAY_FILTER_USE_KEY);
+      }, $resultArray);
     }
-
-    return $resultArray;
   }
 
   function execute($queries) {

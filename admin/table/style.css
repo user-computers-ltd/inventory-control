@@ -1,12 +1,27 @@
 #table-wrapper {
+  position: absolute;
+  padding: 20px;
+  top: 50%;
+  left: 50%;
   width: 100%;
   height: 100%;
+  transform: translate(-50%, -50%);
+  box-sizing: border-box;
+  overflow: auto;
+}
+
+#table {
+  padding: 20px;
+  background-color: white;
+  border-radius: 5px;
+  border-bottom: 2px solid darkgray;
 }
 
 #table-tab {
   max-width: 500px;
   margin: auto;
   margin-bottom: 20px;
+  border: 2px solid darkgray;
   border-radius: 5px;
   overflow: hidden;
 }

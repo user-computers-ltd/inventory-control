@@ -114,6 +114,18 @@
         throwError("missing database, table or column");
       }
       break;
+    case "reinitialize-database":
+      if ($_POST["system"]) {
+        $system = $_POST["system"];
+        dropDatabase($system);
+        createDatabase($system);
+        executeSQLFiles($_POST["system"], array_map(function ($table) use ($system) {
+          return ROOT_PATH . "systems/$system/data-model/tables/$table";
+        }, listFile(ROOT_PATH . "systems/$system/data-model/tables")));
+      } else {
+        throwError("missing system");
+      }
+      break;
     default:
       throwError("invalid action");
   }

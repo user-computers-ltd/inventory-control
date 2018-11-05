@@ -70,10 +70,13 @@
           var reader = new FileReader();
 
           reader.onload = function(event) {
-            var lines = event.target.result.split(/\r\n|\n/);
+            var result = event.target.result;
+            var lines = result.substring(result.indexOf("\"") + 1, result.lastIndexOf("\"")).split(/\"\r\n\"|\"\n\"/);
 
             if (lines.length > 0) {
-              var headers = lines[0].split(",");
+              var firstLine = lines[0];
+              var headers = firstLine.split("\",\"");
+
               createImportTableHead.innerHTML = "<tr>" + headers.map(function (h) {
                 var html = "<th>"
                   + "<input type=\"checkbox\" onchange=\"disableCreateImportColumnHandler(event)\" />"
@@ -94,7 +97,9 @@
               createImportTableBody.innerHTML = "";
 
               for (var i = 1; i <= 5 && i < lines.length; i++) {
-                var values = lines[i].split(",");
+                var line = lines[i].replace(/,,/g, ",\"\",").replace(/,,/g, ",\"\",");
+                var values = line.split("\",\"");
+
                 createImportTableBody.innerHTML += "<tr>" + values.map(function (v) { return "<td>" + v + "</td>"; }).join("") + "</tr>";
               }
 

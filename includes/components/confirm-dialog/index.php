@@ -1,4 +1,5 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
   <head>
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>includes/components/confirm-dialog/style.css">
   </head>
