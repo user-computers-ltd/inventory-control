@@ -12,10 +12,18 @@
   font-size: 13px;
 }
 
-#so-input input {
-  padding: 5px;
+#so-input input,
+#so-input select {
   width: 100%;
   box-sizing: border-box;
+}
+
+#so-results td {
+  min-width: 50px;
+  max-width: 50px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 #so-results .link {
@@ -28,7 +36,7 @@
   text-align: right;
 }
 
-#so-no-results {
+.so-customer-no-results {
   margin: 100px 0px;
   text-align: center;
   font-size: 40px;

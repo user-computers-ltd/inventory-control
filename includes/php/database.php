@@ -20,13 +20,27 @@
   }
 
   if (defined("MYSQL_DATABASE")) {
-    $connection = mysqli_connect(MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE);
+    $connection = @mysqli_connect(MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE);
   } else {
-    $connection = mysqli_connect(MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD);
+    $connection = @mysqli_connect(MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD);
   }
 
   if (!$connection) {
-    throwError("Connection failed: " . mysqli_connect_error());
+    sendErrorPage(array(
+      title => "Failed to connect to MySQL Server",
+      content => "
+        The connection to the database has failed to establish.
+        Please contact your administrator to resolve this by making sure the
+        server is running and the configuration is correct in following path:
+        <pre>includes/php/config.php</pre>
+        Note: Please make sure the followings are set:
+        <ul>
+          <li><code>MYSQL_HOST</code></li>
+          <li><code>MYSQL_USER</code></li>
+          <li><code>MYSQL_PASSWORD</code></li>
+        </ul>
+      "
+    ));
   }
 
   function selectDatabase($database) {

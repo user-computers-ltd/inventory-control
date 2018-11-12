@@ -4,7 +4,12 @@
 
 #discount,
 #tax {
-  width: 50px;
+  width: 65px;
+}
+
+#discount + span,
+#tax + span {
+  margin-left: -30px;
 }
 
 #so-header,
@@ -43,16 +48,17 @@
 
 #so-models th,
 #so-models td {
+  min-width: 0px;
+  max-width: 0px;
   border: none;
-  padding: 2px;
 }
 
 #so-models thead th {
-  border-bottom: 1px solid;
+  border-bottom: 1px solid lightgray;
 }
 
 #so-models tfoot th {
-  border-top: 1px solid;
+  border-top: 1px solid lightgray;
 }
 
 #so-models .discount-row {
@@ -78,10 +84,6 @@
 
 #so-footer td {
   vertical-align: top;
-}
-
-#so-model-sample {
-  display: none;
 }
 
 #so-footer #remarks {

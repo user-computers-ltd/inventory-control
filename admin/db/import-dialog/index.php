@@ -54,6 +54,8 @@
         importForm.reset();
         importOverlay.className = "show";
         importOverlay.addEventListener("click", closeImportHandler);
+
+        updateColumnSelection();
       }
 
       function disableImportColumnHandler(event) {
@@ -126,6 +128,10 @@
 
       function onImportColumnSelected(event) {
         event.target.parentNode.querySelector("input[name=\"field[]\"]").value = event.target.value;
+        updateColumnSelection();
+      }
+
+      function updateColumnSelection() {
         var fieldset = document.querySelectorAll(".fieldset");
         var allOptions = document.querySelectorAll(".fieldset option");
         var selectedColumns = [];

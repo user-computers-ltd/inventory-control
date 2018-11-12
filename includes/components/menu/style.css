@@ -57,13 +57,20 @@
 
 #menu-sidebar .menu-item {
   display: block;
-  padding: 8px 0px 8px 8px;
+  padding: 5px 0px 5px 5px;
+  width: 250px;
+  max-height: 30px;
+  box-sizing: border-box;
   text-decoration: none;
   font-size: 16px;
-  white-space: nowrap;
   color: #888888;
   transition: 0.3s;
   cursor: pointer;
+  overflow: hidden;
+}
+
+#menu-sidebar.show .menu-item {
+  max-height: 200px;
 }
 
 #menu-sidebar .menu-item:hover,
@@ -74,6 +81,9 @@
 
 #menu-sidebar .menu-item span {
   display: inline-block;
+  width: 180px;
+  vertical-align: top;
+  line-height: 20px;
 }
 
 #menu-sidebar .menu-item .initial {

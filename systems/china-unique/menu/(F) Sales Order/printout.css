@@ -1,5 +1,4 @@
 #so-header {
-  width: 50%;
   font-size: 13px;
 }
 
@@ -8,6 +7,7 @@
 }
 
 #so-header td:nth-child(2n + 1) {
+  width: 100px;
   font-weight: bold;
 }
 
@@ -33,6 +33,7 @@
   border-top: 1px solid;
 }
 
+#so-models-no-results,
 #so-not-found {
   margin: 100px 0px;
   text-align: center;

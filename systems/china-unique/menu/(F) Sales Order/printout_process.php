@@ -1,46 +1,46 @@
 <?php
-  $so_no = $_GET["so_no"];
-  $so_date = $_GET["so_date"];
-  $debtor_code = $_GET["debtor_code"];
-  $currency_code = $_GET["currency_code"];
-  $exchange_rate = $_GET["exchange_rate"];
+  $soNo = $_GET["so_no"];
+  $soDate = $_GET["so_date"];
+  $debtorCode = $_GET["debtor_code"];
+  $currencyCode = $_GET["currency_code"];
+  $exchangeRate = $_GET["exchange_rate"];
   $discount = $_GET["discount"];
   $tax = $_GET["tax"];
   $remarks = assigned($_GET["remarks"]) || "";
 
-  $brand_codes = $_GET["brand_code"];
-  $model_nos = $_GET["model_no"];
+  $brandCodes = $_GET["brand_code"];
+  $modelNos = $_GET["model_no"];
   $prices = $_GET["price"];
   $qtys = $_GET["qty"];
 
-  $so_header = null;
-  $so_models = array();
+  $soHeader = null;
+  $soModels = array();
 
   /* Only populate the data if an order number is given. */
-  if (assigned($so_no)) {
+  if (assigned($soNo)) {
 
     /* If a complete form is given, follow all the data to printout. */
-    if (assigned($so_date) && assigned($debtor_code) && assigned($currency_code) && assigned($exchange_rate) && assigned($discount) && assigned($tax)) {
+    if (assigned($soDate) && assigned($debtorCode) && assigned($currencyCode) && assigned($exchangeRate) && assigned($discount) && assigned($tax)) {
 
-      $debtors = query("SELECT english_name AS name FROM debtor WHERE code=\"$debtor_code\"");
+      $debtors = query("SELECT english_name AS name FROM `debtor` WHERE code=\"$debtorCode\"");
 
-      $so_header = array(
-        "Order No." => $so_no,
-        "Date"      => $so_date,
-        "Customer"  => "$debtor_code - " . (count($debtors) > 0 ? $debtors[0]["name"] : "Unknown"),
-        "Currency"  => "$currency_code @ $exchange_rate",
+      $soHeader = array(
+        "Order No." => $soNo,
+        "Date"      => $soDate,
+        "Customer"  => "$debtorCode - " . (count($debtors) > 0 ? $debtors[0]["name"] : "Unknown"),
+        "Currency"  => "$currencyCode @ $exchangeRate",
         "Discount"  => $discount,
         "Tax"       => $tax,
       );
 
       /* If a model list is given, follow all the data to printout. */
-      if (assigned($brand_codes) && assigned($model_nos) && assigned($prices) && assigned($qtys) && count($brand_codes) > 0 && count($model_nos) > 0 && count($prices) > 0 && count($qtys) > 0) {
-        $so_models = array();
+      if (assigned($brandCodes) && assigned($modelNos) && assigned($prices) && assigned($qtys) && count($brandCodes) > 0 && count($modelNos) > 0 && count($prices) > 0 && count($qtys) > 0) {
+        $soModels = array();
 
-        for ($i = 0; $i < count($brand_codes); $i++) {
-          array_push($so_models, array(
-            "Brand"         => $brand_codes[$i],
-            "Model No."     => $model_nos[$i],
+        for ($i = 0; $i < count($brandCodes); $i++) {
+          array_push($soModels, array(
+            "Brand"         => $brandCodes[$i],
+            "Model No."     => $modelNos[$i],
             "Selling Price" => $prices[$i],
             "Quantity"      => $qtys[$i],
             "Outstanding"   => $qtys[$i],
@@ -52,7 +52,7 @@
 
     /* If the sales order was not filled-in completely, attempt to retrieve an existing sales order. */
     else {
-      $so_header = query("
+      $soHeader = query("
         SELECT
           a.so_no                                                           AS `Order No.`,
           DATE_FORMAT(a.so_date, '%d-%m-%Y')                                AS `Date`,
@@ -66,10 +66,10 @@
           `debtor` AS b
           ON a.debtor_code=b.code
         WHERE
-          a.so_no=\"$so_no\"
+          a.so_no=\"$soNo\"
       ")[0];
 
-      $so_models = query("
+      $soModels = query("
         SELECT
           b.name                                  AS `Brand`,
           a.model_no                              AS `Model No.`,
@@ -83,7 +83,7 @@
           `brand` AS b
           ON a.brand_code=b.code
         WHERE
-          a.so_no=\"$so_no\"
+          a.so_no=\"$soNo\"
       ");
     }
   }

@@ -17,14 +17,14 @@
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo getURLParentLocation() . " Entry"; ?></div>
-      <?php if (assigned($so_no)): ?>
+      <?php if (assigned($soNo)): ?>
         <form id="so-form">
           <table id="so-header">
             <tr>
               <td>Order No.:</td>
-              <td><input type="text" id="so-no" name="so_no" placeholder="Sales Order No." value="<?php echo $so_no; ?>" readonly required /></td>
+              <td><input type="text" id="so-no" name="so_no" placeholder="Sales Order No." value="<?php echo $soNo; ?>" readonly required /></td>
               <td>Date:</td>
-              <td><input type="date" id="so-date" name="so_date" placeholder="Sales Date" value="<?php echo $so_date; ?>" required /></td>
+              <td><input type="date" id="so-date" name="so_date" placeholder="Sales Date" value="<?php echo $soDate; ?>" required /></td>
             </tr>
             <tr>
               <td>Client:</td>
@@ -34,7 +34,7 @@
                     foreach ($debtors as $debtor) {
                       $code = $debtor["code"];
                       $label = $debtor["code"] . " - " . $debtor["name"];
-                      $selected = $debtor_code == $code ? "selected" : "";
+                      $selected = $debtorCode == $code ? "selected" : "";
                       echo "<option value=\"$code\" $selected>$label</option>";
                     }
                   ?>
@@ -45,19 +45,19 @@
                 <select id="currency-code" name="currency_code" onchange="onCurrencyCodeChange()" required>
                   <?php
                     foreach ($currencies as $code => $rate) {
-                      $selected = $currency_code == $code ? "selected" : "";
+                      $selected = $currencyCode == $code ? "selected" : "";
                       echo "<option value=\"$code\" $selected>$code</option>";
                     }
                   ?>
                 </select>
-                <input id="exchange-rate" name="exchange_rate" type="number" step="0.00000001" min="0.00000001" placeholder="Exchange Rate" value="<?php echo $exchange_rate; ?>" <?php echo $currency_code === COMPANY_CURRENCY ? "readonly" : ""; ?> onchange="onExchangeRateChange()" required />
+                <input id="exchange-rate" name="exchange_rate" type="number" step="0.00000001" min="0.00000001" placeholder="Exchange Rate" value="<?php echo $exchangeRate; ?>" <?php echo $currencyCode === COMPANY_CURRENCY ? "readonly" : ""; ?> onchange="onExchangeRateChange()" required />
               </td>
             </tr>
             <tr>
               <td>Discount:</td>
-              <td><input id="discount" name="discount" type="number" step="1" min="0" max="100" placeholder="Discount" value="<?php echo $discount; ?>" onchange="onDiscountChange()" required /></td>
+              <td><input id="discount" name="discount" type="number" step="0.01" min="0" max="100" placeholder="Discount" value="<?php echo $discount; ?>" onchange="onDiscountChange()" required /><span>%</span></td>
               <td>Tax:</td>
-              <td><input id="tax" name="tax" type="number" step="1" placeholder="Tax" min="0" max="100" value="<?php echo $tax; ?>" onchange="onTaxChange()" required /></td>
+              <td><input id="tax" name="tax" type="number" step="0.01" placeholder="Tax" min="0" max="100" value="<?php echo $tax; ?>" onchange="onTaxChange()" required /><span>%</span></td>
             </tr>
           </table>
           <table id="so-sub-header">
@@ -82,7 +82,7 @@
               <col>
               <col>
               <col>
-              <col style="width: 50px">
+              <col style="width: 30px">
             </colgroup>
             <thead>
               <tr>
@@ -135,29 +135,6 @@
           <?php endif ?>
           <button type="button" onclick="printout()">Print</button>
         </form>
-        <table id="so-model-sample">
-          <tr>
-            <td><input class="model-no" type="text" name="model_no[]" list="model-list" oninput="onModelNoChange(event)" onchange="onModelNoChange(event, true)" onfocus="onFieldFocused(event)" onblur="onFieldBlurred(event)" autocomplete="on" required /></td>
-            <td>
-              <select class="brand-code" name="brand_code[]" onchange="onBrandCodeChange(event)" onfocus="onFieldFocused(event)" onblur="onFieldBlurred(event)" required>
-                <?php
-                  foreach ($brands as $brand) {
-                    $code = $brand["code"];
-                    echo "<option value=\"$code\">$code</option>";
-                  }
-                ?>
-              </select>
-            </td>
-            <td><input class="qty number" type="number" min="0" name="qty[]" onchange="onQuantityChange(event)" onfocus="onFieldFocused(event)" onblur="onFieldBlurred(event)" required /></td>
-            <td><input class="price number" type="number" step="0.01" min="0" name="price[]" onchange="onPriceChange(event)" onfocus="onFieldFocused(event)" onblur="onFieldBlurred(event)" required /></td>
-            <td><span class="total-amount number"></span></td>
-            <td><span class="cost-average number"></span></td>
-            <td><span class="profit number"></span></td>
-            <td><span class="qty-on-hand number"></span></td>
-            <td><span class="qty-on-order number"></span></td>
-            <td><div class="remove" onclick="removeSalesModel(event)">×</div></td>
-          </tr>
-        </table>
         <datalist id="model-list">
           <?php
             foreach ($models as $model) {
@@ -174,8 +151,9 @@
           ?>
         </datalist>
         <script>
-          var soModels = <?php echo json_encode($so_models); ?>;
+          var soModels = <?php echo json_encode($soModels); ?>;
           var currencies = <?php echo json_encode($currencies); ?>;
+          var brands = <?php echo json_encode($brands); ?>;
           var focusedRow = null;
           var focusedFieldName = null;
 
@@ -191,7 +169,6 @@
           var discountAmountElement = document.querySelector("#discount-amount");
           var totolQtyElement = document.querySelector("#total-qty");
           var totolAmountElement = document.querySelector("#total-amount");
-          var sampleRowElement = document.querySelector("#so-model-sample tr");
           var modelListElement = document.querySelector("#model-list");
 
           function getModels(modelNo, brandCode) {
@@ -206,7 +183,7 @@
             return models;
           }
 
-          function drawTable() {
+          function render() {
             var focusedElement = null;
 
             tableBodyElement.innerHTML = "";
@@ -218,36 +195,42 @@
             for (var i = 0; i < soModels.length; i++) {
               var soModel = soModels[i];
               var matchedModels = getModels(soModel["model_no"]);
-              var rowElement = sampleRowElement.cloneNode(true);
-              var brandOptions = rowElement.querySelectorAll(".brand-code option");
+              var newRowElement = document.createElement("tr");
 
-              for (var j = 0; j < brandOptions.length; j++) {
-                var brand = brandOptions[j];
-                var unmatched = matchedModels.map(function (m) { return m["brand_code"]; }).indexOf(brand.value) === -1;
+              var rowInnerHTML =
+                  "<tr>"
+                + "<td><input class=\"model-no\" type=\"text\" name=\"model_no[]\" list=\"model-list\" value=\"" + soModel["model_no"] + "\" oninput=\"onModelNoChange(event, " + i + ")\" onchange=\"onModelNoChange(event, " + i + ", true)\" onfocus=\"onFieldFocused(" + i + ", 'model_no[]')\" onblur=\"onFieldBlurred()\" autocomplete=\"on\" required /></td>"
+                + "<td><select class=\"brand-code\" name=\"brand_code[]\" value=\"" + soModel["brand_code"] + "\" onchange=\"onBrandCodeChange(event, " + i + ")\" onfocus=\"onFieldFocused(" + i + ", 'brand_code[]')\" onblur=\"onFieldBlurred()\" required>";
 
-                brandOptions[j].disabled = unmatched;
-                brandOptions[j].hidden = unmatched;
+              for (var j = 0; j < brands.length; j++) {
+                var code = brands[j]["code"];
+                var disabled = matchedModels.map(function (model) { return model["brand_code"]; }).indexOf(code) === -1 ? " disabled hidden" : "";
+                rowInnerHTML += "<option value=\"" + code + "\"" + disabled + ">" + code + "</option>";
               }
 
-              rowElement.dataset.index = i;
-              rowElement.querySelector(".model-no").value = soModel["model_no"];
-              rowElement.querySelector(".brand-code").value = soModel["brand_code"];
-              rowElement.querySelector(".cost-average").innerHTML = soModel["cost_average"].toFixed(2);
-              rowElement.querySelector(".price").value = soModel["price"].toFixed(2);
-              rowElement.querySelector(".profit").innerHTML = soModel["profit"].toFixed(2) + "%";
-              rowElement.querySelector(".qty").value = soModel["qty"];
-              rowElement.querySelector(".total-amount").innerHTML = soModel["total_amount"].toFixed(2);
-              rowElement.querySelector(".qty-on-hand").innerHTML = soModel["qty_on_hand"];
-              rowElement.querySelector(".qty-on-order").innerHTML = soModel["qty_on_order"];
+              rowInnerHTML +=
+                  "</select>"
+                + "</td>"
+                + "<td><input class=\"qty number\" type=\"number\" min=\"0\" name=\"qty[]\" value=\"" + soModel["qty"] + "\" onchange=\"onQuantityChange(event, " + i + ")\" onfocus=\"onFieldFocused(" + i + ", 'qty[]')\" onblur=\"onFieldBlurred()\" required /></td>"
+                + "<td><input class=\"price number\" type=\"number\" step=\"0.01\" min=\"0\" name=\"price[]\" value=\"" + soModel["price"].toFixed(2) + "\" onchange=\"onPriceChange(event, " + i + ")\" onfocus=\"onFieldFocused(" + i + ", 'price[]')\" onblur=\"onFieldBlurred()\" required /></td>"
+                + "<td><span class=\"total-amount number\">" + soModel["total_amount"].toFixed(2) + "</span></td>"
+                + "<td><span class=\"cost-average number\">" + soModel["cost_average"].toFixed(2) + "</span></td>"
+                + "<td><span class=\"profit number\">" + soModel["profit"].toFixed(2) + "%</span></td>"
+                + "<td><span class=\"qty-on-hand number\">" + soModel["qty_on_hand"] + "</span></td>"
+                + "<td><span class=\"qty-on-order number\">" + soModel["qty_on_order"] + "</span></td>"
+                + "<td><div class=\"remove\" onclick=\"removeSalesModel(" + i + ")\">×</div></td>"
+                + "</tr>";
 
-              if (i === focusedRow) {
-                focusedElement = rowElement.querySelector("[name=\"" + focusedFieldName + "\"]");
-              }
+              newRowElement.innerHTML = rowInnerHTML;
 
               totolQty += parseFloat(soModel["qty"]);
               totolAmount += parseFloat(soModel["price"] * soModel["qty"]);
 
-              tableBodyElement.appendChild(rowElement);
+              tableBodyElement.appendChild(newRowElement);
+
+              if (i === focusedRow) {
+                focusedElement = newRowElement.querySelector("[name=\"" + focusedFieldName + "\"]");
+              }
             }
 
             if (soModels.length === 0) {
@@ -326,7 +309,7 @@
               updatePrice(i, soModels[i]["price"]);
             }
 
-            drawTable();
+            render();
           }
 
           function updateQuantity (index, quantity = 0) {
@@ -343,26 +326,20 @@
             soModels.push({});
 
             updateModel(soModels.length - 1);
-            drawTable();
+            render();
           }
 
-          function removeSalesModel(event) {
-            var rowElement = event.target.parentElement.parentElement;
-            var rowIndex = parseInt(rowElement.dataset.index, 10);
-
-            soModels.splice(rowIndex, 1);
-            drawTable();
+          function removeSalesModel(index) {
+            soModels.splice(index, 1);
+            render();
           }
 
-          function onFieldFocused(event) {
-            var focusedElement = event.target;
-            var rowElement = focusedElement.parentElement.parentElement;
-
-            focusedRow = parseInt(rowElement.dataset.index, 10);
-            focusedFieldName = focusedElement.name;
+          function onFieldFocused(index, name) {
+            focusedRow = index;
+            focusedFieldName = name;
           }
 
-          function onFieldBlurred(event) {
+          function onFieldBlurred() {
             focusedRow = null;
             focusedFieldName = null;
           }
@@ -377,7 +354,7 @@
               }
             }
 
-            drawTable();
+            render();
           }
 
           function onCurrencyCodeChange() {
@@ -413,51 +390,35 @@
               updateModel(i, matchedModel);
             }
 
-            drawTable();
+            render();
           }
 
-          function onModelNoChange(event, force = false) {
-            var modelNoElement = event.target;
-            var rowElement = modelNoElement.parentElement.parentElement;
-            var index = parseInt(rowElement.dataset.index, 10);
-            var matchedModel = getModels(modelNoElement.value)[0];
+          function onModelNoChange(event, index, force = false) {
+            var matchedModel = getModels(event.target.value)[0];
 
             if (matchedModel || force) {
               updateModel(index, matchedModel);
-              drawTable();
+              render();
             }
           }
 
-          function onBrandCodeChange(event) {
-            var brandCodeElement = event.target;
-            var rowElement = brandCodeElement.parentElement.parentElement;
-            var index = parseInt(rowElement.dataset.index, 10);
-            var modelNo = rowElement.querySelector(".model-no").value;
-            var brandCode = brandCodeElement.value;
-            var matchedModel = modelNo && brandCode && getModels(modelNo).filter(function (m) { return m["brand_code"] === brandCode; })[0] || undefined;
+          function onBrandCodeChange(event, index) {
+            var modelNo = soModels[i]["model_no"];
+            var brandCode = event.target.value;
+            var matchedModel = modelNo && brandCode && getModels(modelNo).filter(function (model) { return model["brand_code"] === brandCode; })[0] || undefined;
 
             updateModel(index, matchedModel);
-            drawTable();
+            render();
           }
 
-          function onPriceChange(event) {
-            var priceElement = event.target;
-            var rowElement = priceElement.parentElement.parentElement;
-            var index = parseInt(rowElement.dataset.index, 10);
-            var price = priceElement.value;
-
-            updatePrice(index, price);
-            drawTable();
+          function onPriceChange(event, index) {
+            updatePrice(index, event.target.value);
+            render();
           }
 
-          function onQuantityChange(event) {
-            var qtyElement = event.target;
-            var rowElement = qtyElement.parentElement.parentElement;
-            var index = parseInt(rowElement.dataset.index, 10);
-            var qty = qtyElement.value;
-
-            updateQuantity(index, qty);
-            drawTable();
+          function onQuantityChange(event, index) {
+            updateQuantity(index, event.target.value);
+            render();
           }
 
           function printout() {
@@ -477,7 +438,7 @@
               updatePrice(i, price);
             }
 
-            drawTable();
+            render();
           }
         </script>
       <?php else: ?>
