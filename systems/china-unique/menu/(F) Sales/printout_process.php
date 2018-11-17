@@ -25,12 +25,12 @@
       $debtors = query("SELECT english_name AS name FROM `debtor` WHERE code=\"$debtorCode\"");
 
       $soHeader = array(
-        "Order No." => $soNo,
-        "Date"      => $soDate,
-        "Customer"  => "$debtorCode - " . (count($debtors) > 0 ? $debtors[0]["name"] : "Unknown"),
-        "Currency"  => "$currencyCode @ $exchangeRate",
-        "Discount"  => $discount,
-        "Tax"       => $tax,
+        "so_no"     => $soNo,
+        "date"      => $soDate,
+        "customer"  => "$debtorCode - " . (count($debtors) > 0 ? $debtors[0]["name"] : "Unknown"),
+        "currency"  => "$currencyCode @ $exchangeRate",
+        "discount"  => $discount,
+        "tax"       => $tax,
       );
 
       /* If a model list is given, follow all the data to printout. */
@@ -39,12 +39,12 @@
 
         for ($i = 0; $i < count($brandCodes); $i++) {
           array_push($soModels, array(
-            "Brand"         => $brandCodes[$i],
-            "Model No."     => $modelNos[$i],
-            "Selling Price" => $prices[$i],
-            "Quantity"      => $qtys[$i],
-            "Outstanding"   => $qtys[$i],
-            "Sub Total"     => $prices[$i] * $qtys[$i]
+            "brand"             => $brandCodes[$i],
+            "model_no"          => $modelNos[$i],
+            "price"             => $prices[$i],
+            "qty"               => $qtys[$i],
+            "qty_outstanding"   => $qtys[$i],
+            "subtotal"          => $prices[$i] * $qtys[$i]
           ));
         }
       }
@@ -54,36 +54,38 @@
     else {
       $soHeader = query("
         SELECT
-          a.so_no                                                           AS `Order No.`,
-          DATE_FORMAT(a.so_date, '%d-%m-%Y')                                AS `Date`,
-          CONCAT(a.debtor_code, ' - ', IFNULL(b.english_name, 'Unknown'))   AS `Customer`,
-          CONCAT(a.currency_code, ' @ ', a.exchange_rate)                   AS `Currency`,
-          a.discount                                                        AS `Discount`,
-          a.tax                                                             AS `Tax`
+          a.so_no                                                           AS `so_no`,
+          DATE_FORMAT(a.so_date, '%d-%m-%Y')                                AS `date`,
+          CONCAT(a.debtor_code, ' - ', IFNULL(b.english_name, 'Unknown'))   AS `customer`,
+          CONCAT(a.currency_code, ' @ ', a.exchange_rate)                   AS `currency`,
+          a.discount                                                        AS `discount`,
+          a.tax                                                             AS `tax`
         FROM
           `so_header` AS a
         LEFT JOIN
           `debtor` AS b
-          ON a.debtor_code=b.code
+        ON a.debtor_code=b.code
         WHERE
           a.so_no=\"$soNo\"
       ")[0];
 
       $soModels = query("
         SELECT
-          b.name                                  AS `Brand`,
-          a.model_no                              AS `Model No.`,
-          a.price                                 AS `Selling Price`,
-          a.qty                                   AS `Quantity`,
-          a.qty_outstanding                       AS `Outstanding`,
-          a.qty * a.price                         AS `Sub Total`
+          b.name                                  AS `brand`,
+          a.model_no                              AS `model_no`,
+          a.price                                 AS `price`,
+          a.qty                                   AS `qty`,
+          a.qty_outstanding                       AS `qty_outstanding`,
+          a.qty * a.price                         AS `subtotal`
         FROM
           `so_model` AS a
         LEFT JOIN
           `brand` AS b
-          ON a.brand_code=b.code
+        ON a.brand_code=b.code
         WHERE
           a.so_no=\"$soNo\"
+        ORDER BY
+          a.so_index ASC
       ");
     }
   }

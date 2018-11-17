@@ -1,0 +1,43 @@
+#inv-header,
+#inv-footer {
+  font-size: 13px;
+}
+
+#inv-header td,
+#inv-footer td {
+  border: none;
+}
+
+#inv-header td:nth-child(2n + 1),
+#inv-footer td:nth-child(2n + 1) {
+  width: 120px;
+  font-weight: bold;
+}
+
+#inv-models th,
+#inv-models td {
+  border-left: none;
+  border-right: none;
+}
+
+#inv-models .number {
+  text-align: right;
+}
+
+#inv-footer #remarks {
+  padding: 5px;
+  width: 100%;
+  height: 80px;
+  font-family: inherit;
+  font-size: 13px;
+  box-sizing: border-box;
+}
+
+#inv-models-no-results,
+#inv-not-found {
+  margin: 100px 0px;
+  text-align: center;
+  font-size: 40px;
+  font-weight: bold;
+  opacity: 0.3;
+}

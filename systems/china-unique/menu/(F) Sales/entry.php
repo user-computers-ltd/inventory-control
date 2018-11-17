@@ -1,22 +1,33 @@
 <?php
-  define("SYSTEM_PATH", "../../");
+  if (!defined("SYSTEM_PATH")) {
+    define("SYSTEM_PATH", "../../");
+  }
+
   include_once SYSTEM_PATH . "includes/php/config.php";
   include_once ROOT_PATH . "includes/php/utils.php";
   include_once ROOT_PATH . "includes/php/database.php";
   include "entry_process.php";
+
+  if (!defined("SALES_PATH")) {
+    define("SALES_PATH", "");
+  }
+
+  if (!defined("HEADLINE")) {
+    define("HEADLINE", "Sales Order Entry");
+  }
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <?php include_once SYSTEM_PATH . "includes/php/head.php"; ?>
-    <link rel="stylesheet" href="entry.css">
+    <link rel="stylesheet" href="<?php echo SALES_PATH; ?>entry.css">
   </head>
   <body>
     <?php include_once ROOT_PATH . "includes/components/menu/index.php"; ?>
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
-      <div class="headline"><?php echo getURLParentLocation() . " Entry"; ?></div>
+      <div class="headline"><?php echo HEADLINE; ?></div>
       <?php if (assigned($soNo)): ?>
         <form id="so-form">
           <table id="so-header">
@@ -235,7 +246,7 @@
 
             if (soModels.length === 0) {
               var rowElement = document.createElement("tr");
-              rowElement.innerHTML = "<td colspan=\"10\"><span id=\"so-entry-no-model\">No Models</span></td>";
+              rowElement.innerHTML = "<td colspan=\"10\"><span id=\"so-entry-no-model\">No models</span></td>";
               tableBodyElement.appendChild(rowElement);
             }
 
@@ -442,7 +453,7 @@
           }
         </script>
       <?php else: ?>
-        <div id="so-entry-not-found">Sales Order Not Found</div>
+        <div id="so-entry-not-found">Sales order not found</div>
       <?php endif ?>
     </div>
   </body>

@@ -1,40 +1,38 @@
-#so-header {
+#inv-header {
   font-size: 13px;
 }
 
-#so-header td {
+#inv-header td {
   border: none;
 }
 
-#so-header td:nth-child(2n + 1) {
+#inv-header td:nth-child(2n + 1) {
   width: 100px;
   font-weight: bold;
 }
 
-#so-models th,
-#so-models td {
+#inv-models th,
+#inv-models td {
   background-color: transparent;
   border: none;
   padding: 4px;
   font-size: 13px;
 }
 
-#so-models .number {
-  display: inline-block;
-  width: 100%;
+#inv-models .number {
   text-align: right;
 }
 
-#so-models thead th {
+#inv-models thead th {
   border-bottom: 1px solid;
 }
 
-#so-models tfoot th {
+#inv-models tfoot th {
   border-top: 1px solid;
 }
 
-#so-models-no-results,
-#so-not-found {
+#inv-models-no-results,
+#inv-not-found {
   margin: 100px 0px;
   text-align: center;
   font-size: 40px;

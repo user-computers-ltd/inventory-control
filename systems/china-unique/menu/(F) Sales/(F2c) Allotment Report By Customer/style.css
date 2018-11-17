@@ -13,12 +13,33 @@
   box-sizing: border-box;
 }
 
+.so-customer-header .currency,
+.so-customer-header .discount,
+.so-customer-header .tax,
+.so-customer-header .warehouse {
+  margin: 5px 10px;
+  font-size: 13px;
+  font-weight: bold;
+  float: right;
+}
+
+.so-customer-header .currency {
+  margin-right: 0px;
+}
+
+.so-customer-results th,
+.so-customer-results td {
+  border-left: none;
+  border-right: none;
+}
+
 .so-customer-results td {
   min-width: 50px;
   max-width: 50px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  vertical-align: top;
 }
 
 .so-customer-results .link {
@@ -26,8 +47,6 @@
 }
 
 .so-customer-results .number {
-  display: inline-block;
-  width: 100%;
   text-align: right;
 }
 
@@ -36,5 +55,6 @@
   text-align: center;
   font-size: 40px;
   font-weight: bold;
+  line-height: 48px;
   opacity: 0.3;
 }

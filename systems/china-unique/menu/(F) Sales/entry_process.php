@@ -109,6 +109,7 @@
           $modelNo = $modelNos[$i];
           $price = $prices[$i];
           $qty = $qtys[$i];
+
           array_push($values, "(\"$soNo\", \"$i\", \"$brandCode\", \"$modelNo\", \"$price\", \"$qty\", \"$qty\")");
         }
 
@@ -150,7 +151,7 @@
 
   /* If no data is given, treat it as a new entry form. */
   else {
-    $soNo = "SO" . date("YmdHi");
+    $soNo = "SO" . date("YmdHis");
     $soDate = date("Y-m-d");
     $currencyCode = COMPANY_CURRENCY;
     $exchangeRate = $currencies[COMPANY_CURRENCY];

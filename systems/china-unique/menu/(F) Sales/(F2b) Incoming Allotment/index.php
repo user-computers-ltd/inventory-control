@@ -19,20 +19,10 @@
       <div class="headline"><?php echo getURLParentLocation(); ?></div>
       <form>
         <table id="ia-input">
+          <colgroup>
+            <col style="width: 100px">
+          </colgroup>
           <tr>
-            <td><label>Supplier:</label></td>
-            <td>
-              <select name="filter_creditor_code[]" multiple>
-                <?php
-                  foreach ($suppliers as $supplier) {
-                    $code = $supplier["code"];
-                    $name = $supplier["name"];
-                    $selected = assigned($filterCreditorCodes) && in_array($code, $filterCreditorCodes) ? "selected" : "";
-                    echo "<option value=\"$code\" $selected>$code - $name</option>";
-                  }
-                ?>
-              </select>
-            </td>
             <td><label>IA No.:</label></td>
             <td>
               <select name="filter_ia_no[]" multiple>
@@ -50,17 +40,16 @@
         </table>
       </form>
       <form method="post">
-        <button type="submit" name="save" value="true">Save</button>
         <?php
           if (count($iaModels) > 0) {
-            foreach ($iaModels as $supplier => $ias) {
-              echo "<div class=\"ia-supplier\"><h4>$supplier</h4>";
+            echo "<button type=\"submit\">Save</button>";
 
-              foreach ($ias as $iaNo => $ia) {
-                $date = $ia["date"];
-                $models = $ia["models"];
+            foreach ($iaModels as $iaNo => $ia) {
+              $date = $ia["date"];
+              $models = $ia["models"];
 
-                echo "
+              echo "
+                <div class=\"ia\">
                   <table class=\"ia-header\">
                     <tr>
                       <td>IA No.:</td>
@@ -69,94 +58,98 @@
                       <td>$date</td>
                     </tr>
                   </table>
+              ";
+
+              if (count($models) > 0) {
+                echo "
+                  <table class=\"ia-results\" data-ia_no=\"$iaNo\">
+                    <colgroup>
+                      <col style=\"width: 70px\">
+                      <col style=\"width: 90px\">
+                      <col style=\"width: 80px\">
+                      <col>
+                      <col>
+                      <col style=\"width: 80px\">
+                      <col style=\"width: 80px\">
+                      <col style=\"width: 80px\">
+                      <col style=\"width: 30px\">
+                      <col style=\"width: 80px\">
+                      <col style=\"width: 30px\">
+                    </colgroup>
+                    <thead>
+                      <tr></tr>
+                      <tr>
+                        <th>Brand</th>
+                        <th>Model No.</th>
+                        <th class=\"number\">Available Qty</th>
+                        <th>SO No.</th>
+                        <th>Customer</th>
+                        <th class=\"number\">Selling Price (Inc. Disc)</th>
+                        <th class=\"number\">Outstanding Qty</th>
+                        <th class=\"number\">Allot Qty</th>
+                        <th></th>
+                        <th class=\"number\">Total Allot Qty</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
                 ";
 
-                if (count($models) > 0) {
+                $totalQty = 0;
+
+                for ($i = 0; $i < count($models); $i++) {
+                  $model = $models[$i];
+                  $brandCode = $model["brand_code"];
+                  $brand = $model["brand_name"];
+                  $modelNo = $model["model_no"];
+                  $qty = $model["qty_available"];
+                  $totalQty += $qty;
+
                   echo "
-                    <table class=\"ia-results\" data-ia_no=\"$iaNo\">
-                      <colgroup>
-                        <col style=\"width: 70px\">
-                        <col style=\"width: 80px\">
-                        <col style=\"width: 80px\">
-                        <col>
-                        <col>
-                        <col style=\"width: 80px\">
-                        <col>
-                        <col style=\"width: 30px\">
-                        <col style=\"width: 80px\">
-                        <col style=\"width: 30px\">
-                      </colgroup>
-                      <thead>
-                        <tr></tr>
-                        <tr>
-                          <th>Brand</th>
-                          <th>Model No.</th>
-                          <th><span class=\"number\">Available Qty</span></th>
-                          <th>SO No.</th>
-                          <th>Customer</th>
-                          <th><span class=\"number\">Outstanding Qty</span></th>
-                          <th><span class=\"number\">Allot Qty</span></th>
-                          <th></th>
-                          <th><span class=\"number\">Total Allot Qty</span></th>
-                          <th></th>
-                        </tr>
-                      </thead>
-                      <tbody>
+                    <tr class=\"ia-model\" data-brand_code=\"$brandCode\" data-model_no=\"$modelNo\" data-qty_available=\"$qty\">
+                      <td title=\"$brand\">$brand</td>
+                      <td title=\"$modelNo\">$modelNo</td>
+                      <td class=\"number\">$qty</td>
+                      <td><div class=\"so-no\"></div></td>
+                      <td><div class=\"customer\"></div></td>
+                      <td><div class=\"selling-price\"></div></td>
+                      <td><div class=\"outstanding-qty\"></div></td>
+                      <td><div class=\"allot-qty\"></div></td>
+                      <td><div class=\"remove-allotment\"></div></td>
+                      <td class=\"allot-qty-sum number\"></td>
+                      <td><button type=\"button\" class=\"action-button add\" onclick=\"addAllotment('$iaNo', '$brandCode', '$modelNo')\"></button></td>
+                    </tr>
                   ";
+                }
 
-                  $totalQty = 0;
-
-                  for ($i = 0; $i < count($models); $i++) {
-                    $model = $models[$i];
-                    $brandCode = $model["brand_code"];
-                    $brand = $model["brand_name"];
-                    $modelNo = $model["model_no"];
-                    $qty = $model["qty_available"];
-                    $totalQty += $qty;
-
-                    echo "
-                      <tr class=\"ia-model\" data-brand_code=\"$brandCode\" data-model_no=\"$modelNo\" data-qty_available=\"$qty\">
-                        <td title=\"$brand\">$brand</td>
-                        <td title=\"$modelNo\">$modelNo</td>
-                        <td><span class=\"number\">$qty</span></td>
-                        <td><div class=\"so-no\"></div></td>
-                        <td><div class=\"customer\"></div></td>
-                        <td><div class=\"outstanding-qty\"></div></td>
-                        <td><div class=\"allot-qty\"></div></td>
-                        <td><div class=\"remove-allotment\"></div></td>
-                        <td><span class=\"allot-qty-sum number\"></span></td>
-                        <td><button type=\"button\" class=\"action-button add\" onclick=\"addAllotment('$iaNo', '$brandCode', '$modelNo')\"></button></td>
-                      </tr>
-                    ";
-                  }
-
-                  echo "
+                echo "
                       </tbody>
                       <tfoot>
                         <tr>
                           <th></th>
-                          <th><span class=\"number\">Total:</span></th>
-                          <th><span class=\"number\">$totalQty</span></th>
+                          <th class=\"number\">Total:</th>
+                          <th class=\"number\">$totalQty</th>
                           <th></th>
                           <th></th>
                           <th></th>
                           <th></th>
                           <th></th>
-                          <th><span class=\"total-allot-qty number\"></span></th>
+                          <th></th>
+                          <th class=\"total-allot-qty number\"></th>
                           <th></th>
                         </tr>
                       </tfoot>
                     </table>
-                  ";
-                } else {
-                  echo "<div class=\"ia-no-results\">No Incoming Advice Models</div>";
-                }
+                  </div>
+                ";
+              } else {
+                echo "<div class=\"ia-no-results\">No incoming advice models</div>";
               }
-
-              echo "</div>";
             }
+          } else if (!$hasFilter) {
+            echo "<div class=\"ia-no-results\">Please select an incoming advice no.</div>";
           } else {
-            echo "<div class=\"ia-no-results\">No Results</div>";
+            echo "<div class=\"ia-no-results\">No results</div>";
           }
         ?>
       </form>
@@ -195,6 +188,7 @@
         var iaRowElement = getIARowElement(iaNo, brandCode, modelNo);
         var customerElement = iaRowElement.querySelector(".customer");
         var soNoElement = iaRowElement.querySelector(".so-no");
+        var sellingPriceElement = iaRowElement.querySelector(".selling-price");
         var outstandingQtyElement = iaRowElement.querySelector(".outstanding-qty");
         var allotQtyElement = iaRowElement.querySelector(".allot-qty");
         var allotQtySumElement = iaRowElement.querySelector(".allot-qty-sum");
@@ -206,6 +200,7 @@
 
         soNoElement.innerHTML = "";
         customerElement.innerHTML = "";
+        sellingPriceElement.innerHTML = "";
         outstandingQtyElement.innerHTML = "";
         allotQtyElement.innerHTML = "";
         removeElement.innerHTML = "";
@@ -217,8 +212,7 @@
           var maxQty = Math.min(qtyAvailable - allotedQty, allotment["qty_outstanding"]);
 
           var soNoInnerHTML =
-              "<div>"
-            + "<input type=\"hidden\" name=\"ia_no[]\" value=\"" + iaNo + "\" />"
+              "<input type=\"hidden\" name=\"ia_no[]\" value=\"" + iaNo + "\" />"
             + "<input type=\"hidden\" name=\"brand_code[]\" value=\"" + brandCode + "\" />"
             + "<input type=\"hidden\" name=\"model_no[]\" value=\"" + modelNo + "\" />"
             + "<select name=\"so_no[]\" onchange=\"onSoNoChange(event, '" + iaNo + "', '" + brandCode + "', '" + modelNo + "', " + i + ")\" required>"
@@ -227,7 +221,8 @@
           for (var j = 0; j < availableSoModels.length; j++) {
             var soModel = availableSoModels[j];
             var soNo = soModel["so_no"];
-            var qtyOutstanding = parseFloat(soModel["qty_outstanding"]);
+            var otherAllottedQty = getOtherAllottedQty(iaNo, brandCode, modelNo, soNo);
+            var qtyOutstanding = parseFloat(soModel["qty_outstanding"]) - otherAllottedQty;
             var soNoSelected = allotment["so_no"] === soNo ? "selected" : "";
             var disabled = modelAllotments.filter(function (a) { return a["so_no"] === soNo && allotment["so_no"] !== soNo; }).length > 0 ? " disabled" : "";
 
@@ -236,11 +231,12 @@
             }
           }
 
-          soNoInnerHTML += "</select></div>";
+          soNoInnerHTML += "</select>";
 
           soNoElement.innerHTML += soNoInnerHTML;
           customerElement.innerHTML += "<div title=\"" + allotment["debtor_name"] + "\">" + allotment["debtor_name"] + "</div>";
-          outstandingQtyElement.innerHTML += "<div class=\"number\">" + allotment["qty_outstanding"] + "</div>";
+          sellingPriceElement.innerHTML += "<div title=\"" + allotment["selling_price"] + "\" class=\"number\">" + allotment["selling_price"].toFixed(2) + "</div>";
+          outstandingQtyElement.innerHTML += "<div title=\"" + allotment["qty_outstanding"] + "\" class=\"number\">" + allotment["qty_outstanding"] + "</div>";
           allotQtyElement.innerHTML += "<input class=\"number\" type=\"number\" value=\"" + allotment["qty"] + "\" min=\"0\" max=\"" + maxQty + "\" name=\"qty[]\" onchange=\"onQtyChange(event, '" + iaNo + "', '" + brandCode + "', '" + modelNo + "', " + i + ")\" required />";
           removeElement.innerHTML += "<button type=\"button\" class=\"action-button remove\" onclick=\"removeAllotment('" + iaNo + "', '" + brandCode + "', '" + modelNo + "', " + i + ")\"></button>";
 
@@ -250,15 +246,34 @@
         allotQtySumElement.innerHTML = allotQtySum;
       }
 
+      function getOtherAllottedQty(iaNo, brandCode, modelNo, soNo) {
+        var totalQty = 0;
+        var otherIANos = Object.keys(allotments).filter(function (i) { return i !== iaNo; });
+
+        for (var i = 0; i < otherIANos.length; i++) {
+          var code = otherIANos[i];
+          var modelAllotments = (allotments[code] && allotments[code][brandCode] && allotments[code][brandCode][modelNo]) || [];
+          modelAllotments = modelAllotments.filter(function (allotment) { return allotment["so_no"] === soNo; });
+
+          for (var j = 0; j < modelAllotments.length; j++) {
+            totalQty += parseFloat(modelAllotments[j]["qty"]);
+          }
+        }
+
+        return totalQty;
+      }
+
       function updateAllotmentSoNo(iaNo, brandCode, modelNo, index, soNo = "") {
         var modelAllotments = allotments[iaNo][brandCode][modelNo];
         var allotment = modelAllotments[index];
         var availableSoModels = (soModels[brandCode] && soModels[brandCode][modelNo]) || [];
         var matchedSoModel = availableSoModels.filter(function (model) { return soNo && (model["so_no"] === soNo); })[0];
+        var otherAllottedQty = getOtherAllottedQty(iaNo, brandCode, modelNo, soNo);
 
         allotment["so_no"] = soNo;
         allotment["debtor_name"] = (matchedSoModel && matchedSoModel["debtor_name"]) || "";
-        allotment["qty_outstanding"] = (matchedSoModel && matchedSoModel["qty_outstanding"]) || 0;
+        allotment["selling_price"] = (matchedSoModel && parseFloat(matchedSoModel["selling_price"])) || 0;
+        allotment["qty_outstanding"] = (matchedSoModel && parseFloat(matchedSoModel["qty_outstanding"]) - otherAllottedQty) || 0;
         allotment["qty"] = 0;
       }
 
@@ -305,6 +320,12 @@
         updateAllotmentQty(iaNo, brandCode, modelNo, index, parseFloat(event.target.value));
         renderAllotment(iaNo, brandCode, modelNo);
         renderIASum(iaNo);
+
+        var otherIANos = Object.keys(allotments).filter(function (i) { return i !== iaNo; });
+
+        for (var i = 0; i < otherIANos.length; i++) {
+          renderAllotment(otherIANos[i], brandCode, modelNo);
+        }
       }
 
       function primilaryAllocate(iaNo) {
@@ -321,19 +342,20 @@
           allotments[iaNo] = allotments[iaNo] || {};
           allotments[iaNo][brandCode] = allotments[iaNo][brandCode] || {};
           allotments[iaNo][brandCode][modelNo] = [];
+          var models = allotments[iaNo][brandCode][modelNo];
 
           for (var j = 0; j < availableSoModels.length; j++) {
             var soModel = availableSoModels[j];
             var soNo = soModel["so_no"];
-            var qtyOutstanding = soModel["qty_outstanding"];
-            console.log(soNo, qtyOutstanding)
-            if (qtyAvailable > 0) {
-              var qty = Math.min(qtyAvailable, qtyOutstanding);
+            var otherAllottedQty = getOtherAllottedQty(iaNo, brandCode, modelNo, soNo);
+            var qtyOutstanding = parseFloat(soModel["qty_outstanding"]) - otherAllottedQty;
+            var qty = Math.min(qtyAvailable, qtyOutstanding);
 
-              allotments[iaNo][brandCode][modelNo].push({});
+            if (qty > 0) {
+              models.push({});
 
-              updateAllotmentSoNo(iaNo, brandCode, modelNo, j, soNo);
-              updateAllotmentQty(iaNo, brandCode, modelNo, j, qty);
+              updateAllotmentSoNo(iaNo, brandCode, modelNo, models.length - 1, soNo);
+              updateAllotmentQty(iaNo, brandCode, modelNo, models.length - 1, qty);
 
               qtyAvailable -= qty;
             }
