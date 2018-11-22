@@ -57,10 +57,10 @@
         window.location.href = "<?php echo BASE_URL; ?>admin/db/?db=<?php echo $system; ?>";
       }
 
-      function sendReinitializeDatabase() {
+      function sendReinitializeDatabase(overwrite = false) {
         post({
           url: url,
-          data: { action: "reinitialize-database", system: system },
+          data: { action: "reinitialize-database", system: system, overwrite: overwrite},
           resolve: loadDatabasePage,
           reject: showErrorBar
         });
@@ -68,7 +68,9 @@
 
       function reinitializeDatabase() {
         if (<?php echo json_encode($databaseExists); ?>) {
-          showConfirmDialog("<b>Database " + system + " already exists. Overwrite?</b><br/><br/>Overwriting the existing database cannot be undone.", sendReinitializeDatabase);
+          showConfirmDialog("<b>Database " + system + " already exists. Overwrite?</b><br/><br/>Overwriting the existing database cannot be undone.", function () {
+            sendReinitializeDatabase(true);
+          });
         } else {
           sendReinitializeDatabase();
         }

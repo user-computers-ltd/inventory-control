@@ -115,9 +115,13 @@
       }
       break;
     case "reinitialize-database":
-      if ($_POST["system"]) {
+      if ($_POST["system"] && $_POST["overwrite"]) {
         $system = $_POST["system"];
-        dropDatabase($system);
+
+        if ($_POST["overwrite"] == "true") {
+          dropDatabase($system);
+        }
+        
         createDatabase($system);
         executeSQLFiles($_POST["system"], array_map(function ($table) use ($system) {
           return ROOT_PATH . "systems/$system/data-model/tables/$table";
