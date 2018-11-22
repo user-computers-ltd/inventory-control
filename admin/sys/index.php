@@ -60,7 +60,7 @@
       function sendReinitializeDatabase(overwrite = false) {
         post({
           url: url,
-          data: { action: "reinitialize-database", system: system, overwrite: overwrite},
+          data: { action: "reinitialize-database", system: system, overwrite: overwrite },
           resolve: loadDatabasePage,
           reject: showErrorBar
         });

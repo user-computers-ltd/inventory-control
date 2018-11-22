@@ -4,7 +4,7 @@ function toURLParams(object) {
   for (var key in object) {
     var value = object[key];
 
-    if (value) {
+    if (typeof value !== "undefined") {
       if (value.constructor === Array) {
         value.forEach(function(v) {
           urlParams.push(key + "[]=" + v);
