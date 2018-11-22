@@ -1,53 +1,46 @@
 <?php
-  if (!defined("SYSTEM_PATH")) {
-    define("SYSTEM_PATH", "../../");
-  }
-
+  define("SYSTEM_PATH", "../../../");
   include_once SYSTEM_PATH . "includes/php/config.php";
   include_once ROOT_PATH . "includes/php/utils.php";
   include_once ROOT_PATH . "includes/php/database.php";
-  include "invoice_process.php";
-
-  if (!defined("SALES_PATH")) {
-    define("SALES_PATH", "");
-  }
+  include "process.php";
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <?php include_once SYSTEM_PATH . "includes/php/head.php"; ?>
-    <link rel="stylesheet" href="<?php echo SALES_PATH; ?>invoice.css">
+    <link rel="stylesheet" href="style.css">
   </head>
   <body>
     <?php include_once ROOT_PATH . "includes/components/menu/index.php"; ?>
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
-      <div class="headline">Proforma Invoice</div>
-      <?php if ($piHeader): ?>
+      <div class="headline"><?php echo PACKING_LIST_DETAIL_TITLE; ?></div>
+      <?php if ($plHeader): ?>
         <form method="post">
-          <table id="inv-header">
+          <table id="pl-header">
             <tr>
-              <td>Invoice No.:</td>
-              <td><?php echo $piHeader["pi_no"]; ?></td>
+              <td>Packing List No.:</td>
+              <td><?php echo $plHeader["pl_no"]; ?></td>
               <td>Date:</td>
-              <td><?php echo $piHeader["date"]; ?></td>
+              <td><?php echo $plHeader["date"]; ?></td>
             </tr>
             <tr>
               <td>Client:</td>
-              <td><?php echo $piHeader["debtor_code"] . " - " . $piHeader["debtor_name"]; ?></td>
+              <td><?php echo $plHeader["debtor_code"] . " - " . $plHeader["debtor_name"]; ?></td>
               <td>Currency:</td>
-              <td><?php echo $piHeader["currency_code"] . " @ " . $piHeader["exchange_rate"]; ?></td>
+              <td><?php echo $plHeader["currency_code"] . " @ " . $plHeader["exchange_rate"]; ?></td>
             </tr>
             <tr>
               <td>Discount:</td>
-              <td><?php echo $piHeader["discount"]; ?>%</td>
+              <td><?php echo $plHeader["discount"]; ?>%</td>
               <td>Tax:</td>
-              <td><?php echo $piHeader["tax"]; ?>%</td>
+              <td><?php echo $plHeader["tax"]; ?>%</td>
             </tr>
           </table>
-          <?php if (count($piModels) > 0) : ?>
-            <table id="inv-models">
+          <?php if (count($plModels) > 0) : ?>
+            <table id="pl-models">
               <thead>
                 <tr></tr>
                 <tr>
@@ -63,15 +56,15 @@
                 <?php
                   $totalQty = 0;
                   $subtotalSum = 0;
-                  $discount = $piHeader["discount"];
+                  $discount = $plHeader["discount"];
 
-                  for ($i = 0; $i < count($piModels); $i++) {
-                    $piModel = $piModels[$i];
-                    $soNo = $piModel["so_no"];
-                    $brand = $piModel["brand"];
-                    $modelNo = $piModel["model_no"];
-                    $price = $piModel["price"];
-                    $qty = $piModel["qty"];
+                  for ($i = 0; $i < count($plModels); $i++) {
+                    $plModel = $plModels[$i];
+                    $soNo = $plModel["so_no"];
+                    $brand = $plModel["brand"];
+                    $modelNo = $plModel["model_no"];
+                    $price = $plModel["price"];
+                    $qty = $plModel["qty"];
                     $subtotal = $qty * $price;
 
                     $totalQty += $qty;
@@ -119,29 +112,29 @@
                 </tr>
               </tfoot>
             </table>
-            <table id="inv-footer">
+            <table id="pl-footer">
               <tr>
                 <td>Reference No.:</td>
-                <td><input id="ref-no" name="ref_no" value="<?php echo $piHeader["ref_no"]; ?>" /></td>
+                <td><input id="ref-no" name="ref_no" value="<?php echo $plHeader["ref_no"]; ?>" /></td>
               </tr>
               <tr>
                 <td>Remarks:</td>
-                <td><textarea id="remarks" name="remarks"><?php echo $piHeader["remarks"]; ?></textarea></td>
+                <td><textarea id="remarks" name="remarks"><?php echo $plHeader["remarks"]; ?></textarea></td>
               </tr>
             </table>
             <button name="status" type="submit" value="SAVED">Save</button>
-            <?php if (assigned($piHeader["status"]) && $piHeader["status"] != "POSTED") : ?>
+            <?php if (assigned($plHeader["status"]) && $plHeader["status"] != "POSTED") : ?>
               <button name="status" type="submit" value="POSTED">Post</button>
               <button name="status" type="submit" value="DELETED">Delete</button>
             <?php endif ?>
-            <button type="button" onclick="window.open('invoice_printout.php?pi_no=<?php echo $piHeader["pi_no"]; ?>')">Print</button>
-            <button type="button" onclick="window.open('packing_list.php?pi_no=<?php echo $piHeader["pi_no"]; ?>')">Packing List</button>
+            <!-- <button type="button" onclick="window.open('invoice_printout.php?pl_no=<?php echo $plHeader["pl_no"]; ?>')">Print</button>
+            <button type="button" onclick="window.open('packing_list.php?pl_no=<?php echo $plHeader["pl_no"]; ?>')">Packing List</button> -->
           <?php else: ?>
-            <div id="inv-models-no-results">No models</div>
+            <div id="pl-models-no-results">No models</div>
           <?php endif ?>
         </form>
       <?php else: ?>
-        <div id="inv-not-found">Proforma invoice not found</div>
+        <div id="pl-not-found">Proforma invoice not found</div>
       <?php endif ?>
     </div>
   </body>

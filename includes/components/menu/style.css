@@ -4,7 +4,7 @@
   top: 0px;
   left: 0px;
   height: 100%;
-  width: 50px;
+  width: 60px;
   box-sizing: border-box;
   background-color: rgba(0, 0, 0, 1);
   transition: 0.3s;
@@ -14,8 +14,8 @@
 }
 
 #menu-sidebar.show {
-  width: 250px;
-  background-color: rgba(0, 0, 0, 0.8);
+  width: 300px;
+  background-color: rgba(0, 0, 0, 0.9);
 }
 
 #menu-sidebar .toggle-button {
@@ -25,12 +25,12 @@
   padding: 0px;
   top: 0;
   right: 0px;
-  width: 50px;
+  width: 60px;
   height: 40px;
   line-height: 40px;
   font-size: 36px;
   text-align: center;
-  color: #888888;
+  color: #b4b4b4;
   text-decoration: none;
   background: none;
   box-shadow: none;
@@ -58,12 +58,12 @@
 #menu-sidebar .menu-item {
   display: block;
   padding: 5px 0px 5px 5px;
-  width: 250px;
+  width: 300px;
   max-height: 30px;
   box-sizing: border-box;
   text-decoration: none;
   font-size: 16px;
-  color: #888888;
+  color: #b4b4b4;
   transition: 0.3s;
   cursor: pointer;
   overflow: hidden;
@@ -81,13 +81,14 @@
 
 #menu-sidebar .menu-item span {
   display: inline-block;
-  width: 180px;
+  width: 220px;
   vertical-align: top;
   line-height: 20px;
 }
 
 #menu-sidebar .menu-item .initial {
   width: 50px;
+  padding: 0px 5px;
 }
 
 #menu-sidebar .sub-menu {
@@ -98,6 +99,10 @@
   transition: 0.3s;
 }
 
+#menu-sidebar .menu-item.expanded {
+  color: white;
+}
+
 #menu-sidebar .menu-item.expanded + .sub-menu {
-  max-height: 100%;
+  max-height: 100vh;
 }

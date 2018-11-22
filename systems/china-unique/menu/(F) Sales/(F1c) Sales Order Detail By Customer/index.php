@@ -183,7 +183,7 @@
                 echo "
                   <tr>
                     <td title=\"$date\">$date</td>
-                    <td title=\"$soNo\"><a class=\"link\" href=\"../printout.php?so_no=$soNo\">$soNo</a></td>
+                    <td title=\"$soNo\"><a class=\"link\" href=\"../entry.php?so_no=$soNo\">$soNo</a></td>
                     <td title=\"$brand\">$brand</td>
                     <td title=\"$modelNo\">$modelNo</td>
                     <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>

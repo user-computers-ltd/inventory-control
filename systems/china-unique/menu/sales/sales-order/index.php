@@ -1,35 +1,25 @@
 <?php
-  if (!defined("SYSTEM_PATH")) {
-    define("SYSTEM_PATH", "../../");
-  }
+  define("SYSTEM_PATH", "../../../");
 
   include_once SYSTEM_PATH . "includes/php/config.php";
   include_once ROOT_PATH . "includes/php/utils.php";
   include_once ROOT_PATH . "includes/php/database.php";
-  include "entry_process.php";
-
-  if (!defined("SALES_PATH")) {
-    define("SALES_PATH", "");
-  }
-
-  if (!defined("HEADLINE")) {
-    define("HEADLINE", "Sales Order Entry");
-  }
+  include "process.php";
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <?php include_once SYSTEM_PATH . "includes/php/head.php"; ?>
-    <link rel="stylesheet" href="<?php echo SALES_PATH; ?>entry.css">
+    <link rel="stylesheet" href="style.css">
   </head>
   <body>
     <?php include_once ROOT_PATH . "includes/components/menu/index.php"; ?>
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
-      <div class="headline"><?php echo HEADLINE; ?></div>
+      <div class="headline"><?php echo $headline; ?></div>
       <?php if (assigned($soNo)): ?>
-        <form id="so-form">
+        <form id="so-form" method="post">
           <table id="so-header">
             <tr>
               <td>Order No.:</td>
@@ -136,7 +126,7 @@
           <table id="so-footer">
             <tr>
               <td>Remarks:</td>
-              <td><textarea id="remarks" name="remarks" placeholder="Remarks"><?php echo $remarks; ?></textarea></td>
+              <td><textarea id="remarks" name="remarks"><?php echo $remarks; ?></textarea></td>
             </tr>
           </table>
           <?php if ($status == "" || $status == "SAVED"): ?>
@@ -146,7 +136,7 @@
             <button name="status" type="submit" value="POSTED">Post</button>
             <button name="status" type="submit" value="DELETED">Delete</button>
           <?php endif ?>
-          <button type="button" onclick="printout()">Print</button>
+          <button type="submit" formaction="<?php echo SALES_ORDER_PRINTOUT_URL; ?>">Print</button>
         </form>
         <datalist id="model-list">
           <?php
@@ -434,8 +424,8 @@
             render();
           }
 
-          function printout() {
-            window.open("<?php echo SALES_PATH; ?>printout.php?" + serialize(formElement));
+          function printSalesOrder() {
+            window.open("<?php echo SALES_ORDER_PRINTOUT_URL; ?>?" + serialize(formElement));
           }
 
           window.onload = function () {

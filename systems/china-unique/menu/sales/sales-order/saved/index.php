@@ -1,68 +1,55 @@
 <?php
-  define("SYSTEM_PATH", "../../../");
+  define("SYSTEM_PATH", "../../../../");
   include_once SYSTEM_PATH . "includes/php/config.php";
   include_once ROOT_PATH . "includes/php/utils.php";
   include_once ROOT_PATH . "includes/php/database.php";
 
   $InBaseCurrCol = "(in " . COMPANY_CURRENCY . ")";
 
-  $debtorCodes = $_GET["debtor_code"];
+  $from = $_GET["from"];
+  $to = $_GET["to"];
 
   $whereClause = "";
-  $hasFilter = false;
 
-  if (assigned($debtorCodes) && count($debtorCodes) > 0) {
-    $whereClause = "
-      AND (" . join(" OR ", array_map(function ($d) { return "a.debtor_code='$d'"; }, $debtorCodes)) . ")";
-    $hasFilter = true;
+  if (assigned($from)) {
+    $whereClause = $range . "
+      AND a.so_date >= \"$from\"";
   }
 
-  $soHeaders = array();
-
-  if ($hasFilter) {
-    $soHeaders = query("
-      SELECT
-        CONCAT(a.debtor_code, ' - ', IFNULL(c.english_name, 'Unknown'))                     AS `debtor`,
-        DATE_FORMAT(a.so_date, '%d-%m-%Y')                                                  AS `date`,
-        a.so_no                                                                             AS `so_no`,
-        IFNULL(b.total_qty, 0)                                                              AS `qty`,
-        IFNULL(b.total_qty_outstanding, 0)                                                  AS `outstanding_qty`,
-        a.discount                                                                          AS `discount`,
-        a.currency_code                                                                     AS `currency`,
-        IFNULL(b.total_outstanding_amt, 0) * (100 - a.discount) / 100                       AS `outstanding_amt`,
-        IFNULL(b.total_outstanding_amt, 0) * (100 - a.discount) / 100 * a.exchange_rate     AS `outstanding_amt_base`
-      FROM
-        `so_header` AS a
-        LEFT JOIN
-          (SELECT
-            so_no, SUM(qty) as total_qty, SUM(qty_outstanding) AS total_qty_outstanding, SUM(qty_outstanding * price) as total_outstanding_amt
-          FROM
-            `so_model`
-          GROUP BY
-            so_no) AS b
-        ON a.so_no=b.so_no
-        LEFT JOIN
-          `debtor` AS c
-        ON a.debtor_code=c.code
-      WHERE
-        a.debtor_code IS NOT NULL
-        $whereClause
-      ORDER BY
-        a.so_date DESC
-    ");
+  if (assigned($to)) {
+    $whereClause = $range . "
+      AND a.so_date <= \"$to\"";
   }
 
-  $debtors = query("
-    SELECT DISTINCT
-      a.debtor_code                       AS `code`,
-      IFNULL(b.english_name, 'Unknown')   AS `name`
+  $soHeaders = query("
+    SELECT
+      CONCAT(a.debtor_code, ' - ', IFNULL(c.english_name, 'Unknown'))                     AS `debtor`,
+      DATE_FORMAT(a.so_date, '%d-%m-%Y')                                                  AS `date`,
+      a.so_no                                                                             AS `so_no`,
+      IFNULL(b.total_qty, 0)                                                              AS `qty`,
+      IFNULL(b.total_qty_outstanding, 0)                                                  AS `outstanding_qty`,
+      a.discount                                                                          AS `discount`,
+      a.currency_code                                                                     AS `currency`,
+      IFNULL(b.total_outstanding_amt, 0) * (100 - a.discount) / 100                       AS `outstanding_amt`,
+      IFNULL(b.total_outstanding_amt, 0) * (100 - a.discount) / 100 * a.exchange_rate     AS `outstanding_amt_base`
     FROM
       `so_header` AS a
-    LEFT JOIN
-      `debtor` AS b
-      ON a.debtor_code=b.code
+      LEFT JOIN
+        (SELECT
+          so_no, SUM(qty) as total_qty, SUM(qty_outstanding) AS total_qty_outstanding, SUM(qty_outstanding * price) as total_outstanding_amt
+        FROM
+          `so_model`
+        GROUP BY
+          so_no) AS b
+      ON a.so_no=b.so_no
+      LEFT JOIN
+        `debtor` AS c
+      ON a.debtor_code=c.code
+    WHERE
+      a.status=\"SAVED\"
+      $whereClause
     ORDER BY
-      a.debtor_code ASC
+      a.so_date DESC
   ");
 ?>
 
@@ -76,36 +63,30 @@
     <?php include_once ROOT_PATH . "includes/components/menu/index.php"; ?>
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
-      <div class="headline"><?php echo getURLParentLocation(); ?></div>
+      <div class="headline"><?php echo SALES_ORDER_SAVED_TITLE; ?></div>
       <form>
         <table id="so-input">
           <colgroup>
             <col style="width: 100px">
+            <col>
+            <col style="width: 100px">
+            <col>
           </colgroup>
-          <tr>
-            <td><label for="so-debtors">Customer:</label></td>
-            <td>
-              <select name="debtor_code[]" multiple>
-                <?php
-                  foreach ($debtors as $debtor) {
-                    $code = $debtor["code"];
-                    $name = $debtor["name"];
-                    $selected = assigned($debtorCodes) && in_array($code, $debtorCodes) ? "selected" : "";
-                    echo "<option value=\"$code\" $selected>$code - $name</option>";
-                  }
-                ?>
-              </select>
-            </td>
-            <td><button type="submit">Go</button></td>
-          </tr>
-        </table>
+         <tr>
+           <td><label for="so-from">From:</label></td>
+           <td><input type="date" name="from" value="<?php echo $from; ?>" max="<?php echo date("Y-m-d"); ?>" /></td>
+           <td><label for="so-to">To:</label></td>
+           <td><input type="date" name="to" value="<?php echo $to; ?>" max="<?php echo date("Y-m-d"); ?>" /></td>
+           <td><button type="submit">Go</button></td>
+         </tr>
+       </table>
       </form>
-      <?php if (count($soHeaders[0]) > 0): ?>
+      <?php if (count($soHeaders) > 0): ?>
         <table id="so-results">
           <colgroup>
-            <col style="width: 120px">
             <col style="width: 70px">
-            <col>
+            <col style="width: 100px">
+            <col style="width: 100px">
             <col>
             <col>
             <col>
@@ -116,8 +97,8 @@
           <thead>
             <tr></tr>
             <tr>
-              <th>Customer</th>
               <th>Date</th>
+              <th>Customer</th>
               <th>Order No.</th>
               <th class="number">Total Qty</th>
               <th class="number">Outstanding Qty</th>
@@ -135,8 +116,8 @@
 
               for ($i = 0; $i < count($soHeaders); $i++) {
                 $soHeader = $soHeaders[$i];
-                $debtor = $soHeader["debtor"];
                 $date = $soHeader["date"];
+                $debtor = $soHeader["debtor"];
                 $soNo = $soHeader["so_no"];
                 $qty = $soHeader["qty"];
                 $outstandingQty = $soHeader["outstanding_qty"];
@@ -151,9 +132,9 @@
 
                 echo "
                   <tr>
-                    <td title=\"$debtor\">$debtor</td>
                     <td title=\"$date\">$date</td>
-                    <td title=\"$soNo\"><a class=\"link\" href=\"../entry.php?so_no=$soNo\">$soNo</a></td>
+                    <td title=\"$debtor\">$debtor</td>
+                    <td title=\"$soNo\"><a class=\"link\" href=\"" . SALES_ORDER_URL . "?so_no=$soNo\">$soNo</a></td>
                     <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
                     <td title=\"$outstandingQty\" class=\"number\">" . number_format($outstandingQty) . "</td>
                     <td title=\"$discount\" class=\"number\">" . number_format($discount, 2) . "%</td>
@@ -179,8 +160,6 @@
             </tr>
           </tfoot>
         </table>
-      <?php elseif (!$hasFilter): ?>
-        <div class="so-customer-no-results">Please select a customer</div>
       <?php else: ?>
         <div class="so-customer-no-results">No results</div>
       <?php endif ?>

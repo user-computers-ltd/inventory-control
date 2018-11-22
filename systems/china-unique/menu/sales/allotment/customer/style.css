@@ -1,0 +1,60 @@
+#so-input {
+  margin: 0px;
+}
+
+#so-input td {
+  border: none;
+  font-size: 13px;
+}
+
+#so-input input,
+#so-input select {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.so-customer-header .currency,
+.so-customer-header .discount,
+.so-customer-header .tax,
+.so-customer-header .warehouse {
+  margin: 5px 10px;
+  font-size: 13px;
+  font-weight: bold;
+  float: right;
+}
+
+.so-customer-header .currency {
+  margin-right: 0px;
+}
+
+.so-customer-results th,
+.so-customer-results td {
+  border-left: none;
+  border-right: none;
+}
+
+.so-customer-results td {
+  min-width: 50px;
+  max-width: 50px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: top;
+}
+
+.so-customer-results .link {
+  text-decoration: none;
+}
+
+.so-customer-results .number {
+  text-align: right;
+}
+
+.so-customer-no-results {
+  margin: 100px 0px;
+  text-align: center;
+  font-size: 40px;
+  font-weight: bold;
+  line-height: 48px;
+  opacity: 0.3;
+}

@@ -6,6 +6,28 @@
     $menuItems = listDirectory($menuDirectory);
   }
 
+
+  function generateSitemap($sitemap, $prefix) {
+    $currentURL = (strpos(CURRENT_URL, "?") === false) ? CURRENT_URL : substr(CURRENT_URL, 0, strpos(CURRENT_URL, "?"));
+    $menu = "";
+
+    foreach ($sitemap as $name => $site) {
+      $initial = substr($name, strpos($name, "(") + 1, strrpos($name, ")") - 1);
+      $label = substr($name, strpos($name, ")") + 1);
+      $menuLabel = "<span class=\"initial\">$initial</span><span class=\"label\">$label</span>";
+      if (is_array($site)) {
+        $subMenu = "<div class=\"sub-menu\">" . generateSitemap($site, "$prefix-$name") . "</div>";
+        $expanded = strpos($subMenu, "active") ? "expanded" : "";
+        $menu = "$menu<div class=\"menu-item toggle $expanded\" data-name=\"$prefix-$name\" onclick=\"toggleMenu('$prefix-$name')\">$menuLabel</div>$subMenu";
+      } else {
+        $active = $currentURL == $site ? "active" : "";
+        $menu = "$menu<a class=\"menu-item $active\" href=\"$site\">$menuLabel</a>";
+      }
+    }
+
+    return $menu;
+  }
+
   function generateMenu($menuItems, $subPath) {
     foreach ($menuItems as $menuItem) {
       if (is_array($menuItem)) {
@@ -37,7 +59,7 @@
       <div id="menu-sidebar" class="web-only">
         <button class="toggle-button" onclick="toggleNav()"></button>
         <a class="menu-item" href="<?php echo $menuDirectory; ?>"><span class="initial">M</span><span class="label">Main Menu</span></a>
-        <?php generateMenu($menuItems, ""); ?>
+        <?php echo generateSitemap(SITEMAP, ""); ?>
       </div>
       <script src="<?php echo BASE_URL; ?>includes/js/utils.js"></script>
       <script>

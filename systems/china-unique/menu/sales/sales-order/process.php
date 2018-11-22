@@ -1,4 +1,20 @@
 <?php
+  $soNo = assigned($_GET["so_no"]) ? $_GET["so_no"] : $_POST["so_no"];
+  $soDate = $_POST["so_date"];
+  $debtorCode = $_POST["debtor_code"];
+  $currencyCode = $_POST["currency_code"];
+  $exchangeRate = $_POST["exchange_rate"];
+  $discount = $_POST["discount"];
+  $tax = $_POST["tax"];
+  $status = $_POST["status"];
+  $remarks = assigned($_POST["remarks"]) || "";
+  $priceStandard = assigned($_POST["price_standard"]) ? $_POST["price_standard"] : "normal_price";
+
+  $brandCodes = $_POST["brand_code"];
+  $modelNos = $_POST["model_no"];
+  $prices = $_POST["price"];
+  $qtys = $_POST["qty"];
+
   $debtors = query("SELECT code, english_name AS name FROM `debtor`");
 
   $results = query("SELECT code, rate FROM `currency`");
@@ -43,33 +59,18 @@
     ON a.model_no=c.model_no AND a.brand_code=c.brand_code
   ");
 
-  $soNo = $_GET["so_no"];
-  $soDate = $_GET["so_date"];
-  $debtorCode = $_GET["debtor_code"];
-  $currencyCode = $_GET["currency_code"];
-  $exchangeRate = $_GET["exchange_rate"];
-  $discount = $_GET["discount"];
-  $tax = $_GET["tax"];
-  $priceStandard = assigned($_GET["price_standard"]) ? $_GET["price_standard"] : "normal_price";
-  $remarks = assigned($_GET["remarks"]) || "";
-
-  $brandCodes = $_GET["brand_code"];
-  $modelNos = $_GET["model_no"];
-  $prices = $_GET["price"];
-  $qtys = $_GET["qty"];
-
-  $status = $_GET["status"];
-
   /* If an order number is given, attempt to retrieve an existing sales order. */
   if (assigned($soNo)) {
-    $so_header = query("SELECT *, DATE_FORMAT(so_date, '%Y-%m-%d') AS `so_date` FROM `so_header` WHERE so_no=\"$soNo\"");
+    $headline = SALES_ORDER_DETAIL_TITLE;
+
+    $soHeader = query("SELECT *, DATE_FORMAT(so_date, '%Y-%m-%d') AS `so_date` FROM `so_header` WHERE so_no=\"$soNo\"");
 
     /* If a complete form is given, submit the sales order. */
     if (assigned($soDate) && assigned($debtorCode) && assigned($currencyCode) && assigned($exchangeRate) && assigned($discount) && assigned($tax) && assigned($status)) {
 
       /* Upon submission, if the sales number already exists, update the existing sales order header.
          Also delete all existing sales models, new ones will be inserted afterwards. */
-      if (count($so_header) > 0) {
+      if (count($soHeader) > 0) {
         query("
           UPDATE
             `so_header`
@@ -124,15 +125,15 @@
 
     /* If the sales order was not filled-in completely and the order number does exists,
        retrieve it from the database and auto-fill in the entry form with the retrieved data. */
-    else if (count($so_header) > 0) {
-      $soDate = $so_header[0]["so_date"];
-      $debtorCode = $so_header[0]["debtor_code"];
-      $currencyCode = $so_header[0]["currency_code"];
-      $exchangeRate = $so_header[0]["exchange_rate"];
-      $discount = $so_header[0]["discount"];
-      $tax = $so_header[0]["tax"];
-      $remarks = $so_header[0]["remarks"];
-      $status = $so_header[0]["status"];
+    else if (count($soHeader) > 0) {
+      $soDate = $soHeader[0]["so_date"];
+      $debtorCode = $soHeader[0]["debtor_code"];
+      $currencyCode = $soHeader[0]["currency_code"];
+      $exchangeRate = $soHeader[0]["exchange_rate"];
+      $discount = $soHeader[0]["discount"];
+      $tax = $soHeader[0]["tax"];
+      $remarks = $soHeader[0]["remarks"];
+      $status = $soHeader[0]["status"];
 
       $soModels = query("SELECT so_index, brand_code, model_no, price, qty FROM `so_model` WHERE so_no=\"$soNo\" ORDER BY so_index ASC");
 
@@ -151,6 +152,8 @@
 
   /* If no data is given, treat it as a new entry form. */
   else {
+    $headline = SALES_ORDER_CREATE_TITLE;
+
     $soNo = "SO" . date("YmdHis");
     $soDate = date("Y-m-d");
     $currencyCode = COMPANY_CURRENCY;

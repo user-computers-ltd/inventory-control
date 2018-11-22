@@ -1,0 +1,35 @@
+#pl-input td {
+  border: none;
+  font-size: 13px;
+}
+
+#pl-input input,
+#pl-input select {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.pl-results td {
+  min-width: 50px;
+  max-width: 50px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pl-results .link {
+  text-decoration: none;
+}
+
+.pl-results .number {
+  text-align: right;
+}
+
+.pl-customer-no-results {
+  margin: 100px 0px;
+  text-align: center;
+  font-size: 40px;
+  font-weight: bold;
+  line-height: 48px;
+  opacity: 0.3;
+}
