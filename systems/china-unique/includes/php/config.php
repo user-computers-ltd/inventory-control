@@ -62,7 +62,7 @@
 
 
   /* Sitemap configuration. */
-  define("SITEMAP", array(
+  $SITEMAP = array(
     SALES_TITLE => array(
       SALES_ORDER_TITLE => array(
         SALES_ORDER_CREATE_TITLE      => SALES_ORDER_URL,
@@ -82,5 +82,5 @@
         PACKING_LIST_CUSTOMER_TITLE  => PACKING_LIST_CUSTOMER_URL
       )
     )
-  ));
+  );
 ?>
