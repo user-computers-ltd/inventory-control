@@ -1,12 +1,6 @@
 <?php
   include_once ROOT_PATH . "includes/php/utils.php";
 
-  if (defined("MENU_DIRECTORY")) {
-    $menuDirectory = MENU_DIRECTORY;
-    $menuItems = listDirectory($menuDirectory);
-  }
-
-
   function generateSitemap($sitemap, $prefix) {
     $currentURL = (strpos(CURRENT_URL, "?") === false) ? CURRENT_URL : substr(CURRENT_URL, 0, strpos(CURRENT_URL, "?"));
     $menu = "";
@@ -27,26 +21,6 @@
 
     return $menu;
   }
-
-  function generateMenu($menuItems, $subPath) {
-    foreach ($menuItems as $menuItem) {
-      if (is_array($menuItem)) {
-        $name = $menuItem["name"];
-        $initial = substr($name, strpos($name, "(") + 1, strrpos($name, ")") - 1);
-        $label = substr($name, strpos($name, ")") + 1);
-        $expanded = strpos(CURRENT_URL, MENU_URL . $subPath . $name) === 0 ? " expanded" : "";
-        echo "<div class=\"menu-item toggle$expanded\" data-name=\"$subPath$name\" onclick=\"toggleMenu('$subPath$name')\"><span class=\"initial\">$initial</span><span class=\"label\">$label</span></div>";
-        echo "<div class=\"sub-menu\">";
-        generateMenu($menuItem["sub"], "$name/");
-        echo "</div>";
-      } else {
-        $initial = substr($menuItem, strpos($menuItem, "(") + 1, strrpos($menuItem, ")") - 1);
-        $label = substr($menuItem, strpos($menuItem, ")") + 1);
-        $active = strpos(CURRENT_URL, MENU_URL . $subPath . $menuItem) === 0 ? " active" : "";
-        echo "<a class=\"menu-item$active\" href=\"" . MENU_URL . "$subPath$menuItem\"><span class=\"initial\">$initial</span><span class=\"label\">$label</span></a>";
-      }
-    }
-  }
 ?>
 
 <!DOCTYPE html>
@@ -55,11 +29,11 @@
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>includes/components/menu/style.css">
   </head>
   <body>
-    <?php if (defined("MENU_DIRECTORY")) : ?>
+    <?php if (isset($SITEMAP)) : ?>
       <div id="menu-sidebar" class="web-only">
         <button class="toggle-button" onclick="toggleNav()"></button>
         <a class="menu-item" href="<?php echo $menuDirectory; ?>"><span class="initial">M</span><span class="label">Main Menu</span></a>
-        <?php echo generateSitemap(SITEMAP, ""); ?>
+        <?php echo generateSitemap($SITEMAP, ""); ?>
       </div>
       <script src="<?php echo BASE_URL; ?>includes/js/utils.js"></script>
       <script>
