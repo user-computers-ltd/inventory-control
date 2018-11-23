@@ -7,7 +7,7 @@
   $discount = $_POST["discount"];
   $tax = $_POST["tax"];
   $status = $_POST["status"];
-  $remarks = assigned($_POST["remarks"]) || "";
+  $remarks = $_POST["remarks"];
   $priceStandard = assigned($_POST["price_standard"]) ? $_POST["price_standard"] : "normal_price";
 
   $brandCodes = $_POST["brand_code"];

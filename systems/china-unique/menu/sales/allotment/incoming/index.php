@@ -58,7 +58,7 @@
                   <div class=\"ia\">
                     <table class=\"ia-header\">
                       <tr>
-                        <td>IA No.:</td>
+                        <td>DO No.:</td>
                         <td>
                           $iaNo
                           <button type=\"button\" class=\"header-button\" onclick=\"allocateBySoDate('$iaNo')\">Allocate by date</button>
@@ -395,7 +395,8 @@
 
             var proportion = allottableSoQty / totalModelAllottableQty;
 
-            allotments[iaNo][brandCode][modelNo][soNo]["qty"] = Math.round(proportion * availableQty);
+            var round = soNo !== soNos[soNos.length - 1] ? Math.round : Math.ceil;
+            allotments[iaNo][brandCode][modelNo][soNo]["qty"] = round(proportion * availableQty);
 
             renderAllotment(iaNo, brandCode, modelNo, soNo);
           }

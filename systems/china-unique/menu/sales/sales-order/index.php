@@ -23,9 +23,9 @@
           <table id="so-header">
             <tr>
               <td>Order No.:</td>
-              <td><input type="text" id="so-no" name="so_no" placeholder="Sales Order No." value="<?php echo $soNo; ?>" readonly required /></td>
+              <td><input type="text" id="so-no" name="so_no" placeholder="Sales Order No." value="<?php echo $soNo; ?>" required /></td>
               <td>Date:</td>
-              <td><input type="date" id="so-date" name="so_date" placeholder="Sales Date" value="<?php echo $soDate; ?>" required /></td>
+              <td><input type="date" id="so-date" name="so_date" placeholder="Sales Date" value="<?php echo $soDate; ?>" max="<?php echo date("Y-m-d"); ?>" required /></td>
             </tr>
             <tr>
               <td>Client:</td>
@@ -56,14 +56,11 @@
             </tr>
             <tr>
               <td>Discount:</td>
-              <td><input id="discount" name="discount" type="number" step="0.01" min="0" max="100" placeholder="Discount" value="<?php echo $discount; ?>" onchange="onDiscountChange()" required /><span>%</span></td>
-              <td>Tax:</td>
-              <td><input id="tax" name="tax" type="number" step="0.01" placeholder="Tax" min="0" max="100" value="<?php echo $tax; ?>" onchange="onTaxChange()" required /><span>%</span></td>
-            </tr>
-          </table>
-          <table id="so-sub-header">
-            <tr>
               <td>
+                <input id="discount" name="discount" type="number" step="0.01" min="0" max="100" placeholder="Discount" value="<?php echo $discount; ?>" onchange="onDiscountChange()" required /><span>%</span>
+                <input id="tax" name="tax" type="number" value="<?php echo $tax; ?>" hidden required />
+              </td>
+              <td colspan="2">
                 <input id="normal-price" name="price-standard" type="radio" value="normal_price" <?php echo $priceStandard == "normal_price" ? "checked" : ""; ?> onchange="onPriceStandardChange()" />
                 <label for="normal-price">Normal Price</label>
                 <input id="special-price" name="price-standard" type="radio" value="special_price" <?php echo $priceStandard == "special_price" ? "checked" : ""; ?> onchange="onPriceStandardChange()" />
@@ -74,10 +71,6 @@
           <button type="button" onclick="addSalesModel()">Add</button>
           <table id="so-models">
             <colgroup>
-              <col style="width: 120px">
-              <col>
-              <col style="width: 60px">
-              <col style="width: 100px">
               <col>
               <col>
               <col>
@@ -92,10 +85,6 @@
                 <th><span class="number">Quantity</span></th>
                 <th><span class="number">Selling Price</span></th>
                 <th><span class="number">Sub Total</span></th>
-                <th><span class="number">Unit Price</span></th>
-                <th><span class="number">Profit</span></th>
-                <th><span class="number">On Hand</span></th>
-                <th><span class="number">On Order</span></th>
                 <th></th>
               </tr>
             </thead>
@@ -104,20 +93,20 @@
                 <td colspan="3"></td>
                 <th></th>
                 <th><span id="sub-total-amount" class="number"></span></th>
-                <td colspan="5"></td>
+                <td></td>
               </tr>
               <tr class="discount-row">
                 <td colspan="3"></td>
                 <td><span id="discount-percentage" class="number"></span></td>
                 <td><span id="discount-amount" class="number"></span></td>
-                <td colspan="5"></td>
+                <td></td>
               </tr>
                 <th></th>
                 <th><span class="number">Total:</span></th>
                 <th><span id="total-qty" class="number"></span></th>
                 <th></th>
                 <th><span id="total-amount" class="number"></span></th>
-                <th colspan="5"></th>
+                <th></th>
               </tr>
             </tfoot>
             <tbody>
@@ -132,11 +121,11 @@
           <?php if ($status == "" || $status == "SAVED"): ?>
             <button name="status" type="submit" value="SAVED">Save</button>
           <?php endif ?>
+          <button name="status" type="submit" value="<?php echo $status; ?>" formaction="<?php echo SALES_ORDER_PRINTOUT_URL; ?>">Print</button>
           <?php if ($status == "SAVED"): ?>
             <button name="status" type="submit" value="POSTED">Post</button>
             <button name="status" type="submit" value="DELETED">Delete</button>
           <?php endif ?>
-          <button type="submit" formaction="<?php echo SALES_ORDER_PRINTOUT_URL; ?>">Print</button>
         </form>
         <datalist id="model-list">
           <?php
@@ -146,9 +135,6 @@
                . "\" data-brand_code=\"" . $model["brand_code"]
                . "\" data-normal_price=\"" . $model["normal_price"]
                . "\" data-special_price=\"" . $model["special_price"]
-               . "\" data-cost_average=\"" . $model["cost_average"]
-               . "\" data-qty_on_hand=\"" . $model["qty_on_hand"]
-               . "\" data-qty_on_order=\"" . $model["qty_on_order"]
                . "\">" . $model["model_no"] . "</option>";
             }
           ?>
@@ -217,10 +203,6 @@
                 + "<td><input class=\"qty number\" type=\"number\" min=\"0\" name=\"qty[]\" value=\"" + soModel["qty"] + "\" onchange=\"onQuantityChange(event, " + i + ")\" onfocus=\"onFieldFocused(" + i + ", 'qty[]')\" onblur=\"onFieldBlurred()\" required /></td>"
                 + "<td><input class=\"price number\" type=\"number\" step=\"0.01\" min=\"0\" name=\"price[]\" value=\"" + soModel["price"].toFixed(2) + "\" onchange=\"onPriceChange(event, " + i + ")\" onfocus=\"onFieldFocused(" + i + ", 'price[]')\" onblur=\"onFieldBlurred()\" required /></td>"
                 + "<td><span class=\"total-amount number\">" + soModel["total_amount"].toFixed(2) + "</span></td>"
-                + "<td><span class=\"cost-average number\">" + soModel["cost_average"].toFixed(2) + "</span></td>"
-                + "<td><span class=\"profit number\">" + soModel["profit"].toFixed(2) + "%</span></td>"
-                + "<td><span class=\"qty-on-hand number\">" + soModel["qty_on_hand"] + "</span></td>"
-                + "<td><span class=\"qty-on-order number\">" + soModel["qty_on_order"] + "</span></td>"
                 + "<td><div class=\"remove\" onclick=\"removeSalesModel(" + i + ")\">×</div></td>"
                 + "</tr>";
 
@@ -378,10 +360,6 @@
           }
 
           function onDiscountChange() {
-            updateAllProfits();
-          }
-
-          function onTaxChange() {
             updateAllProfits();
           }
 

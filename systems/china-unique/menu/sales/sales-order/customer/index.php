@@ -136,10 +136,10 @@
                       <th>Order No.</th>
                       <th class=\"number\">Total Qty</th>
                       <th class=\"number\">Outstanding Qty</th>
-                      <th class=\"number\">Discount</th>
                       <th class=\"number\">Currency</th>
                       <th class=\"number\">Outstanding Amt</th>
                       <th class=\"number\">$InBaseCurrCol</th>
+                      <th class=\"number\">Discount</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -167,10 +167,10 @@
                   <td title=\"$soNo\"><a class=\"link\" href=\"" . SALES_ORDER_URL . "?so_no=$soNo\">$soNo</a></td>
                   <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
                   <td title=\"$outstandingQty\" class=\"number\">" . number_format($outstandingQty) . "</td>
-                  <td title=\"$discount\" class=\"number\">" . number_format($discount, 2) . "%</td>
                   <td title=\"$currency\" class=\"number\">$currency</td>
                   <td title=\"$outstandingAmt\" class=\"number\">" . number_format($outstandingAmt, 2) . "</td>
                   <td title=\"$outstandingAmtBase\" class=\"number\">" . number_format($outstandingAmtBase, 2) . "</td>
+                  <td title=\"$discount\" class=\"number\">" . number_format($discount, 2) . "%</td>
                 </tr>
               ";
             }
@@ -185,8 +185,8 @@
                       <th class=\"number\">" . number_format($totalOutstanding) . "</th>
                       <th></th>
                       <th></th>
-                      <th></th>
                       <th class=\"number\">" . number_format($totalAmtBase, 2) . "</th>
+                      <th></th>
                     </tr>
                   </tfoot>
                 </table>

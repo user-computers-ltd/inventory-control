@@ -22,6 +22,7 @@
         <button type="submit">import</button>
       </form>
     </div>
+    <div id="import-loading"></div>
     <script src="<?php echo BASE_URL; ?>includes/js/utils.js"></script>
     <script>
       var importClose = document.querySelector("#import-close");
@@ -32,6 +33,7 @@
       var importTableHead = importForm.querySelector("#import-table thead");
       var importTableBody = importForm.querySelector("#import-table tbody");
       var importError = importForm.querySelector("#import-error");
+      var importLoading = document.querySelector("#import-loading");
       var columnCount = importForm.querySelector("#column-count");
       var dataCount = importForm.querySelector("#data-count");
       var url = "<?php echo BASE_URL; ?>admin/ajax.php";
@@ -54,6 +56,7 @@
         importForm.reset();
         importOverlay.className = "show";
         importOverlay.addEventListener("click", closeImportHandler);
+        importError.innerHTML = "";
 
         updateColumnSelection();
       }
@@ -159,13 +162,18 @@
           data.append("import", importButton.files[i]);
         }
 
+        toggleClass(importLoading, "show", true);
+
         ajax({
           url: url,
           method: "post",
           contentType: false,
           data: data,
           resolve: function () { window.location.reload(); },
-          reject: function (message) { importError.innerHTML = message; }
+          reject: function (message) {
+            toggleClass(importLoading, "show", false);
+            importError.innerHTML = message;
+          }
         });
 
         return false;

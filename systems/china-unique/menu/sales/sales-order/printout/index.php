@@ -35,8 +35,8 @@
           <tr>
             <td>Discount:</td>
             <td><?php echo $soHeader["discount"]; ?>%</td>
-            <td>Tax:</td>
-            <td><?php echo $soHeader["tax"]; ?>%</td>
+            <td>Status:</td>
+            <td><?php echo $soHeader["status"]; ?></td>
           </tr>
         </table>
         <?php if (count($soModels) > 0) : ?>
@@ -48,14 +48,12 @@
                 <th>Model No.</th>
                 <th class="number">Selling Price</th>
                 <th class="number">Qty</th>
-                <th class="number">Outstanding</th>
                 <th class="number">Subtotal</th>
               </tr>
             </thead>
             <tbody>
               <?php
                 $totalQty = 0;
-                $totalOutstanding = 0;
                 $subtotalSum = 0;
                 $discount = $soHeader["discount"];
 
@@ -65,11 +63,9 @@
                   $modelNo = $soModel["model_no"];
                   $price = $soModel["price"];
                   $qty = $soModel["qty"];
-                  $outstanding = $soModel["qty_outstanding"];
                   $subtotal = $soModel["subtotal"];
 
                   $totalQty += $qty;
-                  $totalOutstanding += $outstanding;
                   $subtotalSum += $subtotal;
 
                   echo "
@@ -78,7 +74,6 @@
                       <td>$modelNo</td>
                       <td class=\"number\">" . number_format($price, 2) . "</td>
                       <td class=\"number\">" . number_format($qty) . "</td>
-                      <td class=\"number\">" . number_format($outstanding) . "</td>
                       <td class=\"number\">" . number_format($subtotal, 2) . "</td>
                     </tr>
                   ";
@@ -91,12 +86,10 @@
                   <td></td>
                   <td></td>
                   <td></td>
-                  <td></td>
                   <th></th>
                   <th class="number"><?php echo number_format($subtotalSum, 2); ?></th>
                 </tr>
                 <tr>
-                  <td></td>
                   <td></td>
                   <td></td>
                   <td></td>
@@ -109,7 +102,6 @@
                 <th></th>
                 <th class="number">Total:</th>
                 <th class="number"><?php echo number_format($totalQty); ?></th>
-                <th class="number"><?php echo number_format($totalOutstanding); ?></th>
                 <th class="number"><?php echo number_format($subtotalSum * (100 - $discount) / 100, 2); ?></th>
               </tr>
             </tfoot>

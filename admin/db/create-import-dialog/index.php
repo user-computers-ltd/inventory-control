@@ -23,6 +23,7 @@
         <button type="submit">create & import</button>
       </form>
     </div>
+    <div id="create-import-loading"></div>
     <script src="<?php echo BASE_URL; ?>includes/js/utils.js"></script>
     <script>
       var createImportClose = document.querySelector("#create-import-close");
@@ -32,6 +33,7 @@
       var createImportTableHead = createImportForm.querySelector("#create-import-table thead");
       var createImportTableBody = createImportForm.querySelector("#create-import-table tbody");
       var createImportError = createImportForm.querySelector("#create-import-error");
+      var createImportLoading = document.querySelector("#create-import-loading");
       var columnCount = createImportForm.querySelector("#column-count");
       var dataCount = createImportForm.querySelector("#data-count");
       var columnTypes = <?php echo json_encode(COLUMN_TYPES); ?>;
@@ -52,6 +54,7 @@
         createImportForm.reset();
         createImportOverlay.className = "show";
         createImportOverlay.addEventListener("click", closeCreateImportHandler);
+        createImportError.innerHTML = "";
       }
 
       function disableCreateImportColumnHandler(event) {
@@ -130,13 +133,18 @@
           data.append("import", createImportButton.files[i]);
         }
 
+        toggleClass(createImportLoading, "show", true);
+
         ajax({
           url: url,
           method: "post",
           contentType: false,
           data: data,
           resolve: function () { window.location.reload(); },
-          reject: function (message) { createImportError.innerHTML = message; }
+          reject: function (message) {
+            toggleClass(createImportLoading, "show", false);
+            createImportError.innerHTML = message;
+          }
         });
 
         return false;
