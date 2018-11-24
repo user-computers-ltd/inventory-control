@@ -109,6 +109,14 @@
         <?php else: ?>
           <div id="so-models-no-results">No models</div>
         <?php endif ?>
+        <?php if (assigned($remarks)) : ?>
+          <table id="so-footer">
+            <tr>
+              <td>Remarks:</td>
+              <td><?php echo $remarks; ?></td>
+            </tr>
+          </table>
+        <?php endif ?>
       <?php else: ?>
         <div id="so-not-found">Sales order not found</div>
       <?php endif ?>

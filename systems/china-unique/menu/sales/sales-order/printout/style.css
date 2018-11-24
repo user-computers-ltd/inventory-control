@@ -1,12 +1,15 @@
-#so-header {
+#so-header,
+#so-footer {
   font-size: 13px;
 }
 
-#so-header td {
+#so-header td,
+#so-footer td {
   border: none;
 }
 
-#so-header td:nth-child(2n + 1) {
+#so-header td:nth-child(2n + 1),
+#so-footer td:nth-child(2n + 1) {
   width: 100px;
   font-weight: bold;
 }
