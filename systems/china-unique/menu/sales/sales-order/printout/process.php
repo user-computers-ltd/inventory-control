@@ -6,8 +6,8 @@
   $exchangeRate = $_POST["exchange_rate"];
   $discount = $_POST["discount"];
   $tax = $_POST["tax"];
-  $remarks = assigned($_POST["remarks"]) ? $_POST["remarks"] : "";
-  $status = assigned($_POST["status"]) ? $_POST["status"] : "DRAFT";
+  $remarks = $_POST["remarks"];
+  $status = $_POST["status"];
 
   $brandCodes = $_POST["brand_code"];
   $modelNos = $_POST["model_no"];
@@ -68,7 +68,7 @@
           CONCAT(a.currency_code, ' @ ', a.exchange_rate)                   AS `currency`,
           a.discount                                                        AS `discount`,
           a.tax                                                             AS `tax`,
-          a.status                                                          AS `status`,
+          a.status                                                          AS `status`
         FROM
           `so_header` AS a
         LEFT JOIN

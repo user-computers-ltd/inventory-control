@@ -1,19 +1,15 @@
-#so-input {
-  margin: 0px;
-}
-
-#so-input td {
+#pl-input td {
   border: none;
   font-size: 13px;
 }
 
-#so-input input,
-#so-input select {
+#pl-input input,
+#pl-input select {
   width: 100%;
   box-sizing: border-box;
 }
 
-.so-customer-results td {
+#pl-results td {
   min-width: 50px;
   max-width: 50px;
   white-space: nowrap;
@@ -21,15 +17,15 @@
   text-overflow: ellipsis;
 }
 
-.so-customer-results .link {
+#pl-results .link {
   text-decoration: none;
 }
 
-.so-customer-results .number {
+#pl-results .number {
   text-align: right;
 }
 
-.so-customer-no-results {
+.pl-customer-no-results {
   margin: 100px 0px;
   text-align: center;
   font-size: 40px;

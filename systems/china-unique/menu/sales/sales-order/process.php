@@ -6,9 +6,9 @@
   $exchangeRate = $_POST["exchange_rate"];
   $discount = $_POST["discount"];
   $tax = $_POST["tax"];
-  $status = $_POST["status"];
-  $remarks = $_POST["remarks"];
   $priceStandard = assigned($_POST["price_standard"]) ? $_POST["price_standard"] : "normal_price";
+  $remarks = $_POST["remarks"];
+  $status = $_POST["status"];
 
   $brandCodes = $_POST["brand_code"];
   $modelNos = $_POST["model_no"];
@@ -61,12 +61,12 @@
 
   /* If an order number is given, attempt to retrieve an existing sales order. */
   if (assigned($soNo)) {
-    $headline = SALES_ORDER_DETAIL_TITLE;
+    $headline = SALES_ORDER_PRINTOUT_TITLE;
 
     $soHeader = query("SELECT *, DATE_FORMAT(so_date, '%Y-%m-%d') AS `so_date` FROM `so_header` WHERE so_no=\"$soNo\"");
 
     /* If a complete form is given, submit the sales order. */
-    if (assigned($soDate) && assigned($debtorCode) && assigned($currencyCode) && assigned($exchangeRate) && assigned($discount) && assigned($tax) && assigned($status)) {
+    if (assigned($soDate) && assigned($debtorCode) && assigned($currencyCode) && assigned($exchangeRate) && assigned($discount) && assigned($tax) && assigned($remarks) && assigned($status)) {
 
       /* Upon submission, if the sales number already exists, update the existing sales order header.
          Also delete all existing sales models, new ones will be inserted afterwards. */

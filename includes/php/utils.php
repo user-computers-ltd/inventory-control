@@ -4,7 +4,7 @@
   define("PROTOCAL", isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on" ? "https" : "http");
   define("CURRENT_URL", urldecode(PROTOCAL . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]"));
 
-  define("COLUMN_TYPES", array(
+  $columnTypes = array(
     "INT",
     "DECIMAL",
     "FLOAT",
@@ -17,7 +17,7 @@
     "DATETIME",
     "TIMESTAMP",
     "ENUM"
-  ));
+  );
 
   function assigned($data) {
     return isset($data) && $data != "";

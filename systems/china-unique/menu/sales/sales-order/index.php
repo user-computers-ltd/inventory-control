@@ -121,7 +121,7 @@
           <?php if ($status == "" || $status == "SAVED"): ?>
             <button name="status" type="submit" value="SAVED">Save</button>
           <?php endif ?>
-          <button name="status" type="submit" value="<?php echo $status; ?>" formaction="<?php echo SALES_ORDER_PRINTOUT_URL; ?>">Print</button>
+          <button name="status" type="submit" value="<?php echo assigned($status) ? $status : "DRAFT"; ?>" formaction="<?php echo SALES_ORDER_PRINTOUT_URL; ?>">Print</button>
           <?php if ($status == "SAVED"): ?>
             <button name="status" type="submit" value="POSTED">Post</button>
             <button name="status" type="submit" value="DELETED">Delete</button>

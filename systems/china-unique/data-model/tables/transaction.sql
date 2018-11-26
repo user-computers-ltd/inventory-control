@@ -4,7 +4,7 @@ CREATE TABLE `transaction` (
   `transaction_code`  INT(12)         NOT NULL,
   `transaction_date`  DATETIME        NOT NULL,
   `client_code`       VARCHAR(30)     NOT NULL,
-  `currency`          VARCHAR(30)     NOT NULL,
+  `currency_code`     VARCHAR(30)     NOT NULL,
   `exchange_rate`     DECIMAL(16,8)   NOT NULL,
   `brand_code`        VARCHAR(30)     NOT NULL,
   `model_no`          VARCHAR(30)     NOT NULL,

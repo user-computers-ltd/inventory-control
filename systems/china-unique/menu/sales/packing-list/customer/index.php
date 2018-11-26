@@ -46,16 +46,16 @@
       a.pl_date DESC
   ");
 
-  $soHeaders = array();
+  $plHeaders = array();
 
-  foreach ($results as $soHeader) {
-    $customer = $soHeader["debtor"];
+  foreach ($results as $plHeader) {
+    $customer = $plHeader["debtor"];
 
-    if (!isset($soHeaders[$customer])) {
-      $soHeaders[$customer] = array();
+    if (!isset($plHeaders[$customer])) {
+      $plHeaders[$customer] = array();
     }
 
-    array_push($soHeaders[$customer], $soHeader);
+    array_push($plHeaders[$customer], $plHeader);
   }
 
   $debtors = query("
@@ -107,9 +107,9 @@
         </table>
       </form>
       <?php
-        if (count($soHeaders) > 0) {
+        if (count($plHeaders) > 0) {
 
-          foreach ($soHeaders as $customer => $headers) {
+          foreach ($plHeaders as $customer => $headers) {
             $totalQtySum = 0;
             $totalAmtSum = 0;
             $totalAmtSumBase = 0;
@@ -143,15 +143,15 @@
             ";
 
             for ($i = 0; $i < count($headers); $i++) {
-              $soHeader = $headers[$i];
-              $date = $soHeader["date"];
-              $debtor = $soHeader["debtor"];
-              $soNo = $soHeader["pl_no"];
-              $totalQty = $soHeader["qty"];
-              $discount = $soHeader["discount"];
-              $currency = $soHeader["currency"];
-              $totalAmt = $soHeader["total_amt"];
-              $totalAmtBase = $soHeader["total_amt_base"];
+              $plHeader = $headers[$i];
+              $date = $plHeader["date"];
+              $debtor = $plHeader["debtor"];
+              $plNo = $plHeader["pl_no"];
+              $totalQty = $plHeader["qty"];
+              $discount = $plHeader["discount"];
+              $currency = $plHeader["currency"];
+              $totalAmt = $plHeader["total_amt"];
+              $totalAmtBase = $plHeader["total_amt_base"];
 
               $totalQtySum += $totalQty;
               $totalAmtSum += $totalAmt;
@@ -160,7 +160,7 @@
               echo "
                 <tr>
                   <td title=\"$date\">$date</td>
-                  <td title=\"$soNo\"><a class=\"link\" href=\"" . SALES_ORDER_URL . "?pl_no=$soNo\">$soNo</a></td>
+                  <td title=\"$plNo\"><a class=\"link\" href=\"" . PACKING_LIST_URL . "?pl_no=$plNo\">$plNo</a></td>
                   <td title=\"$totalQty\" class=\"number\">" . number_format($totalQty) . "</td>
                   <td title=\"$discount\" class=\"number\">" . number_format($discount, 2) . "%</td>
                   <td title=\"$currency\" class=\"number\">$currency</td>

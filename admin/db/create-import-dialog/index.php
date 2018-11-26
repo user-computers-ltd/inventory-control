@@ -36,7 +36,7 @@
       var createImportLoading = document.querySelector("#create-import-loading");
       var columnCount = createImportForm.querySelector("#column-count");
       var dataCount = createImportForm.querySelector("#data-count");
-      var columnTypes = <?php echo json_encode(COLUMN_TYPES); ?>;
+      var columnTypes = <?php echo json_encode($columnTypes); ?>;
       var url = "<?php echo BASE_URL; ?>admin/ajax.php";
 
       function createAndImportTable() {

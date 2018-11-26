@@ -16,7 +16,7 @@
     <?php include_once ROOT_PATH . "includes/components/menu/index.php"; ?>
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
-      <div class="headline"><?php echo ALLOTMENT_CUSTOMER_TITLE ?></div>
+      <div class="headline"><?php echo ALLOTMENT_REPORT_CUSTOMER_TITLE ?></div>
       <form>
         <table id="so-input">
           <colgroup>
@@ -61,7 +61,6 @@
                           <button type=\"submit\">Create Packing List</button>
                           <span class=\"currency\">$currencyCode @ $exchangeRate</span>
                           <span class=\"discount\">Discount: $discount%</span>
-                          <span class=\"tax\">Tax: $tax%</span>
                           <span class=\"warehouse\">Warehouse: $warehouseCode</span>
                           <input name=\"debtor_code\" value=\"$debtorCode\" hidden />
                           <input name=\"currency_code\" value=\"$currencyCode\" hidden />
@@ -76,18 +75,19 @@
                       echo "
                         <table class=\"so-customer-results\">
                           <colgroup>
+                          <col style=\"width: 90px\">
+                            <col>
                             <col style=\"width: 70px\">
-                            <col style=\"width: 70px\">
-                            <col style=\"width: 90px\">
                             <col>
-                            <col>
-                            <col>
-                            <col>
-                            <col>
+                            <col style=\"width: 80px\">
+                            <col style=\"width: 80px\">
+                            <col style=\"width: 80px\">
+                            <col style=\"width: 80px\">
                           </colgroup>
                           <thead>
                             <tr></tr>
                             <tr>
+                              <th>DO No. / On Hand</th>
                               <th>Order No.</th>
                               <th>Brand</th>
                               <th>Model No.</th>
@@ -95,7 +95,6 @@
                               <th class=\"number\">Allotted Qty</th>
                               <th class=\"number\">Allotted Subtotal</th>
                               <th class=\"number\">$InBaseCurrCol</th>
-                              <th class=\"number\">IA No. / On Hand</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -130,7 +129,7 @@
 
                           $modelColumns = $i == 0 ? "
                             <td rowspan=\"" . count($models) . "\" title=\"$soNo\">
-                              <a class=\"link\" href=\"../printout.php?so_no=$soNo\">$soNo</a>
+                              <a class=\"link\" href=\"" . SALES_ORDER_PRINTOUT_URL . "?so_no=$soNo\">$soNo</a>
                             </td>
                             <td rowspan=\"" . count($models) . "\" title=\"$brandName\">
                               $brandName
@@ -143,10 +142,11 @@
                             </td>
                           " : "";
 
-                          $sourceColumn = "<td class=\"number\">" . (assigned($iaNo) ? "<a class=\"link\">$iaNo</a>" : "On Hand") . "</td>";
+                          $sourceColumn = "<td>" . (assigned($iaNo) ? "<a class=\"link\">$iaNo</a>" : "On Hand") . "</td>";
 
                           echo "
                             <tr>
+                              $sourceColumn
                               $modelColumns
                               <td class=\"number\">
                                 " . number_format($qty) . "
@@ -158,7 +158,6 @@
                               </td>
                               <td class=\"number\">" . number_format($subTotal, 2) . "</td>
                               <td class=\"number\">" . number_format($subTotalBase, 2) . "</td>
-                              $sourceColumn
                             </tr>
                           ";
                         }
@@ -170,12 +169,12 @@
                             <tr>
                               <th></th>
                               <th></th>
+                              <th></th>
                               <th class=\"number\">Total:</th>
                               <th class=\"number\">" . number_format($totalOutstanding) . "</th>
                               <th class=\"number\">" . number_format($totalAllottedQty) . "</th>
                               <th class=\"number\">" . number_format($totalAmt, 2) . "</th>
                               <th class=\"number\">" . number_format($totalAmt * $exchangeRate, 2) . "</th>
-                              <th></th>
                             </tr>
                           </tfoot>
                         </table>

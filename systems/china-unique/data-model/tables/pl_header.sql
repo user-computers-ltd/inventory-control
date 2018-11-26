@@ -11,6 +11,7 @@ CREATE TABLE `pl_header` (
   `ref_no`            VARCHAR(30)     DEFAULT "",
   `remarks`           TEXT,
   `status`            VARCHAR(30)     DEFAULT "SAVED",
+  `paid`              VARCHAR(10)     DEFAULT "FALSE",
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_index` (`pl_no`)
 );

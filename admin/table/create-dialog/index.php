@@ -11,7 +11,7 @@
         <input type="text" name="field" id="create-field" required />
         <label for="create-type">type:</label>
         <select name="type" id="create-type" required>
-          <?php foreach (COLUMN_TYPES as $type) { echo "<option value=\"$type\">$type</option>"; } ?>
+          <?php foreach ($columnTypes as $type) { echo "<option value=\"$type\">$type</option>"; } ?>
         </select>
         <label for="create-length">length:</label>
         <input type="text" name="length" id="create-length" />
@@ -26,7 +26,7 @@
       var createButton = document.querySelector("#create");
       var createOverlay = document.querySelector("#create-overlay");
       var createForm = createOverlay.querySelector("form");
-      var columnTypes = <?php echo json_encode(COLUMN_TYPES); ?>;
+      var columnTypes = <?php echo json_encode($columnTypes); ?>;
       var url = "<?php echo BASE_URL; ?>admin/ajax.php";
 
       function closeCreateHandler(event) {

@@ -12,7 +12,7 @@
   $qtys = $_POST["qty"];
 
   if (assigned($debtorCode) && assigned($currencyCode) && assigned($exchangeRate) && assigned($discount) && assigned($tax) && assigned($warehouseCode) && assigned($soNos) && assigned($brandCodes) && assigned($modelNos) && assigned($prices) && assigned($qtys)) {
-    $plNo = "INV" . date("YmdHis");
+    $plNo = "PL" . date("YmdHis");
     $date = date("Y-m-d");
 
     query("
@@ -119,46 +119,59 @@
     $warehouseCode = $allotment["warehouse_code"];
     $allotmentModel = $allotment["so_no"] . "-" . $allotment["brand_code"] . "-" . $allotment["model_no"];
 
-    if (!isset($allotments[$debtorCode])) {
-      $allotments[$debtorCode] = array();
-      $allotments[$debtorCode]["name"] = $debtorName;
-      $allotments[$debtorCode]["models"] = array();
-    }
+    $arrayPointer = &$allotments;
 
-    if (!isset($allotments[$debtorCode]["models"][$currencyCode])) {
-      $allotments[$debtorCode]["models"][$currencyCode] = array();
-      $allotments[$debtorCode]["models"][$currencyCode]["rate"] = $exchangeRate;
-      $allotments[$debtorCode]["models"][$currencyCode]["models"] = array();
+    if (!isset($arrayPointer[$debtorCode])) {
+      $arrayPointer[$debtorCode] = array();
+      $arrayPointer[$debtorCode]["name"] = $debtorName;
+      $arrayPointer[$debtorCode]["models"] = array();
     }
+    $arrayPointer = &$arrayPointer[$debtorCode]["models"];
 
-    if (!isset($allotments[$debtorCode]["models"][$currencyCode]["models"][$discount])) {
-      $allotments[$debtorCode]["models"][$currencyCode]["models"][$discount] = array();
+    if (!isset($arrayPointer[$currencyCode])) {
+      $arrayPointer[$currencyCode] = array();
+      $arrayPointer[$currencyCode]["rate"] = $exchangeRate;
+      $arrayPointer[$currencyCode]["models"] = array();
     }
+    $arrayPointer = &$arrayPointer[$currencyCode]["models"];
 
-    if (!isset($allotments[$debtorCode]["models"][$currencyCode]["models"][$discount][$tax])) {
-      $allotments[$debtorCode]["models"][$currencyCode]["models"][$discount][$tax] = array();
+    if (!isset($arrayPointer[$discount])) {
+      $arrayPointer[$discount] = array();
     }
+    $arrayPointer = &$arrayPointer[$discount];
 
-    if (!isset($allotments[$debtorCode]["models"][$currencyCode]["models"][$discount][$tax][$warehouseCode])) {
-      $allotments[$debtorCode]["models"][$currencyCode]["models"][$discount][$tax][$warehouseCode] = array();
+    if (!isset($arrayPointer[$tax])) {
+      $arrayPointer[$tax] = array();
     }
+    $arrayPointer = &$arrayPointer[$tax];
 
-    if (!isset($allotments[$debtorCode]["models"][$currencyCode]["models"][$discount][$tax][$warehouseCode][$allotmentModel])) {
-      $allotments[$debtorCode]["models"][$currencyCode]["models"][$discount][$tax][$warehouseCode][$allotmentModel] = array();
+    if (!isset($arrayPointer[$warehouseCode])) {
+      $arrayPointer[$warehouseCode] = array();
     }
+    $arrayPointer = &$arrayPointer[$warehouseCode];
 
-    array_push($allotments[$debtorCode]["models"][$currencyCode]["models"][$discount][$tax][$warehouseCode][$allotmentModel], $allotment);
+    if (!isset($arrayPointer[$allotmentModel])) {
+      $arrayPointer[$allotmentModel] = array();
+    }
+    $arrayPointer = &$arrayPointer[$allotmentModel];
+
+    array_push($arrayPointer, $allotment);
   }
 
   $results = query("
     SELECT DISTINCT
       a.debtor_code                       AS `code`,
-      IFNULL(b.english_name, 'Unknown')   AS `name`
+      IFNULL(c.english_name, 'Unknown')   AS `name`
     FROM
       `so_header` AS a
     LEFT JOIN
-      `debtor` AS b
-    ON a.debtor_code=b.code
+      `so_allotment` AS b
+    ON a.so_no=b.so_no
+    LEFT JOIN
+      `debtor` AS c
+    ON a.debtor_code=c.code
+    WHERE
+      b.qty IS NOT NULL
     ORDER BY
       a.debtor_code ASC
   ");

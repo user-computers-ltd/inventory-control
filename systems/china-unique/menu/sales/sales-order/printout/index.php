@@ -16,7 +16,7 @@
   <body>
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
-      <div class="headline"><?php echo SALES_ORDER_DETAIL_TITLE ?></div>
+      <div class="headline"><?php echo SALES_ORDER_PRINTOUT_TITLE ?></div>
 
       <?php if ($soHeader): ?>
         <table id="so-header">

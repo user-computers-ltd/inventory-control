@@ -16,12 +16,25 @@
 
 #pl-models th,
 #pl-models td {
-  border-left: none;
-  border-right: none;
+  min-width: 0px;
+  max-width: 0px;
+  border: none;
+}
+
+#pl-models thead th {
+  border-bottom: 1px solid lightgray;
+}
+
+#pl-models tfoot th {
+  border-top: 1px solid lightgray;
 }
 
 #pl-models .number {
   text-align: right;
+}
+
+#pl-models .link {
+  text-decoration: none;
 }
 
 #pl-footer #remarks {
