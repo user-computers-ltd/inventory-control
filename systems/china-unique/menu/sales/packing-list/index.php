@@ -131,7 +131,7 @@
             <?php if ($plHeader["status"] == "SAVED"): ?>
               <button name="status" type="submit" value="SAVED">Save</button>
             <?php endif ?>
-            <button name="status" type="submit" value="<?php echo $plHeader["status"]; ?>" formaction="<?php echo PACKING_LIST_PRINTOUT_URL; ?>">Print</button>
+            <button name="status" type="submit" value="<?php echo $plHeader["status"]; ?>" formaction="<?php echo PACKING_LIST_PRINTOUT_URL . "?pl_no=" . $plHeader["pl_no"]; ?>">Print</button>
             <?php if ($plHeader["status"] == "SAVED"): ?>
               <button name="status" type="submit" value="POSTED">Post</button>
             <?php endif ?>

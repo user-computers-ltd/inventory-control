@@ -4,6 +4,7 @@
   include_once SYSTEM_PATH . "includes/php/config.php";
   include_once ROOT_PATH . "includes/php/utils.php";
   include_once ROOT_PATH . "includes/php/database.php";
+
   include "process.php";
 ?>
 
@@ -16,31 +17,37 @@
   <body>
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
-      <div class="headline"><?php echo SALES_ORDER_PRINTOUT_TITLE ?></div>
+      <div class="headline"><?php echo PACKING_LIST_PRINTOUT_TITLE . " (" . $plHeader["warehouse"] . ")" ?></div>
 
-      <?php if ($soHeader): ?>
-        <table id="so-header">
+      <?php if ($plHeader): ?>
+        <table id="pl-header">
           <tr>
             <td>Order No.:</td>
-            <td><?php echo $soHeader["so_no"]; ?></td>
-            <td>Date:</td>
-            <td><?php echo $soHeader["date"]; ?></td>
+            <td><?php echo $plHeader["pl_no"]; ?></td>
           </tr>
           <tr>
             <td>Client:</td>
-            <td><?php echo $soHeader["customer"]; ?></td>
-            <td>Currency:</td>
-            <td><?php echo $soHeader["currency"]; ?></td>
+            <td><?php echo $plHeader["customer_name"]; ?></td>
           </tr>
           <tr>
-            <td>Discount:</td>
-            <td><?php echo $soHeader["discount"]; ?>%</td>
-            <td>Status:</td>
-            <td><?php echo $soHeader["status"]; ?></td>
+            <td>Address:</td>
+            <td><?php echo $plHeader["customer_address"]; ?></td>
+          </tr>
+          <tr>
+            <td>Contact:</td>
+            <td><?php echo $plHeader["customer_contact"]; ?></td>
+          </tr>
+          <tr>
+            <td>Tel:</td>
+            <td><?php echo $plHeader["customer_tel"]; ?></td>
+          </tr>
+          <tr>
+            <td>Date:</td>
+            <td><?php echo $plHeader["date"]; ?></td>
           </tr>
         </table>
-        <?php if (count($soModels) > 0) : ?>
-          <table id="so-models">
+        <?php if (count($plModels) > 0) : ?>
+          <table id="pl-models">
             <thead>
               <tr></tr>
               <tr>
@@ -55,15 +62,15 @@
               <?php
                 $totalQty = 0;
                 $subtotalSum = 0;
-                $discount = $soHeader["discount"];
+                $discount = $plHeader["discount"];
 
-                for ($i = 0; $i < count($soModels); $i++) {
-                  $soModel = $soModels[$i];
-                  $brand = $soModel["brand"];
-                  $modelNo = $soModel["model_no"];
-                  $price = $soModel["price"];
-                  $qty = $soModel["qty"];
-                  $subtotal = $soModel["subtotal"];
+                for ($i = 0; $i < count($plModels); $i++) {
+                  $plModel = $plModels[$i];
+                  $brand = $plModel["brand"];
+                  $modelNo = $plModel["model_no"];
+                  $price = $plModel["price"];
+                  $qty = $plModel["qty"];
+                  $subtotal = $qty * $price;
 
                   $totalQty += $qty;
                   $subtotalSum += $subtotal;
@@ -107,10 +114,10 @@
             </tfoot>
           </table>
         <?php else: ?>
-          <div id="so-models-no-results">No models</div>
+          <div id="pl-models-no-results">No models</div>
         <?php endif ?>
         <?php if (assigned($remarks)) : ?>
-          <table id="so-footer">
+          <table id="pl-footer">
             <tr>
               <td>Remarks:</td>
               <td><?php echo $remarks; ?></td>
@@ -118,7 +125,7 @@
           </table>
         <?php endif ?>
       <?php else: ?>
-        <div id="so-not-found">Sales order not found</div>
+        <div id="pl-not-found">Packing list not found</div>
       <?php endif ?>
     </div>
   </body>
