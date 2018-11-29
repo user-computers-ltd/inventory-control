@@ -58,7 +58,7 @@
     $result = mysqli_query($GLOBALS["connection"], $sql);
 
     if (!$result) {
-      throwError("Error in query - $sql: " . mysqli_error($GLOBALS["connection"]));
+      throwError("Error in query: " . mysqli_error($GLOBALS["connection"]) . " - $sql");
     }
 
     if (is_bool($result)) {
@@ -86,7 +86,7 @@
       $result = mysqli_query($connection, $query);
 
       if (!$result) {
-        $error = "$error\nError in query - $query: " . mysqli_error($connection);
+        $error = "$error\nError in query: " . mysqli_error($connection) . " - $query";
         break;
       }
     }

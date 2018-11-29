@@ -127,6 +127,39 @@
     ));
   }
 
+  function exportTable($database, $table) {
+    selectDatabase($database);
+
+    $results = query("SELECT * FROM `$table`");
+
+    $content = array();
+
+    if (count($results) > 0) {
+      $columns = array();
+      $row = array();
+
+      foreach ($results[0] as $column => $value) {
+        array_push($columns, $column);
+        array_push($row, "\"$column\"");
+      }
+
+      array_push($content, join(", ", $row));
+
+      foreach ($results as $result) {
+        $row = array();
+
+        foreach ($columns as $column) {
+          $value = $result[$column];
+          array_push($row, "\"$value\"");
+        }
+
+        array_push($content, join(", ", $row));
+      }
+    }
+
+    return join("\r\n", $content);
+  }
+
   function copyTable($table1, $table2) {
     execute(array(
       "CREATE TABLE `$table1` LIKE $table2",

@@ -52,7 +52,7 @@
               . "<div class=\"list-item-right\">"
               . "<div class=\"count\">$count rows</div>"
               . "<div class=\"import-button\" onclick=\"importTable('$name', $columns)\"></div>"
-              . "<div class=\"export-button\"></div>"
+              . "<div class=\"export-button\" onclick=\"exportTable('$name')\"></div>"
               . "<div class=\"copy-button\" onclick=\"copyTable('$name')\"></div>"
               . "<div class=\"clear-button\" onclick=\"clearTable('$name')\"></div>"
               . "<div class=\"delete-button\" onclick=\"deleteTable('$name')\"></div>"
@@ -110,6 +110,17 @@
               reject: showErrorBar
             });
           }
+        });
+      }
+
+      function exportTable(table) {
+        post({
+          url: url,
+          data: { action: "export-table", database: database, table: table },
+          resolve: function (content) {
+            downloadTextFile(table + ".csv", content);
+          },
+          reject: showErrorBar
         });
       }
 

@@ -180,3 +180,17 @@ function serialize(form) {
 
   return query.join("&");
 }
+
+function downloadTextFile(filename, text) {
+  var element = document.createElement("a");
+  var content = "data:text/plain;charset=utf-8," + encodeURIComponent(text);
+  element.setAttribute("href", content);
+  element.setAttribute("download", filename);
+
+  element.style.display = "none";
+  document.body.appendChild(element);
+
+  element.click();
+
+  document.body.removeChild(element);
+}

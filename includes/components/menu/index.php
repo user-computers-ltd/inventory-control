@@ -32,7 +32,6 @@
     <?php if (isset($SITEMAP)) : ?>
       <div id="menu-sidebar" class="web-only">
         <button class="toggle-button" onclick="toggleNav()"></button>
-        <a class="menu-item" href="<?php echo $menuDirectory; ?>"><span class="initial">M</span><span class="label">Main Menu</span></a>
         <?php echo generateSitemap($SITEMAP, ""); ?>
       </div>
       <script src="<?php echo BASE_URL; ?>includes/js/utils.js"></script>
