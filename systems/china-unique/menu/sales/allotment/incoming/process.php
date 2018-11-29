@@ -33,10 +33,12 @@
   }
 
   $filterIaNos = $_GET["filter_ia_no"];
+  $filterSoNos = $_GET["filter_so_no"];
 
-  /* If a filter is provided, add it to the query. */
+  $whereClause = "";
+
   if (assigned($filterIaNos) && count($filterIaNos) > 0) {
-    $whereClause = "
+    $whereClause = $whereClause . "
       AND (" . join(" OR ", array_map(function ($i) { return "a.ia_no='$i'"; }, $filterIaNos)) . ")";
   }
 
@@ -68,7 +70,8 @@
     ORDER BY
       b.creditor_code ASC,
       a.ia_no ASC,
-      a.ia_index ASC
+      a.ia_index ASC,
+      a.model_no ASC
   ");
 
   $iaResults = array();
@@ -127,6 +130,13 @@
     $arrayPointer = $model;
   }
 
+  $whereClause = "";
+
+  if (assigned($filterSoNos) && count($filterSoNos) > 0) {
+    $whereClause = $whereClause . "
+      AND (" . join(" OR ", array_map(function ($i) { return "a.so_no='$i'"; }, $filterSoNos)) . ")";
+  }
+
   $results = query("
     SELECT
       b.debtor_code                       AS `debtor_code`,
@@ -152,6 +162,7 @@
     ON b.debtor_code=c.code
     WHERE
       a.qty_outstanding > 0
+      $whereClause
     ORDER BY
       a.brand_code ASC,
       a.model_no ASC,
@@ -236,13 +247,24 @@
 
   $ias = query("
     SELECT
-      a.ia_no                               AS `ia_no`,
-      DATE_FORMAT(a.ia_date, '%d-%m-%Y')    AS `date`
+      ia_no                               AS `ia_no`,
+      DATE_FORMAT(ia_date, '%d-%m-%Y')    AS `date`
     FROM
-      `ia_header` AS a
+      `ia_header`
     WHERE
-      a.status=\"DO\"
+      status=\"DO\"
     ORDER BY
-      a.ia_no ASC
+      ia_no ASC
+  ");
+
+  $sos = query("
+    SELECT DISTINCT
+      so_no                               AS `so_no`
+    FROM
+      `so_model`
+    WHERE
+      qty_outstanding > 0
+    ORDER BY
+      so_no ASC
   ");
 ?>

@@ -21,6 +21,9 @@
         <table id="ia-input">
           <colgroup>
             <col style="width: 100px">
+            <col>
+            <col style="width: 100px">
+            <col>
           </colgroup>
           <tr>
             <td><label>DO No.:</label></td>
@@ -31,6 +34,18 @@
                     $iaNo = $ia["ia_no"];
                     $selected = assigned($filterIaNos) && in_array($iaNo, $filterIaNos) ? "selected" : "";
                     echo "<option value=\"$iaNo\" $selected>$iaNo</option>";
+                  }
+                ?>
+              </select>
+            </td>
+            <td><label>SO No.:</label></td>
+            <td>
+              <select name="filter_so_no[]" multiple>
+                <?php
+                  foreach ($sos as $so) {
+                    $soNo = $so["so_no"];
+                    $selected = assigned($filterSoNos) && in_array($soNo, $filterSoNos) ? "selected" : "";
+                    echo "<option value=\"$soNo\" $selected>$soNo</option>";
                   }
                 ?>
               </select>
@@ -76,14 +91,14 @@
                     <table class=\"ia-results\" data-ia_no=\"$iaNo\">
                       <colgroup>
                         <col style=\"width: 70px\">
+                        <col>
+                        <col style=\"width: 75px\">
+                        <col>
                         <col style=\"width: 90px\">
                         <col style=\"width: 80px\">
-                        <col style=\"width: 90px\">
-                        <col style=\"width: 90px\">
-                        <col>
-                        <col style=\"width: 100px\">
-                        <col style=\"width: 80px\">
-                        <col>
+                        <col style=\"width: 75px\">
+                        <col style=\"width: 75px\">
+                        <col style=\"width: 75px\">
                       </colgroup>
                       <thead>
                         <tr></tr>
@@ -148,7 +163,7 @@
                             required
                           />
                         </td>
-                      " : "<td colspan=\"4\"></td>";
+                      " : "<td colspan=\"5\"></td>";
                       $totalColumn = $firstModel ? "
                         <td rowspan=\"" . count($matchedModels) . "\" class=\"total-model-allot-qty number\">0</td>
                       " : "";

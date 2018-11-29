@@ -12,12 +12,12 @@
   $whereClause = "";
 
   if (assigned($from)) {
-    $whereClause = $range . "
+    $whereClause = $whereClause . "
       AND a.so_date >= \"$from\"";
   }
 
   if (assigned($to)) {
-    $whereClause = $range . "
+    $whereClause = $whereClause . "
       AND a.so_date <= \"$to\"";
   }
 
@@ -34,17 +34,17 @@
       IFNULL(b.total_outstanding_amt, 0) * (100 - a.discount) / 100 * a.exchange_rate     AS `outstanding_amt_base`
     FROM
       `so_header` AS a
-      LEFT JOIN
-        (SELECT
-          so_no, SUM(qty) as total_qty, SUM(qty_outstanding) AS total_qty_outstanding, SUM(qty_outstanding * price) as total_outstanding_amt
-        FROM
-          `so_model`
-        GROUP BY
-          so_no) AS b
-      ON a.so_no=b.so_no
-      LEFT JOIN
-        `debtor` AS c
-      ON a.debtor_code=c.code
+    LEFT JOIN
+      (SELECT
+        so_no, SUM(qty) as total_qty, SUM(qty_outstanding) AS total_qty_outstanding, SUM(qty_outstanding * price) as total_outstanding_amt
+      FROM
+        `so_model`
+      GROUP BY
+        so_no) AS b
+    ON a.so_no=b.so_no
+    LEFT JOIN
+      `debtor` AS c
+    ON a.debtor_code=c.code
     WHERE
       a.status=\"POSTED\"
       $whereClause
@@ -72,14 +72,14 @@
             <col style="width: 100px">
             <col>
           </colgroup>
-         <tr>
-           <td><label for="so-from">From:</label></td>
-           <td><input type="date" name="from" value="<?php echo $from; ?>" max="<?php echo date("Y-m-d"); ?>" /></td>
-           <td><label for="so-to">To:</label></td>
-           <td><input type="date" name="to" value="<?php echo $to; ?>" max="<?php echo date("Y-m-d"); ?>" /></td>
-           <td><button type="submit">Go</button></td>
-         </tr>
-       </table>
+          <tr>
+            <td><label>From:</label></td>
+            <td><input type="date" name="from" value="<?php echo $from; ?>" max="<?php echo date("Y-m-d"); ?>" /></td>
+            <td><label>To:</label></td>
+            <td><input type="date" name="to" value="<?php echo $to; ?>" max="<?php echo date("Y-m-d"); ?>" /></td>
+            <td><button type="submit">Go</button></td>
+          </tr>
+        </table>
       </form>
       <?php if (count($soHeaders) > 0): ?>
         <table id="so-results">
@@ -133,7 +133,7 @@
                 echo "
                   <tr>
                     <td title=\"$date\">$date</td>
-                    <td title=\"$soNo\"><a class=\"link\" href=\"" . SALES_ORDER_URL . "?so_no=$soNo\">$soNo</a></td>
+                    <td title=\"$soNo\"><a class=\"link\" href=\"" . SALES_ORDER_PRINTOUT_URL . "?so_no=$soNo\">$soNo</a></td>
                     <td title=\"$debtor\">$debtor</td>
                     <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
                     <td title=\"$outstandingQty\" class=\"number\">" . number_format($outstandingQty) . "</td>

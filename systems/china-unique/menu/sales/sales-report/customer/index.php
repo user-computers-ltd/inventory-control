@@ -28,17 +28,17 @@
       IFNULL(b.total_outstanding_amt, 0) * (100 - a.discount) / 100 * a.exchange_rate     AS `outstanding_amt_base`
     FROM
       `so_header` AS a
-      LEFT JOIN
-        (SELECT
-          so_no, SUM(qty) as total_qty, SUM(qty_outstanding) AS total_qty_outstanding, SUM(qty_outstanding * price) as total_outstanding_amt
-        FROM
-          `so_model`
-        GROUP BY
-          so_no) AS b
-      ON a.so_no=b.so_no
-      LEFT JOIN
-        `debtor` AS c
-      ON a.debtor_code=c.code
+    LEFT JOIN
+      (SELECT
+        so_no, SUM(qty) as total_qty, SUM(qty_outstanding) AS total_qty_outstanding, SUM(qty_outstanding * price) as total_outstanding_amt
+      FROM
+        `so_model`
+      GROUP BY
+        so_no) AS b
+    ON a.so_no=b.so_no
+    LEFT JOIN
+      `debtor` AS c
+    ON a.debtor_code=c.code
     WHERE
       a.debtor_code IS NOT NULL
       $whereClause
@@ -90,7 +90,7 @@
             <col style="width: 100px">
           </colgroup>
           <tr>
-            <td><label for="so-debtors">Customer:</label></td>
+            <td><label>Customer:</label></td>
             <td>
               <select name="debtor_code[]" multiple>
                 <?php

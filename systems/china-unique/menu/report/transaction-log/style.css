@@ -1,31 +1,36 @@
-#so-input td {
+#trans-input td {
   border: none;
   font-size: 13px;
+  padding: 0px 5px;
 }
 
-#so-input input,
-#so-input select {
+#trans-input input,
+#trans-input select {
   width: 100%;
   box-sizing: border-box;
 }
 
-.so-results td {
-  min-width: 50px;
-  max-width: 50px;
+#trans-results th,
+#trans-results td {
+  min-width: 0px;
+  max-width: 0px;
+}
+
+#trans-results td {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.so-results .link {
+#trans-results .link {
   text-decoration: none;
 }
 
-.so-results .number {
+#trans-results .number {
   text-align: right;
 }
 
-.so-model-no-results {
+.trans-customer-no-results {
   margin: 100px 0px;
   text-align: center;
   font-size: 40px;

@@ -12,12 +12,12 @@
   $whereClause = "";
 
   if (assigned($from)) {
-    $whereClause = $range . "
+    $whereClause = $whereClause . "
       AND a.pl_date >= \"$from\"";
   }
 
   if (assigned($to)) {
-    $whereClause = $range . "
+    $whereClause = $whereClause . "
       AND a.pl_date <= \"$to\"";
   }
 
@@ -33,17 +33,17 @@
       IFNULL(b.total_amt, 0) * (100 - a.discount) / 100 * a.exchange_rate     AS `total_amt_base`
     FROM
       `pl_header` AS a
-      LEFT JOIN
-        (SELECT
-          pl_no, SUM(qty) as total_qty, SUM(qty * price) as total_amt
-        FROM
-          `pl_model`
-        GROUP BY
-          pl_no) AS b
-      ON a.pl_no=b.pl_no
-      LEFT JOIN
-        `debtor` AS c
-      ON a.debtor_code=c.code
+    LEFT JOIN
+      (SELECT
+        pl_no, SUM(qty) as total_qty, SUM(qty * price) as total_amt
+      FROM
+        `pl_model`
+      GROUP BY
+        pl_no) AS b
+    ON a.pl_no=b.pl_no
+    LEFT JOIN
+      `debtor` AS c
+    ON a.debtor_code=c.code
     WHERE
       a.status=\"SAVED\"
       $whereClause
@@ -71,14 +71,14 @@
             <col style="width: 100px">
             <col>
           </colgroup>
-         <tr>
-           <td><label for="pl-from">From:</label></td>
-           <td><input type="date" name="from" value="<?php echo $from; ?>" max="<?php echo date("Y-m-d"); ?>" /></td>
-           <td><label for="pl-to">To:</label></td>
-           <td><input type="date" name="to" value="<?php echo $to; ?>" max="<?php echo date("Y-m-d"); ?>" /></td>
-           <td><button type="submit">Go</button></td>
-         </tr>
-       </table>
+          <tr>
+            <td><label>From:</label></td>
+            <td><input type="date" name="from" value="<?php echo $from; ?>" max="<?php echo date("Y-m-d"); ?>" /></td>
+            <td><label>To:</label></td>
+            <td><input type="date" name="to" value="<?php echo $to; ?>" max="<?php echo date("Y-m-d"); ?>" /></td>
+            <td><button type="submit">Go</button></td>
+          </tr>
+        </table>
       </form>
       <?php if (count($plHeaders) > 0): ?>
         <table id="pl-results">

@@ -5,13 +5,15 @@
   $discount = $_POST["discount"];
   $tax = $_POST["tax"];
   $warehouseCode = $_POST["warehouse_code"];
+
+  $iaNos = $_POST["ia_no"];
   $soNos = $_POST["so_no"];
   $brandCodes = $_POST["brand_code"];
   $modelNos = $_POST["model_no"];
   $prices = $_POST["price"];
   $qtys = $_POST["qty"];
 
-  if (assigned($debtorCode) && assigned($currencyCode) && assigned($exchangeRate) && assigned($discount) && assigned($tax) && assigned($warehouseCode) && assigned($soNos) && assigned($brandCodes) && assigned($modelNos) && assigned($prices) && assigned($qtys)) {
+  if (assigned($debtorCode) && assigned($currencyCode) && assigned($exchangeRate) && assigned($discount) && assigned($tax) && assigned($warehouseCode) && assigned($iaNos) && assigned($soNos) && assigned($brandCodes) && assigned($modelNos) && assigned($prices) && assigned($qtys)) {
     $plNo = "PL" . date("YmdHis");
     $date = date("Y-m-d");
 
@@ -26,19 +28,20 @@
     $values = array();
 
     for ($i = 0; $i < count($soNos); $i++) {
+      $iaNo = $iaNos[$i];
       $soNo = $soNos[$i];
       $brandCode = $brandCodes[$i];
       $modelNo = $modelNos[$i];
       $price = $prices[$i];
       $qty = $qtys[$i];
 
-      array_push($values, "(\"$plNo\", \"$i\", \"$soNo\", \"$brandCode\", \"$modelNo\", \"$price\", \"$qty\")");
+      array_push($values, "(\"$plNo\", \"$i\", \"$iaNo\", \"$soNo\", \"$brandCode\", \"$modelNo\", \"$price\", \"$qty\")");
     }
 
     query("
       INSERT INTO
         `pl_model`
-          (pl_no, pl_index, so_no, brand_code, model_no, price, qty)
+          (pl_no, pl_index, ia_no, so_no, brand_code, model_no, price, qty)
           VALUES
       " . join(", ", $values));
 

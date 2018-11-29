@@ -27,17 +27,17 @@
       IFNULL(b.total_amt, 0) * (100 - a.discount) / 100 * a.exchange_rate                 AS `total_amt_base`
     FROM
       `pl_header` AS a
-      LEFT JOIN
-        (SELECT
-          pl_no, SUM(qty) as total_qty, SUM(qty * price) as total_amt
-        FROM
-          `pl_model`
-        GROUP BY
-          pl_no) AS b
-      ON a.pl_no=b.pl_no
-      LEFT JOIN
-        `debtor` AS c
-      ON a.debtor_code=c.code
+    LEFT JOIN
+      (SELECT
+        pl_no, SUM(qty) as total_qty, SUM(qty * price) as total_amt
+      FROM
+        `pl_model`
+      GROUP BY
+        pl_no) AS b
+    ON a.pl_no=b.pl_no
+    LEFT JOIN
+      `debtor` AS c
+    ON a.debtor_code=c.code
     WHERE
       a.debtor_code IS NOT NULL
       $whereClause

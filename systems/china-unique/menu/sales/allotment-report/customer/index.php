@@ -75,22 +75,22 @@
                       echo "
                         <table class=\"so-customer-results\">
                           <colgroup>
-                          <col style=\"width: 90px\">
-                            <col>
+                            <col style=\"width: 90px\">
                             <col style=\"width: 70px\">
                             <col>
-                            <col style=\"width: 80px\">
-                            <col style=\"width: 80px\">
-                            <col style=\"width: 80px\">
-                            <col style=\"width: 80px\">
+                            <col style=\"width: 90px\">
+                            <col style=\"width: 90px\">
+                            <col style=\"width: 90px\">
+                            <col style=\"width: 90px\">
+                            <col style=\"width: 90px\">
                           </colgroup>
                           <thead>
                             <tr></tr>
                             <tr>
                               <th>DO No. / On Hand</th>
-                              <th>Order No.</th>
                               <th>Brand</th>
                               <th>Model No.</th>
+                              <th>Order No.</th>
                               <th class=\"number\">Outstanding Qty</th>
                               <th class=\"number\">Allotted Qty</th>
                               <th class=\"number\">Allotted Subtotal</th>
@@ -108,6 +108,7 @@
 
                         for ($i = 0; $i < count($models); $i++) {
                           $allotment = $models[$i];
+                          $iaNo = $allotment["ia_no"];
                           $soNo = $allotment["so_no"];
                           $brandCode = $allotment["brand_code"];
                           $brandName = $allotment["brand_name"];
@@ -128,14 +129,14 @@
                           $totalAmt += $subTotal;
 
                           $modelColumns = $i == 0 ? "
-                            <td rowspan=\"" . count($models) . "\" title=\"$soNo\">
-                              <a class=\"link\" href=\"" . SALES_ORDER_PRINTOUT_URL . "?so_no=$soNo\">$soNo</a>
-                            </td>
                             <td rowspan=\"" . count($models) . "\" title=\"$brandName\">
                               $brandName
                             </td>
                             <td rowspan=\"" . count($models) . "\" title=\"$modelNo\">
                               $modelNo
+                            </td>
+                            <td rowspan=\"" . count($models) . "\" title=\"$soNo\">
+                              <a class=\"link\" href=\"" . SALES_ORDER_PRINTOUT_URL . "?so_no=$soNo\">$soNo</a>
                             </td>
                             <td rowspan=\"" . count($models) . "\" class=\"number\" title=\"$outstandingQty\">
                             " . number_format($outstandingQty) . "
@@ -150,6 +151,7 @@
                               $modelColumns
                               <td class=\"number\">
                                 " . number_format($qty) . "
+                                <input name=\"ia_no[]\" value=\"$iaNo\" hidden />
                                 <input name=\"so_no[]\" value=\"$soNo\" hidden />
                                 <input name=\"brand_code[]\" value=\"$brandCode\" hidden />
                                 <input name=\"model_no[]\" value=\"$modelNo\" hidden />
