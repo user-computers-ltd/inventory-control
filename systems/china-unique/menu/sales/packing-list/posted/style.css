@@ -17,10 +17,6 @@
   text-overflow: ellipsis;
 }
 
-#pl-results .link {
-  text-decoration: none;
-}
-
 #pl-results .number {
   text-align: right;
 }

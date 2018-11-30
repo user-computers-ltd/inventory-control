@@ -131,7 +131,7 @@
           </table>
         <?php endif ?>
       <?php else: ?>
-        <div id="pl-not-found">Packing list not found</div>
+        <div id="pl-not-found"><?php echo PACKING_LIST_PRINTOUT_TITLE; ?> not found</div>
       <?php endif ?>
     </div>
   </body>

@@ -49,7 +49,6 @@
         display: block;
         margin-top: 20px;
         text-align: center;
-        text-decoration: none;
       }
     </style>
   </head>

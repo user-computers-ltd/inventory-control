@@ -13,7 +13,20 @@
   $prices = $_POST["price"];
   $qtys = $_POST["qty"];
 
-  if (assigned($debtorCode) && assigned($currencyCode) && assigned($exchangeRate) && assigned($discount) && assigned($tax) && assigned($warehouseCode) && assigned($iaNos) && assigned($soNos) && assigned($brandCodes) && assigned($modelNos) && assigned($prices) && assigned($qtys)) {
+  if (
+    assigned($debtorCode) &&
+    assigned($currencyCode) &&
+    assigned($exchangeRate) &&
+    assigned($discount) &&
+    assigned($tax) &&
+    assigned($warehouseCode) &&
+    assigned($iaNos) &&
+    assigned($soNos) &&
+    assigned($brandCodes) &&
+    assigned($modelNos) &&
+    assigned($prices) &&
+    assigned($qtys)
+  ) {
     $plNo = "PL" . date("YmdHis");
     $date = date("Y-m-d");
 
@@ -22,7 +35,16 @@
         `pl_header`
           (pl_no, pl_date, debtor_code, currency_code, exchange_rate, discount, tax, warehouse_code)
         VALUES
-          (\"$plNo\", \"$date\", \"$debtorCode\", \"$currencyCode\", \"$exchangeRate\", \"$discount\", \"$tax\", \"$warehouseCode\")
+          (
+            \"$plNo\",
+            \"$date\",
+            \"$debtorCode\",
+            \"$currencyCode\",
+            \"$exchangeRate\",
+            \"$discount\",
+            \"$tax\",
+            \"$warehouseCode\"
+          )
     ");
 
     $values = array();
@@ -61,22 +83,23 @@
 
   $results = query("
     SELECT
-      e.code                                                                                  AS `debtor_code`,
-      e.english_name                                                                          AS `debtor_name`,
-      c.currency_code                                                                         AS `currency_code`,
-      c.exchange_rate                                                                         AS `exchange_rate`,
-      c.discount                                                                              AS `discount`,
-      c.tax                                                                                   AS `tax`,
-      IF(a.warehouse_code='', g.warehouse_code, a.warehouse_code)                             AS `warehouse_code`,
-      a.so_no                                                                                 AS `so_no`,
-      a.brand_code                                                                            AS `brand_code`,
-      f.name                                                                                  AS `brand_name`,
-      a.model_no                                                                              AS `model_no`,
-      b.price                                                                                 AS `price`,
-      b.qty_outstanding                                                                       AS `outstanding_qty`,
-      a.qty                                                                                   AS `qty`,
-      a.ia_no                                                                                 AS `ia_no`,
-      d.cost_average                                                                          AS `cost_average`
+      e.code                                                        AS `debtor_code`,
+      e.english_name                                                AS `debtor_name`,
+      c.currency_code                                               AS `currency_code`,
+      c.exchange_rate                                               AS `exchange_rate`,
+      c.discount                                                    AS `discount`,
+      c.tax                                                         AS `tax`,
+      IFNULL(h.pl_no, '')                                           AS `pl_no`,
+      IF(a.warehouse_code='', g.warehouse_code, a.warehouse_code)   AS `warehouse_code`,
+      a.so_no                                                       AS `so_no`,
+      a.brand_code                                                  AS `brand_code`,
+      f.name                                                        AS `brand_name`,
+      a.model_no                                                    AS `model_no`,
+      b.price                                                       AS `price`,
+      b.qty_outstanding                                             AS `outstanding_qty`,
+      a.qty                                                         AS `qty`,
+      a.ia_no                                                       AS `ia_no`,
+      d.cost_average                                                AS `cost_average`
     FROM
       `so_allotment` AS a
     LEFT JOIN
@@ -97,6 +120,26 @@
     LEFT JOIN
       `ia_header` AS g
     ON a.ia_no=g.ia_no
+    LEFT JOIN
+      (SELECT
+        y.pl_no           AS `pl_no`,
+        x.ia_no           AS `ia_no`,
+        y.warehouse_code  AS `warehouse_code`,
+        x.so_no           AS `so_no`,
+        x.brand_code      AS `brand_code`,
+        x.model_no        AS `model_no`
+      FROM
+        `pl_model` AS x
+      LEFT JOIN
+        `pl_header` AS y
+      ON
+        x.pl_no=y.pl_no) AS h
+    ON
+      a.ia_no=h.ia_no AND
+      IF(a.warehouse_code='', g.warehouse_code, a.warehouse_code)=h.warehouse_code AND
+      a.so_no=h.so_no AND
+      a.brand_code=h.brand_code AND
+      a.model_no=h.model_no
     WHERE
       a.qty IS NOT NULL
       $whereClause
@@ -105,6 +148,7 @@
       CONCAT(c.currency_code, '-', c.exchange_rate) ASC,
       c.discount ASC,
       c.tax ASC,
+      h.pl_no,
       a.brand_code ASC,
       a.model_no ASC,
       a.so_no ASC
@@ -120,6 +164,7 @@
     $discount = $allotment["discount"];
     $tax = $allotment["tax"];
     $warehouseCode = $allotment["warehouse_code"];
+    $plNo = $allotment["pl_no"];
     $allotmentModel = $allotment["so_no"] . "-" . $allotment["brand_code"] . "-" . $allotment["model_no"];
 
     $arrayPointer = &$allotments;
@@ -152,6 +197,11 @@
       $arrayPointer[$warehouseCode] = array();
     }
     $arrayPointer = &$arrayPointer[$warehouseCode];
+
+    if (!isset($arrayPointer[$plNo])) {
+      $arrayPointer[$plNo] = array();
+    }
+    $arrayPointer = &$arrayPointer[$plNo];
 
     if (!isset($arrayPointer[$allotmentModel])) {
       $arrayPointer[$allotmentModel] = array();

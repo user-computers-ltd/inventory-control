@@ -53,10 +53,6 @@
   text-overflow: ellipsis;
 }
 
-.ia-results .link {
-  text-decoration: none;
-}
-
 .ia-results .number {
   text-align: right;
 }

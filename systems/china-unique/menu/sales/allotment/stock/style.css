@@ -53,10 +53,6 @@
   text-overflow: ellipsis;
 }
 
-.stock-results .link {
-  text-decoration: none;
-}
-
 .stock-results .number {
   text-align: right;
 }

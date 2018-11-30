@@ -13,6 +13,7 @@
   box-sizing: border-box;
 }
 
+.so-customer-header .packing-list,
 .so-customer-header .currency,
 .so-customer-header .discount,
 .so-customer-header .tax,
@@ -20,6 +21,12 @@
   margin: 5px 10px;
   font-size: 13px;
   font-weight: bold;
+}
+
+.so-customer-header .currency,
+.so-customer-header .discount,
+.so-customer-header .tax,
+.so-customer-header .warehouse {
   float: right;
 }
 
@@ -44,10 +51,6 @@
 
 .so-customer-results tfoot th {
   border-top: 1px solid lightgray;
-}
-
-.so-customer-results .link {
-  text-decoration: none;
 }
 
 .so-customer-results .number {

@@ -17,10 +17,6 @@
   text-overflow: ellipsis;
 }
 
-.so-results .link {
-  text-decoration: none;
-}
-
 .so-results .number {
   text-align: right;
 }

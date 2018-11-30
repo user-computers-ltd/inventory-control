@@ -25,7 +25,7 @@
     SELECT
       DATE_FORMAT(a.so_date, '%d-%m-%Y')                                                  AS `date`,
       a.so_no                                                                             AS `so_no`,
-      CONCAT(a.debtor_code, ' - ', IFNULL(c.english_name, 'Unknown'))                     AS `debtor`,
+      IFNULL(c.english_name, 'Unknown')                                                   AS `debtor_name`,
       IFNULL(b.total_qty, 0)                                                              AS `qty`,
       IFNULL(b.total_qty_outstanding, 0)                                                  AS `outstanding_qty`,
       a.discount                                                                          AS `discount`,
@@ -85,14 +85,14 @@
         <table id="so-results">
           <colgroup>
             <col style="width: 70px">
-            <col style="width: 100px">
-            <col style="width: 100px">
             <col>
             <col>
-            <col>
-            <col>
-            <col>
-            <col>
+            <col style="width: 80px">
+            <col style="width: 80px">
+            <col style="width: 60px">
+            <col style="width: 60px">
+            <col style="width: 80px">
+            <col style="width: 80px">
           </colgroup>
           <thead>
             <tr></tr>
@@ -118,7 +118,7 @@
                 $soHeader = $soHeaders[$i];
                 $date = $soHeader["date"];
                 $soNo = $soHeader["so_no"];
-                $debtor = $soHeader["debtor"];
+                $debtorName = $soHeader["debtor_name"];
                 $qty = $soHeader["qty"];
                 $outstandingQty = $soHeader["outstanding_qty"];
                 $discount = $soHeader["discount"];
@@ -134,7 +134,7 @@
                   <tr>
                     <td title=\"$date\">$date</td>
                     <td title=\"$soNo\"><a class=\"link\" href=\"" . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?so_no=$soNo\">$soNo</a></td>
-                    <td title=\"$debtor\">$debtor</td>
+                    <td title=\"$debtorName\">$debtorName</td>
                     <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
                     <td title=\"$outstandingQty\" class=\"number\">" . number_format($outstandingQty) . "</td>
                     <td title=\"$discount\" class=\"number\">" . number_format($discount, 2) . "%</td>

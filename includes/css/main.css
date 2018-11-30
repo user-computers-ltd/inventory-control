@@ -8,6 +8,10 @@ h1 {
   text-align: center;
 }
 
+a {
+  text-decoration: none;
+}
+
 button {
   display: inline-block;
   margin: 2px;

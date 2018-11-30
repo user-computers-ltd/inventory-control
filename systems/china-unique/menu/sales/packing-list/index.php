@@ -52,6 +52,7 @@
               <thead>
                 <tr></tr>
                 <tr>
+                  <th>DO No. / On Hand</th>
                   <th>Order No.</th>
                   <th>Brand</th>
                   <th>Model No.</th>
@@ -65,21 +66,30 @@
                   $totalQty = 0;
                   $subtotalSum = 0;
                   $discount = $plHeader["discount"];
+                  $hasIncoming = false;
 
                   for ($i = 0; $i < count($plModels); $i++) {
                     $plModel = $plModels[$i];
+                    $iaNo = $plModel["ia_no"];
                     $soNo = $plModel["so_no"];
                     $brand = $plModel["brand"];
                     $modelNo = $plModel["model_no"];
                     $price = $plModel["price"];
                     $qty = $plModel["qty"];
                     $subtotal = $qty * $price;
+                    $status = "On Hand";
+
+                    if (assigned($iaNo)) {
+                      $status = $iaNo;
+                      $hasIncoming = true;
+                    }
 
                     $totalQty += $qty;
                     $subtotalSum += $subtotal;
 
                     echo "
                       <tr>
+                        <td title=\"$status\">$status</td>
                         <td title=\"$soNo\"><a class=\"link\" href=\"" . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?so_no=$soNo\">$soNo</a></td>
                         <td title=\"$brand\">$brand</td>
                         <td title=\"$modelNo\">$modelNo</td>
@@ -98,10 +108,12 @@
                     <td></td>
                     <td></td>
                     <td></td>
+                    <td></td>
                     <th></th>
                     <th class="number"><?php echo number_format($subtotalSum, 2); ?></th>
                   </tr>
                   <tr>
+                    <td></td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -111,6 +123,7 @@
                   </tr>
                 <?php endif ?>
                 <tr>
+                  <th></th>
                   <th></th>
                   <th></th>
                   <th></th>
@@ -134,7 +147,7 @@
               <button name="status" type="submit" value="SAVED">Save</button>
             <?php endif ?>
             <button name="status" type="submit" value="<?php echo $plHeader["status"]; ?>" formaction="<?php echo PACKING_LIST_PRINTOUT_URL . "?pl_no=" . $plHeader["pl_no"]; ?>">Print</button>
-            <?php if ($plHeader["status"] == "SAVED"): ?>
+            <?php if ($plHeader["status"] == "SAVED" && !$hasIncoming): ?>
               <button name="status" type="submit" value="POSTED">Post</button>
             <?php endif ?>
             <?php if ($plHeader["paid"] == "FALSE"): ?>
@@ -150,7 +163,7 @@
           <?php endif ?>
         </form>
       <?php else: ?>
-        <div id="pl-not-found">Proforma invoice not found</div>
+        <div id="pl-not-found"><?php echo PACKING_LIST_PRINTOUT_TITLE; ?> not found</div>
       <?php endif ?>
     </div>
   </body>

@@ -66,8 +66,15 @@
     $soHeader = query("SELECT *, DATE_FORMAT(so_date, '%Y-%m-%d') AS `so_date` FROM `so_header` WHERE so_no=\"$soNo\"");
 
     /* If a complete form is given, submit the sales order. */
-    if (assigned($soDate) && assigned($debtorCode) && assigned($currencyCode) && assigned($exchangeRate) && assigned($discount) && assigned($tax) && assigned($remarks) && assigned($status)) {
-
+    if (
+      assigned($soDate) &&
+      assigned($debtorCode) &&
+      assigned($currencyCode) &&
+      assigned($exchangeRate) &&
+      assigned($discount) &&
+      assigned($tax) &&
+      assigned($status)
+    ) {
       /* Upon submission, if the sales number already exists, update the existing sales order header.
          Also delete all existing sales models, new ones will be inserted afterwards. */
       if (count($soHeader) > 0) {
@@ -97,12 +104,31 @@
             `so_header`
               (so_no, so_date, debtor_code, currency_code, exchange_rate, discount, tax, status, remarks)
             VALUES
-              (\"$soNo\", \"$soDate\", \"$debtorCode\", \"$currencyCode\", \"$exchangeRate\", \"$discount\", \"$tax\", \"$status\", \"$remarks\")
+              (
+                \"$soNo\",
+                \"$soDate\",
+                \"$debtorCode\",
+                \"$currencyCode\",
+                \"$exchangeRate\",
+                \"$discount\",
+                \"$tax\",
+                \"$status\",
+                \"$remarks\"
+              )
         ");
       }
 
       /* Create the sales order models as they are given. */
-      if (assigned($brandCodes) && assigned($modelNos) && assigned($prices) && assigned($qtys) && count($brandCodes) > 0 && count($modelNos) > 0 && count($prices) > 0 && count($qtys) > 0) {
+      if (
+        assigned($brandCodes) &&
+        assigned($modelNos) &&
+        assigned($prices) &&
+        assigned($qtys) &&
+        count($brandCodes) > 0 &&
+        count($modelNos) > 0 &&
+        count($prices) > 0 &&
+        count($qtys) > 0
+      ) {
         $values = array();
 
         for ($i = 0; $i < count($brandCodes); $i++) {
@@ -135,7 +161,20 @@
       $remarks = $soHeader[0]["remarks"];
       $status = $soHeader[0]["status"];
 
-      $soModels = query("SELECT so_index, brand_code, model_no, price, qty FROM `so_model` WHERE so_no=\"$soNo\" ORDER BY so_index ASC");
+      $soModels = query("
+        SELECT
+          so_index,
+          brand_code,
+          model_no,
+          price,
+          qty
+        FROM
+          `so_model`
+        WHERE
+          so_no=\"$soNo\"
+        ORDER BY
+        so_index ASC
+      ");
 
       $brandCodes = array_map(function ($s) { return $s["brand_code"]; }, $soModels);
       $modelNos = array_map(function ($s) { return $s["model_no"]; }, $soModels);
