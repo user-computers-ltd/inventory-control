@@ -223,7 +223,11 @@
 
         for (var i = 0; i < otherIaNos.length; i++) {
           var code = otherIaNos[i];
-          var allotment = allotments[code] && allotments[code][brandCode] && allotments[code][brandCode][modelNo] && allotments[code][brandCode][modelNo][soNo];
+          var allotment =
+            allotments[code] &&
+            allotments[code][brandCode] &&
+            allotments[code][brandCode][modelNo] &&
+            allotments[code][brandCode][modelNo][soNo];
 
           if (allotment && allotment["qty"]) {
             totalQty += parseFloat(allotment["qty"]);
@@ -235,12 +239,20 @@
 
       function getOtherSoAllottedQty(iaNo, brandCode, modelNo, soNo) {
         var totalQty = 0;
-        var modelAllotments = allotments[iaNo] && allotments[iaNo][brandCode] && allotments[iaNo][brandCode][modelNo] && allotments[iaNo][brandCode][modelNo];
+        var modelAllotments =
+          allotments[iaNo] &&
+          allotments[iaNo][brandCode] &&
+          allotments[iaNo][brandCode][modelNo] &&
+          allotments[iaNo][brandCode][modelNo];
         var otherSoNos = Object.keys(modelAllotments).filter(function (i) { return i !== soNo; });
 
         for (var i = 0; i < otherSoNos.length; i++) {
           var code = otherSoNos[i];
-          var allotment = allotments[iaNo] && allotments[iaNo][brandCode] && allotments[iaNo][brandCode][modelNo] && allotments[iaNo][brandCode][modelNo][code];
+          var allotment =
+            allotments[iaNo] &&
+            allotments[iaNo][brandCode] &&
+            allotments[iaNo][brandCode][modelNo] &&
+            allotments[iaNo][brandCode][modelNo][code];
 
           if (allotment && allotment["qty"]) {
             totalQty += parseFloat(allotment["qty"]);
@@ -287,7 +299,12 @@
       }
 
       function renderAllotment(iaNo, brandCode, modelNo, soNo) {
-        if (allotments[iaNo] && allotments[iaNo][brandCode] && allotments[iaNo][brandCode][modelNo] && allotments[iaNo][brandCode][modelNo][soNo]) {
+        if (
+          allotments[iaNo] &&
+          allotments[iaNo][brandCode] &&
+          allotments[iaNo][brandCode][modelNo] &&
+          allotments[iaNo][brandCode][modelNo][soNo]
+        ) {
           var iaModelSelector = ".ia-results[data-ia_no=\"" + iaNo + "\"] .ia-model[data-brand_code=\"" + brandCode + "\"][data-model_no=\"" + modelNo + "\"]";
           var outstandingQtyElement = document.querySelector(iaModelSelector + " .outstanding-qty[data-so_no=\"" + soNo + "\"]");
           var allotQtyElement = document.querySelector(iaModelSelector + " .allot-qty[data-so_no=\"" + soNo + "\"]");

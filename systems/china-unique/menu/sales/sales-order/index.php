@@ -402,10 +402,6 @@
             render();
           }
 
-          function printSalesOrder() {
-            window.open("<?php echo SALES_ORDER_PRINTOUT_URL; ?>?" + serialize(formElement));
-          }
-
           window.onload = function () {
             document.querySelector("#so-form").reset();
 

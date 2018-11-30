@@ -28,7 +28,7 @@
               <select name="filter_debtor_code[]" multiple>
                 <?php
                   foreach ($debtors as $code => $name) {
-                    $selected = assigned($debtorCodes) && in_array($code, $filterDebtorCodes) ? "selected" : "";
+                    $selected = assigned($filterDebtorCodes) && in_array($code, $filterDebtorCodes) ? "selected" : "";
                     echo "<option value=\"$code\" $selected>$code - $name</option>";
                   }
                 ?>
@@ -51,14 +51,16 @@
               $currencyAllotmentModels = $currencyAllotments["models"];
 
               foreach ($currencyAllotmentModels as $discount => $discountAllotments) {
+                $discountFactor = (100 - $discount) / 100;
 
                 foreach ($discountAllotments as $tax => $taxAllotments) {
+                  $taxFactor = (100 + $tax) / 100;
 
                   foreach ($taxAllotments as $warehouseCode => $warehouseAllotments) {
                     echo "
                       <form method=\"post\">
                         <div class=\"so-customer-header\">
-                          <button type=\"submit\">Create Packing List</button>
+                          <button type=\"submit\">Create " . PACKING_LIST_PRINTOUT_TITLE . "</button>
                           <span class=\"currency\">$currencyCode @ $exchangeRate</span>
                           <span class=\"discount\">Discount: $discount%</span>
                           <span class=\"warehouse\">Warehouse: $warehouseCode</span>
@@ -75,14 +77,15 @@
                       echo "
                         <table class=\"so-customer-results\">
                           <colgroup>
-                            <col style=\"width: 90px\">
-                            <col style=\"width: 70px\">
                             <col>
-                            <col style=\"width: 90px\">
-                            <col style=\"width: 90px\">
-                            <col style=\"width: 90px\">
-                            <col style=\"width: 90px\">
-                            <col style=\"width: 90px\">
+                            <col style=\"width: 70px\">
+                            <col style=\"width: 120px\">
+                            <col>
+                            <col style=\"width: 80px\">
+                            <col style=\"width: 80px\">
+                            <col style=\"width: 80px\">
+                            <col style=\"width: 80px\">
+                            <col style=\"width: 80px\">
                           </colgroup>
                           <thead>
                             <tr></tr>
@@ -93,6 +96,7 @@
                               <th>Order No.</th>
                               <th class=\"number\">Outstanding Qty</th>
                               <th class=\"number\">Allotted Qty</th>
+                              <th class=\"number\">Price</th>
                               <th class=\"number\">Allotted Subtotal</th>
                               <th class=\"number\">$InBaseCurrCol</th>
                             </tr>
@@ -120,9 +124,9 @@
                           $warehouseCode = $allotment["warehouse_code"];
                           $subTotal = $price * $qty;
                           $subTotalBase = $subTotal * $exchangeRate;
-                          $unitPrice = $allotment["unit_price"];
-                          $totalCost = $unitPrice * $qty;
-                          $margin = 100 - $price * (100 - $discount) / 100 * $exchangeRate / $unitPrice * 100;
+                          $costAverage = $allotment["cost_average"];
+                          $totalCost = $costAverage * $qty;
+                          $margin = 100 - ($price * $discountFactor / $taxFactor * $exchangeRate / $costAverage) * 100;
 
                           $totalOutstanding += $outstandingQty;
                           $totalAllottedQty += $qty;
@@ -136,7 +140,7 @@
                               $modelNo
                             </td>
                             <td rowspan=\"" . count($models) . "\" title=\"$soNo\">
-                              <a class=\"link\" href=\"" . SALES_ORDER_PRINTOUT_URL . "?so_no=$soNo\">$soNo</a>
+                              <a class=\"link\" href=\"" . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?so_no=$soNo\">$soNo</a>
                             </td>
                             <td rowspan=\"" . count($models) . "\" class=\"number\" title=\"$outstandingQty\">
                             " . number_format($outstandingQty) . "
@@ -158,6 +162,7 @@
                                 <input name=\"price[]\" value=\"$price\" hidden />
                                 <input name=\"qty[]\" value=\"$qty\" hidden />
                               </td>
+                              <td class=\"number\">" . number_format($price, 2) . "</td>
                               <td class=\"number\">" . number_format($subTotal, 2) . "</td>
                               <td class=\"number\">" . number_format($subTotalBase, 2) . "</td>
                             </tr>
@@ -168,15 +173,34 @@
                       echo "
                           </tbody>
                           <tfoot>
+                      ";
+
+                      if ($discount > 0) {
+                        echo "
+                          <tr>
+                            <td colspan=\"6\"></td>
+                            <td></td>
+                            <th class=\"number\">" . number_format($totalAmt, 2) . "</th>
+                            <td></td>
+                          </tr>
+                          <tr>
+                            <td colspan=\"6\"></td>
+                            <td class=\"number\">Disc. $discount%</td>
+                            <td class=\"number\">" . number_format($totalAmt * $discount / 100, 2) . "</td>
+                            <td></td>
+                          </tr>
+                        ";
+                      }
+
+                      echo "
                             <tr>
-                              <th></th>
-                              <th></th>
-                              <th></th>
+                              <td colspan=\"3\"></th>
                               <th class=\"number\">Total:</th>
                               <th class=\"number\">" . number_format($totalOutstanding) . "</th>
                               <th class=\"number\">" . number_format($totalAllottedQty) . "</th>
-                              <th class=\"number\">" . number_format($totalAmt, 2) . "</th>
-                              <th class=\"number\">" . number_format($totalAmt * $exchangeRate, 2) . "</th>
+                              <th></th>
+                              <th class=\"number\">" . number_format($totalAmt * $discountFactor, 2) . "</th>
+                              <th class=\"number\">" . number_format($totalAmt * $discountFactor * $exchangeRate, 2) . "</th>
                             </tr>
                           </tfoot>
                         </table>

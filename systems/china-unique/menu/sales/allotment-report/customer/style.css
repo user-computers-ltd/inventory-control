@@ -42,6 +42,10 @@
   vertical-align: top;
 }
 
+.so-customer-results tfoot th {
+  border-top: 1px solid lightgray;
+}
+
 .so-customer-results .link {
   text-decoration: none;
 }

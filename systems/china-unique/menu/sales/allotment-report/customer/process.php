@@ -76,7 +76,7 @@
       b.qty_outstanding                                                                       AS `outstanding_qty`,
       a.qty                                                                                   AS `qty`,
       a.ia_no                                                                                 AS `ia_no`,
-      d.cost_average                                                                          AS `unit_price`
+      d.cost_average                                                                          AS `cost_average`
     FROM
       `so_allotment` AS a
     LEFT JOIN
@@ -105,9 +105,9 @@
       CONCAT(c.currency_code, '-', c.exchange_rate) ASC,
       c.discount ASC,
       c.tax ASC,
-      a.so_no ASC,
       a.brand_code ASC,
-      a.model_no ASC
+      a.model_no ASC,
+      a.so_no ASC
   ");
 
   $allotments = array();

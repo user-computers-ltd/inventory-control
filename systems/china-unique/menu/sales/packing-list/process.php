@@ -191,8 +191,7 @@
         b.name            AS `brand`,
         a.model_no        AS `model_no`,
         a.price           AS `price`,
-        SUM(a.qty)        AS `qty`,
-        MIN(a.pl_index)   AS `index`
+        SUM(a.qty)        AS `qty`
       FROM
         `pl_model` AS a
       LEFT JOIN
@@ -201,9 +200,10 @@
       WHERE
         a.pl_no=\"$plNo\"
       GROUP BY
-        a.so_no, b.name, a.model_no, a.price
+        a.brand_code, a.model_no, a.so_no, a.price
       ORDER BY
-        MIN(a.pl_index) ASC
+        a.brand_code ASC,
+        a.model_no ASC
     ");
   }
 ?>

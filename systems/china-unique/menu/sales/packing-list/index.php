@@ -80,7 +80,7 @@
 
                     echo "
                       <tr>
-                        <td title=\"$soNo\"><a class=\"link\" href=\"" . SALES_ORDER_PRINTOUT_URL . "?so_no=$soNo\">$soNo</a></td>
+                        <td title=\"$soNo\"><a class=\"link\" href=\"" . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?so_no=$soNo\">$soNo</a></td>
                         <td title=\"$brand\">$brand</td>
                         <td title=\"$modelNo\">$modelNo</td>
                         <td title=\"$price\" class=\"number\">" . number_format($price, 2) . "</td>

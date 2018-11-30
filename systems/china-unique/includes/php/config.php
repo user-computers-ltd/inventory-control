@@ -6,7 +6,7 @@
   /* System information configuration. */
   define("MYSQL_DATABASE", "china-unique");
   define("TITLE", "華裔針車（深圳）有限公司");
-  define("COMPANY_NAME_ENG", "China Unique (Shenzhen) Co., Ltd.");
+  define("COMPANY_NAME_ENG", "China Unique Sewing Machine (Shenzhen) Ltd.");
   define("COMPANY_NAME_CHI", "華裔針車（深圳）有限公司");
   define("COMPANY_TAX", 16);
   define("COMPANY_CURRENCY", "RMB");

@@ -1,26 +1,26 @@
 <?php
-  $iaNos = $_POST["ia_no"];
+  $warehouseCodes = $_POST["warehouse_code"];
   $soNos = $_POST["so_no"];
   $brandCodes = $_POST["brand_code"];
   $modelNos = $_POST["model_no"];
   $qtys = $_POST["qty"];
 
   /* If a complete form is given, submit and update all IA allotments. */
-  if (assigned($iaNos) && assigned($soNos) && assigned($brandCodes) && assigned($modelNos) && assigned($qtys)) {
-    $iaNoClause = join(" OR ", array_map(function ($iaNo) { return "ia_no=\"$iaNo\""; }, $iaNos));
-    query("DELETE FROM `so_allotment` WHERE $iaNoClause");
+  if (assigned($warehouseCodes) && assigned($soNos) && assigned($brandCodes) && assigned($modelNos) && assigned($qtys)) {
+    $whereClause = join(" OR ", array_map(function ($code) { return "warehouse_code=\"$code\""; }, $warehouseCodes));
+    query("DELETE FROM `so_allotment` WHERE $whereClause");
 
     $values = array();
 
-    for ($i = 0; $i < count($iaNos); $i++) {
-      $iaNo = $iaNos[$i];
+    for ($i = 0; $i < count($warehouseCodes); $i++) {
+      $warehouseCode = $warehouseCodes[$i];
       $soNo = $soNos[$i];
       $brandCode = $brandCodes[$i];
       $modelNo = $modelNos[$i];
       $qty = $qtys[$i];
 
       if ($qty > 0) {
-        array_push($values, "(\"$iaNo\", \"\", \"$soNo\", \"$brandCode\", \"$modelNo\", \"$qty\")");
+        array_push($values, "(\"\", \"$warehouseCode\", \"$soNo\", \"$brandCode\", \"$modelNo\", \"$qty\")");
       }
     }
 
@@ -32,14 +32,14 @@
     " . join(", ", $values));
   }
 
-  $filterIaNos = $_GET["filter_ia_no"];
+  $filterWarehouseCodes = $_GET["filter_warehouse_code"];
   $filterSoNos = $_GET["filter_so_no"];
 
   $whereClause = "";
 
-  if (assigned($filterIaNos) && count($filterIaNos) > 0) {
+  if (assigned($filterWarehouseCodes) && count($filterWarehouseCodes) > 0) {
     $whereClause = $whereClause . "
-      AND (" . join(" OR ", array_map(function ($i) { return "a.ia_no='$i'"; }, $filterIaNos)) . ")";
+      AND (" . join(" OR ", array_map(function ($i) { return "a.warehouse_code='$i'"; }, $filterWarehouseCodes)) . ")";
   }
 
   $whereSoModelClause = "";
@@ -51,26 +51,20 @@
 
   $results = query("
     SELECT
-      b.creditor_code                     AS `creditor_code`,
-      c.english_name                      AS `creditor_name`,
-      a.ia_no                             AS `ia_no`,
-      DATE_FORMAT(b.ia_date, '%d-%m-%Y')  AS `date`,
-      a.ia_index                          AS `index`,
-      d.code                              AS `brand_code`,
-      d.name                              AS `brand_name`,
-      a.model_no                          AS `model_no`,
-      a.qty                               AS `qty`
+      b.code                                AS `warehouse_code`,
+      b.name                                AS `warehouse_name`,
+      c.code                                AS `brand_code`,
+      c.name                                AS `brand_name`,
+      a.model_no                            AS `model_no`,
+      a.qty                                 AS `qty`
     FROM
-      `ia_model` AS a
+      `stock` AS a
     LEFT JOIN
-      `ia_header` AS b
-    ON a.ia_no=b.ia_no
+      `warehouse` AS b
+    ON a.warehouse_code=b.code
     LEFT JOIN
-      `creditor` AS c
-    ON b.creditor_code=c.code
-    LEFT JOIN
-      `brand` AS d
-    ON a.brand_code=d.code
+      `brand` AS c
+    ON a.brand_code=c.code
     LEFT JOIN
       (SELECT
         brand_code            AS `brand_code`,
@@ -82,60 +76,49 @@
         qty_outstanding > 0
         $whereSoModelClause
       GROUP BY
-        brand_code, model_no) AS e
-    ON a.brand_code=e.brand_code AND a.model_no=e.model_no
+        brand_code, model_no) AS d
+    ON a.brand_code=d.brand_code AND a.model_no=d.model_no
     WHERE
-      b.status=\"DO\"
+      a.qty > 0 AND d.qty_outstanding > 0
       $whereClause
     ORDER BY
-      b.creditor_code ASC,
-      a.ia_no ASC,
-      a.ia_index ASC,
+      b.code ASC,
+      c.code ASC,
       a.model_no ASC
   ");
 
-  $iaResults = array();
+  $stockResults = array();
 
   foreach ($results as $model) {
-    $creditorCode = $model["creditor_code"];
-    $creditorName = $model["creditor_name"];
-    $iaNo = $model["ia_no"];
-    $date = $model["date"];
-    $brandCode = $model["brand_code"];
-    $modelNo = $model["model_no"];
+    $warehouseCode = $model["warehouse_code"];
+    $warehouseName = $model["warehouse_name"];
 
-    $arrayPointer = &$iaResults;
+    $arrayPointer = &$stockResults;
 
-    if (!isset($arrayPointer[$creditorCode])) {
-      $arrayPointer[$creditorCode] = array();
-      $arrayPointer[$creditorCode]["name"] = $creditorName;
-      $arrayPointer[$creditorCode]["models"] = array();
+    if (!isset($arrayPointer[$warehouseCode])) {
+      $arrayPointer[$warehouseCode] = array();
+      $arrayPointer[$warehouseCode]["name"] = $warehouseName;
+      $arrayPointer[$warehouseCode]["models"] = array();
     }
-    $arrayPointer = &$arrayPointer[$creditorCode]["models"];
 
-    if (!isset($arrayPointer[$iaNo])) {
-      $arrayPointer[$iaNo] = array();
-      $arrayPointer[$iaNo]["date"] = $date;
-      $arrayPointer[$iaNo]["models"] = array();
-    }
-    $arrayPointer = &$arrayPointer[$iaNo]["models"];
+    $arrayPointer = &$arrayPointer[$warehouseCode]["models"];
 
     array_push($arrayPointer, $model);
   }
 
-  $iaModels = array();
+  $stockModels = array();
 
   foreach ($results as $model) {
-    $iaNo = $model["ia_no"];
+    $warehouseCode = $model["warehouse_code"];
     $brandCode = $model["brand_code"];
     $modelNo = $model["model_no"];
 
-    $arrayPointer = &$iaModels;
+    $arrayPointer = &$stockModels;
 
-    if (!isset($arrayPointer[$iaNo])) {
-      $arrayPointer[$iaNo] = array();
+    if (!isset($arrayPointer[$warehouseCode])) {
+      $arrayPointer[$warehouseCode] = array();
     }
-    $arrayPointer = &$arrayPointer[$iaNo];
+    $arrayPointer = &$arrayPointer[$warehouseCode];
 
     if (!isset($arrayPointer[$brandCode])) {
       $arrayPointer[$brandCode] = array();
@@ -218,7 +201,7 @@
 
   $results = query("
     SELECT
-      a.ia_no       AS `ia_no`,
+      a.warehouse_code       AS `warehouse_code`,
       a.so_no       AS `so_no`,
       a.brand_code  AS `brand_code`,
       a.model_no    AS `model_no`,
@@ -226,7 +209,7 @@
     FROM
       `so_allotment` AS a
     ORDER BY
-      a.ia_no ASC,
+      a.warehouse_code ASC,
       a.brand_code ASC,
       a.model_no ASC,
       a.so_no ASC
@@ -235,17 +218,17 @@
   $allotments = array();
 
   foreach ($results as $allotment) {
-    $iaNo = $allotment["ia_no"];
+    $warehouseCode = $allotment["warehouse_code"];
     $brandCode = $allotment["brand_code"];
     $modelNo = $allotment["model_no"];
     $soNo = $allotment["so_no"];
 
     $arrayPointer = &$allotments;
 
-    if (!isset($arrayPointer[$iaNo])) {
-      $arrayPointer[$iaNo] = array();
+    if (!isset($arrayPointer[$warehouseCode])) {
+      $arrayPointer[$warehouseCode] = array();
     }
-    $arrayPointer = &$arrayPointer[$iaNo];
+    $arrayPointer = &$arrayPointer[$warehouseCode];
 
     if (!isset($arrayPointer[$brandCode])) {
       $arrayPointer[$brandCode] = array();
@@ -265,16 +248,14 @@
     $arrayPointer = $allotment;
   }
 
-  $ias = query("
+  $warehouses = query("
     SELECT
-      ia_no                               AS `ia_no`,
-      DATE_FORMAT(ia_date, '%d-%m-%Y')    AS `date`
+      code    AS `warehouse_code`,
+      name    AS `warehouse_name`
     FROM
-      `ia_header`
-    WHERE
-      status=\"DO\"
+      `warehouse`
     ORDER BY
-      ia_no ASC
+      name ASC
   ");
 
   $sos = query("

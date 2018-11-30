@@ -133,7 +133,7 @@
                 echo "
                   <tr>
                     <td title=\"$date\">$date</td>
-                    <td title=\"$soNo\"><a class=\"link\" href=\"" . SALES_ORDER_PRINTOUT_URL . "?so_no=$soNo\">$soNo</a></td>
+                    <td title=\"$soNo\"><a class=\"link\" href=\"" . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?so_no=$soNo\">$soNo</a></td>
                     <td title=\"$debtor\">$debtor</td>
                     <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
                     <td title=\"$outstandingQty\" class=\"number\">" . number_format($outstandingQty) . "</td>
