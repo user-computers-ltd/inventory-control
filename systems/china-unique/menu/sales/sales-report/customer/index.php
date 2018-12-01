@@ -67,7 +67,7 @@
       `so_header` AS a
     LEFT JOIN
       `debtor` AS b
-      ON a.debtor_code=b.code
+    ON a.debtor_code=b.code
     ORDER BY
       a.debtor_code ASC
   ");

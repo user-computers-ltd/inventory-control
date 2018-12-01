@@ -23,6 +23,20 @@
     return isset($data) && $data != "";
   }
 
+  function concat($array1, $array2) {
+    $array3 = array();
+
+    foreach ($array1 as $element) {
+      array_push($array3, $element);
+    }
+
+    foreach ($array2 as $element) {
+      array_push($array3, $element);
+    }
+
+    return $array3;
+  }
+
   function consoleLog($data) {
     echo "<script>";
     echo "console.log(" . json_encode($data) . ")";

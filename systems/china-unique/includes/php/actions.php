@@ -51,7 +51,7 @@
         FROM
           `stock`
         WHERE
-          warechouse_code=\"$warehouseCode\" AND brand_code=\"$brandCode\" AND model_no=\"$modelNo\"
+          warehouse_code=\"$warehouseCode\" AND brand_code=\"$brandCode\" AND model_no=\"$modelNo\"
       ")[0]["qty_in_warehouse"];
 
       $stockChange = strpos($transactionCode, "R") === 0 ? $qty : -$qty;
@@ -90,7 +90,7 @@
           SET
             qty=\"$newQty\"
           WHERE
-            warechouse_code=\"$warehouseCode\" AND brand_code=\"$brandCode\" AND model_no=\"$modelNo\"
+            warehouse_code=\"$warehouseCode\" AND brand_code=\"$brandCode\" AND model_no=\"$modelNo\"
         ");
       }
 
@@ -141,7 +141,7 @@
         $transactionValues
     ");
 
-    execute($queries);
+    return $queries;
   }
 
   function postPackingList($plNo) {
@@ -174,20 +174,24 @@
       WHERE
         pl_no=\"$plNo\"
       GROUP BY
-        so_no, name, model_no, price
+        so_no, brand_code, model_no, price
     ");
 
     $allotmentRefs = query("
       SELECT
-        ia_no             AS `ia_no`,
-        warehouse_code    AS `warehouse_code`,
-        so_no             AS `so_no`,
-        brand_code        AS `brand_code`,
-        model_no          AS `model_no`
+        b.warehouse_code    AS `warehouse_code`,
+        a.so_no             AS `so_no`,
+        a.brand_code        AS `brand_code`,
+        a.model_no          AS `model_no`,
+        a.price             AS `price`,
+        a.qty               AS `qty`
       FROM
-        `pl_model`
+        `pl_model` AS a
+      LEFT JOIN
+        `pl_header` AS b
+      ON a.pl_no=b.pl_no
       WHERE
-        pl_no=\"$plNo\"");
+        a.pl_no=\"$plNo\"");
 
     $transactionRefs = query("
       SELECT
@@ -223,25 +227,24 @@
 
     /* Remove corresponding allotments. */
     foreach ($allotmentRefs as $allotmentRef) {
-      $iaNo = $allotmentRef["ia_no"];
       $warehouseCode = $allotmentRef["warehouse_code"];
       $soNo = $allotmentRef["so_no"];
       $brandCode = $allotmentRef["brand_code"];
       $modelNo = $allotmentRef["model_no"];
+      $price = $allotmentRef["price"];
+      $qty = $allotmentRef["qty"];
 
       array_push($queries, "
         DELETE FROM
           `so_allotment`
         WHERE
-          ia_no=\"$iaNo\" AND
+          ia_no=\"\" AND
           warehouse_code=\"$warehouseCode\" AND
           so_no=\"$soNo\" AND
           brand_code=\"$brandCode\" AND
           model_no=\"$modelNo\"
       ");
     }
-
-    execute($queries);
 
     /* Insert corresponding transactions. */
     $brandCodes = array();
@@ -261,7 +264,7 @@
       array_push($qtys, $qty);
     }
 
-    postTransactions(
+    $postTransactionQueries = postTransactions(
       $plNo,
       "S2",
       $plHeader["debtor_code"],
@@ -275,11 +278,15 @@
       $prices,
       $qtys
     );
+
+    return concat($queries, $postTransactionQueries);
   }
 
   function processDOStockIn() {
-    updatePostedIncomingAllotments();
-    updateOnHandPackingListModels();
+    $allotmentQueries = updatePostedIncomingAllotments();
+    $packingListQueries = updateOnHandPackingListModels();
+
+    return concat($allotmentQueries, $packingListQueries);
   }
 
   function updatePostedIncomingAllotments() {
@@ -373,7 +380,7 @@
       }
     }
 
-    execute($queries);
+    return $queries;
   }
 
   function updateOnHandPackingListModels() {
@@ -480,6 +487,6 @@
       }
     }
 
-    execute($queries);
+    return $queries;
   }
 ?>

@@ -75,77 +75,89 @@
       assigned($tax) &&
       assigned($status)
     ) {
-      /* Upon submission, if the sales number already exists, update the existing sales order header.
-         Also delete all existing sales models, new ones will be inserted afterwards. */
-      if (count($soHeader) > 0) {
-        query("
-          UPDATE
-            `so_header`
-          SET
-            so_date=\"$soDate\",
-            debtor_code=\"$debtorCode\",
-            currency_code=\"$currencyCode\",
-            exchange_rate=\"$exchangeRate\",
-            discount=\"$discount\",
-            tax=\"$tax\",
-            remarks=\"$remarks\",
-            status=\"$status\"
-          WHERE
-            so_no=\"$soNo\"
-        ");
 
-        query("DELETE FROM `so_model` WHERE so_no=\"$soNo\"");
-      }
+      /* Remove all the previous sales models first. */
+      query("DELETE FROM `so_model` WHERE so_no=\"$soNo\"");
 
-      /* If the sales number does not exist create as a new sales order. */
-      else {
-        query("
-          INSERT INTO
-            `so_header`
-              (so_no, so_date, debtor_code, currency_code, exchange_rate, discount, tax, status, remarks)
-            VALUES
-              (
-                \"$soNo\",
-                \"$soDate\",
-                \"$debtorCode\",
-                \"$currencyCode\",
-                \"$exchangeRate\",
-                \"$discount\",
-                \"$tax\",
-                \"$status\",
-                \"$remarks\"
-              )
-        ");
-      }
+      if ($status == "DELETED") {
+        query("DELETE FROM `so_header` WHERE so_no=\"$soNo\"");
 
-      /* Create the sales order models as they are given. */
-      if (
-        assigned($brandCodes) &&
-        assigned($modelNos) &&
-        assigned($prices) &&
-        assigned($qtys) &&
-        count($brandCodes) > 0 &&
-        count($modelNos) > 0 &&
-        count($prices) > 0 &&
-        count($qtys) > 0
-      ) {
-        $values = array();
-
-        for ($i = 0; $i < count($brandCodes); $i++) {
-          $brandCode = $brandCodes[$i];
-          $modelNo = $modelNos[$i];
-          $price = $prices[$i];
-          $qty = $qtys[$i];
-
-          array_push($values, "(\"$soNo\", \"$i\", \"$brandCode\", \"$modelNo\", \"$price\", \"$qty\", \"$qty\")");
+        header("Location: " . SALES_ORDER_SAVED_URL);
+      } else {
+        /* Upon submission, if the sales number already exists, update the existing sales order header.
+           Also delete all existing sales models, new ones will be inserted afterwards. */
+        if (count($soHeader) > 0) {
+          query("
+            UPDATE
+              `so_header`
+            SET
+              so_date=\"$soDate\",
+              debtor_code=\"$debtorCode\",
+              currency_code=\"$currencyCode\",
+              exchange_rate=\"$exchangeRate\",
+              discount=\"$discount\",
+              tax=\"$tax\",
+              remarks=\"$remarks\",
+              status=\"$status\"
+            WHERE
+              so_no=\"$soNo\"
+          ");
         }
 
-        query("
-          INSERT INTO
-            `so_model`
-              (so_no, so_index, brand_code, model_no, price, qty, qty_outstanding)
-            VALUES
-        " . join(", ", $values));
+        /* If the sales number does not exist create as a new sales order. */
+        else {
+          query("
+            INSERT INTO
+              `so_header`
+                (so_no, so_date, debtor_code, currency_code, exchange_rate, discount, tax, status, remarks)
+              VALUES
+                (
+                  \"$soNo\",
+                  \"$soDate\",
+                  \"$debtorCode\",
+                  \"$currencyCode\",
+                  \"$exchangeRate\",
+                  \"$discount\",
+                  \"$tax\",
+                  \"$status\",
+                  \"$remarks\"
+                )
+          ");
+        }
+
+        /* Create the sales order models as they are given. */
+        if (
+          assigned($brandCodes) &&
+          assigned($modelNos) &&
+          assigned($prices) &&
+          assigned($qtys) &&
+          count($brandCodes) > 0 &&
+          count($modelNos) > 0 &&
+          count($prices) > 0 &&
+          count($qtys) > 0
+        ) {
+          $values = array();
+
+          for ($i = 0; $i < count($brandCodes); $i++) {
+            $brandCode = $brandCodes[$i];
+            $modelNo = $modelNos[$i];
+            $price = $prices[$i];
+            $qty = $qtys[$i];
+
+            array_push($values, "(\"$soNo\", \"$i\", \"$brandCode\", \"$modelNo\", \"$price\", \"$qty\", \"$qty\")");
+          }
+
+          query("
+            INSERT INTO
+              `so_model`
+                (so_no, so_index, brand_code, model_no, price, qty, qty_outstanding)
+              VALUES
+          " . join(", ", $values));
+        }
+
+        if ($status == "POSTED") {
+          header("Location: " . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?so_no=$soNo");
+        }
       }
     }
 

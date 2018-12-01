@@ -24,12 +24,14 @@
       }
     }
 
-    query("
-      INSERT INTO
-        `so_allotment`
-          (ia_no, warehouse_code, so_no, brand_code, model_no, qty)
-        VALUES
-    " . join(", ", $values));
+    if (count($values) > 0) {
+      query("
+        INSERT INTO
+          `so_allotment`
+            (ia_no, warehouse_code, so_no, brand_code, model_no, qty)
+          VALUES
+      " . join(", ", $values));
+    }
   }
 
   $filterIaNos = $_GET["filter_ia_no"];
@@ -181,7 +183,7 @@
       `debtor` AS c
     ON b.debtor_code=c.code
     WHERE
-      a.qty_outstanding > 0
+      a.qty_outstanding > 0 AND b.status=\"POSTED\"
       $whereClause
     ORDER BY
       a.brand_code ASC,
@@ -218,13 +220,22 @@
 
   $results = query("
     SELECT
-      a.ia_no       AS `ia_no`,
-      a.so_no       AS `so_no`,
-      a.brand_code  AS `brand_code`,
-      a.model_no    AS `model_no`,
-      a.qty         AS `qty`
+      IFNULL(b.pl_no, '')     AS `pl_no`,
+      a.ia_no                 AS `ia_no`,
+      a.so_no                 AS `so_no`,
+      a.brand_code            AS `brand_code`,
+      a.model_no              AS `model_no`,
+      a.qty                   AS `qty`
     FROM
       `so_allotment` AS a
+    LEFT JOIN
+      `pl_model` AS b
+    ON
+      a.ia_no=b.ia_no AND
+      a.so_no=b.so_no AND
+      a.brand_code=b.brand_code AND
+      a.model_no=b.model_no AND
+      a.qty=b.qty
     ORDER BY
       a.ia_no ASC,
       a.brand_code ASC,
@@ -277,14 +288,28 @@
       ia_no ASC
   ");
 
+  $filterWhereClause = "";
+
+  if (assigned($filterIaNos) && count($filterIaNos) > 0) {
+    $filterWhereClause = $filterWhereClause . "
+      AND (" . join(" OR ", array_map(function ($i) { return "c.ia_no='$i'"; }, $filterIaNos)) . ")";
+  }
+
   $sos = query("
     SELECT DISTINCT
-      so_no   AS `so_no`
+      a.so_no   AS `so_no`
     FROM
-      `so_model`
+      `so_model` AS a
+    LEFT JOIN
+      `so_header` AS b
+    ON a.so_no=b.so_no
+    LEFT JOIN
+      `ia_model` AS c
+    ON a.brand_code=c.brand_code AND a.model_no=c.model_no
     WHERE
-      qty_outstanding > 0
+      a.qty_outstanding > 0 AND b.status=\"POSTED\"
+      $filterWhereClause
     ORDER BY
-      so_no ASC
+      a.so_no ASC
   ");
 ?>

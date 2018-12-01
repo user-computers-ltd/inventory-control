@@ -142,7 +142,7 @@
                         <td rowspan=\"" . count($matchedModels) . "\" class=\"number\">$qty</td>
                       " : "";
                       $soColumns = isset($soNo) ? "
-                        <td title=\"$soNo\">$soNo</td>
+                        <td title=\"$soNo\"><a href=\"" . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?so_no=$soNo\">$soNo</a></td>
                         <td title=\"$debtorName\">$debtorName</td>
                         <td title=\"$date\">$date</td>
                         <td class=\"outstanding-qty number\" data-so_no=\"$soNo\">0</td>
@@ -309,7 +309,9 @@
           var outstandingQtyElement = document.querySelector(iaModelSelector + " .outstanding-qty[data-so_no=\"" + soNo + "\"]");
           var allotQtyElement = document.querySelector(iaModelSelector + " .allot-qty[data-so_no=\"" + soNo + "\"]");
 
-          var allotQty = parseFloat(allotments[iaNo][brandCode][modelNo][soNo]["qty"]);
+          var allotment = allotments[iaNo][brandCode][modelNo][soNo];
+          var allotQty = parseFloat(allotment["qty"]);
+          var plNo = allotment["pl_no"] ? allotment["pl_no"] : "";
           var outstandingQty = parseFloat(soModels[brandCode][modelNo][soNo]["qty_outstanding"]);
           var availableQty = parseFloat(iaModels[iaNo][brandCode][modelNo]["qty"]);
           var otherAllotedIaQty = getOtherIaAllottedQty(iaNo, brandCode, modelNo, soNo);
@@ -320,8 +322,16 @@
           allotQty = Math.min(maxQty, allotQty);
 
           outstandingQtyElement.innerHTML = allottableSoQty;
+          outstandingQtyElement.title = plNo;
+
           allotQtyElement.max = maxQty;
           allotQtyElement.value = allotQty;
+          if (plNo !== "") {
+            allotQtyElement.setAttribute("readonly", true);
+          } else {
+            allotQtyElement.removeAttribute("readonly");
+          }
+          toggleClass(allotQtyElement, "packed", plNo !== "");
 
           allotments[iaNo][brandCode][modelNo][soNo]["qty"] = allotQty;
 

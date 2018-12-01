@@ -24,15 +24,18 @@
       }
     }
 
-    query("
-      INSERT INTO
-        `so_allotment`
-          (ia_no, warehouse_code, so_no, brand_code, model_no, qty)
-        VALUES
-    " . join(", ", $values));
+    if (count($values) > 0) {
+      query("
+        INSERT INTO
+          `so_allotment`
+            (ia_no, warehouse_code, so_no, brand_code, model_no, qty)
+          VALUES
+      " . join(", ", $values));
+    }
   }
 
   $filterWarehouseCodes = $_GET["filter_warehouse_code"];
+  $filterDebtorCodes = $_GET["filter_debtor_code"];
   $filterSoNos = $_GET["filter_so_no"];
 
   $whereClause = "";
@@ -44,9 +47,14 @@
 
   $whereSoModelClause = "";
 
+  if (assigned($filterDebtorCodes) && count($filterDebtorCodes) > 0) {
+    $whereSoModelClause = $whereSoModelClause . "
+      AND (" . join(" OR ", array_map(function ($i) { return "y.debtor_code='$i'"; }, $filterDebtorCodes)) . ")";
+  }
+
   if (assigned($filterSoNos) && count($filterSoNos) > 0) {
     $whereSoModelClause = $whereSoModelClause . "
-      AND (" . join(" OR ", array_map(function ($i) { return "so_no='$i'"; }, $filterSoNos)) . ")";
+      AND (" . join(" OR ", array_map(function ($i) { return "x.so_no='$i'"; }, $filterSoNos)) . ")";
   }
 
   $results = query("
@@ -67,16 +75,19 @@
     ON a.brand_code=c.code
     LEFT JOIN
       (SELECT
-        brand_code            AS `brand_code`,
-        model_no              AS `model_no`,
-        SUM(qty_outstanding)  AS `qty_outstanding`
+        x.brand_code            AS `brand_code`,
+        x.model_no              AS `model_no`,
+        SUM(x.qty_outstanding)  AS `qty_outstanding`
       FROM
-        `so_model`
+        `so_model` AS x
+      LEFT JOIN
+        `so_header` AS y
+      ON x.so_no=y.so_no
       WHERE
-        qty_outstanding > 0
+        x.qty_outstanding > 0
         $whereSoModelClause
       GROUP BY
-        brand_code, model_no) AS d
+        x.brand_code, x.model_no) AS d
     ON a.brand_code=d.brand_code AND a.model_no=d.model_no
     WHERE
       a.qty > 0 AND d.qty_outstanding > 0
@@ -135,6 +146,11 @@
 
   $whereClause = "";
 
+  if (assigned($filterDebtorCodes) && count($filterDebtorCodes) > 0) {
+    $whereClause = $whereClause . "
+      AND (" . join(" OR ", array_map(function ($i) { return "b.debtor_code='$i'"; }, $filterDebtorCodes)) . ")";
+  }
+
   if (assigned($filterSoNos) && count($filterSoNos) > 0) {
     $whereClause = $whereClause . "
       AND (" . join(" OR ", array_map(function ($i) { return "a.so_no='$i'"; }, $filterSoNos)) . ")";
@@ -164,7 +180,7 @@
       `debtor` AS c
     ON b.debtor_code=c.code
     WHERE
-      a.qty_outstanding > 0
+      a.qty_outstanding > 0 AND b.status=\"POSTED\"
       $whereClause
     ORDER BY
       a.brand_code ASC,
@@ -201,13 +217,33 @@
 
   $results = query("
     SELECT
-      a.warehouse_code       AS `warehouse_code`,
-      a.so_no       AS `so_no`,
-      a.brand_code  AS `brand_code`,
-      a.model_no    AS `model_no`,
-      a.qty         AS `qty`
+      IFNULL(b.pl_no, '')     AS `pl_no`,
+      a.warehouse_code        AS `warehouse_code`,
+      a.so_no                 AS `so_no`,
+      a.brand_code            AS `brand_code`,
+      a.model_no              AS `model_no`,
+      a.qty                   AS `qty`
     FROM
       `so_allotment` AS a
+    LEFT JOIN
+      (SELECT
+        x.pl_no           AS `pl_no`,
+        y.warehouse_code  AS `warehouse_code`,
+        x.so_no           AS `so_no`,
+        x.brand_code      AS `brand_code`,
+        x.model_no        AS `model_no`,
+        x.qty             AS `qty`
+      FROM
+        `pl_model` AS x
+      LEFT JOIN
+        `pl_header` AS y
+      ON x.pl_no=y.pl_no) AS b
+    ON
+      a.warehouse_code=b.warehouse_code AND
+      a.so_no=b.so_no AND
+      a.brand_code=b.brand_code AND
+      a.model_no=b.model_no AND
+      a.qty=b.qty
     ORDER BY
       a.warehouse_code ASC,
       a.brand_code ASC,
@@ -258,14 +294,43 @@
       name ASC
   ");
 
+  $debtors = query("
+    SELECT DISTINCT
+      b.debtor_code                       AS `code`,
+      IFNULL(c.english_name, 'Unknown')   AS `name`
+    FROM
+      `so_model` AS a
+    LEFT JOIN
+      `so_header` AS b
+    ON a.so_no=b.so_no
+    LEFT JOIN
+      `debtor` AS c
+    ON b.debtor_code=c.code
+    WHERE
+      a.qty_outstanding > 0
+    ORDER BY
+      b.debtor_code ASC
+  ");
+
+  $filterWhereClause = "";
+
+  if (assigned($filterDebtorCodes) && count($filterDebtorCodes) > 0) {
+    $filterWhereClause = $filterWhereClause . "
+      AND (" . join(" OR ", array_map(function ($i) { return "b.debtor_code='$i'"; }, $filterDebtorCodes)) . ")";
+  }
+
   $sos = query("
     SELECT DISTINCT
-      so_no   AS `so_no`
+      a.so_no   AS `so_no`
     FROM
-      `so_model`
+      `so_model` AS a
+    LEFT JOIN
+      `so_header` AS b
+    ON a.so_no=b.so_no
     WHERE
-      qty_outstanding > 0
+      a.qty_outstanding > 0 AND b.status=\"POSTED\"
+      $filterWhereClause
     ORDER BY
-      so_no ASC
+      a.so_no ASC
   ");
 ?>

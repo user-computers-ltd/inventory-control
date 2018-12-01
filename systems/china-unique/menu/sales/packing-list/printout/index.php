@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
+    <?php include_once ROOT_PATH . "includes/components/menu/index.php"; ?>
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo PACKING_LIST_PRINTOUT_TITLE . " (" . $plHeader["warehouse"] . ")" ?></div>

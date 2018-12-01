@@ -13,25 +13,49 @@
   /* Only populate the data if an order number is given. */
   if (assigned($plNo)) {
 
-    $setValues = array(
-      "ref_no=\"$refNo\"",
-      "remarks=\"$remarks\"",
-      "pl_date=\"$date\""
-    );
+    if (assigned($status) || assigned($paid)) {
+      $queries = array();
+      $directionLocation = "";
 
-    if (assigned($status)) {
-      array_push($setValues, "status=\"$status\"");
-    }
+      $setValues = array(
+        "ref_no=\"$refNo\"",
+        "remarks=\"$remarks\"",
+        "pl_date=\"$date\""
+      );
 
-    if (assigned($paid)) {
-      array_push($setValues, "paid=\"$paid\"");
-    }
+      if (assigned($status)) {
+        array_push($setValues, "status=\"$status\"");
+      }
 
-    $setValues = join(", ", $setValues);
-    query("UPDATE `pl_header` SET $setValues WHERE pl_no=\"$plNo\"");
+      if (assigned($paid)) {
+        array_push($setValues, "paid=\"$paid\"");
+      }
 
-    if (assigned($status) && $status == "POSTED") {
-      postPackingList($plNo);
+      array_push($queries, "
+        UPDATE
+          `pl_header`
+        SET
+          " . join(", ", $setValues) . "
+        WHERE
+          pl_no=\"$plNo\"
+      ");
+
+      if ($status == "POSTED") {
+        $queries = concat($queries, postPackingList($plNo));
+        $directionLocation = PACKING_LIST_POSTED_URL;
+      } else if ($status == "DELETED") {
+        $queries = array(
+          "DELETE FROM `pl_header` WHERE pl_no=\"$plNo\"",
+          "DELETE FROM `pl_model` WHERE pl_no=\"$plNo\""
+        );
+        $directionLocation = PACKING_LIST_SAVED_URL;
+      }
+
+      execute($queries);
+
+      if (assigned($directionLocation)) {
+        header("Location: $directionLocation");
+      }
     }
 
     /* Attempt to retrieve an existing sales order. */

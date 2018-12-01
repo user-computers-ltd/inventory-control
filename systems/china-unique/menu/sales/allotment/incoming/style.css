@@ -105,6 +105,10 @@
   box-sizing: border-box;
 }
 
+.ia-results .ia-model .allot-qty.packed {
+  border-color: transparent;
+}
+
 .ia-no-results {
   margin: 100px 0px;
   text-align: center;

@@ -105,6 +105,10 @@
   box-sizing: border-box;
 }
 
+.stock-results .stock-model .allot-qty.packed {
+  border-color: transparent;
+}
+
 .stock-no-results {
   margin: 100px 0px;
   text-align: center;

@@ -122,7 +122,7 @@
     ON a.ia_no=g.ia_no
     LEFT JOIN
       (SELECT
-        y.pl_no           AS `pl_no`,
+        x.pl_no           AS `pl_no`,
         x.ia_no           AS `ia_no`,
         y.warehouse_code  AS `warehouse_code`,
         x.so_no           AS `so_no`,
@@ -132,8 +132,7 @@
         `pl_model` AS x
       LEFT JOIN
         `pl_header` AS y
-      ON
-        x.pl_no=y.pl_no) AS h
+      ON x.pl_no=y.pl_no) AS h
     ON
       a.ia_no=h.ia_no AND
       IF(a.warehouse_code='', g.warehouse_code, a.warehouse_code)=h.warehouse_code AND
