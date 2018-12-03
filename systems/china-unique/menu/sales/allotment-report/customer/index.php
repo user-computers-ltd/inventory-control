@@ -19,11 +19,10 @@
       <div class="headline"><?php echo ALLOTMENT_REPORT_CUSTOMER_TITLE ?></div>
       <form>
         <table id="so-input">
-          <colgroup>
-            <col style="width: 100px">
-          </colgroup>
           <tr>
-            <td><label for="so-debtors">Customer:</label></td>
+            <th>Customer:</th>
+          </tr>
+          <tr>
             <td>
               <select name="filter_debtor_code[]" multiple>
                 <?php

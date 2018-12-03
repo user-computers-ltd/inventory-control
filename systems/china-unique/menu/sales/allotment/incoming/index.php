@@ -19,14 +19,11 @@
       <div class="headline"><?php echo ALLOTMENT_INCOMING_TITLE ?></div>
       <form>
         <table id="ia-input">
-          <colgroup>
-            <col style="width: 100px">
-            <col>
-            <col style="width: 100px">
-            <col>
-          </colgroup>
           <tr>
-            <td><label>DO No.:</label></td>
+            <th>DO No.:</th>
+            <th>SO No.:</th>
+          </tr>
+          <tr>
             <td>
               <select name="filter_ia_no[]" multiple>
                 <?php
@@ -38,7 +35,6 @@
                 ?>
               </select>
             </td>
-            <td><label>SO No.:</label></td>
             <td>
               <select name="filter_so_no[]" multiple>
                 <?php

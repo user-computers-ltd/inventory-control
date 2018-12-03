@@ -95,11 +95,11 @@
       <form>
         <table id="trans-input">
           <tr>
-            <td><label>From:</label></td>
-            <td><label>To:</label></td>
-            <td><label>Brand Code:</label></td>
-            <td><label>Model No:</label></td>
-            <td><label>Transaction Code:</label></td>
+            <th><label>From:</label></th>
+            <th><label>To:</label></th>
+            <th><label>Brand Code:</label></th>
+            <th><label>Model No:</label></th>
+            <th><label>Transaction Code:</label></th>
           </tr>
           <tr>
             <td><input type="date" name="from" value="<?php echo $from; ?>" max="<?php echo date("Y-m-d"); ?>" /></td>

@@ -86,11 +86,10 @@
       <div class="headline"><?php echo SALES_ORDER_CUSTOMER_TITLE; ?></div>
       <form>
         <table id="so-input">
-          <colgroup>
-            <col style="width: 100px">
-          </colgroup>
           <tr>
-            <td><label>Customer:</label></td>
+            <th>Customer:</th>
+          </tr>
+          <tr>
             <td>
               <select name="debtor_code[]" multiple>
                 <?php

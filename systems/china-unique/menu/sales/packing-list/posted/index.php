@@ -65,16 +65,12 @@
       <div class="headline"><?php echo PACKING_LIST_POSTED_TITLE; ?></div>
       <form>
         <table id="pl-input">
-          <colgroup>
-            <col style="width: 100px">
-            <col>
-            <col style="width: 100px">
-            <col>
-          </colgroup>
           <tr>
-            <td><label>From:</label></td>
+            <th>From:</th>
+            <th>To:</th>
+          </tr>
+          <tr>
             <td><input type="date" name="from" value="<?php echo $from; ?>" max="<?php echo date("Y-m-d"); ?>" /></td>
-            <td><label>To:</label></td>
             <td><input type="date" name="to" value="<?php echo $to; ?>" max="<?php echo date("Y-m-d"); ?>" /></td>
             <td><button type="submit">Go</button></td>
           </tr>

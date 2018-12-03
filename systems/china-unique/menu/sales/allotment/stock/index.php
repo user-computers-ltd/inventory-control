@@ -19,16 +19,12 @@
       <div class="headline"><?php echo ALLOTMENT_STOCK_TITLE; ?></div>
       <form>
         <table id="stock-input">
-          <colgroup>
-            <col style="width: 100px">
-            <col>
-            <col style="width: 100px">
-            <col>
-            <col style="width: 100px">
-            <col>
-          </colgroup>
           <tr>
-            <td><label>Warehouse:</label></td>
+            <th>Warehouse:</th>
+            <th>Customer:</th>
+            <th>SO No.:</th>
+          </tr>
+          <tr>
             <td>
               <select name="filter_warehouse_code[]" multiple>
                 <?php
@@ -41,7 +37,6 @@
                 ?>
               </select>
             </td>
-            <td><label>Customer:</label></td>
             <td>
               <select name="filter_debtor_code[]" multiple>
                 <?php
@@ -54,7 +49,6 @@
                 ?>
               </select>
             </td>
-            <td><label>SO No.:</label></td>
             <td>
               <select name="filter_so_no[]" multiple>
                 <?php
