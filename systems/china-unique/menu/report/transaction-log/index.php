@@ -49,7 +49,7 @@
         DATE_FORMAT(a.transaction_date, '%d-%m-%Y')                                         AS `date`,
         a.header_no                                                                         AS `header_no`,
         a.client_code                                                                       AS `client_code`,
-        IFNULL(b.english_name, IFNULL(c.english_name, 'Unknown'))                           AS `client_name`,
+        IFNULL(b.english_name, IFNULL(c.english_name, ''))                                  AS `client_name`,
         a.transaction_code                                                                  AS `transaction_code`,
         a.warehouse_code                                                                    AS `warehouse_code`,
         a.discount                                                                          AS `discount`,
