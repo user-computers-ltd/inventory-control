@@ -143,7 +143,7 @@
         array_push($row, "\"$column\"");
       }
 
-      array_push($content, join(", ", $row));
+      array_push($content, join(",", $row));
 
       foreach ($results as $result) {
         $row = array();
@@ -153,7 +153,7 @@
           array_push($row, "\"$value\"");
         }
 
-        array_push($content, join(", ", $row));
+        array_push($content, join(",", $row));
       }
     }
 
