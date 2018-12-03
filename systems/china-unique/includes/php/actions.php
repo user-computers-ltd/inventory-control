@@ -150,7 +150,7 @@
 
     $plHeader = query("
       SELECT
-        pl_date
+        pl_date,
         debtor_code,
         currency_code,
         exchange_rate,
