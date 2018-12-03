@@ -212,7 +212,6 @@
       $soNo = $soModelRef["so_no"];
       $brandCode = $soModelRef["brand_code"];
       $modelNo = $soModelRef["model_no"];
-      $price = $soModelRef["price"];
       $qty = $soModelRef["qty"];
 
       /* Update sales order outsanding quantities. */
@@ -232,8 +231,6 @@
       $soNo = $allotmentRef["so_no"];
       $brandCode = $allotmentRef["brand_code"];
       $modelNo = $allotmentRef["model_no"];
-      $price = $allotmentRef["price"];
-      $qty = $allotmentRef["qty"];
 
       array_push($queries, "
         DELETE FROM
@@ -340,6 +337,8 @@
         b.status='POSTED'
     ");
 
+    $allotmentValues = array();
+
     foreach ($postedAllotments as $postedAllotment) {
       $iaNo = $postedAllotment["ia_no"];
       $warehouseCode = $postedAllotment["warehouse_code"];
@@ -370,16 +369,39 @@
         ");
       }
 
-      /* Else, create a new stock allotment. */
+      /* Else, collect values for new allotment insertion. */
       else {
-        array_push($queries, "
-          INSERT INTO
-            `so_allotment`
-            (ia_no, warehouse_code, so_no, brand_code, model_no, qty)
-          VALUES
-            (\"\", \"$warehouseCode\", \"$soNo\", \"$brandCode\", \"$modelNo\", \"$qty\")
+        array_push($allotmentValues, "
+          (
+            \"\",
+            \"$warehouseCode\",
+            \"$soNo\",
+            \"$brandCode\",
+            \"$modelNo\",
+            \"$qty\"
+          )
         ");
       }
+    }
+
+    /* Insert new stock allotments. */
+    if (count($allotmentValues) > 0) {
+      $allotmentValues = join(", ", $allotmentValues);
+
+      array_push($queries, "
+        INSERT INTO
+          `so_allotment`
+          (
+            ia_no,
+            warehouse_code,
+            so_no,
+            brand_code,
+            model_no,
+            qty
+          )
+        VALUES
+          $allotmentValues
+      ");
     }
 
     return $queries;
@@ -391,6 +413,7 @@
     $postedPackingListModels = query("
       SELECT
         a.pl_no             AS `pl_no`,
+        a.pl_index          AS `pl_index`,
         a.ia_no             AS `ia_no`,
         b.warehouse_code    AS `warehouse_code`,
         a.so_no             AS `so_no`,
@@ -442,8 +465,11 @@
         c.status='POSTED'
     ");
 
+    $packingListModelValues = array();
+
     foreach ($postedPackingListModels as $postedPackingListModel) {
       $plNo = $postedPackingListModel["pl_no"];
+      $plIndex = $postedPackingListModel["pl_index"];
       $iaNo = $postedPackingListModel["ia_no"];
       $warehouseCode = $postedPackingListModel["warehouse_code"];
       $soNo = $postedPackingListModel["so_no"];
@@ -477,16 +503,43 @@
         ");
       }
 
-      /* Else, create a new packing list model. */
+      /* Else, collect values for new packing list model insertion. */
       else {
-        array_push($queries, "
-          INSERT INTO
-            `pl_model`
-            (pl_no, ia_no, so_no, brand_code, model_no, price, qty)
-          VALUES
-            (\"$plNo\", \"\", \"$soNo\", \"$brandCode\", \"$modelNo\", \"$price\", \"$qty\")
+        array_push($packingListModelValues, "
+          (
+            \"$plNo\",
+            \"$plIndex\",
+            \"\",
+            \"$soNo\",
+            \"$brandCode\",
+            \"$modelNo\",
+            \"$price\",
+            \"$qty\"
+          )
         ");
       }
+    }
+
+    /* Insert new packing list models. */
+    if (count($packingListModelValues) > 0) {
+      $packingListModelValues = join(", ", $packingListModelValues);
+
+      array_push($queries, "
+        INSERT INTO
+          `pl_model`
+          (
+            pl_no,
+            pl_index,
+            ia_no,
+            so_no,
+            brand_code,
+            model_no,
+            price,
+            qty
+          )
+        VALUES
+          $packingListModelValues
+      ");
     }
 
     return $queries;
