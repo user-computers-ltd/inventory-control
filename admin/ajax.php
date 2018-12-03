@@ -75,15 +75,6 @@
         break;
       case "export-table":
         if ($_POST["database"] && $_POST["table"]) {
-          $columns = array();
-
-          for ($i = 0; $i < count($_POST["field"]); $i++) {
-            array_push($columns, array(
-              "field" => $_POST["field"][$i],
-              "name" => $_POST["name"][$i]
-            ));
-          }
-
           echo json_encode(exportTable($_POST["database"], $_POST["table"]));
         } else {
           throwError("missing database or table");

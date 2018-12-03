@@ -123,14 +123,20 @@
         <?php else: ?>
           <div id="pl-models-no-results">No models</div>
         <?php endif ?>
-        <?php if (assigned($remarks)) : ?>
-          <table id="pl-footer">
+        <table id="pl-footer">
+          <?php if (assigned($plHeader["ref_no"])) : ?>
+            <tr>
+              <td>Ref No.:</td>
+              <td><?php echo $plHeader["ref_no"]; ?></td>
+            </tr>
+          <?php endif ?>
+          <?php if (assigned($plHeader["remarks"])) : ?>
             <tr>
               <td>Remarks:</td>
-              <td><?php echo $remarks; ?></td>
+              <td><?php echo $plHeader["remarks"]; ?></td>
             </tr>
-          </table>
-        <?php endif ?>
+          <?php endif ?>
+        </table>
       <?php else: ?>
         <div id="pl-not-found"><?php echo PACKING_LIST_PRINTOUT_TITLE; ?> not found</div>
       <?php endif ?>

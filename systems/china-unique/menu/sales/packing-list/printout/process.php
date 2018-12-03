@@ -18,6 +18,8 @@
         a.discount                                        AS `discount`,
         a.tax                                             AS `tax`,
         c.name                                            AS `warehouse`,
+        a.ref_no                                          AS `ref_no`,
+        a.remarks                                         AS `remarks`,
         a.status                                          AS `status`
       FROM
         `pl_header` AS a
