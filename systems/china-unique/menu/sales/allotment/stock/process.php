@@ -7,7 +7,17 @@
 
   /* If a complete form is given, submit and update all IA allotments. */
   if (assigned($warehouseCodes) && assigned($soNos) && assigned($brandCodes) && assigned($modelNos) && assigned($qtys)) {
-    $whereClause = join(" OR ", array_map(function ($code) { return "warehouse_code=\"$code\""; }, $warehouseCodes));
+
+    $whereClause = "";
+
+    $whereClause = join(" OR ", array_map(function ($warehouseCode, $soNo, $brandCode, $modelNo) {
+      return "
+        warehouse_code=\"$warehouseCode\" AND
+        so_no=\"$soNo\" AND
+        brand_code=\"$brandCode\" AND
+        model_no=\"$modelNo\"
+      ";
+    }, $warehouseCodes, $soNos, $brandCodes, $modelNos));
     query("DELETE FROM `so_allotment` WHERE $whereClause");
 
     $values = array();

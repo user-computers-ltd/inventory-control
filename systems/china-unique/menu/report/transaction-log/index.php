@@ -39,40 +39,46 @@
       AND a.transaction_code = \"$transactionCode\"";
   }
 
-  $transactions = query("
-    SELECT
-      DATE_FORMAT(a.transaction_date, '%d-%m-%Y')                                         AS `date`,
-      a.header_no                                                                         AS `header_no`,
-      a.client_code                                                                       AS `client_code`,
-      IFNULL(b.english_name, IFNULL(c.english_name, 'Unknown'))                           AS `client_name`,
-      a.transaction_code                                                                  AS `transaction_code`,
-      a.warehouse_code                                                                    AS `warehouse_code`,
-      a.discount                                                                          AS `discount`,
-      a.currency_code                                                                     AS `currency`,
-      a.exchange_rate                                                                     AS `exchange_rate`,
-      a.brand_code                                                                        AS `brand_code`,
-      d.name                                                                              AS `brand_name`,
-      a.model_no                                                                          AS `model_no`,
-      a.cost_average                                                                      AS `cost_average`,
-      a.price                                                                             AS `price`,
-      a.qty                                                                               AS `qty`
-    FROM
-      `transaction` AS a
-    LEFT JOIN
-      `debtor` AS b
-    ON a.client_code=b.code
-    LEFT JOIN
-      `creditor` AS c
-    ON a.client_code=c.code
-    LEFT JOIN
-      `brand` AS d
-    ON a.brand_code=d.code
-    WHERE
-      a.header_no IS NOT NULL
-      $whereClause
-    ORDER BY
-      a.transaction_date DESC
-  ");
+  $hasFilter = assigned($whereClause);
+
+  $transaction = array();
+
+  if ($hasFilter) {
+    $transactions = query("
+      SELECT
+        DATE_FORMAT(a.transaction_date, '%d-%m-%Y')                                         AS `date`,
+        a.header_no                                                                         AS `header_no`,
+        a.client_code                                                                       AS `client_code`,
+        IFNULL(b.english_name, IFNULL(c.english_name, 'Unknown'))                           AS `client_name`,
+        a.transaction_code                                                                  AS `transaction_code`,
+        a.warehouse_code                                                                    AS `warehouse_code`,
+        a.discount                                                                          AS `discount`,
+        a.currency_code                                                                     AS `currency`,
+        a.exchange_rate                                                                     AS `exchange_rate`,
+        a.brand_code                                                                        AS `brand_code`,
+        d.name                                                                              AS `brand_name`,
+        a.model_no                                                                          AS `model_no`,
+        a.cost_average                                                                      AS `cost_average`,
+        a.price                                                                             AS `price`,
+        a.qty                                                                               AS `qty`
+      FROM
+        `transaction` AS a
+      LEFT JOIN
+        `debtor` AS b
+      ON a.client_code=b.code
+      LEFT JOIN
+        `creditor` AS c
+      ON a.client_code=c.code
+      LEFT JOIN
+        `brand` AS d
+      ON a.brand_code=d.code
+      WHERE
+        a.header_no IS NOT NULL
+        $whereClause
+      ORDER BY
+        a.transaction_date DESC
+    ");
+  }
 ?>
 
 <!DOCTYPE html>
@@ -210,8 +216,10 @@
             </tr>
           </tfoot>
         </table>
-      <?php else: ?>
+      <?php elseif ($hasFilter): ?>
         <div class="trans-customer-no-results">No results</div>
+      <?php else: ?>
+        <div class="trans-customer-no-results">Please select a date range</div>
       <?php endif ?>
     </div>
   </body>
