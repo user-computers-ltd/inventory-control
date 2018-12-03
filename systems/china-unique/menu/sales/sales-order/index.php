@@ -23,9 +23,9 @@
           <table id="so-header">
             <tr>
               <td>Order No.:</td>
-              <td><input type="text" id="so-no" name="so_no" placeholder="Sales Order No." value="<?php echo $soNo; ?>" required /></td>
+              <td><input type="text" name="so_no" value="<?php echo $soNo; ?>" required /></td>
               <td>Date:</td>
-              <td><input type="date" id="so-date" name="so_date" placeholder="Sales Date" value="<?php echo $soDate; ?>" max="<?php echo date("Y-m-d"); ?>" required /></td>
+              <td><input type="date" name="so_date" value="<?php echo $soDate; ?>" max="<?php echo date("Y-m-d"); ?>" required /></td>
             </tr>
             <tr>
               <td>Client:</td>

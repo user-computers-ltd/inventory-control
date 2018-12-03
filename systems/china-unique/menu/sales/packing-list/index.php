@@ -26,7 +26,7 @@
               <td>Packing List No.:</td>
               <td><?php echo $plHeader["pl_no"]; ?></td>
               <td>Date:</td>
-              <td><?php echo $plHeader["date"]; ?></td>
+              <td><input type="date" name="pl_date" value="<?php echo $plHeader["pl_date"]; ?>" max="<?php echo date("Y-m-d"); ?>" required /></td>
             </tr>
             <tr>
               <td>Client:</td>

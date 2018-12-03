@@ -1,12 +1,12 @@
 <?php
   $plNo = $_GET["pl_no"];
 
+  $plDate = $_POST["pl_date"];
   $refNo = $_POST["ref_no"];
   $remarks = $_POST["remarks"];
   $status = $_POST["status"];
   $paid = $_POST["paid"];
 
-  $date = date("Y-m-d");
   $plHeader = null;
   $plModels = array();
 
@@ -20,7 +20,7 @@
       $setValues = array(
         "ref_no=\"$refNo\"",
         "remarks=\"$remarks\"",
-        "pl_date=\"$date\""
+        "pl_date=\"$plDate\""
       );
 
       if (assigned($status)) {
@@ -62,7 +62,7 @@
     $plHeader = query("
       SELECT
         a.pl_no                               AS `pl_no`,
-        DATE_FORMAT(a.pl_date, '%d-%m-%Y')    AS `date`,
+        DATE_FORMAT(a.pl_date, '%Y-%m-%d')    AS `pl_date`,
         a.debtor_code                         AS `debtor_code`,
         IFNULL(b.english_name, 'Unknown')     AS `debtor_name`,
         IFNULL(b.bill_address, 'Unknown')     AS `debtor_address`,

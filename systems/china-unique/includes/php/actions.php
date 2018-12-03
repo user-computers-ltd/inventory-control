@@ -6,6 +6,7 @@
   function postTransactions(
     $headerNo,
     $transactionCode,
+    $date,
     $clientCode,
     $currencyCode,
     $exchangeRate,
@@ -17,7 +18,6 @@
     $prices,
     $qtys
   ) {
-    $date = date("Y-m-d");
     $queries = array();
     $transactionValues = array();
 
@@ -150,6 +150,7 @@
 
     $plHeader = query("
       SELECT
+        pl_date
         debtor_code,
         currency_code,
         exchange_rate,
@@ -267,6 +268,7 @@
     $postTransactionQueries = postTransactions(
       $plNo,
       "S2",
+      $plHeader["pl_date"],
       $plHeader["debtor_code"],
       $plHeader["currency_code"],
       $plHeader["exchange_rate"],
