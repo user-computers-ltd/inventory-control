@@ -8,6 +8,7 @@
 
   $InBaseCurrency = "(in " . COMPANY_CURRENCY . ")";
   $date = date("Y-m-d");
+  $year = date("Y");
 
   $model = query("
     SELECT
@@ -141,7 +142,7 @@
         t.transaction_date
           BETWEEN
             DATE_FORMAT(NOW() - INTERVAL 1 YEAR, '%Y-01-01') AND
-            LAST_DAY(DATE_FORMAT(NOW() - INTERVAL 1 YEAR, '%Y-12'))
+            LAST_DAY(DATE_FORMAT(NOW() - INTERVAL 1 YEAR, '%Y-12-%d'))
           AND
         ($whereClause)
     ";
