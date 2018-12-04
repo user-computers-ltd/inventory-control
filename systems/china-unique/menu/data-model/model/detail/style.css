@@ -1,0 +1,42 @@
+#model-header,
+#model-stock {
+  width: 50%;
+}
+
+#model-header td {
+  border: none;
+  font-size: 13px;
+  padding: 0px 5px;
+}
+
+#model-header input,
+#model-header select {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#model-header .number,
+#model-performance .number {
+  text-align: right;
+}
+
+#model-performance th,
+#model-performance td {
+  min-width: 0px;
+  max-width: 0px;
+}
+
+#model-performance td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.model-no-result {
+  margin: 100px 0px;
+  text-align: center;
+  font-size: 40px;
+  font-weight: bold;
+  line-height: 48px;
+  opacity: 0.3;
+}

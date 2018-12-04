@@ -38,7 +38,7 @@
       `model` AS a
     LEFT JOIN
       (SELECT
-        model_no, brand_code, SUM(qty) AS qty_on_hand
+        model_no, brand_code, SUM(qty) AS `qty_on_hand`
       FROM
         `stock`
       GROUP BY
@@ -46,7 +46,7 @@
     ON a.model_no=b.model_no AND a.brand_code=b.brand_code
     LEFT JOIN
       (SELECT
-        m.model_no, m.brand_code, SUM(GREATEST(qty_outstanding, 0)) AS qty_on_order
+        m.model_no, m.brand_code, SUM(GREATEST(qty_outstanding, 0)) AS `qty_on_order`
       FROM
         `po_model` AS m
       LEFT JOIN
