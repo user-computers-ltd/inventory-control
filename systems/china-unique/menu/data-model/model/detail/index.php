@@ -12,22 +12,22 @@
 
   $model = query("
     SELECT
-      a.model_no                                                                    AS `model_no`,
-      a.description                                                                 AS `description`,
-      a.brand_code                                                                  AS `brand_code`,
-      b.name                                                                        AS `brand_name`,
-      CONCAT(a.cost_pri_currency_code, ' ', a.cost_pri, ' @ ', IFNULL(f.rate, 1))   AS `cost_pri`,
-      a.cost_pri * IFNULL(f.rate, 1)                                                AS `cost_pri_base`,
-      CONCAT(a.cost_sec_currency_code, ' ', a.cost_sec, ' @ ', IFNULL(g.rate, 1))   AS `cost_sec`,
-      a.cost_sec * IFNULL(g.rate, 1)                                                AS `cost_sec_base`,
-      a.cost_average                                                                AS `cost_average`,
-      a.retail_normal                                                               AS `retail_normal`,
-      a.retail_special                                                              AS `retail_special`,
-      a.wholesale_normal                                                            AS `wholesale_normal`,
-      a.wholesale_special                                                           AS `wholesale_special`,
-      IFNULL(c.qty_on_hand, 0)                                                      AS `qty_on_hand`,
-      IFNULL(d.qty_on_order, 0)                                                     AS `qty_on_order`,
-      IFNULL(e.qty_on_reserve, 0)                                                   AS `qty_on_reserve`
+      a.model_no                                                                          AS `model_no`,
+      a.description                                                                       AS `description`,
+      a.brand_code                                                                        AS `brand_code`,
+      b.name                                                                              AS `brand_name`,
+      CONCAT('(', a.cost_pri_currency_code, ' @ ', IFNULL(f.rate, 1), ') ', a.cost_pri)   AS `cost_pri`,
+      a.cost_pri * IFNULL(f.rate, 1)                                                      AS `cost_pri_base`,
+      CONCAT('(', a.cost_sec_currency_code, ' @ ', IFNULL(g.rate, 1), ') ', a.cost_sec)   AS `cost_sec`,
+      a.cost_sec * IFNULL(g.rate, 1)                                                      AS `cost_sec_base`,
+      a.cost_average                                                                      AS `cost_average`,
+      a.retail_normal                                                                     AS `retail_normal`,
+      a.retail_special                                                                    AS `retail_special`,
+      a.wholesale_normal                                                                  AS `wholesale_normal`,
+      a.wholesale_special                                                                 AS `wholesale_special`,
+      IFNULL(c.qty_on_hand, 0)                                                            AS `qty_on_hand`,
+      IFNULL(d.qty_on_order, 0)                                                           AS `qty_on_order`,
+      IFNULL(e.qty_on_reserve, 0)                                                         AS `qty_on_reserve`
     FROM
       `model` AS a
     LEFT JOIN
@@ -283,7 +283,7 @@
               <td class="number"><?php echo $model["brand_code"] . " - " . $model["brand_name"]; ?></td>
             </tr>
             <tr>
-              <th>Cost Primary:</th>
+              <th>Cost Primary (正價):</th>
               <td class="number"><?php echo $model["cost_pri"]; ?></td>
             </tr>
             <tr>
@@ -291,7 +291,7 @@
               <td class="number"><?php echo number_format($model["cost_pri_base"], 6); ?></td>
             </tr>
             <tr>
-              <th>Cost Special:</th>
+              <th>Cost Special (特價):</th>
               <td class="number"><?php echo $model["cost_sec"]; ?></td>
             </tr>
             <tr>
@@ -303,15 +303,15 @@
               <td class="number"><?php echo number_format($model["cost_average"], 6); ?></td>
             </tr>
             <tr>
-              <th>Retail Normal Price:</th>
+              <th>Retail Normal Price (正價):</th>
               <td class="number"><?php echo number_format($model["retail_normal"], 6); ?></td>
             </tr>
             <tr>
-              <th>Retail Special Price:</th>
+              <th>Retail Special Price (特價):</th>
               <td class="number"><?php echo number_format($model["retail_special"], 6); ?></td>
             </tr>
             <tr>
-              <th>End User Price:</th>
+              <th>End User Price (廠價):</th>
               <td class="number"><?php echo number_format($model["wholesale_normal"], 6); ?></td>
             </tr>
             <tr>
