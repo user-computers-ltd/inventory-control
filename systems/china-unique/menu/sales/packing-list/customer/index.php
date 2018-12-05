@@ -4,7 +4,7 @@
   include_once ROOT_PATH . "includes/php/utils.php";
   include_once ROOT_PATH . "includes/php/database.php";
 
-  $InBaseCurrCol = "(in " . COMPANY_CURRENCY . ")";
+  $InBaseCurrency = "(in " . COMPANY_CURRENCY . ")";
 
   $debtorCodes = $_GET["debtor_code"];
 
@@ -17,6 +17,7 @@
 
   $results = query("
     SELECT
+      a.id                                                                                AS `pl_id`,
       CONCAT(a.debtor_code, ' - ', IFNULL(c.english_name, 'Unknown'))                     AS `debtor`,
       DATE_FORMAT(a.pl_date, '%d-%m-%Y')                                                  AS `date`,
       a.pl_no                                                                             AS `pl_no`,
@@ -136,7 +137,7 @@
                       <th class=\"number\">Discount</th>
                       <th class=\"number\">Currency</th>
                       <th class=\"number\">Total</th>
-                      <th class=\"number\">$InBaseCurrCol</th>
+                      <th class=\"number\">$InBaseCurrency</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -144,6 +145,7 @@
 
             for ($i = 0; $i < count($headers); $i++) {
               $plHeader = $headers[$i];
+              $plId = $plHeader["pl_id"];
               $date = $plHeader["date"];
               $debtor = $plHeader["debtor"];
               $plNo = $plHeader["pl_no"];
@@ -160,7 +162,7 @@
               echo "
                 <tr>
                   <td title=\"$date\">$date</td>
-                  <td title=\"$plNo\"><a class=\"link\" href=\"" . PACKING_LIST_URL . "?pl_no=$plNo\">$plNo</a></td>
+                  <td title=\"$plNo\"><a class=\"link\" href=\"" . PACKING_LIST_URL . "?id=$plId\">$plNo</a></td>
                   <td title=\"$totalQty\" class=\"number\">" . number_format($totalQty) . "</td>
                   <td title=\"$discount\" class=\"number\">" . number_format($discount, 2) . "%</td>
                   <td title=\"$currency\" class=\"number\">$currency</td>

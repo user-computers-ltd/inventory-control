@@ -1,29 +1,90 @@
 <?php
-  $soNo = assigned($_GET["so_no"]) ? $_GET["so_no"] : $_POST["so_no"];
+  $id = $_GET["id"];
+  $soNo = $_POST["so_no"];
   $soDate = $_POST["so_date"];
   $debtorCode = $_POST["debtor_code"];
   $currencyCode = $_POST["currency_code"];
   $exchangeRate = $_POST["exchange_rate"];
   $discount = $_POST["discount"];
   $tax = $_POST["tax"];
-  $priceStandard = assigned($_POST["price_standard"]) ? $_POST["price_standard"] : "normal_price";
   $remarks = $_POST["remarks"];
   $status = $_POST["status"];
-
   $brandCodes = $_POST["brand_code"];
   $modelNos = $_POST["model_no"];
   $prices = $_POST["price"];
   $qtys = $_POST["qty"];
 
-  $debtors = query("SELECT code, english_name AS name FROM `debtor`");
+  /* If a form is submitted, update or insert the sales order. */
+  if (
+    assigned($soNo) &&
+    assigned($soDate) &&
+    assigned($debtorCode) &&
+    assigned($currencyCode) &&
+    assigned($exchangeRate) &&
+    assigned($discount) &&
+    assigned($tax) &&
+    assigned($status) &&
+    assigned($brandCodes) &&
+    assigned($modelNos) &&
+    assigned($prices) &&
+    assigned($qtys)
+  ) {
+    $queries = array();
 
-  $results = query("SELECT code, rate FROM `currency`");
-  $currencies = array();
+    /* If an id is given, remove the previous sales order first. */
+    if (assigned($id)) {
+      array_push($queries, "DELETE FROM `so_header` WHERE id=\"$id\"");
+      array_push($queries, "DELETE a FROM `so_model` AS a LEFT JOIN `so_header` AS b ON a.so_no=b.so_no WHERE b.id=\"$id\"");
+    }
 
-  foreach ($results as $currency) {
-    $currencies[$currency["code"]] = $currency["rate"];
+    /* If the status is not delete, insert a new sales order. */
+    if ($status != "DELETED") {
+
+      $values = array();
+
+      for ($i = 0; $i < count($brandCodes); $i++) {
+        $brandCode = $brandCodes[$i];
+        $modelNo = $modelNos[$i];
+        $price = $prices[$i];
+        $qty = $qtys[$i];
+
+        array_push($values, "(\"$soNo\", \"$i\", \"$brandCode\", \"$modelNo\", \"$price\", \"$qty\", \"$qty\")");
+      }
+
+      if (count($values) > 0) {
+        array_push($queries, "
+          INSERT INTO
+            `so_model`
+              (so_no, so_index, brand_code, model_no, price, qty, qty_outstanding)
+            VALUES
+        " . join(", ", $values));
+      }
+
+      array_push($queries, "
+        INSERT INTO
+          `so_header`
+            (so_no, so_date, debtor_code, currency_code, exchange_rate, discount, tax, status, remarks)
+          VALUES
+            (
+              \"$soNo\",
+              \"$soDate\",
+              \"$debtorCode\",
+              \"$currencyCode\",
+              \"$exchangeRate\",
+              \"$discount\",
+              \"$tax\",
+              \"$status\",
+              \"$remarks\"
+            )
+      ");
+    }
+
+    execute($queries);
+
+    header("Location: " . SALES_ORDER_SAVED_URL);
   }
 
+  $debtors = query("SELECT code, english_name AS name FROM `debtor`");
   $brands = query("SELECT code, name FROM `brand`");
   $models = query("
     SELECT
@@ -58,124 +119,37 @@
         model_no, m.brand_code) AS c
     ON a.model_no=c.model_no AND a.brand_code=c.brand_code
   ");
+  $results = query("SELECT code, rate FROM `currency`");
+  $currencies = array();
+  foreach ($results as $currency) {
+    $currencies[$currency["code"]] = $currency["rate"];
+  }
 
-  /* If an order number is given, attempt to retrieve an existing sales order. */
-  if (assigned($soNo)) {
+  /* If an id is given, attempt to retrieve an existing sales order. */
+  if (assigned($id)) {
     $headline = SALES_ORDER_PRINTOUT_TITLE;
 
-    $soHeader = query("SELECT *, DATE_FORMAT(so_date, '%Y-%m-%d') AS `so_date` FROM `so_header` WHERE so_no=\"$soNo\"");
+    $soHeader = query("
+      SELECT
+        *,
+        DATE_FORMAT(so_date, '%Y-%m-%d') AS `so_date`
+      FROM
+        `so_header`
+      WHERE id=\"$id\"
+    ")[0];
 
-    /* If a complete form is given, submit the sales order. */
-    if (
-      assigned($soDate) &&
-      assigned($debtorCode) &&
-      assigned($currencyCode) &&
-      assigned($exchangeRate) &&
-      assigned($discount) &&
-      assigned($tax) &&
-      assigned($status)
-    ) {
-
-      /* Remove all the previous sales models first. */
-      query("DELETE FROM `so_model` WHERE so_no=\"$soNo\"");
-
-      if ($status == "DELETED") {
-        query("DELETE FROM `so_header` WHERE so_no=\"$soNo\"");
-
-        header("Location: " . SALES_ORDER_SAVED_URL);
-      } else {
-        /* Upon submission, if the sales number already exists, update the existing sales order header.
-           Also delete all existing sales models, new ones will be inserted afterwards. */
-        if (count($soHeader) > 0) {
-          query("
-            UPDATE
-              `so_header`
-            SET
-              so_date=\"$soDate\",
-              debtor_code=\"$debtorCode\",
-              currency_code=\"$currencyCode\",
-              exchange_rate=\"$exchangeRate\",
-              discount=\"$discount\",
-              tax=\"$tax\",
-              remarks=\"$remarks\",
-              status=\"$status\"
-            WHERE
-              so_no=\"$soNo\"
-          ");
-        }
-
-        /* If the sales number does not exist create as a new sales order. */
-        else {
-          query("
-            INSERT INTO
-              `so_header`
-                (so_no, so_date, debtor_code, currency_code, exchange_rate, discount, tax, status, remarks)
-              VALUES
-                (
-                  \"$soNo\",
-                  \"$soDate\",
-                  \"$debtorCode\",
-                  \"$currencyCode\",
-                  \"$exchangeRate\",
-                  \"$discount\",
-                  \"$tax\",
-                  \"$status\",
-                  \"$remarks\"
-                )
-          ");
-        }
-
-        /* Create the sales order models as they are given. */
-        if (
-          assigned($brandCodes) &&
-          assigned($modelNos) &&
-          assigned($prices) &&
-          assigned($qtys) &&
-          count($brandCodes) > 0 &&
-          count($modelNos) > 0 &&
-          count($prices) > 0 &&
-          count($qtys) > 0
-        ) {
-          $values = array();
-
-          for ($i = 0; $i < count($brandCodes); $i++) {
-            $brandCode = $brandCodes[$i];
-            $modelNo = $modelNos[$i];
-            $price = $prices[$i];
-            $qty = $qtys[$i];
-
-            array_push($values, "(\"$soNo\", \"$i\", \"$brandCode\", \"$modelNo\", \"$price\", \"$qty\", \"$qty\")");
-          }
-
-          query("
-            INSERT INTO
-              `so_model`
-                (so_no, so_index, brand_code, model_no, price, qty, qty_outstanding)
-              VALUES
-          " . join(", ", $values));
-        }
-
-        if ($status == "POSTED") {
-          header("Location: " . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?so_no=$soNo");
-        }
-      }
-    }
-
-    /* If the sales order was not filled-in completely and the order number does exists,
-       retrieve it from the database and auto-fill in the entry form with the retrieved data. */
-    else if (count($soHeader) > 0) {
-      $soDate = $soHeader[0]["so_date"];
-      $debtorCode = $soHeader[0]["debtor_code"];
-      $currencyCode = $soHeader[0]["currency_code"];
-      $exchangeRate = $soHeader[0]["exchange_rate"];
-      $discount = $soHeader[0]["discount"];
-      $tax = $soHeader[0]["tax"];
-      $remarks = $soHeader[0]["remarks"];
-      $status = $soHeader[0]["status"];
-
+    if (isset($soHeader)) {
+      $soNo = $soHeader["so_no"];
+      $soDate = $soHeader["so_date"];
+      $debtorCode = $soHeader["debtor_code"];
+      $currencyCode = $soHeader["currency_code"];
+      $exchangeRate = $soHeader["exchange_rate"];
+      $discount = $soHeader["discount"];
+      $tax = $soHeader["tax"];
+      $remarks = $soHeader["remarks"];
+      $status = $soHeader["status"];
       $soModels = query("
         SELECT
-          so_index,
           brand_code,
           model_no,
           price,
@@ -187,41 +161,19 @@
         ORDER BY
         so_index ASC
       ");
-
-      $brandCodes = array_map(function ($s) { return $s["brand_code"]; }, $soModels);
-      $modelNos = array_map(function ($s) { return $s["model_no"]; }, $soModels);
-      $prices = array_map(function ($s) { return $s["price"]; }, $soModels);
-      $qtys = array_map(function ($s) { return $s["qty"]; }, $soModels);
-    }
-
-    /* If the sales order was not filled-in completely and the order number does not exists,
-       display not found. */
-    else {
-      unset($soNo);
     }
   }
 
-  /* If no data is given, treat it as a new entry form. */
+  /* Else, initialize values for a new sales order. */
   else {
     $headline = SALES_ORDER_CREATE_TITLE;
-
     $soNo = "SO" . date("YmdHis");
     $soDate = date("Y-m-d");
     $currencyCode = COMPANY_CURRENCY;
     $exchangeRate = $currencies[COMPANY_CURRENCY];
     $discount = 0;
     $tax = COMPANY_TAX;
-    $status = "";
-  }
-
-  $soModels = array();
-
-  for ($i = 0; $i < count($modelNos); $i++) {
-    array_push($soModels, array(
-      "model_no" => $modelNos[$i],
-      "brand_code" => $brandCodes[$i],
-      "price" => $prices[$i],
-      "qty" => $qtys[$i]
-    ));
+    $status = "DRAFT";
+    $soModels = array();
   }
 ?>

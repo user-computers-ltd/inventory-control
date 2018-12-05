@@ -58,12 +58,17 @@
                   foreach ($taxAllotments as $warehouseCode => $warehouseAllotments) {
 
                     foreach ($warehouseAllotments as $plNo => $plAllotments) {
+                      $plId = $plAllotments["pl_no"];
                       $option = "";
 
-                      if ($plNo == "") {
+                      if ($plId == "") {
                         $option = "<button type=\"submit\">Create " . PACKING_LIST_PRINTOUT_TITLE . "</button>";
                       } else {
-                        $option = "<span class=\"packing-list\">" . PACKING_LIST_PRINTOUT_TITLE . ": <a href=\"" . PACKING_LIST_URL . "?pl_no=$plNo\">$plNo</a></span>";
+                        $option = "
+                          <span class=\"packing-list\">
+                            " . PACKING_LIST_PRINTOUT_TITLE . ": <a href=\"" . PACKING_LIST_URL . "?id=$plId\">$plNo</a>
+                          </span>
+                        ";
                       }
                       echo "
                         <form method=\"post\">
@@ -106,7 +111,7 @@
                                 <th class=\"number\">Allotted Qty</th>
                                 <th class=\"number\">Price</th>
                                 <th class=\"number\">Allotted Subtotal</th>
-                                <th class=\"number\">$InBaseCurrCol</th>
+                                <th class=\"number\">$InBaseCurrency</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -116,11 +121,12 @@
                         $totalAllottedQty = 0;
                         $totalAmt = 0;
 
-                        foreach ($plAllotments as $key => $models) {
+                        foreach ($plAllotments as $models) {
 
                           for ($i = 0; $i < count($models); $i++) {
                             $allotment = $models[$i];
                             $iaNo = $allotment["ia_no"];
+                            $soId = $allotment["so_id"];
                             $soNo = $allotment["so_no"];
                             $brandCode = $allotment["brand_code"];
                             $brandName = $allotment["brand_name"];
@@ -148,7 +154,7 @@
                                 $modelNo
                               </td>
                               <td rowspan=\"" . count($models) . "\" title=\"$soNo\">
-                                <a class=\"link\" href=\"" . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?so_no=$soNo\">$soNo</a>
+                                <a class=\"link\" href=\"" . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?id=$soId\">$soNo</a>
                               </td>
                               <td rowspan=\"" . count($models) . "\" class=\"number\" title=\"$outstandingQty\">
                               " . number_format($outstandingQty) . "

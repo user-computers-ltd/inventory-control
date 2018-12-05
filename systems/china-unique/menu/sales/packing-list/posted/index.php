@@ -4,7 +4,7 @@
   include_once ROOT_PATH . "includes/php/utils.php";
   include_once ROOT_PATH . "includes/php/database.php";
 
-  $InBaseCurrCol = "(in " . COMPANY_CURRENCY . ")";
+  $InBaseCurrency = "(in " . COMPANY_CURRENCY . ")";
 
   $from = $_GET["from"];
   $to = $_GET["to"];
@@ -23,6 +23,7 @@
 
   $plHeaders = query("
     SELECT
+      a.id                                                                    AS `pl_id`,
       DATE_FORMAT(a.pl_date, '%d-%m-%Y')                                      AS `date`,
       a.pl_no                                                                 AS `pl_no`,
       CONCAT(a.debtor_code, ' - ', IFNULL(c.english_name, 'Unknown'))         AS `debtor`,
@@ -98,7 +99,7 @@
               <th class="number">Discount</th>
               <th class="number">Currency</th>
               <th class="number">Total Amt</th>
-              <th class="number"><?php echo $InBaseCurrCol; ?></th>
+              <th class="number"><?php echo $InBaseCurrency; ?></th>
             </tr>
           </thead>
           <tbody>
@@ -108,6 +109,7 @@
 
               for ($i = 0; $i < count($plHeaders); $i++) {
                 $plHeader = $plHeaders[$i];
+                $plId = $plHeader["pl_id"];
                 $date = $plHeader["date"];
                 $debtor = $plHeader["debtor"];
                 $plNo = $plHeader["pl_no"];
@@ -123,7 +125,7 @@
                 echo "
                   <tr>
                     <td title=\"$date\">$date</td>
-                    <td title=\"$plNo\"><a class=\"link\" href=\"" . PACKING_LIST_PRINTOUT_URL . "?pl_no=$plNo\">$plNo</a></td>
+                    <td title=\"$plNo\"><a class=\"link\" href=\"" . PACKING_LIST_PRINTOUT_URL . "?id=$plId\">$plNo</a></td>
                     <td title=\"$debtor\">$debtor</td>
                     <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
                     <td title=\"$discount\" class=\"number\">" . number_format($discount, 2) . "%</td>

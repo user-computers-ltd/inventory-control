@@ -19,7 +19,7 @@
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo SALES_ORDER_INTERNAL_PRINTOUT_TITLE ?></div>
 
-      <?php if ($soHeader): ?>
+      <?php if (isset($soHeader)): ?>
         <table id="so-header">
           <tr>
             <td>Order No.:</td>

@@ -1,10 +1,10 @@
 <?php
   define("SYSTEM_PATH", "../../../");
+
   include_once SYSTEM_PATH . "includes/php/config.php";
   include_once ROOT_PATH . "includes/php/utils.php";
   include_once ROOT_PATH . "includes/php/database.php";
   include_once SYSTEM_PATH . "includes/php/actions.php";
-
   include "process.php";
 ?>
 
@@ -19,12 +19,12 @@
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo PACKING_LIST_PRINTOUT_TITLE; ?></div>
-      <?php if ($plHeader): ?>
+      <?php if (isset($plHeader)): ?>
         <form method="post">
           <table id="pl-header">
             <tr>
-              <td>Packing List No.:</td>
-              <td><?php echo $plHeader["pl_no"]; ?></td>
+              <td>Order No.:</td>
+              <td><input type="text" name="pl_no" value="<?php echo $plHeader["pl_no"]; ?>" required /></td>
               <td>Date:</td>
               <td><input type="date" name="pl_date" value="<?php echo $plHeader["pl_date"]; ?>" max="<?php echo date("Y-m-d"); ?>" required /></td>
             </tr>
@@ -71,6 +71,7 @@
                   for ($i = 0; $i < count($plModels); $i++) {
                     $plModel = $plModels[$i];
                     $iaNo = $plModel["ia_no"];
+                    $soId = $plModel["so_id"];
                     $soNo = $plModel["so_no"];
                     $brand = $plModel["brand"];
                     $modelNo = $plModel["model_no"];
@@ -90,7 +91,7 @@
                     echo "
                       <tr>
                         <td title=\"$status\">$status</td>
-                        <td title=\"$soNo\"><a class=\"link\" href=\"" . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?so_no=$soNo\">$soNo</a></td>
+                        <td title=\"$soNo\"><a class=\"link\" href=\"" . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?id=$soId\">$soNo</a></td>
                         <td title=\"$brand\">$brand</td>
                         <td title=\"$modelNo\">$modelNo</td>
                         <td title=\"$price\" class=\"number\">" . number_format($price, 2) . "</td>
@@ -133,33 +134,33 @@
                 </tr>
               </tfoot>
             </table>
-            <table id="pl-footer">
-              <tr>
-                <td>Reference No.:</td>
-                <td><input id="ref-no" name="ref_no" value="<?php echo $plHeader["ref_no"]; ?>" /></td>
-              </tr>
-              <tr>
-                <td>Remarks:</td>
-                <td><textarea id="remarks" name="remarks"><?php echo $plHeader["remarks"]; ?></textarea></td>
-              </tr>
-            </table>
-            <?php if ($plHeader["status"] == "SAVED"): ?>
-              <button name="status" type="submit" value="SAVED">Save</button>
-            <?php endif ?>
-            <button name="status" type="submit" value="<?php echo $plHeader["status"]; ?>" formaction="<?php echo PACKING_LIST_PRINTOUT_URL . "?pl_no=" . $plHeader["pl_no"]; ?>">Print</button>
-            <?php if ($plHeader["status"] == "SAVED" && !$hasIncoming): ?>
-              <button name="status" type="submit" value="POSTED">Post</button>
-            <?php endif ?>
-            <?php if ($plHeader["paid"] == "FALSE"): ?>
-              <button name="paid" type="submit" value="TRUE">Set Paid</button>
-            <?php elseif ($plHeader["paid"] == "TRUE"): ?>
-              <button name="paid" type="submit" value="FALSE">Set Unpaid</button>
-            <?php endif ?>
-            <?php if ($plHeader["status"] == "SAVED"): ?>
-              <button name="status" type="submit" value="DELETED">Delete</button>
-            <?php endif ?>
           <?php else: ?>
             <div id="pl-models-no-results">No models</div>
+          <?php endif ?>
+          <table id="pl-footer">
+            <tr>
+              <td>Reference No.:</td>
+              <td><input id="ref-no" name="ref_no" value="<?php echo $plHeader["ref_no"]; ?>" /></td>
+            </tr>
+            <tr>
+              <td>Remarks:</td>
+              <td><textarea id="remarks" name="remarks"><?php echo $plHeader["remarks"]; ?></textarea></td>
+            </tr>
+          </table>
+          <?php if ($plHeader["status"] == "SAVED"): ?>
+            <button name="status" type="submit" value="SAVED">Save</button>
+          <?php endif ?>
+          <button name="status" type="submit" value="<?php echo $plHeader["status"]; ?>" formaction="<?php echo PACKING_LIST_PRINTOUT_URL . "?id=$id"; ?>">Print</button>
+          <?php if ($plHeader["status"] == "SAVED" && !$hasIncoming): ?>
+            <button name="status" type="submit" value="POSTED">Post</button>
+          <?php endif ?>
+          <?php if ($plHeader["paid"] == "FALSE"): ?>
+            <button name="paid" type="submit" value="TRUE">Set Paid</button>
+          <?php elseif ($plHeader["paid"] == "TRUE"): ?>
+            <button name="paid" type="submit" value="FALSE">Set Unpaid</button>
+          <?php endif ?>
+          <?php if ($plHeader["status"] == "SAVED"): ?>
+            <button name="status" type="submit" value="DELETED">Delete</button>
           <?php endif ?>
         </form>
       <?php else: ?>

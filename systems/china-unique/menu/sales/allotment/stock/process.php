@@ -171,6 +171,7 @@
       b.debtor_code                       AS `debtor_code`,
       IFNULL(c.english_name, 'Unknown')   AS `debtor_name`,
       a.so_no                             AS `so_no`,
+      b.id                                AS `so_id`,
       DATE_FORMAT(b.so_date, '%d-%m-%Y')  AS `date`,
       b.discount                          AS `discount`,
       b.currency_code                     AS `currency_code`,

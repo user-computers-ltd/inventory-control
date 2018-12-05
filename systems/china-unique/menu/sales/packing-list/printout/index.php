@@ -4,7 +4,6 @@
   include_once SYSTEM_PATH . "includes/php/config.php";
   include_once ROOT_PATH . "includes/php/utils.php";
   include_once ROOT_PATH . "includes/php/database.php";
-
   include "process.php";
 ?>
 
@@ -20,7 +19,7 @@
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo PACKING_LIST_PRINTOUT_TITLE . " (" . $plHeader["warehouse"] . ")" ?></div>
 
-      <?php if ($plHeader): ?>
+      <?php if (isset($plHeader)): ?>
         <table id="pl-header">
           <tr>
             <td>Order No.:</td>

@@ -131,6 +131,7 @@
                   $firstModel = true;
 
                   foreach ($matchedModels as $matchedModel) {
+                    $soId = $matchedModel["so_id"];
                     $soNo = $matchedModel["so_no"];
                     $debtorCode = $matchedModel["debtor_code"];
                     $debtorName = $matchedModel["debtor_name"];
@@ -142,7 +143,7 @@
                       <td rowspan=\"" . count($matchedModels) . "\" class=\"number\">$qty</td>
                     " : "";
                     $soColumns = isset($soNo) ? "
-                      <td title=\"$soNo\"><a href=\"" . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?so_no=$soNo\">$soNo</a></td>
+                      <td title=\"$soNo\"><a href=\"" . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?id=$soId\">$soNo</a></td>
                       <td title=\"$debtorName\">$debtorName</td>
                       <td title=\"$date\">$date</td>
                       <td class=\"outstanding-qty number\" data-so_no=\"$soNo\">0</td>

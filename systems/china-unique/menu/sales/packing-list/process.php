@@ -1,6 +1,6 @@
 <?php
-  $plNo = $_GET["pl_no"];
-
+  $id = $_GET["id"];
+  $plNo = $_POST["pl_no"];
   $plDate = $_POST["pl_date"];
   $refNo = $_POST["ref_no"];
   $remarks = $_POST["remarks"];
@@ -10,17 +10,19 @@
   $plHeader = null;
   $plModels = array();
 
-  /* Only populate the data if an order number is given. */
-  if (assigned($plNo)) {
+  /* Only when an id is given, retrieve an existing packing list
+     and possibly update the packing list. */
+  if (assigned($id)) {
 
-    if (assigned($status) || assigned($paid)) {
+    /* If a form is submitted, update the packing list. */
+    if (assigned($plNo) && assigned($plDate)) {
       $queries = array();
-      $directionLocation = "";
 
       $setValues = array(
+        "pl_no=\"$plNo\"",
+        "pl_date=\"$plDate\"",
         "ref_no=\"$refNo\"",
-        "remarks=\"$remarks\"",
-        "pl_date=\"$plDate\""
+        "remarks=\"$remarks\""
       );
 
       if (assigned($status)) {
@@ -31,31 +33,21 @@
         array_push($setValues, "paid=\"$paid\"");
       }
 
-      array_push($queries, "
-        UPDATE
-          `pl_header`
-        SET
-          " . join(", ", $setValues) . "
-        WHERE
-          pl_no=\"$plNo\"
-      ");
+      array_push($queries, "UPDATE `pl_model` AS a LEFT JOIN `pl_header` AS b ON a.pl_no=b.pl_no SET a.pl_no=\"$plNo\" WHERE b.id=\"$id\"");
+      array_push($queries, "UPDATE `pl_header` SET " . join(", ", $setValues) . " WHERE id=\"$id\"");
 
       if ($status == "POSTED") {
         $queries = concat($queries, postPackingList($plNo));
-        $directionLocation = PACKING_LIST_POSTED_URL;
       } else if ($status == "DELETED") {
         $queries = array(
-          "DELETE FROM `pl_header` WHERE pl_no=\"$plNo\"",
-          "DELETE FROM `pl_model` WHERE pl_no=\"$plNo\""
+          "DELETE FROM `pl_header` WHERE id=\"$id\"",
+          "DELETE a FROM `pl_model` AS a LEFT JOIN `pl_header` AS b ON a.pl_no=b.pl_no WHERE b.id=\"$id\""
         );
-        $directionLocation = PACKING_LIST_SAVED_URL;
       }
 
       execute($queries);
 
-      if (assigned($directionLocation)) {
-        header("Location: $directionLocation");
-      }
+      header("Location: " . PACKING_LIST_SAVED_URL);
     }
 
     /* Attempt to retrieve an existing sales order. */
@@ -81,12 +73,13 @@
         `debtor` AS b
       ON a.debtor_code=b.code
       WHERE
-        a.pl_no=\"$plNo\"
+        a.id=\"$id\"
     ")[0];
 
     $plModels = query("
       SELECT
         a.ia_no                       AS `ia_no`,
+        c.id                          AS `so_id`,
         a.so_no                       AS `so_no`,
         b.name                        AS `brand`,
         a.model_no                    AS `model_no`,
@@ -97,8 +90,14 @@
       LEFT JOIN
         `brand` AS b
       ON a.brand_code=b.code
+      LEFT JOIN
+        `so_header` AS c
+      ON a.so_no=c.so_no
+      LEFT JOIN
+        `pl_header` AS d
+      ON a.pl_no=d.pl_no
       WHERE
-        a.pl_no=\"$plNo\"
+        d.id=\"$id\"
       ORDER BY
         a.brand_code ASC,
         a.model_no ASC

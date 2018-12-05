@@ -4,7 +4,7 @@
   include_once ROOT_PATH . "includes/php/utils.php";
   include_once ROOT_PATH . "includes/php/database.php";
 
-  $InBaseCurrCol = "(in " . COMPANY_CURRENCY . ")";
+  $InBaseCurrency = "(in " . COMPANY_CURRENCY . ")";
 
   $debtorCodes = $_GET["debtor_code"];
 
@@ -19,6 +19,7 @@
     SELECT
       CONCAT(a.debtor_code, ' - ', IFNULL(c.english_name, 'Unknown'))                     AS `debtor`,
       DATE_FORMAT(a.so_date, '%d-%m-%Y')                                                  AS `date`,
+      a.id                                                                                AS `so_id`,
       a.so_no                                                                             AS `so_no`,
       IFNULL(b.total_qty, 0)                                                              AS `qty`,
       IFNULL(b.total_qty_outstanding, 0)                                                  AS `outstanding_qty`,
@@ -137,7 +138,7 @@
                       <th class=\"number\">Outstanding Qty</th>
                       <th class=\"number\">Currency</th>
                       <th class=\"number\">Outstanding Amt</th>
-                      <th class=\"number\">$InBaseCurrCol</th>
+                      <th class=\"number\">$InBaseCurrency</th>
                       <th class=\"number\">Discount</th>
                     </tr>
                   </thead>
@@ -148,6 +149,7 @@
               $soHeader = $headers[$i];
               $date = $soHeader["date"];
               $debtor = $soHeader["debtor"];
+              $soId = $soHeader["so_id"];
               $soNo = $soHeader["so_no"];
               $qty = $soHeader["qty"];
               $outstandingQty = $soHeader["outstanding_qty"];
@@ -163,7 +165,7 @@
               echo "
                 <tr>
                   <td title=\"$date\">$date</td>
-                  <td title=\"$soNo\"><a class=\"link\" href=\"" . SALES_ORDER_URL . "?so_no=$soNo\">$soNo</a></td>
+                  <td title=\"$soNo\"><a class=\"link\" href=\"" . SALES_ORDER_URL . "?id=$soId\">$soNo</a></td>
                   <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
                   <td title=\"$outstandingQty\" class=\"number\">" . number_format($outstandingQty) . "</td>
                   <td title=\"$currency\" class=\"number\">$currency</td>

@@ -1,11 +1,11 @@
 <?php
-  $plNo = $_GET["pl_no"];
+  $id = $_GET["id"];
 
   $plHeader = null;
   $plModels = array();
 
-  /* Only populate the data if an order number is given. */
-  if (assigned($plNo)) {
+  /* Only populate the data if an id is given. */
+  if (assigned($id)) {
     $plHeader = query("
       SELECT
         a.pl_no                                           AS `pl_no`,
@@ -30,7 +30,7 @@
         `warehouse` AS c
       ON a.warehouse_code=c.code
       WHERE
-        a.pl_no=\"$plNo\"
+        a.id=\"$id\"
     ")[0];
 
     $plModels = query("
@@ -45,8 +45,11 @@
       LEFT JOIN
         `brand` AS b
       ON a.brand_code=b.code
+      LEFT JOIN
+        `pl_header` AS c
+      ON a.pl_no=b.pl_no
       WHERE
-        a.pl_no=\"$plNo\"
+        c.id=\"$id\"
       GROUP BY
         a.brand_code, a.model_no, a.so_no, a.price
       ORDER BY

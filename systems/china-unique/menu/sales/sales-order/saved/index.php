@@ -4,7 +4,7 @@
   include_once ROOT_PATH . "includes/php/utils.php";
   include_once ROOT_PATH . "includes/php/database.php";
 
-  $InBaseCurrCol = "(in " . COMPANY_CURRENCY . ")";
+  $InBaseCurrency = "(in " . COMPANY_CURRENCY . ")";
 
   $from = $_GET["from"];
   $to = $_GET["to"];
@@ -23,6 +23,7 @@
 
   $soHeaders = query("
     SELECT
+      a.id                                                                                AS `id`,
       DATE_FORMAT(a.so_date, '%d-%m-%Y')                                                  AS `date`,
       a.so_no                                                                             AS `so_no`,
       IFNULL(c.english_name, 'Unknown')                                                   AS `debtor_name`,
@@ -36,7 +37,10 @@
       `so_header` AS a
     LEFT JOIN
       (SELECT
-        so_no, SUM(qty) as total_qty, SUM(qty_outstanding) AS total_qty_outstanding, SUM(qty_outstanding * price) as total_outstanding_amt
+        so_no                         AS `so_no`,
+        SUM(qty)                      AS `total_qty`,
+        SUM(qty_outstanding)          AS `total_qty_outstanding`,
+        SUM(qty_outstanding * price)  AS `total_outstanding_amt`
       FROM
         `so_model`
       GROUP BY
@@ -101,7 +105,7 @@
               <th class="number">Discount</th>
               <th class="number">Currency</th>
               <th class="number">Outstanding Amt</th>
-              <th class="number"><?php echo $InBaseCurrCol; ?></th>
+              <th class="number"><?php echo $InBaseCurrency; ?></th>
             </tr>
           </thead>
           <tbody>
@@ -112,6 +116,7 @@
 
               for ($i = 0; $i < count($soHeaders); $i++) {
                 $soHeader = $soHeaders[$i];
+                $id = $soHeader["id"];
                 $date = $soHeader["date"];
                 $soNo = $soHeader["so_no"];
                 $debtorName = $soHeader["debtor_name"];
@@ -129,7 +134,7 @@
                 echo "
                   <tr>
                     <td title=\"$date\">$date</td>
-                    <td title=\"$soNo\"><a class=\"link\" href=\"" . SALES_ORDER_URL . "?so_no=$soNo\">$soNo</a></td>
+                    <td title=\"$soNo\"><a class=\"link\" href=\"" . SALES_ORDER_URL . "?id=$id\">$soNo</a></td>
                     <td title=\"$debtorName\">$debtorName</td>
                     <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
                     <td title=\"$outstandingQty\" class=\"number\">" . number_format($outstandingQty) . "</td>

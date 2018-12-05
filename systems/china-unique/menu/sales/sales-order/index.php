@@ -51,19 +51,54 @@
                     }
                   ?>
                 </select>
-                <input id="exchange-rate" name="exchange_rate" type="number" step="0.00000001" min="0.00000001" placeholder="Exchange Rate" value="<?php echo $exchangeRate; ?>" <?php echo $currencyCode === COMPANY_CURRENCY ? "readonly" : ""; ?> onchange="onExchangeRateChange()" required />
+                <input
+                  id="exchange-rate"
+                  name="exchange_rate"
+                  type="number"
+                  step="0.00000001"
+                  min="0.00000001"
+                  placeholder="Exchange Rate"
+                  value="<?php echo $exchangeRate; ?>"
+                  onchange="onExchangeRateChange()"
+                  required
+                  <?php echo $currencyCode === COMPANY_CURRENCY ? "readonly" : ""; ?>
+                />
               </td>
             </tr>
             <tr>
               <td>Discount:</td>
               <td>
-                <input id="discount" name="discount" type="number" step="0.01" min="0" max="100" placeholder="Discount" value="<?php echo $discount; ?>" onchange="onDiscountChange()" required /><span>%</span>
+                <input
+                  id="discount"
+                  name="discount"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  max="100"
+                  placeholder="Discount"
+                  value="<?php echo $discount; ?>"
+                  onchange="onDiscountChange()"
+                  required
+                /><span>%</span>
                 <input id="tax" name="tax" type="number" value="<?php echo $tax; ?>" hidden required />
               </td>
               <td colspan="2">
-                <input id="normal-price" name="price-standard" type="radio" value="normal_price" <?php echo $priceStandard == "normal_price" ? "checked" : ""; ?> onchange="onPriceStandardChange()" />
+                <input
+                  id="normal-price"
+                  name="price-standard"
+                  type="radio"
+                  value="normal_price"
+                  onchange="onPriceStandardChange()"
+                  checked
+                />
                 <label for="normal-price">Normal Price</label>
-                <input id="special-price" name="price-standard" type="radio" value="special_price" <?php echo $priceStandard == "special_price" ? "checked" : ""; ?> onchange="onPriceStandardChange()" />
+                <input
+                  id="special-price"
+                  name="price-standard"
+                  type="radio"
+                  value="special_price"
+                  onchange="onPriceStandardChange()"
+                />
                 <label for="special-price">Special Price</label>
               </td>
             </tr>
@@ -118,10 +153,10 @@
               <td><textarea id="remarks" name="remarks"><?php echo $remarks; ?></textarea></td>
             </tr>
           </table>
-          <?php if ($status == "" || $status == "SAVED"): ?>
+          <?php if ($status == "DRAFT" || $status == "SAVED"): ?>
             <button name="status" type="submit" value="SAVED">Save</button>
           <?php endif ?>
-          <button name="status" type="submit" value="<?php echo assigned($status) ? $status : "DRAFT"; ?>" formaction="<?php echo SALES_ORDER_PRINTOUT_URL; ?>">Print</button>
+          <button name="status" type="submit" value="<?php echo $status; ?>" formaction="<?php echo SALES_ORDER_PRINTOUT_URL; ?>">Print</button>
           <?php if ($status == "SAVED"): ?>
             <button name="status" type="submit" value="POSTED">Post</button>
             <button name="status" type="submit" value="DELETED">Delete</button>
@@ -188,20 +223,68 @@
 
               var rowInnerHTML =
                   "<tr>"
-                + "<td><input class=\"model-no\" type=\"text\" name=\"model_no[]\" list=\"model-list\" value=\"" + soModel["model_no"] + "\" oninput=\"onModelNoChange(event, " + i + ")\" onchange=\"onModelNoChange(event, " + i + ", true)\" onfocus=\"onFieldFocused(" + i + ", 'model_no[]')\" onblur=\"onFieldBlurred()\" autocomplete=\"on\" required /></td>"
-                + "<td><select class=\"brand-code\" name=\"brand_code[]\" value=\"" + soModel["brand_code"] + "\" onchange=\"onBrandCodeChange(event, " + i + ")\" onfocus=\"onFieldFocused(" + i + ", 'brand_code[]')\" onblur=\"onFieldBlurred()\" required>";
+                + "<td>"
+                  + "<input "
+                    + "class=\"model-no\" "
+                    + "type=\"text\" "
+                    + "name=\"model_no[]\" "
+                    + "list=\"model-list\" "
+                    + "value=\"" + soModel["model_no"] + "\" "
+                    + "onfocus=\"onFieldFocused(" + i + ", 'model_no[]')\" "
+                    + "onblur=\"onModelNoChange(event, " + i + ")\" "
+                    + "autocomplete=\"on\" "
+                    + "required "
+                  + "/>"
+                + "</td>"
+                + "<td>"
+                  + "<select "
+                    + "class=\"brand-code\" "
+                    + "name=\"brand_code[]\" "
+                    + "value=\"" + soModel["brand_code"] + "\" "
+                    + "onchange=\"onBrandCodeChange(event, " + i + ")\" "
+                    + "onfocus=\"onFieldFocused(" + i + ", 'brand_code[]')\" "
+                    + "onblur=\"onFieldBlurred()\" "
+                    + "required"
+                  + ">";
 
               for (var j = 0; j < brands.length; j++) {
                 var code = brands[j]["code"];
-                var disabled = matchedModels.map(function (model) { return model["brand_code"]; }).indexOf(code) === -1 ? " disabled hidden" : "";
+                var disabled = matchedModels.map(function (model) {
+                  return model["brand_code"];
+                }).indexOf(code) === -1 ? " disabled hidden" : "";
                 rowInnerHTML += "<option value=\"" + code + "\"" + disabled + ">" + code + "</option>";
               }
 
               rowInnerHTML +=
                   "</select>"
                 + "</td>"
-                + "<td><input class=\"qty number\" type=\"number\" min=\"0\" name=\"qty[]\" value=\"" + soModel["qty"] + "\" onchange=\"onQuantityChange(event, " + i + ")\" onfocus=\"onFieldFocused(" + i + ", 'qty[]')\" onblur=\"onFieldBlurred()\" required /></td>"
-                + "<td><input class=\"price number\" type=\"number\" step=\"0.01\" min=\"0\" name=\"price[]\" value=\"" + soModel["price"].toFixed(2) + "\" onchange=\"onPriceChange(event, " + i + ")\" onfocus=\"onFieldFocused(" + i + ", 'price[]')\" onblur=\"onFieldBlurred()\" required /></td>"
+                + "<td>"
+                  + "<input "
+                    + "class=\"qty number\" "
+                    + "type=\"number\" "
+                    + "min=\"0\" "
+                    + "name=\"qty[]\" "
+                    + "value=\"" + soModel["qty"] + "\" "
+                    + "onchange=\"onQuantityChange(event, " + i + ")\" "
+                    + "onfocus=\"onFieldFocused(" + i + ", 'qty[]')\" "
+                    + "onblur=\"onFieldBlurred()\" "
+                    + "required "
+                  + "/>"
+                + "</td>"
+                + "<td>"
+                  + "<input "
+                    + "class=\"price number\" "
+                    + "type=\"number\" "
+                    + "step=\"0.01\" "
+                    + "min=\"0\" "
+                    + "name=\"price[]\" "
+                    + "value=\"" + soModel["price"].toFixed(2) + "\" "
+                    + "onchange=\"onPriceChange(event, " + i + ")\" "
+                    + "onfocus=\"onFieldFocused(" + i + ", 'price[]')\" "
+                    + "onblur=\"onFieldBlurred()\" "
+                    + "required "
+                  + "/>"
+                + "</td>"
                 + "<td><span class=\"total-amount number\">" + soModel["total_amount"].toFixed(2) + "</span></td>"
                 + "<td><div class=\"remove\" onclick=\"removeSalesModel(" + i + ")\">×</div></td>"
                 + "</tr>";
@@ -255,18 +338,23 @@
             }
 
             var soModel = soModels[index];
+            var existsAlready = soModels.filter(function (m) {
+              return model["model_no"] && m["model_no"] === model["model_no"];
+            }).length > 0;
 
-            soModel["model_no"] = model["model_no"] || "";
-            soModel["brand_code"] = model["brand_code"] || "";
-            soModel["cost_average"] = parseFloat(model["cost_average"]) || 0;
-            soModel["normal_price"] = parseFloat(model["normal_price"]) || 0;
-            soModel["special_price"] = parseFloat(model["special_price"]) || 0;
-            soModel["price"] = parseFloat(model[priceStandard]) || 0;
-            soModel["profit"] = profit;
-            soModel["qty"] = soModel["qty"] || 0;
-            soModel["total_amount"] = (soModel["qty"] || 0) * soModel["price"];
-            soModel["qty_on_hand"] = parseFloat(model["qty_on_hand"]) || 0;
-            soModel["qty_on_order"] = parseFloat(model["qty_on_order"]) || 0;
+            if (!existsAlready) {
+              soModel["model_no"] = model["model_no"] || "";
+              soModel["brand_code"] = model["brand_code"] || "";
+              soModel["cost_average"] = parseFloat(model["cost_average"]) || 0;
+              soModel["normal_price"] = parseFloat(model["normal_price"]) || 0;
+              soModel["special_price"] = parseFloat(model["special_price"]) || 0;
+              soModel["price"] = parseFloat(model[priceStandard]) || 0;
+              soModel["profit"] = profit;
+              soModel["qty"] = soModel["qty"] || 0;
+              soModel["total_amount"] = (soModel["qty"] || 0) * soModel["price"];
+              soModel["qty_on_hand"] = parseFloat(model["qty_on_hand"]) || 0;
+              soModel["qty_on_order"] = parseFloat(model["qty_on_order"]) || 0;
+            }
           }
 
           function updatePrice(index, price = 0) {
@@ -374,19 +462,27 @@
             render();
           }
 
-          function onModelNoChange(event, index, force = false) {
-            var matchedModel = getModels(event.target.value)[0];
+          function onModelNoChange(event, index) {
+            var newModelNo = event.target.value;
+            var matchedModel = getModels(newModelNo)[0];
 
-            if (matchedModel || force) {
+            if (matchedModel && soModels[index]["model_no"] !== newModelNo) {
               updateModel(index, matchedModel);
               render();
             }
+
+            onFieldBlurred();
           }
 
           function onBrandCodeChange(event, index) {
             var modelNo = soModels[i]["model_no"];
             var brandCode = event.target.value;
-            var matchedModel = modelNo && brandCode && getModels(modelNo).filter(function (model) { return model["brand_code"] === brandCode; })[0] || undefined;
+            var matchedModel =
+              modelNo &&
+              brandCode &&
+              getModels(modelNo).filter(function (model) {
+                return model["brand_code"] === brandCode;
+              })[0] || undefined;
 
             updateModel(index, matchedModel);
             render();
