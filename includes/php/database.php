@@ -54,11 +54,17 @@
     };
   }
 
-  function query($sql) {
+  function query($sql, $failSafe = false) {
     $result = mysqli_query($GLOBALS["connection"], $sql);
 
     if (!$result) {
-      throwError("Error in query: " . mysqli_error($GLOBALS["connection"]) . " - $sql");
+      $error = "Error in query: " . mysqli_error($GLOBALS["connection"]) . " - $sql";
+
+      if ($failSafe == false) {
+        throwError($error);
+      } else {
+        throw new Exception($error);
+      }
     }
 
     if (is_bool($result)) {
@@ -76,7 +82,7 @@
     }
   }
 
-  function execute($queries) {
+  function execute($queries, $failSafe = false) {
     $connection = $GLOBALS["connection"];
     mysqli_autocommit($connection, false);
 
@@ -95,7 +101,12 @@
       mysqli_commit($connection);
     } else {
       mysqli_rollback($connection);
-      throwError($error);
+
+      if ($failSafe == false) {
+        throwError($error);
+      } else {
+        throw new Exception($error);
+      }
     }
   }
 ?>
