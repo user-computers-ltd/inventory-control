@@ -23,16 +23,14 @@
       SELECT
         a.so_no                                                           AS `so_no`,
         DATE_FORMAT(a.so_date, '%d-%m-%Y')                                AS `date`,
-        CONCAT(a.debtor_code, ' - ', IFNULL(b.english_name, 'Unknown'))   AS `customer`,
-        CONCAT(a.currency_code, ' @ ', a.exchange_rate)                   AS `currency`,
+        a.debtor_code                                                     AS `debtor_code`,
+        a.currency_code                                                   AS `currency_code`,
+        a.exchange_rate                                                   AS `exchange_rate`,
         a.discount                                                        AS `discount`,
         a.tax                                                             AS `tax`,
         a.status                                                          AS `status`
       FROM
         `so_header` AS a
-      LEFT JOIN
-        `debtor` AS b
-      ON a.debtor_code=b.code
       WHERE
         a.id=\"$id\"
     ")[0];
@@ -69,26 +67,22 @@
     assigned($exchangeRate) &&
     assigned($discount) &&
     assigned($tax) &&
-    assigned($status) &&
-    assigned($brandCodes) &&
-    assigned($modelNos) &&
-    assigned($prices) &&
-    assigned($qtys)
+    assigned($status)
   ) {
-    $debtors = query("SELECT english_name AS name FROM `debtor` WHERE code=\"$debtorCode\"");
     $brands = query("SELECT code, name FROM `brand`");
     foreach ($brands as $brand) {
       $brands[$brand["code"]] = $brand["name"];
     }
 
     $soHeader = array(
-      "so_no"     => $soNo,
-      "date"      => $soDate,
-      "customer"  => "$debtorCode - " . (count($debtors) > 0 ? $debtors[0]["name"] : "Unknown"),
-      "currency"  => "$currencyCode @ $exchangeRate",
-      "discount"  => $discount,
-      "tax"       => $tax,
-      "status"    => $status
+      "so_no"         => $soNo,
+      "date"          => $soDate,
+      "debtor_code"   => $debtorCode,
+      "currency_code" => $currencyCode,
+      "exchange_rate" => $exchangeRate,
+      "discount"      => $discount,
+      "tax"           => $tax,
+      "status"        => $status
     );
 
     $soModels = array();
@@ -102,5 +96,12 @@
         "subtotal"          => $prices[$i] * $qtys[$i]
       ));
     }
+  }
+
+  if (isset($soHeader)) {
+    $debtor = query("SELECT english_name AS name FROM `debtor` WHERE code=\"$debtorCode\"")[0];
+
+    $soHeader["customer"] = $soHeader["debtor_code"] . " - " . (isset($debtor) ? $debtor["name"] : "Unknown");
+    $soHeader["currency"] = $soHeader["currency_code"] . " @ " . $soHeader["exchange_rate"];
   }
 ?>

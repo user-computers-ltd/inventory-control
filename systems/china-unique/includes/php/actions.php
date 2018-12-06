@@ -41,8 +41,8 @@
           SUM(qty) AS `qty_on_hand`
         FROM
           `stock`
-        GROUP BY
-          model_no, brand_code
+        WHERE
+          brand_code=\"$brandCode\" AND model_no=\"$modelNo\"
       ")[0]["qty_on_hand"];
 
       $stockInWarehouse = query("
@@ -144,8 +144,75 @@
     return $queries;
   }
 
+  function postStockInVoucher($stockInNo) {
+    $queries = array();
+
+    $stockInHeader = query("
+      SELECT
+        stock_in_date,
+        transaction_code,
+        warehouse_code,
+        creditor_code,
+        currency_code,
+        exchange_rate,
+        discount,
+        tax
+      FROM
+        `stock_in_header`
+      WHERE
+        stock_in_no=\"$stockInNo\"
+    ")[0];
+
+    $stockInModels = query("
+      SELECT
+        brand_code      AS `brand_code`,
+        model_no        AS `model_no`,
+        price           AS `price`,
+        qty             AS `qty`
+      FROM
+        `stock_in_model`
+      WHERE
+        stock_in_no=\"$stockInNo\"
+    ");
+
+    /* Insert corresponding transactions. */
+    $brandCodes = array();
+    $modelNos = array();
+    $prices = array();
+    $qtys = array();
+
+    foreach ($stockInModels as $stockInModel) {
+      $brandCode = $stockInModel["brand_code"];
+      $modelNo = $stockInModel["model_no"];
+      $price = $stockInModel["price"];
+      $qty = $stockInModel["qty"];
+
+      array_push($brandCodes, $brandCode);
+      array_push($modelNos, $modelNo);
+      array_push($prices, $price);
+      array_push($qtys, $qty);
+    }
+
+    $postTransactionQueries = postTransactions(
+      $stockInNo,
+      $stockInHeader["transaction_code"],
+      $stockInHeader["stock_in_date"],
+      $stockInHeader["creditor_code"],
+      $stockInHeader["currency_code"],
+      $stockInHeader["exchange_rate"],
+      $stockInHeader["discount"],
+      $stockInHeader["tax"],
+      $stockInHeader["warehouse_code"],
+      $brandCodes,
+      $modelNos,
+      $prices,
+      $qtys
+    );
+
+    return concat($queries, $postTransactionQueries);
+  }
+
   function postPackingList($plNo) {
-    $date = date("Y-m-d");
     $queries = array();
 
     $plHeader = query("
@@ -193,20 +260,6 @@
       ON a.pl_no=b.pl_no
       WHERE
         a.pl_no=\"$plNo\"");
-
-    $transactionRefs = query("
-      SELECT
-        brand_code      AS `brand_code`,
-        model_no        AS `model_no`,
-        price           AS `price`,
-        SUM(qty)        AS `qty`
-      FROM
-        `pl_model`
-      WHERE
-        pl_no=\"$plNo\"
-      GROUP BY
-        brand_code, model_no, price
-    ");
 
     foreach ($soModelRefs as $soModelRef) {
       $soNo = $soModelRef["so_no"];

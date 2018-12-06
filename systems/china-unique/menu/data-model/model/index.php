@@ -161,9 +161,15 @@
       <?php if (count($results) > 0): ?>
         <table id="model-results">
           <colgroup>
-            <col>
-            <col>
             <col style="width: 60px;">
+            <col style="width: 130px;">
+            <col style="width: 60px;">
+            <col>
+            <col>
+            <col>
+            <col style="width: 80px;">
+            <col style="width: 80px;">
+            <col style="width: 80px;">
           </colgroup>
           <thead>
             <tr></tr>

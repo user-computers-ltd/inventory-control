@@ -1,0 +1,44 @@
+#stock-in-header,
+#stock-in-footer {
+  font-size: 13px;
+}
+
+#stock-in-header td,
+#stock-in-footer td {
+  border: none;
+}
+
+#stock-in-header td:nth-child(2n + 1),
+#stock-in-footer td:nth-child(2n + 1) {
+  width: 150px;
+  font-weight: bold;
+}
+
+#stock-in-models th,
+#stock-in-models td {
+  background-color: transparent;
+  border: none;
+  padding: 4px;
+  font-size: 13px;
+}
+
+#stock-in-models .number {
+  text-align: right;
+}
+
+#stock-in-models thead th {
+  border-bottom: 1px solid;
+}
+
+#stock-in-models tfoot th {
+  border-top: 1px solid;
+}
+
+#stock-in-models-no-results,
+#stock-in-not-found {
+  margin: 100px 0px;
+  text-align: center;
+  font-size: 40px;
+  font-weight: bold;
+  opacity: 0.3;
+}
