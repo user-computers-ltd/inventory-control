@@ -57,7 +57,6 @@
                   type="number"
                   step="0.00000001"
                   min="0.00000001"
-                  placeholder="Exchange Rate"
                   value="<?php echo $exchangeRate; ?>"
                   onchange="onExchangeRateChange()"
                   required
@@ -75,13 +74,14 @@
                   step="0.01"
                   min="0"
                   max="100"
-                  placeholder="Discount"
                   value="<?php echo $discount; ?>"
                   onchange="onDiscountChange()"
                   required
                 /><span>%</span>
                 <input id="tax" name="tax" type="number" value="<?php echo $tax; ?>" hidden required />
               </td>
+            </tr>
+            <tr>
               <td colspan="2">
                 <input
                   id="normal-price"
@@ -117,9 +117,9 @@
               <tr>
                 <th>Model no.</th>
                 <th>Brand code</th>
-                <th><span class="number">Quantity</span></th>
-                <th><span class="number">Selling Price</span></th>
-                <th><span class="number">Sub Total</span></th>
+                <th class="number">Quantity</th>
+                <th class="number">Selling Price</th>
+                <th class="number">Subtotal</th>
                 <th></th>
               </tr>
             </thead>
@@ -127,20 +127,20 @@
               <tr class="discount-row">
                 <td colspan="3"></td>
                 <th></th>
-                <th><span id="sub-total-amount" class="number"></span></th>
+                <th id="sub-total-amount" class="number"></th>
                 <td></td>
               </tr>
               <tr class="discount-row">
                 <td colspan="3"></td>
-                <td><span id="discount-percentage" class="number"></span></td>
-                <td><span id="discount-amount" class="number"></span></td>
+                <td id="discount-percentage" class="number"></td>
+                <td id="discount-amount" class="number"></td>
                 <td></td>
               </tr>
                 <th></th>
-                <th><span class="number">Total:</span></th>
-                <th><span id="total-qty" class="number"></span></th>
+                <th class="number">Total:</th>
+                <th id="total-qty" class="number"></th>
                 <th></th>
-                <th><span id="total-amount" class="number"></span></th>
+                <th id="total-amount" class="number"></th>
                 <th></th>
               </tr>
             </tfoot>
@@ -181,7 +181,6 @@
           var focusedRow = null;
           var focusedFieldName = null;
 
-          var formElement = document.querySelector("#so-form");
           var discountElement = document.querySelector("#discount");
           var taxElement = document.querySelector("#tax");
           var currencyCodeElement = document.querySelector("#currency-code");
@@ -285,7 +284,7 @@
                     + "required "
                   + "/>"
                 + "</td>"
-                + "<td><span class=\"total-amount number\">" + soModel["total_amount"].toFixed(2) + "</span></td>"
+                + "<td class=\"total-amount number\">" + soModel["total_amount"].toFixed(2) + "</td>"
                 + "<td><div class=\"remove\" onclick=\"removeSalesModel(" + i + ")\">×</div></td>"
                 + "</tr>";
 
@@ -303,7 +302,7 @@
 
             if (soModels.length === 0) {
               var rowElement = document.createElement("tr");
-              rowElement.innerHTML = "<td colspan=\"10\"><span id=\"so-entry-no-model\">No models</span></td>";
+              rowElement.innerHTML = "<td colspan=\"10\" id=\"so-entry-no-model\">No models</td>";
               tableBodyElement.appendChild(rowElement);
             }
 
@@ -338,23 +337,18 @@
             }
 
             var soModel = soModels[index];
-            var existsAlready = soModels.filter(function (m) {
-              return model["model_no"] && m["model_no"] === model["model_no"];
-            }).length > 0;
 
-            if (!existsAlready) {
-              soModel["model_no"] = model["model_no"] || "";
-              soModel["brand_code"] = model["brand_code"] || "";
-              soModel["cost_average"] = parseFloat(model["cost_average"]) || 0;
-              soModel["normal_price"] = parseFloat(model["normal_price"]) || 0;
-              soModel["special_price"] = parseFloat(model["special_price"]) || 0;
-              soModel["price"] = parseFloat(model[priceStandard]) || 0;
-              soModel["profit"] = profit;
-              soModel["qty"] = soModel["qty"] || 0;
-              soModel["total_amount"] = (soModel["qty"] || 0) * soModel["price"];
-              soModel["qty_on_hand"] = parseFloat(model["qty_on_hand"]) || 0;
-              soModel["qty_on_order"] = parseFloat(model["qty_on_order"]) || 0;
-            }
+            soModel["model_no"] = model["model_no"] || "";
+            soModel["brand_code"] = model["brand_code"] || "";
+            soModel["cost_average"] = parseFloat(model["cost_average"]) || 0;
+            soModel["normal_price"] = parseFloat(model["normal_price"]) || 0;
+            soModel["special_price"] = parseFloat(model["special_price"]) || 0;
+            soModel["price"] = parseFloat(model[priceStandard]) || 0;
+            soModel["profit"] = profit;
+            soModel["qty"] = soModel["qty"] || 0;
+            soModel["total_amount"] = (soModel["qty"] || 0) * soModel["price"];
+            soModel["qty_on_hand"] = parseFloat(model["qty_on_hand"]) || 0;
+            soModel["qty_on_order"] = parseFloat(model["qty_on_order"]) || 0;
           }
 
           function updatePrice(index, price = 0) {
@@ -465,9 +459,17 @@
           function onModelNoChange(event, index) {
             var newModelNo = event.target.value;
             var matchedModel = getModels(newModelNo)[0];
+            var soModel = soModels[index];
 
-            if (matchedModel && soModels[index]["model_no"] !== newModelNo) {
-              updateModel(index, matchedModel);
+            if (soModel["model_no"] !== newModelNo) {
+              var existsAlready = soModels.filter(function (m) {
+                return newModelNo && m["model_no"] === newModelNo;
+              }).length > 0;
+
+              if (!existsAlready) {
+                updateModel(index, matchedModel);
+              }
+
               render();
             }
 

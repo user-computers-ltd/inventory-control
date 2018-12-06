@@ -33,8 +33,8 @@
 
     /* If an id is given, remove the previous sales order first. */
     if (assigned($id)) {
-      array_push($queries, "DELETE FROM `so_header` WHERE id=\"$id\"");
       array_push($queries, "DELETE a FROM `so_model` AS a LEFT JOIN `so_header` AS b ON a.so_no=b.so_no WHERE b.id=\"$id\"");
+      array_push($queries, "DELETE FROM `so_header` WHERE id=\"$id\"");
     }
 
     /* If the status is not delete, insert a new sales order. */
