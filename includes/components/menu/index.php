@@ -15,7 +15,7 @@
         $menu = "$menu<div class=\"menu-item toggle $expanded\" data-name=\"$prefix-$name\" onclick=\"toggleMenu('$prefix-$name')\">$menuLabel</div>$subMenu";
       } else {
         $active = $currentURL == $site ? "active" : "";
-        $menu = "$menu<a class=\"menu-item $active\" href=\"$site\">$menuLabel</a>";
+        $menu = "$menu<a class=\"menu-item link $active\" href=\"$site\">$menuLabel</a>";
       }
     }
 

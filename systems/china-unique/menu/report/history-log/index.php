@@ -16,32 +16,32 @@
 
   if (assigned($from)) {
     $whereClause = $whereClause . "
-      AND a.transaction_date >= \"$from\"";
+      AND a.transaction_date>=\"$from\"";
   }
 
   if (assigned($to)) {
     $whereClause = $whereClause . "
-      AND a.transaction_date <= \"$to\"";
+      AND a.transaction_date<=\"$to\"";
   }
 
   if (assigned($brandCode)) {
     $whereClause = $whereClause . "
-      AND a.brand_code = \"$brandCode\"";
+      AND a.brand_code=\"$brandCode\"";
   }
 
   if (assigned($modelNo)) {
     $whereClause = $whereClause . "
-      AND a.model_no = \"$modelNo\"";
+      AND a.model_no=\"$modelNo\"";
   }
 
   if (assigned($transactionCode)) {
     $whereClause = $whereClause . "
-      AND a.transaction_code = \"$transactionCode\"";
+      AND a.transaction_code=\"$transactionCode\"";
   }
 
   $hasFilter = assigned($whereClause);
 
-  $transaction = array();
+  $transactions = array();
 
   if ($hasFilter) {
     $transactions = query("
@@ -91,15 +91,15 @@
     <?php include_once ROOT_PATH . "includes/components/menu/index.php"; ?>
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
-      <div class="headline"><?php echo REPORT_TRANSACTION_LOG_TITLE; ?></div>
+      <div class="headline"><?php echo REPORT_HISTORY_LOG_TITLE; ?></div>
       <form>
         <table id="trans-input">
           <tr>
-            <th><label>From:</label></th>
-            <th><label>To:</label></th>
-            <th><label>Brand Code:</label></th>
-            <th><label>Model No:</label></th>
-            <th><label>Transaction Code:</label></th>
+            <th>From:</th>
+            <th>To:</th>
+            <th>Brand Code:</th>
+            <th>Model No:</th>
+            <th>Transaction Code:</th>
           </tr>
           <tr>
             <td><input type="date" name="from" value="<?php echo $from; ?>" max="<?php echo date("Y-m-d"); ?>" /></td>

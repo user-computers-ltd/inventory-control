@@ -9,9 +9,13 @@
   box-sizing: border-box;
 }
 
+.so-results th,
 .so-results td {
-  min-width: 50px;
-  max-width: 50px;
+  min-width: 0px;
+  max-width: 0px;
+}
+
+.so-results td {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

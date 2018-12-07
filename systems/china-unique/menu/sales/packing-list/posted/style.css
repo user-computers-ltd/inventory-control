@@ -10,8 +10,8 @@
 }
 
 #pl-results td {
-  min-width: 50px;
-  max-width: 50px;
+  min-width: 0px;
+  max-width: 0px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

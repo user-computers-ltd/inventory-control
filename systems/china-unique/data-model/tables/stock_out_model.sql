@@ -6,6 +6,5 @@ CREATE TABLE `stock_out_model` (
   `model_no`          VARCHAR(30)     NOT NULL,
   `price`             DECIMAL(16,6)   NOT NULL,
   `qty`               INT(12)         NOT NULL,
-  `warehouse_code`    VARCHAR(30)     NOT NULL,
   PRIMARY KEY (`id`)
 );

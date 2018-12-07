@@ -14,7 +14,7 @@
 }
 
 #menu-sidebar.show {
-  width: 300px;
+  width: 350px;
   background-color: rgba(0, 0, 0, 0.9);
 }
 
@@ -57,7 +57,7 @@
 #menu-sidebar .menu-item {
   display: block;
   padding: 5px 0px 5px 5px;
-  width: 300px;
+  width: 350px;
   max-height: 30px;
   box-sizing: border-box;
   font-size: 16px;
@@ -71,7 +71,6 @@
   max-height: 200px;
 }
 
-#menu-sidebar .menu-item:hover,
 #menu-sidebar .menu-item.active {
   color: #ffffff;
   background-color: rgba(255, 255, 255, 0.2);
@@ -91,15 +90,23 @@
 
 #menu-sidebar .sub-menu {
   max-height: 0px;
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.2);
   overflow: hidden;
   transition: 0.3s;
 }
 
-#menu-sidebar .menu-item.expanded {
+#menu-sidebar.show .sub-menu {
+  padding-left: 10px;
+}
+
+#menu-sidebar .menu-item.toggle {
+  font-weight: bold;
+}
+
+#menu-sidebar .menu-item.toggle.expanded {
   color: white;
 }
 
-#menu-sidebar .menu-item.expanded + .sub-menu {
+#menu-sidebar .menu-item.toggle.expanded + .sub-menu {
   max-height: 100vh;
 }

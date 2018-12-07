@@ -82,15 +82,12 @@
 
   $brands = query("
     SELECT DISTINCT
-      a.brand_code  AS `code`,
-      b.name        AS `name`
+      code AS `code`,
+      name AS `name`
     FROM
-      `model` AS a
-    LEFT JOIN
-      `brand` AS b
-    ON a.brand_code=b.code
+      `brand`
     ORDER BY
-      a.brand_code ASC
+      code ASC
   ");
 
   $modelWhereClause = "";

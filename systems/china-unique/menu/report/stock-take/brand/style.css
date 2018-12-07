@@ -1,27 +1,32 @@
-#so-input td {
+#brand-input td {
   border: none;
   font-size: 13px;
+  padding: 0px 5px;
 }
 
-#so-input input,
-#so-input select {
+#brand-input input,
+#brand-input select {
   width: 100%;
   box-sizing: border-box;
 }
 
-#so-results td {
+#brand-results th,
+#brand-results td {
   min-width: 0px;
   max-width: 0px;
+}
+
+#brand-results td {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-#so-results .number {
+#brand-results .number {
   text-align: right;
 }
 
-.so-customer-no-results {
+.brand-no-results {
   margin: 100px 0px;
   text-align: center;
   font-size: 40px;

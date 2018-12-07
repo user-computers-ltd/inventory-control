@@ -9,7 +9,7 @@
   box-sizing: border-box;
 }
 
-#so-results td {
+.so-results td {
   min-width: 0px;
   max-width: 0px;
   white-space: nowrap;
@@ -17,7 +17,7 @@
   text-overflow: ellipsis;
 }
 
-#so-results .number {
+.so-results .number {
   text-align: right;
 }
 
