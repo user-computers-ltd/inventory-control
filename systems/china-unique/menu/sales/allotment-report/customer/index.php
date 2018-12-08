@@ -57,8 +57,9 @@
 
                   foreach ($taxAllotments as $warehouseCode => $warehouseAllotments) {
 
-                    foreach ($warehouseAllotments as $plNo => $plAllotments) {
-                      $plId = $plAllotments["pl_no"];
+                    foreach ($warehouseAllotments as $plNo => $pl) {
+                      $plId = $pl["id"];
+                      $plAllotments = $pl["models"];
                       $option = "";
 
                       if ($plId == "") {

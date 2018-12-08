@@ -306,8 +306,8 @@
 
   $warehouses = query("
     SELECT
-      code    AS `warehouse_code`,
-      name    AS `warehouse_name`
+      code AS `code`,
+      name AS `name`
     FROM
       `warehouse`
     ORDER BY

@@ -28,10 +28,10 @@
               <select name="filter_warehouse_code[]" multiple>
                 <?php
                   foreach ($warehouses as $warehouse) {
-                    $warehouseCode = $warehouse["warehouse_code"];
-                    $warehouseName = $warehouse["warehouse_name"];
+                    $code = $warehouse["code"];
+                    $name = $warehouse["name"];
                     $selected = assigned($filterWarehouseCodes) && in_array($code, $filterWarehouseCodes) ? "selected" : "";
-                    echo "<option value=\"$warehouseCode\" $selected>$warehouseCode -$warehouseName</option>";
+                    echo "<option value=\"$code\" $selected>$code - $name</option>";
                   }
                 ?>
               </select>
@@ -273,7 +273,10 @@
             allotments[warehouseCode][brandCode] = allotments[warehouseCode][brandCode] || {};
             allotments[warehouseCode][brandCode][modelNo] = allotments[warehouseCode][brandCode][modelNo] || {};
             allotments[warehouseCode][brandCode][modelNo][soNo] = allotments[warehouseCode][brandCode][modelNo][soNo] || {};
-            allotments[warehouseCode][brandCode][modelNo][soNo]["qty"] = allotments[warehouseCode][brandCode][modelNo][soNo]["qty"] || 0;
+
+            var allotment = allotments[warehouseCode][brandCode][modelNo][soNo];
+            allotment["pl_no"] = allotment["pl_no"] || "";
+            allotment["qty"] = allotment["qty"] || 0;
 
             renderAllotment(warehouseCode, brandCode, modelNo, soNo);
           }
@@ -289,7 +292,8 @@
           allotments[warehouseCode][brandCode][modelNo] &&
           allotments[warehouseCode][brandCode][modelNo][soNo]
         ) {
-          var iaModelSelector = ".stock-results[data-warehouse_code=\"" + warehouseCode + "\"] .stock-model[data-brand_code=\"" + brandCode + "\"][data-model_no=\"" + modelNo + "\"]";
+          var warehouseSelector = ".stock-results[data-warehouse_code=\"" + warehouseCode + "\"]";
+          var iaModelSelector = warehouseSelector + " .stock-model[data-brand_code=\"" + brandCode + "\"][data-model_no=\"" + modelNo + "\"]";
           var outstandingQtyElement = document.querySelector(iaModelSelector + " .outstanding-qty[data-so_no=\"" + soNo + "\"]");
           var allotQtyElement = document.querySelector(iaModelSelector + " .allot-qty[data-so_no=\"" + soNo + "\"]");
 
@@ -432,20 +436,20 @@
       }
 
       function resetAllotments(warehouseCode) {
-        var otherIANos = Object.keys(stockModels).filter(function (i) { return i !== warehouseCode; });
-        var brandCodes = Object.keys(allotments[warehouseCode]);
+        var warehouseModelElements = document.querySelectorAll(".stock-results[data-warehouse_code=\"" + warehouseCode + "\"] .stock-model");
 
-        for (var i = 0; i < brandCodes.length; i++) {
-          var brandCode = brandCodes[i];
-          var modelNos = Object.keys(allotments[warehouseCode][brandCode]);
+        for (var i = 0; i < warehouseModelElements.length; i++) {
+          var warehouseModelElement = warehouseModelElements[i];
+          var brandCode = warehouseModelElement.dataset.brand_code;
+          var modelNo = warehouseModelElement.dataset.model_no;
+          var allotQtyElement = warehouseModelElement.querySelector(".allot-qty");
 
-          for (var j = 0; j < modelNos.length; j++) {
-            var modelNo = modelNos[j];
-            var soNos = Object.keys(allotments[warehouseCode][brandCode][modelNo]);
+          if (allotQtyElement) {
+            var soNo = allotQtyElement.dataset.so_no;
+            var allotment = allotments[warehouseCode][brandCode][modelNo][soNo];
 
-            for (var k = 0; k < soNos.length; k++) {
-              var soNo = soNos[k];
-              allotments[warehouseCode][brandCode][modelNo][soNo]["qty"] = 0;
+            if (allotment["pl_no"] === "") {
+              allotment["qty"] = 0;
             }
           }
         }

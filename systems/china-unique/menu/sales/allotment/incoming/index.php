@@ -286,7 +286,10 @@
             allotments[iaNo][brandCode] = allotments[iaNo][brandCode] || {};
             allotments[iaNo][brandCode][modelNo] = allotments[iaNo][brandCode][modelNo] || {};
             allotments[iaNo][brandCode][modelNo][soNo] = allotments[iaNo][brandCode][modelNo][soNo] || {};
-            allotments[iaNo][brandCode][modelNo][soNo]["qty"] = allotments[iaNo][brandCode][modelNo][soNo]["qty"] || 0;
+
+            var allotment = allotments[iaNo][brandCode][modelNo][soNo];
+            allotment["pl_no"] = allotment["pl_no"] || "";
+            allotment["qty"] = allotment["qty"] || 0;
 
             renderAllotment(iaNo, brandCode, modelNo, soNo);
           }
@@ -302,7 +305,8 @@
           allotments[iaNo][brandCode][modelNo] &&
           allotments[iaNo][brandCode][modelNo][soNo]
         ) {
-          var iaModelSelector = ".ia-results[data-ia_no=\"" + iaNo + "\"] .ia-model[data-brand_code=\"" + brandCode + "\"][data-model_no=\"" + modelNo + "\"]";
+          var iaSelector = ".ia-results[data-ia_no=\"" + iaNo + "\"]";
+          var iaModelSelector = iaSelector + " .ia-model[data-brand_code=\"" + brandCode + "\"][data-model_no=\"" + modelNo + "\"]";
           var outstandingQtyElement = document.querySelector(iaModelSelector + " .outstanding-qty[data-so_no=\"" + soNo + "\"]");
           var allotQtyElement = document.querySelector(iaModelSelector + " .allot-qty[data-so_no=\"" + soNo + "\"]");
 
@@ -445,20 +449,20 @@
       }
 
       function resetAllotments(iaNo) {
-        var otherIANos = Object.keys(iaModels).filter(function (i) { return i !== iaNo; });
-        var brandCodes = Object.keys(allotments[iaNo]);
+        var iaModelElements = document.querySelectorAll(".ia-results[data-ia_no=\"" + iaNo + "\"] .ia-model");
 
-        for (var i = 0; i < brandCodes.length; i++) {
-          var brandCode = brandCodes[i];
-          var modelNos = Object.keys(allotments[iaNo][brandCode]);
+        for (var i = 0; i < iaModelElements.length; i++) {
+          var iaModelElement = iaModelElements[i];
+          var brandCode = iaModelElement.dataset.brand_code;
+          var modelNo = iaModelElement.dataset.model_no;
+          var allotQtyElement = iaModelElement.querySelector(".allot-qty");
 
-          for (var j = 0; j < modelNos.length; j++) {
-            var modelNo = modelNos[j];
-            var soNos = Object.keys(allotments[iaNo][brandCode][modelNo]);
+          if (allotQtyElement) {
+            var soNo = allotQtyElement.dataset.so_no;
+            var allotment = allotments[iaNo][brandCode][modelNo][soNo];
 
-            for (var k = 0; k < soNos.length; k++) {
-              var soNo = soNos[k];
-              allotments[iaNo][brandCode][modelNo][soNo]["qty"] = 0;
+            if (allotment["pl_no"] === "") {
+              allotment["qty"] = 0;
             }
           }
         }

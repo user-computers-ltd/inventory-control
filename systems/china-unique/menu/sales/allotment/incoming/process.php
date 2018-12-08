@@ -293,8 +293,7 @@
 
   $ias = query("
     SELECT
-      ia_no                               AS `ia_no`,
-      DATE_FORMAT(ia_date, '%d-%m-%Y')    AS `date`
+      ia_no AS `ia_no`
     FROM
       `ia_header`
     WHERE

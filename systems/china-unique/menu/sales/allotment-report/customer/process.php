@@ -174,6 +174,7 @@
       $discount = $allotment["discount"];
       $tax = $allotment["tax"];
       $warehouseCode = $allotment["warehouse_code"];
+      $plId = $allotment["pl_id"];
       $plNo = $allotment["pl_no"];
       $allotmentModel = $allotment["so_no"] . "-" . $allotment["brand_code"] . "-" . $allotment["model_no"];
 
@@ -210,8 +211,10 @@
 
       if (!isset($arrayPointer[$plNo])) {
         $arrayPointer[$plNo] = array();
+        $arrayPointer[$plNo]["id"] = $plId;
+        $arrayPointer[$plNo]["models"] = array();
       }
-      $arrayPointer = &$arrayPointer[$plNo];
+      $arrayPointer = &$arrayPointer[$plNo]["models"];
 
       if (!isset($arrayPointer[$allotmentModel])) {
         $arrayPointer[$allotmentModel] = array();
