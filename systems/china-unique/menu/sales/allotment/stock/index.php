@@ -21,7 +21,6 @@
         <table id="stock-input">
           <tr>
             <th>Warehouse:</th>
-            <th>Customer:</th>
             <th>SO No.:</th>
           </tr>
           <tr>
@@ -33,18 +32,6 @@
                     $warehouseName = $warehouse["warehouse_name"];
                     $selected = assigned($filterWarehouseCodes) && in_array($code, $filterWarehouseCodes) ? "selected" : "";
                     echo "<option value=\"$warehouseCode\" $selected>$warehouseCode -$warehouseName</option>";
-                  }
-                ?>
-              </select>
-            </td>
-            <td>
-              <select name="filter_debtor_code[]" multiple>
-                <?php
-                  foreach ($debtors as $debtor) {
-                    $debtorCode = $debtor["code"];
-                    $debtorName = $debtor["name"];
-                    $selected = assigned($filterDebtorCodes) && in_array($debtorCode, $filterDebtorCodes) ? "selected" : "";
-                    echo "<option value=\"$debtorCode\" $selected>$debtorCode - $debtorName</option>";
                   }
                 ?>
               </select>
@@ -124,7 +111,7 @@
                   $brandCode = $model["brand_code"];
                   $brandName = $model["brand_name"];
                   $modelNo = $model["model_no"];
-                  $qty = $model["qty"];
+                  $qty = $model["qty_available"];
                   $totalQty += $qty;
 
                   $matchedModels = isset($soModels[$brandCode][$modelNo]) ? $soModels[$brandCode][$modelNo] : array(array());

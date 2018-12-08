@@ -86,7 +86,7 @@
 
     if (assigned($filterDebtorCodes) && count($filterDebtorCodes) > 0) {
       $whereClause = "
-        AND (" . join(" OR ", array_map(function ($d) { return "e.code='$d'"; }, $filterDebtorCodes)) . ")";
+        AND (" . join(" OR ", array_map(function ($d) { return "e.code=\"$d\""; }, $filterDebtorCodes)) . ")";
     }
 
     $results = query("

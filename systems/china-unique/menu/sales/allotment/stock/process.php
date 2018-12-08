@@ -45,26 +45,25 @@
   }
 
   $filterWarehouseCodes = $_GET["filter_warehouse_code"];
-  $filterDebtorCodes = $_GET["filter_debtor_code"];
   $filterSoNos = $_GET["filter_so_no"];
 
   $whereClause = "";
 
   if (assigned($filterWarehouseCodes) && count($filterWarehouseCodes) > 0) {
     $whereClause = $whereClause . "
-      AND (" . join(" OR ", array_map(function ($i) { return "a.warehouse_code='$i'"; }, $filterWarehouseCodes)) . ")";
+      AND (" . join(" OR ", array_map(function ($i) { return "a.warehouse_code=\"$i\""; }, $filterWarehouseCodes)) . ")";
   }
 
   $whereSoModelClause = "";
-
-  if (assigned($filterDebtorCodes) && count($filterDebtorCodes) > 0) {
-    $whereSoModelClause = $whereSoModelClause . "
-      AND (" . join(" OR ", array_map(function ($i) { return "y.debtor_code='$i'"; }, $filterDebtorCodes)) . ")";
-  }
+  $whereSoAllotmentClause = "";
 
   if (assigned($filterSoNos) && count($filterSoNos) > 0) {
     $whereSoModelClause = $whereSoModelClause . "
-      AND (" . join(" OR ", array_map(function ($i) { return "x.so_no='$i'"; }, $filterSoNos)) . ")";
+      AND (" . join(" OR ", array_map(function ($i) { return "x.so_no=\"$i\""; }, $filterSoNos)) . ")";
+    $whereSoAllotmentClause = $whereSoAllotmentClause . "
+      AND (" . join(" AND ", array_map(function ($i) { return "so_no!=\"$i\""; }, $filterSoNos)) . ")";
+  } else {
+    $whereSoAllotmentClause = $whereSoAllotmentClause . " AND so_no=\"\"";
   }
 
   $results = query("
@@ -74,7 +73,8 @@
       c.code                                AS `brand_code`,
       c.name                                AS `brand_name`,
       a.model_no                            AS `model_no`,
-      a.qty                                 AS `qty`
+      a.qty                                 AS `qty`,
+      a.qty - IFNULL(e.qty_allotted, 0)     AS `qty_available`
     FROM
       `stock` AS a
     LEFT JOIN
@@ -99,6 +99,20 @@
       GROUP BY
         x.brand_code, x.model_no) AS d
     ON a.brand_code=d.brand_code AND a.model_no=d.model_no
+    LEFT JOIN
+      (SELECT
+        warehouse_code        AS `warehouse_code`,
+        brand_code            AS `brand_code`,
+        model_no              AS `model_no`,
+        SUM(qty)              AS `qty_allotted`
+      FROM
+        `so_allotment`
+      WHERE
+        warehouse_code!=\"\"
+        $whereSoAllotmentClause
+      GROUP BY
+        warehouse_code, brand_code, model_no) AS e
+    ON a.warehouse_code=e.warehouse_code AND a.brand_code=e.brand_code AND a.model_no=e.model_no
     WHERE
       a.qty > 0 AND d.qty_outstanding > 0
       $whereClause
@@ -156,14 +170,9 @@
 
   $whereClause = "";
 
-  if (assigned($filterDebtorCodes) && count($filterDebtorCodes) > 0) {
-    $whereClause = $whereClause . "
-      AND (" . join(" OR ", array_map(function ($i) { return "b.debtor_code='$i'"; }, $filterDebtorCodes)) . ")";
-  }
-
   if (assigned($filterSoNos) && count($filterSoNos) > 0) {
     $whereClause = $whereClause . "
-      AND (" . join(" OR ", array_map(function ($i) { return "a.so_no='$i'"; }, $filterSoNos)) . ")";
+      AND (" . join(" OR ", array_map(function ($i) { return "a.so_no=\"$i\""; }, $filterSoNos)) . ")";
   }
 
   $results = query("
@@ -305,42 +314,35 @@
       name ASC
   ");
 
-  $debtors = query("
-    SELECT DISTINCT
-      b.debtor_code                       AS `code`,
-      IFNULL(c.english_name, 'Unknown')   AS `name`
-    FROM
-      `so_model` AS a
-    LEFT JOIN
-      `so_header` AS b
-    ON a.so_no=b.so_no
-    LEFT JOIN
-      `debtor` AS c
-    ON b.debtor_code=c.code
-    WHERE
-      a.qty_outstanding > 0
-    ORDER BY
-      b.debtor_code ASC
-  ");
-
   $filterWhereClause = "";
 
-  if (assigned($filterDebtorCodes) && count($filterDebtorCodes) > 0) {
+  if (assigned($filterWarehouseCodes) && count($filterWarehouseCodes) > 0) {
     $filterWhereClause = $filterWhereClause . "
-      AND (" . join(" OR ", array_map(function ($i) { return "b.debtor_code='$i'"; }, $filterDebtorCodes)) . ")";
+      AND (" . join(" OR ", array_map(function ($i) { return "warehouse_code=\"$i\""; }, $filterWarehouseCodes)) . ")";
+  } else {
+    $filterWhereClause = $filterWhereClause . "
+      AND (" . join(" OR ", array_map(function ($wh) { return "warehouse_code=\"" . $wh["code"] . "\""; }, $warehouses)) . ")";
   }
 
   $sos = query("
     SELECT DISTINCT
-      a.so_no   AS `so_no`
+      a.so_no AS `so_no`
     FROM
       `so_model` AS a
     LEFT JOIN
       `so_header` AS b
     ON a.so_no=b.so_no
+    LEFT JOIN
+      (SELECT
+        warehouse_code, brand_code, model_no
+      FROM
+        `stock`
+      WHERE
+        warehouse_code IS NOT NULL
+        $filterWhereClause) AS c
+    ON a.brand_code=c.brand_code AND a.model_no=c.model_no
     WHERE
-      a.qty_outstanding > 0 AND b.status=\"POSTED\"
-      $filterWhereClause
+      a.qty_outstanding > 0 AND b.status=\"POSTED\" AND c.warehouse_code IS NOT NULL
     ORDER BY
       a.so_no ASC
   ");

@@ -51,14 +51,16 @@
 
   if (assigned($filterIaNos) && count($filterIaNos) > 0) {
     $whereClause = $whereClause . "
-      AND (" . join(" OR ", array_map(function ($i) { return "a.ia_no='$i'"; }, $filterIaNos)) . ")";
+      AND (" . join(" OR ", array_map(function ($i) { return "a.ia_no=\"$i\""; }, $filterIaNos)) . ")";
   }
 
-  $whereSoModelClause = "";
+  $whereSoAllotmentClause = "";
 
   if (assigned($filterSoNos) && count($filterSoNos) > 0) {
-    $whereSoModelClause = $whereSoModelClause . "
-      AND (" . join(" OR ", array_map(function ($i) { return "so_no='$i'"; }, $filterSoNos)) . ")";
+    $whereSoAllotmentClause = $whereSoAllotmentClause . "
+      AND (" . join(" AND ", array_map(function ($i) { return "so_no!=\"$i\""; }, $filterSoNos)) . ")";
+  } else {
+    $whereSoAllotmentClause = $whereSoAllotmentClause . " AND so_no=\"\"";
   }
 
   $results = query("
@@ -71,7 +73,8 @@
       d.code                              AS `brand_code`,
       d.name                              AS `brand_name`,
       a.model_no                          AS `model_no`,
-      a.qty                               AS `qty`
+      a.qty                               AS `qty`,
+      a.qty - IFNULL(e.qty_allotted, 0)   AS `qty_available`
     FROM
       `ia_model` AS a
     LEFT JOIN
@@ -85,17 +88,18 @@
     ON a.brand_code=d.code
     LEFT JOIN
       (SELECT
+        ia_no                 AS `ia_no`,
         brand_code            AS `brand_code`,
         model_no              AS `model_no`,
-        SUM(qty_outstanding)  AS `qty_outstanding`
+        SUM(qty)              AS `qty_allotted`
       FROM
-        `so_model`
+        `so_allotment`
       WHERE
-        qty_outstanding > 0
-        $whereSoModelClause
+        ia_no!=\"\"
+        $whereSoAllotmentClause
       GROUP BY
-        brand_code, model_no) AS e
-    ON a.brand_code=e.brand_code AND a.model_no=e.model_no
+        ia_no, brand_code, model_no) AS e
+    ON a.ia_no=e.ia_no AND a.brand_code=e.brand_code AND a.model_no=e.model_no
     WHERE
       b.status=\"DO\"
       $whereClause
@@ -166,7 +170,7 @@
 
   if (assigned($filterSoNos) && count($filterSoNos) > 0) {
     $whereClause = $whereClause . "
-      AND (" . join(" OR ", array_map(function ($i) { return "a.so_no='$i'"; }, $filterSoNos)) . ")";
+      AND (" . join(" OR ", array_map(function ($i) { return "a.so_no=\"$i\""; }, $filterSoNos)) . ")";
   }
 
   $results = query("
@@ -303,23 +307,31 @@
 
   if (assigned($filterIaNos) && count($filterIaNos) > 0) {
     $filterWhereClause = $filterWhereClause . "
-      AND (" . join(" OR ", array_map(function ($i) { return "c.ia_no='$i'"; }, $filterIaNos)) . ")";
+      AND (" . join(" OR ", array_map(function ($i) { return "ia_no=\"$i\""; }, $filterIaNos)) . ")";
+  } else {
+    $filterWhereClause = $filterWhereClause . "
+      AND (" . join(" OR ", array_map(function ($ia) { return "ia_no=\"" . $ia["ia_no"] . "\""; }, $ias)) . ")";
   }
 
   $sos = query("
     SELECT DISTINCT
-      a.so_no   AS `so_no`
+      a.so_no AS `so_no`
     FROM
       `so_model` AS a
     LEFT JOIN
       `so_header` AS b
     ON a.so_no=b.so_no
     LEFT JOIN
-      `ia_model` AS c
+      (SELECT
+        ia_no, brand_code, model_no
+      FROM
+        `ia_model`
+      WHERE
+        ia_no IS NOT NULL
+        $filterWhereClause) AS c
     ON a.brand_code=c.brand_code AND a.model_no=c.model_no
     WHERE
-      a.qty_outstanding > 0 AND b.status=\"POSTED\"
-      $filterWhereClause
+      a.qty_outstanding > 0 AND b.status=\"POSTED\" AND c.ia_no IS NOT NULL
     ORDER BY
       a.so_no ASC
   ");

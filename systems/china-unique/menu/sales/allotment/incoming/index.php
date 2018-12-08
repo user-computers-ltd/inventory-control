@@ -120,7 +120,7 @@
                     $brandCode = $model["brand_code"];
                     $brandName = $model["brand_name"];
                     $modelNo = $model["model_no"];
-                    $qty = $model["qty"];
+                    $qty = $model["qty_available"];
                     $totalQty += $qty;
 
                     $matchedModels = isset($soModels[$brandCode][$modelNo]) ? $soModels[$brandCode][$modelNo] : array(array());
