@@ -33,18 +33,20 @@
             <td>Warehouse:</td>
             <td><?php echo $stockInHeader["warehouse"]; ?></td>
           </tr>
-          <tr>
-            <td>Creditor:</td>
-            <td><?php echo $stockInHeader["creditor"]; ?></td>
-            <td>Currency:</td>
-            <td><?php echo $stockInHeader["currency"]; ?></td>
-          </tr>
-          <tr>
-            <td>Discount:</td>
-            <td><?php echo $stockInHeader["discount"]; ?>%</td>
-            <td>Net Amount:</td>
-            <td><?php echo $stockInHeader["net_amount"]; ?></td>
-          </tr>
+          <?php if (!$miscellaneous): ?>
+            <tr>
+              <td>Creditor:</td>
+              <td><?php echo $stockInHeader["creditor"]; ?></td>
+              <td>Currency:</td>
+              <td><?php echo $stockInHeader["currency"]; ?></td>
+            </tr>
+            <tr>
+              <td>Discount:</td>
+              <td><?php echo $stockInHeader["discount"]; ?>%</td>
+              <td>Net Amount:</td>
+              <td><?php echo $stockInHeader["net_amount"]; ?></td>
+            </tr>
+          <?php endif ?>
           <tr>
             <td>Status:</td>
             <td><?php echo $stockInHeader["status"]; ?></td>

@@ -67,10 +67,8 @@
   else if (
     assigned($stockInNo) &&
     assigned($stockInDate) &&
-    assigned($creditorCode) &&
-    assigned($currencyCode) &&
-    assigned($exchangeRate) &&
-    assigned($discount) &&
+    assigned($transactionCode) &&
+    assigned($warehouseCode) &&
     assigned($tax) &&
     assigned($status)
   ) {
@@ -115,4 +113,6 @@
     $stockInHeader["creditor"] = $stockInHeader["creditor_code"] . " - " . (isset($creditor) ? $creditor["name"] : "Unknown");
     $stockInHeader["currency"] = $stockInHeader["currency_code"] . " @ " . $stockInHeader["exchange_rate"];
   }
+
+  $miscellaneous = $stockInHeader["transaction_code"] != "R1" && $stockInHeader["transaction_code"] != "R3";
 ?>
