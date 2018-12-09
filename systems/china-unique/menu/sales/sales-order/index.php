@@ -325,16 +325,6 @@
 
           function updateModel(index, model = {}) {
             var priceStandard = document.querySelector("input[name='price-standard']:checked").value;
-            var tax = taxElement.value;
-            var rate = exchangeRateElement.value;
-            var profit = 0;
-
-            if (model["cost_average"]) {
-              var avgCostIncTax = model["cost_average"] * (1 + tax / 100);
-              var price = model[priceStandard];
-
-              profit = (price * rate - avgCostIncTax) / avgCostIncTax * 100;
-            }
 
             var soModel = soModels[index];
 
@@ -344,47 +334,28 @@
             soModel["normal_price"] = parseFloat(model["normal_price"]) || 0;
             soModel["special_price"] = parseFloat(model["special_price"]) || 0;
             soModel["price"] = parseFloat(model[priceStandard]) || 0;
-            soModel["profit"] = profit;
             soModel["qty"] = soModel["qty"] || 0;
             soModel["total_amount"] = (soModel["qty"] || 0) * soModel["price"];
             soModel["qty_on_hand"] = parseFloat(model["qty_on_hand"]) || 0;
             soModel["qty_on_order"] = parseFloat(model["qty_on_order"]) || 0;
           }
 
-          function updatePrice(index, price = 0) {
+          function updateQuantity (index, qty = 0) {
             var soModel = soModels[index];
-            var tax = taxElement.value;
-            var rate = exchangeRateElement.value;
-            var profit = 0;
 
-            if (soModel["cost_average"]) {
-              var avgCostIncTax = soModel["cost_average"] * (1 + tax / 100);
+            soModel["qty"] = Math.max(0, parseFloat(qty);
 
-              profit = (price * rate - avgCostIncTax) / avgCostIncTax * 100;
-            }
-
-            soModel["price"] = parseFloat(price);
-            soModel["profit"] = profit;
-
-            if (soModel["qty"]) {
+            if (soModel["price"]) {
               soModel["total_amount"] = soModel["price"] * soModel["qty"];
             }
           }
 
-          function updateAllProfits() {
-            for (var i = 0; i < soModels.length; i++) {
-              updatePrice(i, soModels[i]["price"]);
-            }
-
-            render();
-          }
-
-          function updateQuantity (index, quantity = 0) {
+          function updatePrice(index, price = 0) {
             var soModel = soModels[index];
 
-            soModel["qty"] = parseFloat(quantity);
+            soModel["price"] = Math.max(0, parseFloat(price));
 
-            if (soModel["price"]) {
+            if (soModel["qty"]) {
               soModel["total_amount"] = soModel["price"] * soModel["qty"];
             }
           }
@@ -433,16 +404,12 @@
             } else {
               exchangeRateElement.removeAttribute("readonly");
             }
-
-            updateAllProfits();
           }
 
           function onExchangeRateChange() {
-            updateAllProfits();
           }
 
           function onDiscountChange() {
-            updateAllProfits();
           }
 
           function onPriceStandardChange() {

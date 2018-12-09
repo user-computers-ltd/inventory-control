@@ -384,16 +384,6 @@
 
           function updateModel(index, model = {}) {
             var priceStandard = document.querySelector("input[name='price-standard']:checked").value;
-            var tax = taxElement.value;
-            var rate = exchangeRateElement.value;
-            var profit = 0;
-
-            if (model["cost_average"]) {
-              var avgCostIncTax = model["cost_average"] * (1 + tax / 100);
-              var price = model[priceStandard];
-
-              profit = (price * rate - avgCostIncTax) / avgCostIncTax * 100;
-            }
 
             var stockInModel = stockInModels[index];
 
@@ -403,47 +393,28 @@
             stockInModel["normal_price"] = parseFloat(model["normal_price"]) || 0;
             stockInModel["special_price"] = parseFloat(model["special_price"]) || 0;
             stockInModel["price"] = parseFloat(model[priceStandard]) || 0;
-            stockInModel["profit"] = profit;
             stockInModel["qty"] = stockInModel["qty"] || 0;
             stockInModel["total_amount"] = (stockInModel["qty"] || 0) * stockInModel["price"];
             stockInModel["qty_on_hand"] = parseFloat(model["qty_on_hand"]) || 0;
             stockInModel["qty_on_order"] = parseFloat(model["qty_on_order"]) || 0;
           }
 
-          function updatePrice(index, price = 0) {
+          function updateQuantity (index, qty = 0) {
             var stockInModel = stockInModels[index];
-            var rate = exchangeRateElement.value;
-            var tax = taxElement.value;
-            var profit = 0;
 
-            if (stockInModel["cost_average"]) {
-              var avgCostIncTax = stockInModel["cost_average"] * (1 + tax / 100);
+            stockInModel["qty"] = Math.max(0, parseFloat(qty));
 
-              profit = (price * rate - avgCostIncTax) / avgCostIncTax * 100;
-            }
-
-            stockInModel["price"] = parseFloat(price);
-            stockInModel["profit"] = profit;
-
-            if (stockInModel["qty"]) {
+            if (stockInModel["price"]) {
               stockInModel["total_amount"] = stockInModel["price"] * stockInModel["qty"];
             }
           }
 
-          function updateAllProfits() {
-            for (var i = 0; i < stockInModels.length; i++) {
-              updatePrice(i, stockInModels[i]["price"]);
-            }
-
-            render();
-          }
-
-          function updateQuantity (index, quantity = 0) {
+          function updatePrice(index, price = 0) {
             var stockInModel = stockInModels[index];
 
-            stockInModel["qty"] = parseFloat(quantity);
+            stockInModel["price"] = Math.max(0, parseFloat(price));
 
-            if (stockInModel["price"]) {
+            if (stockInModel["qty"]) {
               stockInModel["total_amount"] = stockInModel["price"] * stockInModel["qty"];
             }
           }
@@ -517,16 +488,12 @@
             } else {
               exchangeRateElement.removeAttribute("readonly");
             }
-
-            updateAllProfits();
           }
 
           function onExchangeRateChange() {
-            updateAllProfits();
           }
 
           function onDiscountChange() {
-            updateAllProfits();
           }
 
           function onPriceStandardChange() {

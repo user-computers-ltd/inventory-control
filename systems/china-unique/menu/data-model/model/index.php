@@ -177,8 +177,8 @@
               <th class="number">Exchange Rate (Pri)</th>
               <th class="number">Cost (Pri)</th>
               <th class="number">Average Cost</th>
-              <th class="number">Qty On Order</th>
               <th class="number">Qty On Hand</th>
+              <th class="number">Qty On Order</th>
               <th class="number">Qty On Reserve</th>
             </tr>
           </thead>

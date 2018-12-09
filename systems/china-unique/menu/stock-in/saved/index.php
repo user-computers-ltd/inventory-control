@@ -130,6 +130,7 @@
                 $totalAmt = $stockInHeader["total_amt"];
                 $totalAmtBase = $stockInHeader["total_amt_base"];
                 $transactionCode = $stockInHeader["transaction_code"];
+                $transactionName = $TRANSACTION_CODES[$transactionCode];
                 $miscellaneous = $stockInHeader["transaction_code"] != "R1" && $stockInHeader["transaction_code"] != "R3";
 
                 $totalQty += $qty;
@@ -146,7 +147,7 @@
                     " . ($miscellaneous ? "<td></td>" : "<td title=\"$currency\" class=\"number\">$currency</td>") . "
                     " . ($miscellaneous ? "<td></td>" : "<td title=\"$totalAmt\" class=\"number\">" . number_format($totalAmt, 2) . "</td>") . "
                     " . ($miscellaneous ? "<td></td>" : "<td title=\"$totalAmtBase\" class=\"number\">" . number_format($totalAmtBase, 2) . "</td>") . "
-                    <td title=\"$transactionCode\">$transactionCode</td>
+                    <td title=\"$transactionCode - $transactionName\">$transactionCode</td>
                   </tr>
                 ";
               }
