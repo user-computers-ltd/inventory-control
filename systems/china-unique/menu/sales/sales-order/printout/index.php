@@ -118,6 +118,11 @@
             </tr>
           </table>
         <?php endif ?>
+        <?php echo "
+          <div class=\"web-only\">
+          " . generateRedirectButton(SALES_ORDER_INTERNAL_PRINTOUT_URL, "Internal printout") . "
+          </div>
+        ";?>
       <?php else: ?>
         <div id="so-not-found">Sales order not found</div>
       <?php endif ?>

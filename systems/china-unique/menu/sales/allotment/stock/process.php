@@ -7,6 +7,7 @@
 
   /* If a complete form is given, submit and update all IA allotments. */
   if (assigned($warehouseCodes) && assigned($soNos) && assigned($brandCodes) && assigned($modelNos) && assigned($qtys)) {
+    $queries = array();
 
     $whereClause = "";
 
@@ -18,7 +19,7 @@
         model_no=\"$modelNo\"
       ";
     }, $warehouseCodes, $soNos, $brandCodes, $modelNos));
-    query("DELETE FROM `so_allotment` WHERE $whereClause");
+    array_push($queries, "DELETE FROM `so_allotment` WHERE $whereClause");
 
     $values = array();
 
@@ -35,13 +36,17 @@
     }
 
     if (count($values) > 0) {
-      query("
+      array_push($queries, "
         INSERT INTO
           `so_allotment`
             (ia_no, warehouse_code, so_no, brand_code, model_no, qty)
           VALUES
       " . join(", ", $values));
     }
+
+    execute($queries);
+
+    header("Location: " . ALLOTMENT_REPORT_CUSTOMER_URL);
   }
 
   $filterWarehouseCodes = $_GET["filter_warehouse_code"];
