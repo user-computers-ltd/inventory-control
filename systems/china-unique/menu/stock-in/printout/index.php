@@ -126,14 +126,14 @@
         <?php else: ?>
           <div id="stock-in-models-no-results">No models</div>
         <?php endif ?>
-        <?php if (assigned($remarks)) : ?>
-          <table id="stock-in-footer">
+        <table id="stock-in-footer">
+          <?php if (assigned($stockInHeader["remarks"])) : ?>
             <tr>
               <td>Remarks:</td>
-              <td><?php echo $remarks; ?></td>
+              <td><?php echo $stockInHeader["remarks"]; ?></td>
             </tr>
-          </table>
-        <?php endif ?>
+          <?php endif ?>
+        </table>
       <?php else: ?>
         <div id="stock-in-not-found">Stock in voucher not found</div>
       <?php endif ?>

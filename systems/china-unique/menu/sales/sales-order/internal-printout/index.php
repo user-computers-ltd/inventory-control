@@ -118,14 +118,14 @@
         <?php else: ?>
           <div id="so-models-no-results">No models</div>
         <?php endif ?>
-        <?php if (assigned($remarks)) : ?>
-          <table id="so-footer">
+        <table id="so-footer">
+          <?php if (assigned($soHeader["remarks"])) : ?>
             <tr>
               <td>Remarks:</td>
-              <td><?php echo $remarks; ?></td>
+              <td><?php echo $soHeader["remarks"]; ?></td>
             </tr>
-          </table>
-        <?php endif ?>
+          <?php endif ?>
+        </table>
         <?php echo "
           <div class=\"web-only\">
           " . generateRedirectButton(SALES_ORDER_PRINTOUT_URL, "External printout") . "

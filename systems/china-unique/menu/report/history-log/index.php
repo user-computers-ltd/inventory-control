@@ -170,6 +170,7 @@
                 $discount = $transaction["discount"];
                 $tax = $transaction["tax"];
                 $transactionCode = $transaction["transaction_code"];
+                $transactionName = $TRANSACTION_CODES[$transactionCode];
                 $warehouseCode = $transaction["warehouse_code"];
                 $brandName = $transaction["brand_name"];
                 $modelNo = $transaction["model_no"];
@@ -192,7 +193,7 @@
                     <td title=\"$client\">$client</td>
                     <td title=\"$brandName\">$brandName</td>
                     <td title=\"$modelNo\">$modelNo</td>
-                    <td title=\"$transactionCode\">$transactionCode</td>
+                    <td title=\"$transactionCode - $transactionName\">$transactionCode</td>
                     " . ($isInBound ? "<td class=\"number\" title=\"$qty\">" . number_format($qty) . "</td>" : "<td></td>") . "
                     " . ($isInBound ? "<td></td>" : "<td class=\"number\" title=\"$qty\">" . number_format($qty) . "</td>") . "
                     <td class=\"number\" title=\"$unitPrice\">" . number_format($unitPrice, 2) . "</td>

@@ -24,21 +24,22 @@
   if (assigned($id)) {
     $stockInHeader = query("
       SELECT
-        a.stock_in_no                              AS `stock_in_no`,
-        a.transaction_code                         AS `transaction_code`,
-        a.warehouse_code                           AS `warehouse_code`,
-        DATE_FORMAT(a.stock_in_date, '%d-%m-%Y')   AS `date`,
-        a.creditor_code                            AS `creditor_code`,
-        a.currency_code                            AS `currency_code`,
-        a.exchange_rate                            AS `exchange_rate`,
-        a.net_amount                               AS `net_amount`,
-        a.discount                                 AS `discount`,
-        a.tax                                      AS `tax`,
-        a.status                                   AS `status`
+        stock_in_no                              AS `stock_in_no`,
+        transaction_code                         AS `transaction_code`,
+        warehouse_code                           AS `warehouse_code`,
+        DATE_FORMAT(stock_in_date, '%d-%m-%Y')   AS `date`,
+        creditor_code                            AS `creditor_code`,
+        currency_code                            AS `currency_code`,
+        exchange_rate                            AS `exchange_rate`,
+        net_amount                               AS `net_amount`,
+        discount                                 AS `discount`,
+        tax                                      AS `tax`,
+        remarks                                  AS `remarks`,
+        status                                   AS `status`
       FROM
-        `stock_in_header` AS a
+        `stock_in_header`
       WHERE
-        a.id=\"$id\"
+        id=\"$id\"
     ")[0];
 
     $stockInModels = query("
@@ -88,6 +89,7 @@
       "net_amount"          => $netAmount,
       "discount"            => $discount,
       "tax"                 => $tax,
+      "remarks"             => $remarks,
       "status"              => $status
     );
 

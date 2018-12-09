@@ -21,18 +21,19 @@
   if (assigned($id)) {
     $soHeader = query("
       SELECT
-        a.so_no                                                           AS `so_no`,
-        DATE_FORMAT(a.so_date, '%d-%m-%Y')                                AS `date`,
-        a.debtor_code                                                     AS `debtor_code`,
-        a.currency_code                                                   AS `currency_code`,
-        a.exchange_rate                                                   AS `exchange_rate`,
-        a.discount                                                        AS `discount`,
-        a.tax                                                             AS `tax`,
-        a.status                                                          AS `status`
+        so_no                               AS `so_no`,
+        DATE_FORMAT(so_date, '%d-%m-%Y')    AS `date`,
+        debtor_code                         AS `debtor_code`,
+        currency_code                       AS `currency_code`,
+        exchange_rate                       AS `exchange_rate`,
+        discount                            AS `discount`,
+        tax                                 AS `tax`,
+        remarks                             AS `remarks`,
+        status                              AS `status`
       FROM
-        `so_header` AS a
+        `so_header`
       WHERE
-        a.id=\"$id\"
+        id=\"$id\"
     ")[0];
 
     $soModels = query("
@@ -82,6 +83,7 @@
       "exchange_rate" => $exchangeRate,
       "discount"      => $discount,
       "tax"           => $tax,
+      "remarks"       => $remarks,
       "status"        => $status
     );
 
