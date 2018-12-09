@@ -20,7 +20,7 @@
   $stockInHeader = null;
   $stockInModels = array();
 
-  /* If an id is given, retrieve from an existing sales order. */
+  /* If an id is given, retrieve from an existing stock in voucher. */
   if (assigned($id)) {
     $stockInHeader = query("
       SELECT
@@ -83,7 +83,7 @@
       "warehouse_code"      => $warehouseCode,
       "date"                => $stockInDate,
       "creditor_code"       => $creditorCode,
-      "currency"            => $currencyCode,
+      "currency_code"       => $currencyCode,
       "exchange_rate"       => $exchangeRate,
       "net_amount"          => $netAmount,
       "discount"            => $discount,

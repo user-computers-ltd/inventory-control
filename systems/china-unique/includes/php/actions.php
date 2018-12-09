@@ -144,7 +144,7 @@
     return $queries;
   }
 
-  function postStockInVoucher($stockInNo) {
+  function onPostStockInVoucher($stockInNo) {
     $queries = array();
 
     $stockInHeader = query("
@@ -182,15 +182,10 @@
     $qtys = array();
 
     foreach ($stockInModels as $stockInModel) {
-      $brandCode = $stockInModel["brand_code"];
-      $modelNo = $stockInModel["model_no"];
-      $price = $stockInModel["price"];
-      $qty = $stockInModel["qty"];
-
-      array_push($brandCodes, $brandCode);
-      array_push($modelNos, $modelNo);
-      array_push($prices, $price);
-      array_push($qtys, $qty);
+      array_push($brandCodes, $stockInModel["brand_code"]);
+      array_push($modelNos, $stockInModel["model_no"]);
+      array_push($prices, $stockInModel["price"]);
+      array_push($qtys, $stockInModel["qty"]);
     }
 
     $postTransactionQueries = postTransactions(
@@ -212,7 +207,70 @@
     return concat($queries, $postTransactionQueries);
   }
 
-  function postPackingList($plNo) {
+  function onPostStockOutVoucher($stockOutNo) {
+    $queries = array();
+
+    $stockOutHeader = query("
+      SELECT
+        stock_out_date,
+        transaction_code,
+        warehouse_code,
+        creditor_code,
+        currency_code,
+        exchange_rate,
+        discount,
+        tax
+      FROM
+        `stock_out_header`
+      WHERE
+        stock_out_no=\"$stockOutNo\"
+    ")[0];
+
+    $stockOutModels = query("
+      SELECT
+        brand_code      AS `brand_code`,
+        model_no        AS `model_no`,
+        price           AS `price`,
+        qty             AS `qty`
+      FROM
+        `stock_out_model`
+      WHERE
+        stock_out_no=\"$stockOutNo\"
+    ");
+
+    /* Insert corresponding transactions. */
+    $brandCodes = array();
+    $modelNos = array();
+    $prices = array();
+    $qtys = array();
+
+    foreach ($stockOutModels as $stockOutModel) {
+      array_push($brandCodes, $stockOutModel["brand_code"]);
+      array_push($modelNos, $stockOutModel["model_no"]);
+      array_push($prices, $stockOutModel["price"]);
+      array_push($qtys, $stockOutModel["qty"]);
+    }
+
+    $postTransactionQueries = postTransactions(
+      $stockOutNo,
+      $stockOutHeader["transaction_code"],
+      $stockOutHeader["stock_out_date"],
+      $stockOutHeader["creditor_code"],
+      $stockOutHeader["currency_code"],
+      $stockOutHeader["exchange_rate"],
+      $stockOutHeader["discount"],
+      $stockOutHeader["tax"],
+      $stockOutHeader["warehouse_code"],
+      $brandCodes,
+      $modelNos,
+      $prices,
+      $qtys
+    );
+
+    return concat($queries, $postTransactionQueries);
+  }
+
+  function onPostPackingList($plNo) {
     $queries = array();
 
     $plHeader = query("
@@ -304,15 +362,10 @@
     $qtys = array();
 
     foreach ($allotmentRefs as $allotmentRef) {
-      $brandCode = $allotmentRef["brand_code"];
-      $modelNo = $allotmentRef["model_no"];
-      $price = $allotmentRef["price"];
-      $qty = $allotmentRef["qty"];
-
-      array_push($brandCodes, $brandCode);
-      array_push($modelNos, $modelNo);
-      array_push($prices, $price);
-      array_push($qtys, $qty);
+      array_push($brandCodes, $allotmentRef["brand_code"]);
+      array_push($modelNos, $allotmentRef["model_no"]);
+      array_push($prices, $allotmentRef["price"]);
+      array_push($qtys, $allotmentRef["qty"]);
     }
 
     $postTransactionQueries = postTransactions(

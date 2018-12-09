@@ -37,7 +37,7 @@
       array_push($queries, "UPDATE `pl_header` SET " . join(", ", $setValues) . " WHERE id=\"$id\"");
 
       if ($status == "POSTED") {
-        $queries = concat($queries, postPackingList($plNo));
+        $queries = concat($queries, onPostPackingList($plNo));
       } else if ($status == "DELETED") {
         $queries = array(
           "DELETE FROM `pl_header` WHERE id=\"$id\"",

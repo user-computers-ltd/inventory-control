@@ -1,6 +1,6 @@
 <?php
   define("SYSTEM_PATH", "../../../");
-  
+
   include_once SYSTEM_PATH . "includes/php/config.php";
   include_once ROOT_PATH . "includes/php/utils.php";
   include_once ROOT_PATH . "includes/php/database.php";
@@ -130,6 +130,7 @@
                 $totalAmt = $stockInHeader["total_amt"];
                 $totalAmtBase = $stockInHeader["total_amt_base"];
                 $transactionCode = $stockInHeader["transaction_code"];
+                $miscellaneous = $stockInHeader["transaction_code"] != "R1" && $stockInHeader["transaction_code"] != "R3";
 
                 $totalQty += $qty;
                 $totalAmtBaseSum += $totalAmtBase;
@@ -139,12 +140,12 @@
                     <td title=\"$date\">$date</td>
                     <td title=\"$count\" class=\"number\">$count</td>
                     <td title=\"$stockInNo\"><a class=\"link\" href=\"" . STOCK_IN_URL . "?id=$id\">$stockInNo</a></td>
-                    <td title=\"$creditorName\">$creditorName</td>
+                    " . ($miscellaneous ? "<td></td>" : "<td title=\"$creditorName\">$creditorName</td>") . "
                     <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
-                    <td title=\"$discount\" class=\"number\">" . number_format($discount, 2) . "%</td>
-                    <td title=\"$currency\" class=\"number\">$currency</td>
-                    <td title=\"$totalAmt\" class=\"number\">" . number_format($totalAmt, 2) . "</td>
-                    <td title=\"$totalAmtBase\" class=\"number\">" . number_format($totalAmtBase, 2) . "</td>
+                    " . ($miscellaneous ? "<td></td>" : "<td title=\"$discount\" class=\"number\">" . number_format($discount, 2) . "%</td>") . "
+                    " . ($miscellaneous ? "<td></td>" : "<td title=\"$currency\" class=\"number\">$currency</td>") . "
+                    " . ($miscellaneous ? "<td></td>" : "<td title=\"$totalAmt\" class=\"number\">" . number_format($totalAmt, 2) . "</td>") . "
+                    " . ($miscellaneous ? "<td></td>" : "<td title=\"$totalAmtBase\" class=\"number\">" . number_format($totalAmtBase, 2) . "</td>") . "
                     <td title=\"$transactionCode\">$transactionCode</td>
                   </tr>
                 ";

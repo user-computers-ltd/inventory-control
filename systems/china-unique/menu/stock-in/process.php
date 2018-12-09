@@ -4,7 +4,7 @@
   $stockInDate = $_POST["stock_in_date"];
   $transactionCode = $_POST["transaction_code"];
   $warehouseCode = $_POST["warehouse_code"];
-  $creditorCode = isset($_POST["creditor_code"]) ? $_POST["creditor_code"] : "";
+  $creditorCode = isset($_POST["creditor_code"]) ? $_POST["creditor_code"] : "MISC";
   $currencyCode = isset($_POST["currency_code"]) ? $_POST["currency_code"] : "RMB";
   $exchangeRate = isset($_POST["exchange_rate"]) ? $_POST["exchange_rate"] : 1;
   $netAmount = isset($_POST["net_amount"]) ? $_POST["net_amount"] : 0;
@@ -95,7 +95,7 @@
       ");
 
       if (assigned($id) && $status == "POSTED") {
-        $queries = concat($queries, postStockInVoucher($stockInNo));
+        $queries = concat($queries, onPostStockInVoucher($stockInNo));
       }
     }
 

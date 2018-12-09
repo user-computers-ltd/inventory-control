@@ -146,7 +146,7 @@
               </td>
             </tr>
           </table>
-          <button type="button" onclick="addSalesModel()">Add</button>
+          <button type="button" onclick="addStockInModel()">Add</button>
           <table id="stock-in-models">
             <colgroup>
               <col>
@@ -343,7 +343,7 @@
                   + "/>"
                 + "</td>"
                 + "<td class=\"total-amount number\">" + stockInModel["total_amount"].toFixed(2) + "</td>"
-                + "<td><div class=\"remove\" onclick=\"removeSalesModel(" + i + ")\">×</div></td>"
+                + "<td><div class=\"remove\" onclick=\"removeStockInModel(" + i + ")\">×</div></td>"
                 + "</tr>";
 
               newRowElement.innerHTML = rowInnerHTML;
@@ -448,14 +448,14 @@
             }
           }
 
-          function addSalesModel() {
+          function addStockInModel() {
             stockInModels.push({});
 
             updateModel(stockInModels.length - 1);
             render();
           }
 
-          function removeSalesModel(index) {
+          function removeStockInModel(index) {
             stockInModels.splice(index, 1);
             render();
           }
