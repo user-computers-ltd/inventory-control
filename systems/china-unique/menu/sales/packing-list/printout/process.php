@@ -47,7 +47,7 @@
       ON a.brand_code=b.code
       LEFT JOIN
         `pl_header` AS c
-      ON a.pl_no=b.pl_no
+      ON a.pl_no=c.pl_no
       WHERE
         c.id=\"$id\"
       GROUP BY
