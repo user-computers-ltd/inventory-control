@@ -73,6 +73,21 @@
           throwError("missing database, table, columns or import file");
         }
         break;
+      case "clear-import-table":
+        if ($_POST["database"] && $_POST["table"] && $_POST["field"] && $_POST["name"] && $_FILES["import"]) {
+          $columns = array();
+
+          for ($i = 0; $i < count($_POST["field"]); $i++) {
+            array_push($columns, array(
+              "field" => $_POST["field"][$i],
+              "name" => $_POST["name"][$i]
+            ));
+          }
+          clearImportTable($_POST["database"], $_POST["table"], $columns, $_FILES["import"]);
+        } else {
+          throwError("missing database, table, columns or import file");
+        }
+        break;
       case "export-table":
         if ($_POST["database"] && $_POST["table"]) {
           echo json_encode(exportTable($_POST["database"], $_POST["table"]));

@@ -45,6 +45,7 @@ li > .list-item-right {
 .delete-button,
 .clear-button,
 .copy-button,
+.clear-import-button,
 .import-button,
 .export-button {
   display: inline-block;
@@ -68,6 +69,10 @@ li > .list-item-right {
 
 .copy-button {
   background-image: url("../resources/copy.png");
+}
+
+.clear-import-button {
+  background-image: url("../resources/clear-import.png");
 }
 
 .import-button {

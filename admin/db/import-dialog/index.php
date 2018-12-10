@@ -38,9 +38,17 @@
       var dataCount = importForm.querySelector("#data-count");
       var url = "<?php echo BASE_URL; ?>admin/ajax.php";
       var tableColumns = [];
+      var clearImport = false;
 
       function importTable(table, columns) {
         tableColumns = columns;
+        importTableInput.setAttribute("value", table);
+        importButton.click();
+      }
+
+      function clearImportTable(table, columns) {
+        tableColumns = columns;
+        clearImport = true;
         importTableInput.setAttribute("value", table);
         importButton.click();
       }
@@ -155,7 +163,7 @@
 
         var data = new FormData(importForm);
 
-        data.append("action", "import-table");
+        data.append("action", clearImport ? "clear-import-table" : "import-table");
         data.append("database", database);
 
         for (var i = 0; i < importButton.files.length; i++) {

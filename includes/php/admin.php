@@ -127,6 +127,16 @@
     ));
   }
 
+  function clearImportTable($database, $table, $columns, $file) {
+    selectDatabase($database);
+
+    execute(array(
+      "SET SESSION sql_mode = ''",
+      "TRUNCATE TABLE `$table`",
+      generateInsertStatment($table, $columns, $file)
+    ));
+  }
+
   function exportTable($database, $table) {
     selectDatabase($database);
 

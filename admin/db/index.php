@@ -51,6 +51,7 @@
               . "</div>"
               . "<div class=\"list-item-right\">"
               . "<div class=\"count\">$count rows</div>"
+              . "<div class=\"clear-import-button\" onclick=\"clearImportTable('$name', $columns)\"></div>"
               . "<div class=\"import-button\" onclick=\"importTable('$name', $columns)\"></div>"
               . "<div class=\"export-button\" onclick=\"exportTable('$name')\"></div>"
               . "<div class=\"copy-button\" onclick=\"copyTable('$name')\"></div>"
