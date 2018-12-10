@@ -37,7 +37,7 @@
     return $array3;
   }
 
-  function object_map($array, $callback) {
+  function object_map($callback, $array) {
     $mappedArray = array();
 
     foreach ($array as $key => $value) {
@@ -108,18 +108,36 @@
   function generateRedirectButton($url, $buttonLabel) {
     if (count($_POST) > 0) {
       if (count($_GET) > 0) {
-        $url = $url . "?" . join("&", object_map($_GET, function($key, $value) { return "$key=$value"; }));
+        $url = $url . "?" . join("&", object_map(function ($key, $value) {
+          if (is_array($value)) {
+            return join("&", array_map(function ($v) use ($key) { return $key . "[]=$v"; }, $value));
+          } else {
+            return "$key=$value";
+          }
+        }, $_GET));
       }
 
       $method = "post";
-      $parameters = object_map($_POST, function($key, $value) {
-        return "<input type=\"hidden\" name=\"$key\" value=\"$value\" />";
-      });
+      $parameters = object_map(function ($key, $value) {
+        if (is_array($value)) {
+          return join(array_map(function ($v) use ($key) {
+            return "<input type=\"hidden\" name=\"$key" . "[]\" value=\"$v\" />";
+          }, $value));
+        } else {
+          return "<input type=\"hidden\" name=\"$key\" value=\"$value\" />";
+        }
+      }, $_POST);
     } else {
       $method = "get";
-      $parameters = object_map($_GET, function($key, $value) {
-        return "<input type=\"hidden\" name=\"$key\" value=\"$value\" />";
-      });
+      $parameters = object_map(function ($key, $value) {
+        if (is_array($value)) {
+          return join(array_map(function ($v) use ($key) {
+            return "<input type=\"hidden\" name=\"$key" . "[]\" value=\"$v\" />";
+          }, $value));
+        } else {
+          return "<input type=\"hidden\" name=\"$key\" value=\"$value\" />";
+        }
+      }, $_GET);
     }
 
     return "

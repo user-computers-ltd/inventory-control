@@ -85,7 +85,8 @@
 
 #menu-sidebar .menu-item .initial {
   width: 50px;
-  padding: 0px 5px;
+  padding-left: 5px;
+  transition: 0.3s;
 }
 
 #menu-sidebar .sub-menu {
@@ -95,8 +96,16 @@
   transition: 0.3s;
 }
 
-#menu-sidebar.show .sub-menu {
-  padding-left: 10px;
+#menu-sidebar.show .sub-menu .menu-item .initial {
+  padding-left: 15px;
+}
+
+#menu-sidebar.show .sub-menu .sub-menu .menu-item .initial {
+  padding-left: 25px;
+}
+
+#menu-sidebar.show .sub-menu .sub-menu .sub-menu .menu-item .initial {
+  padding-left: 35px;
 }
 
 #menu-sidebar .menu-item.toggle {

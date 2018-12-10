@@ -90,7 +90,7 @@
           url: "<?php echo BASE_URL; ?>includes/php/query.php",
           params: {
             database: database,
-            sql: textarea.value
+            sql: encodeURIComponent(textarea.value)
           },
           resolve: updateStatus,
           reject: updateStatus
