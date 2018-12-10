@@ -4,5 +4,6 @@ CREATE TABLE `stock` (
   `model_no`        VARCHAR(30)     NOT NULL,
   `warehouse_code`  VARCHAR(30)     NOT NULL,
   `qty`             INT(12)         DEFAULT 0,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `stock` (`brand_code`, `model_no`, `warehouse_code`)
 );

@@ -18,6 +18,9 @@
     $prices,
     $qtys
   ) {
+    $discountFactor = (100 - $discount) / 100;
+    $taxFactor = (100 + $tax) / 100;
+
     $queries = array();
     $transactionValues = array();
 
@@ -26,73 +29,39 @@
       $modelNo = $modelNos[$i];
       $price = $prices[$i];
       $qty = $qtys[$i];
-
-      $costAverage = query("
-        SELECT
-          cost_average
-        FROM
-          `model`
-        WHERE
-          brand_code=\"$brandCode\" AND model_no=\"$modelNo\"
-      ")[0]["cost_average"];
-
-      $qtyOnHand = query("
-        SELECT
-          SUM(qty) AS `qty_on_hand`
-        FROM
-          `stock`
-        WHERE
-          brand_code=\"$brandCode\" AND model_no=\"$modelNo\"
-      ")[0]["qty_on_hand"];
-
-      $stockInWarehouse = query("
-        SELECT
-          SUM(qty) AS `qty_in_warehouse`
-        FROM
-          `stock`
-        WHERE
-          warehouse_code=\"$warehouseCode\" AND brand_code=\"$brandCode\" AND model_no=\"$modelNo\"
-      ")[0]["qty_in_warehouse"];
-
+      $cost = $price * $discountFactor / $taxFactor * $exchangeRate;
       $stockChange = strpos($transactionCode, "R") === 0 ? $qty : -$qty;
 
       /* Update model average cost. */
       if ($transactionCode == "R1" || $transactionCode == "R2") {
-        $discountFactor = (100 - $discount) / 100;
-        $taxFactor = (100 + $tax) / 100;
-        $cost = $price * $discountFactor / $taxFactor * $exchangeRate;
-        $newCostAverage = ($costAverage * $qtyOnHand + $cost * $qty) / ($qtyOnHand + $qty);
-
         array_push($queries, "
           UPDATE
-            `model`
+            `model` AS a
+          LEFT JOIN
+            (SELECT
+              brand_code,
+              model_no,
+              SUM(qty) AS `qty_on_hand`
+            FROM
+              `stock`
+            GROUP BY
+              brand_code, model_no) AS b
           SET
-            cost_average=\"$newCostAverage\"
+            a.cost_average=(a.cost_average * b.qty_on_hand + $cost * $qty) / (b.qty_on_hand + $qty)
           WHERE
             brand_code=\"$brandCode\" AND model_no=\"$modelNo\"
         ");
       }
 
       /* Update or insert stock. */
-      if ($stockInWarehouse == NULL) {
-        array_push($queries, "
-          INSERT INTO
-            `stock`
-            (warehouse_code, brand_code, model_no, qty)
-          VALUES
-            (\"$warehouseCode\", \"$brandCode\", \"$modelNo\", \"$stockChange\")
-        ");
-      } else {
-        $newQty = $stockInWarehouse + $stockChange;
-        array_push($queries, "
-          UPDATE
-            `stock`
-          SET
-            qty=\"$newQty\"
-          WHERE
-            warehouse_code=\"$warehouseCode\" AND brand_code=\"$brandCode\" AND model_no=\"$modelNo\"
-        ");
-      }
+      array_push($queries, "
+        INSERT INTO
+          `stock`
+          (warehouse_code, brand_code, model_no, qty)
+        VALUES
+          (\"$warehouseCode\", \"$brandCode\", \"$modelNo\", \"$stockChange\")
+        ON DUPLICATE KEY UPDATE qty=qty + $stockChange;
+      ");
 
       /* Collect transaction values for insertion. */
       array_push($transactionValues, "
@@ -105,7 +74,7 @@
           \"$exchangeRate\",
           \"$brandCode\",
           \"$modelNo\",
-          \"$costAverage\",
+          (SELECT cost_average FROM `model` WHERE brand_code=\"$brandCode\" AND model_no=\"$modelNo\"),
           \"$price\",
           \"$qty\",
           \"$discount\",
