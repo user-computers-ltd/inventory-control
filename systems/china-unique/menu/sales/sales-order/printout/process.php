@@ -100,7 +100,7 @@
   }
 
   if (isset($soHeader)) {
-    $debtor = query("SELECT english_name AS name FROM `debtor` WHERE code=\"$debtorCode\"")[0];
+    $debtor = query("SELECT english_name AS name FROM `debtor` WHERE code=\"" . $soHeader["debtor_code"] . "\"")[0];
 
     $soHeader["customer"] = $soHeader["debtor_code"] . " - " . (isset($debtor) ? $debtor["name"] : "Unknown");
     $soHeader["currency"] = $soHeader["currency_code"] . " @ " . $soHeader["exchange_rate"];

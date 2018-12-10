@@ -343,7 +343,7 @@
           function updateQuantity (index, qty = 0) {
             var soModel = soModels[index];
 
-            soModel["qty"] = Math.max(0, parseFloat(qty);
+            soModel["qty"] = Math.max(0, parseFloat(qty));
 
             if (soModel["price"]) {
               soModel["total_amount"] = soModel["price"] * soModel["qty"];
