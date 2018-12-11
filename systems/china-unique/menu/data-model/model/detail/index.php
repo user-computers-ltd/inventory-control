@@ -4,30 +4,30 @@
   include_once ROOT_PATH . "includes/php/utils.php";
   include_once ROOT_PATH . "includes/php/database.php";
 
-  $modelId = $_GET["id"];
+  $id = $_GET["id"];
 
-  $InBaseCurrency = "(in " . COMPANY_CURRENCY . ")";
+  $InBaseCurrency = "in " . COMPANY_CURRENCY . "";
   $date = date("Y-m-d");
   $year = date("Y");
 
   $model = query("
     SELECT
-      a.model_no                                                                          AS `model_no`,
-      a.description                                                                       AS `description`,
-      a.brand_code                                                                        AS `brand_code`,
-      b.name                                                                              AS `brand_name`,
-      CONCAT('(', a.cost_pri_currency_code, ' @ ', IFNULL(f.rate, 1), ') ', a.cost_pri)   AS `cost_pri`,
-      a.cost_pri * IFNULL(f.rate, 1)                                                      AS `cost_pri_base`,
-      CONCAT('(', a.cost_sec_currency_code, ' @ ', IFNULL(g.rate, 1), ') ', a.cost_sec)   AS `cost_sec`,
-      a.cost_sec * IFNULL(g.rate, 1)                                                      AS `cost_sec_base`,
-      a.cost_average                                                                      AS `cost_average`,
-      a.retail_normal                                                                     AS `retail_normal`,
-      a.retail_special                                                                    AS `retail_special`,
-      a.wholesale_normal                                                                  AS `wholesale_normal`,
-      a.wholesale_special                                                                 AS `wholesale_special`,
-      IFNULL(c.qty_on_hand, 0)                                                            AS `qty_on_hand`,
-      IFNULL(d.qty_on_order, 0)                                                           AS `qty_on_order`,
-      IFNULL(e.qty_on_reserve, 0)                                                         AS `qty_on_reserve`
+      a.model_no                                          AS `model_no`,
+      a.description                                       AS `description`,
+      a.brand_code                                        AS `brand_code`,
+      b.name                                              AS `brand_name`,
+      CONCAT(a.cost_pri_currency_code, ' ', a.cost_pri)   AS `cost_pri`,
+      a.cost_pri * IFNULL(f.rate, 1)                      AS `cost_pri_base`,
+      CONCAT(a.cost_sec_currency_code, ' ', a.cost_sec)   AS `cost_sec`,
+      a.cost_sec * IFNULL(g.rate, 1)                      AS `cost_sec_base`,
+      a.cost_average                                      AS `cost_average`,
+      a.retail_normal                                     AS `retail_normal`,
+      a.retail_special                                    AS `retail_special`,
+      a.wholesale_normal                                  AS `wholesale_normal`,
+      a.wholesale_special                                 AS `wholesale_special`,
+      IFNULL(c.qty_on_hand, 0)                            AS `qty_on_hand`,
+      IFNULL(d.qty_on_order, 0)                           AS `qty_on_order`,
+      IFNULL(e.qty_on_reserve, 0)                         AS `qty_on_reserve`
     FROM
       `model` AS a
     LEFT JOIN
@@ -69,7 +69,7 @@
       `currency` AS g
     ON a.cost_sec_currency_code=g.code
     WHERE
-      a.id=\"$modelId\"
+      a.id=\"$id\"
   ")[0];
 
   execute(array(
@@ -166,16 +166,16 @@
     FROM
       temp_dates AS a
     LEFT JOIN
-      (" . getMonthlyTransactions($modelId, "transaction_code=\"S1\" OR transaction_code=\"S2\"") . ") AS b
+      (" . getMonthlyTransactions($id, "transaction_code=\"S1\" OR transaction_code=\"S2\"") . ") AS b
     ON a.date=b.date
     LEFT JOIN
-      (" . getMonthlyTransactions($modelId, "transaction_code=\"R3\"") . ") AS c
+      (" . getMonthlyTransactions($id, "transaction_code=\"R3\"") . ") AS c
     ON a.date=c.date
     LEFT JOIN
-      (" . getMonthlyTransactions($modelId, "transaction_code=\"R1\" OR transaction_code=\"R2\"") . ") AS d
+      (" . getMonthlyTransactions($id, "transaction_code=\"R1\" OR transaction_code=\"R2\"") . ") AS d
     ON a.date=d.date
     LEFT JOIN
-      (" . getMonthlyTransactions($modelId, "transaction_code=\"S3\"") . ") AS e
+      (" . getMonthlyTransactions($id, "transaction_code=\"S3\"") . ") AS e
     ON a.date=e.date
   ");
 
@@ -195,15 +195,15 @@
       IFNULL(d.qty, 0)    AS `purchase_return_qty`,
       IFNULL(d.amt, 0)    AS `purchase_return_amt`
     FROM
-      (" . getYTDTransactions($modelId, "transaction_code=\"S1\" OR transaction_code=\"S2\"") . ") AS a
+      (" . getYTDTransactions($id, "transaction_code=\"S1\" OR transaction_code=\"S2\"") . ") AS a
     LEFT JOIN
-      (" . getYTDTransactions($modelId, "transaction_code=\"R3\"") . ") AS b
+      (" . getYTDTransactions($id, "transaction_code=\"R3\"") . ") AS b
     ON a.date=b.date
     LEFT JOIN
-      (" . getYTDTransactions($modelId, "transaction_code=\"R1\" OR transaction_code=\"R2\"") . ") AS c
+      (" . getYTDTransactions($id, "transaction_code=\"R1\" OR transaction_code=\"R2\"") . ") AS c
     ON a.date=c.date
     LEFT JOIN
-      (" . getYTDTransactions($modelId, "transaction_code=\"S3\"") . ") AS d
+      (" . getYTDTransactions($id, "transaction_code=\"S3\"") . ") AS d
     ON a.date=d.date
   ");
 
@@ -223,15 +223,15 @@
       IFNULL(d.qty, 0)    AS `purchase_return_qty`,
       IFNULL(d.amt, 0)    AS `purchase_return_amt`
     FROM
-      (" . getPreviousYTDTransactions($modelId, "transaction_code=\"S1\" OR transaction_code=\"S2\"") . ") AS a
+      (" . getPreviousYTDTransactions($id, "transaction_code=\"S1\" OR transaction_code=\"S2\"") . ") AS a
     LEFT JOIN
-      (" . getPreviousYTDTransactions($modelId, "transaction_code=\"R3\"") . ") AS b
+      (" . getPreviousYTDTransactions($id, "transaction_code=\"R3\"") . ") AS b
     ON a.date=b.date
     LEFT JOIN
-      (" . getPreviousYTDTransactions($modelId, "transaction_code=\"R1\" OR transaction_code=\"R2\"") . ") AS c
+      (" . getPreviousYTDTransactions($id, "transaction_code=\"R1\" OR transaction_code=\"R2\"") . ") AS c
     ON a.date=c.date
     LEFT JOIN
-      (" . getPreviousYTDTransactions($modelId, "transaction_code=\"S3\"") . ") AS d
+      (" . getPreviousYTDTransactions($id, "transaction_code=\"S3\"") . ") AS d
     ON a.date=d.date
   ");
 
@@ -251,7 +251,7 @@
       `warehouse` AS c
     ON a.warehouse_code=c.code
     WHERE
-      b.id=\"$modelId\"
+      b.id=\"$id\"
     GROUP BY
       c.code, c.name
   ");
@@ -268,169 +268,173 @@
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo DATA_MODEL_MODEL_DETAIL_TITLE; ?></div>
-        <?php if (isset($model)): ?>
-          <table id="model-header">
+      <?php if (isset($model)): ?>
+        <form class="web-only" action="<?php echo DATA_MODEL_MODEL_ENTRY_URL; ?>">
+          <input type="hidden" name="id" value="<?php echo $id; ?>" />
+          <button type="submit">Edit</button>
+        </form>
+        <table id="model-header">
+          <tr>
+            <th>Model No.:</th>
+            <td class="number"><?php echo $model["model_no"]; ?></td>
+          </tr>
+          <tr>
+            <th>Description:</th>
+            <td class="number multi-line"><?php echo $model["description"]; ?></td>
+          </tr>
+          <tr>
+            <th>Brand:</th>
+            <td class="number"><?php echo $model["brand_code"] . " - " . $model["brand_name"]; ?></td>
+          </tr>
+          <tr>
+            <th>Cost Primary (正價):</th>
+            <td class="number"><?php echo $model["cost_pri"]; ?></td>
+            <th><?php echo $InBaseCurrency; ?>:</th>
+            <td class="number"><?php echo number_format($model["cost_pri_base"], 6); ?></td>
+          </tr>
+          <tr>
+            <th>Cost Special (特價):</th>
+            <td class="number"><?php echo $model["cost_sec"]; ?></td>
+            <th><?php echo $InBaseCurrency; ?>:</th>
+            <td class="number"><?php echo number_format($model["cost_sec_base"], 6); ?></td>
+          </tr>
+          <tr>
+            <th>Retail Normal Price (正價):</th>
+            <td class="number"><?php echo number_format($model["retail_normal"], 6); ?></td>
+          </tr>
+          <tr>
+            <th>Retail Special Price (特價):</th>
+            <td class="number"><?php echo number_format($model["retail_special"], 6); ?></td>
+          </tr>
+          <tr>
+            <th>End User Price (廠價):</th>
+            <td class="number"><?php echo number_format($model["wholesale_normal"], 6); ?></td>
+          </tr>
+          <tr>
+            <th>Wholesale Price (批發價):</th>
+            <td class="number"><?php echo number_format($model["wholesale_special"], 6); ?></td>
+          </tr>
+          <tr>
+            <th>Average Cost:</th>
+            <td class="number"><?php echo number_format($model["cost_average"], 6); ?></td>
+          </tr>
+          <tr>
+            <th>Qty On Hand:</th>
+            <td class="number"><?php echo number_format($model["qty_on_hand"]); ?></td>
+          </tr>
+          <tr>
+            <th>Qty On Order:</th>
+            <td class="number"><?php echo number_format($model["qty_on_order"]); ?></td>
+          </tr>
+          <tr>
+            <th>Qty On Reserve:</th>
+            <td class="number"><?php echo number_format($model["qty_on_reserve"]); ?></td>
+          </tr>
+        </table>
+        <table id="model-performance">
+          <colgroup>
+            <col style="width: 80px;">
+            <col>
+            <col>
+            <col>
+            <col>
+            <col>
+            <col>
+            <col>
+            <col>
+          </colgroup>
+          <thead>
             <tr>
-              <th>Model No.:</th>
-              <td class="number"><?php echo $model["model_no"]; ?></td>
+              <th rowspan="2">Period</th>
+              <th colspan="2">Sales</th>
+              <th colspan="2">Sales Return</th>
+              <th colspan="2">Purchase</th>
+              <th colspan="2">Purchase Return</th>
             </tr>
             <tr>
-              <th>Description:</th>
-              <td class="number"><?php echo $model["description"]; ?></td>
+              <th class="number">Qty</th>
+              <th class="number">Amount</th>
+              <th class="number">Qty</th>
+              <th class="number">Amount</th>
+              <th class="number">Qty</th>
+              <th class="number">Amount</th>
+              <th class="number">Qty</th>
+              <th class="number">Amount</th>
             </tr>
-            <tr>
-              <th>Brand:</th>
-              <td class="number"><?php echo $model["brand_code"] . " - " . $model["brand_name"]; ?></td>
-            </tr>
-            <tr>
-              <th>Cost Primary (正價):</th>
-              <td class="number"><?php echo $model["cost_pri"]; ?></td>
-            </tr>
-            <tr>
-              <th>Cost Primary <?php echo $InBaseCurrency; ?>:</th>
-              <td class="number"><?php echo number_format($model["cost_pri_base"], 6); ?></td>
-            </tr>
-            <tr>
-              <th>Cost Special (特價):</th>
-              <td class="number"><?php echo $model["cost_sec"]; ?></td>
-            </tr>
-            <tr>
-              <th>Cost Special <?php echo $InBaseCurrency; ?>:</th>
-              <td class="number"><?php echo number_format($model["cost_sec_base"], 6); ?></td>
-            </tr>
-            <tr>
-              <th>Average Cost:</th>
-              <td class="number"><?php echo number_format($model["cost_average"], 6); ?></td>
-            </tr>
-            <tr>
-              <th>Retail Normal Price (正價):</th>
-              <td class="number"><?php echo number_format($model["retail_normal"], 6); ?></td>
-            </tr>
-            <tr>
-              <th>Retail Special Price (特價):</th>
-              <td class="number"><?php echo number_format($model["retail_special"], 6); ?></td>
-            </tr>
-            <tr>
-              <th>End User Price (廠價):</th>
-              <td class="number"><?php echo number_format($model["wholesale_normal"], 6); ?></td>
-            </tr>
-            <tr>
-              <th>Qty On Hand:</th>
-              <td class="number"><?php echo number_format($model["qty_on_hand"]); ?></td>
-            </tr>
-            <tr>
-              <th>Qty On Order:</th>
-              <td class="number"><?php echo number_format($model["qty_on_order"]); ?></td>
-            </tr>
-            <tr>
-              <th>Qty On Reserve:</th>
-              <td class="number"><?php echo number_format($model["qty_on_reserve"]); ?></td>
-            </tr>
-          </table>
-          <table id="model-performance">
-            <colgroup>
-              <col style="width: 80px;">
-              <col>
-              <col>
-              <col>
-              <col>
-              <col>
-              <col>
-              <col>
-              <col>
-            </colgroup>
+          </thead>
+          <tbody>
+            <?php
+              function generateRows($transactions) {
+                for ($i = 0; $i < count($transactions); $i++) {
+                  $transaction = $transactions[$i];
+                  $date = $transaction["date"];
+                  $salesCount = $transaction["sales_count"];
+                  $salesQty = $transaction["sales_qty"];
+                  $salesAmt = $transaction["sales_amt"];
+                  $salesReturnCount = $transaction["sales_return_count"];
+                  $salesReturnQty = $transaction["sales_return_qty"];
+                  $salesReturnAmt = $transaction["sales_return_amt"];
+                  $purchaseCount = $transaction["purchase_count"];
+                  $purchaseQty = $transaction["purchase_qty"];
+                  $purchaseAmt = $transaction["purchase_amt"];
+                  $purchaseReturnCount = $transaction["purchase_return_count"];
+                  $purchaseReturnQty = $transaction["purchase_return_qty"];
+                  $purchaseReturnAmt = $transaction["purchase_return_amt"];
+
+                  echo "
+                    <tr>
+                      <td title=\"$date\">$date</td>
+                      <td class=\"number\" title=\"$salesQty\">" . number_format($salesQty) . "</td>
+                      <td class=\"number\" title=\"$salesAmt\">" . number_format($salesAmt, 2) . "</td>
+                      <td class=\"number\" title=\"$salesReturnQty\">" . number_format($salesReturnQty) . "</td>
+                      <td class=\"number\" title=\"$salesReturnAmt\">" . number_format($salesReturnAmt, 2) . "</td>
+                      <td class=\"number\" title=\"$purchaseQty\">" . number_format($purchaseQty) . "</td>
+                      <td class=\"number\" title=\"$purchaseAmt\">" . number_format($purchaseAmt, 2) . "</td>
+                      <td class=\"number\" title=\"$purchaseReturnQty\">" . number_format($purchaseReturnQty) . "</td>
+                      <td class=\"number\" title=\"$purchaseReturnAmt\">" . number_format($purchaseReturnAmt, 2) . "</td>
+                    </tr>
+                  ";
+                }
+              }
+
+              generateRows($monthlyTransactions);
+              generateRows($ytdTransactions);
+              generateRows($ytdPreviousTransactions);
+            ?>
+          </tbody>
+        </table>
+        <?php if (count($warehouseStocks) > 0): ?>
+          <table id="model-stock">
             <thead>
               <tr>
-                <th rowspan="2">Period</th>
-                <th colspan="2">Sales</th>
-                <th colspan="2">Sales Return</th>
-                <th colspan="2">Purchase</th>
-                <th colspan="2">Purchase Return</th>
-              </tr>
-              <tr>
-                <th class="number">Qty</th>
-                <th class="number">Amount</th>
-                <th class="number">Qty</th>
-                <th class="number">Amount</th>
-                <th class="number">Qty</th>
-                <th class="number">Amount</th>
-                <th class="number">Qty</th>
-                <th class="number">Amount</th>
+                <th>Warehouse</th>
+                <th>Qty</th>
               </tr>
             </thead>
             <tbody>
               <?php
-                function generateRows($transactions) {
-                  for ($i = 0; $i < count($transactions); $i++) {
-                    $transaction = $transactions[$i];
-                    $date = $transaction["date"];
-                    $salesCount = $transaction["sales_count"];
-                    $salesQty = $transaction["sales_qty"];
-                    $salesAmt = $transaction["sales_amt"];
-                    $salesReturnCount = $transaction["sales_return_count"];
-                    $salesReturnQty = $transaction["sales_return_qty"];
-                    $salesReturnAmt = $transaction["sales_return_amt"];
-                    $purchaseCount = $transaction["purchase_count"];
-                    $purchaseQty = $transaction["purchase_qty"];
-                    $purchaseAmt = $transaction["purchase_amt"];
-                    $purchaseReturnCount = $transaction["purchase_return_count"];
-                    $purchaseReturnQty = $transaction["purchase_return_qty"];
-                    $purchaseReturnAmt = $transaction["purchase_return_amt"];
+                for ($i = 0; $i < count($warehouseStocks); $i++) {
+                  $warehouseStock = $warehouseStocks[$i];
+                  $warehouseCode = $warehouseStock["warehouse_code"];
+                  $warehouseName = $warehouseStock["warehouse_name"];
+                  $qty = $warehouseStock["qty"];
 
-                    echo "
-                      <tr>
-                        <td title=\"$date\">$date</td>
-                        <td class=\"number\" title=\"$salesQty\">" . number_format($salesQty) . "</td>
-                        <td class=\"number\" title=\"$salesAmt\">" . number_format($salesAmt, 2) . "</td>
-                        <td class=\"number\" title=\"$salesReturnQty\">" . number_format($salesReturnQty) . "</td>
-                        <td class=\"number\" title=\"$salesReturnAmt\">" . number_format($salesReturnAmt, 2) . "</td>
-                        <td class=\"number\" title=\"$purchaseQty\">" . number_format($purchaseQty) . "</td>
-                        <td class=\"number\" title=\"$purchaseAmt\">" . number_format($purchaseAmt, 2) . "</td>
-                        <td class=\"number\" title=\"$purchaseReturnQty\">" . number_format($purchaseReturnQty) . "</td>
-                        <td class=\"number\" title=\"$purchaseReturnAmt\">" . number_format($purchaseReturnAmt, 2) . "</td>
-                      </tr>
-                    ";
-                  }
+                  echo "
+                    <tr>
+                      <td title=\"$warehouseCode\">$warehouseCode - $warehouseName</td>
+                      <td class=\"number\" title=\"$qty\">" . number_format($qty) . "</td>
+                    </tr>
+                  ";
                 }
-
-                generateRows($monthlyTransactions);
-                generateRows($ytdTransactions);
-                generateRows($ytdPreviousTransactions);
               ?>
             </tbody>
           </table>
-          <?php if (count($warehouseStocks) > 0): ?>
-            <table id="model-stock">
-              <thead>
-                <tr>
-                  <th>Warehouse</th>
-                  <th>Qty</th>
-                </tr>
-              </thead>
-              <tbody>
-                <?php
-                  for ($i = 0; $i < count($warehouseStocks); $i++) {
-                    $warehouseStock = $warehouseStocks[$i];
-                    $warehouseCode = $warehouseStock["warehouse_code"];
-                    $warehouseName = $warehouseStock["warehouse_name"];
-                    $qty = $warehouseStock["qty"];
-
-                    echo "
-                      <tr>
-                        <td title=\"$warehouseCode\">$warehouseCode - $warehouseName</td>
-                        <td class=\"number\" title=\"$qty\">" . number_format($qty) . "</td>
-                      </tr>
-                    ";
-                  }
-                ?>
-              </tbody>
-            </table>
-          <?php else: ?>
-            <div class="model-no-result">No stocks</div>
-          <?php endif ?>
         <?php else: ?>
-          <div class="model-no-result">No results</div>
+          <div class="model-no-result">No stocks</div>
         <?php endif ?>
+      <?php else: ?>
+        <div class="model-no-result">Model not found</div>
+      <?php endif ?>
     </div>
   </body>
 </html>

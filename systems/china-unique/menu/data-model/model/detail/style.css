@@ -1,4 +1,3 @@
-#model-header,
 #model-stock {
   width: 50%;
 }
@@ -7,6 +6,10 @@
   border: none;
   font-size: 13px;
   padding: 0px 5px;
+}
+
+#model-header th {
+  vertical-align: top;
 }
 
 #model-header input,
@@ -18,6 +21,10 @@
 #model-header .number,
 #model-performance .number {
   text-align: right;
+}
+
+#model-header .multi-line {
+  white-space: pre;
 }
 
 #model-performance th,

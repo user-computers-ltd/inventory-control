@@ -324,7 +324,7 @@
   if (assigned($filterWarehouseCodes) && count($filterWarehouseCodes) > 0) {
     $filterWhereClause = $filterWhereClause . "
       AND (" . join(" OR ", array_map(function ($i) { return "warehouse_code=\"$i\""; }, $filterWarehouseCodes)) . ")";
-  } else {
+  } else if (count($warehouses) > 0) {
     $filterWhereClause = $filterWhereClause . "
       AND (" . join(" OR ", array_map(function ($wh) { return "warehouse_code=\"" . $wh["code"] . "\""; }, $warehouses)) . ")";
   }

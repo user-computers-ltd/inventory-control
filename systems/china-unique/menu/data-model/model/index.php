@@ -155,6 +155,9 @@
           </tr>
         </table>
       </form>
+      <form action="<?php echo DATA_MODEL_MODEL_ENTRY_URL; ?>">
+        <button type="submit">Create</button>
+      </form>
       <?php if (count($results) > 0): ?>
         <table id="model-results">
           <colgroup>

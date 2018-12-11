@@ -312,7 +312,7 @@
   if (assigned($filterIaNos) && count($filterIaNos) > 0) {
     $filterWhereClause = $filterWhereClause . "
       AND (" . join(" OR ", array_map(function ($i) { return "ia_no=\"$i\""; }, $filterIaNos)) . ")";
-  } else if (count($ias) > 0){
+  } else if (count($ias) > 0) {
     $filterWhereClause = $filterWhereClause . "
       AND (" . join(" OR ", array_map(function ($ia) { return "ia_no=\"" . $ia["ia_no"] . "\""; }, $ias)) . ")";
   }
