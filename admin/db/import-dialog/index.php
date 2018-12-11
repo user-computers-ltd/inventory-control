@@ -181,6 +181,7 @@
           reject: function (message) {
             toggleClass(importLoading, "show", false);
             importError.innerHTML = message;
+            showErrorBar(message);
           }
         });
 
