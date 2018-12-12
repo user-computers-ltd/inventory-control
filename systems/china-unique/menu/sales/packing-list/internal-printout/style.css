@@ -1,0 +1,49 @@
+#pl-header,
+#pl-footer {
+  font-size: 13px;
+}
+
+#pl-header td {
+  padding: 2px;
+  vertical-align: top;
+}
+
+#pl-header td,
+#pl-footer td {
+  border: none;
+}
+
+#pl-header td:nth-child(2n + 1),
+#pl-footer td:nth-child(2n + 1) {
+  width: 100px;
+  font-weight: bold;
+}
+
+#pl-models th,
+#pl-models td {
+  background-color: transparent;
+  border: none;
+  padding: 4px;
+  font-size: 13px;
+}
+
+#pl-models .number {
+  text-align: right;
+}
+
+#pl-models thead th {
+  border-bottom: 1px solid;
+}
+
+#pl-models tfoot th {
+  border-top: 1px solid;
+}
+
+#pl-models-no-results,
+#pl-not-found {
+  margin: 100px 0px;
+  text-align: center;
+  font-size: 40px;
+  font-weight: bold;
+  opacity: 0.3;
+}

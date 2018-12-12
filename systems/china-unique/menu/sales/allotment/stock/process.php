@@ -50,7 +50,7 @@
   }
 
   $filterWarehouseCodes = $_GET["filter_warehouse_code"];
-  $filterSoNos = $_GET["filter_so_no"];
+  $filterDebtorCodes = $_GET["filter_debtor_code"];
 
   $whereClause = "";
 
@@ -62,13 +62,13 @@
   $whereSoModelClause = "";
   $whereSoAllotmentClause = "";
 
-  if (assigned($filterSoNos) && count($filterSoNos) > 0) {
+  if (assigned($filterDebtorCodes) && count($filterDebtorCodes) > 0) {
     $whereSoModelClause = $whereSoModelClause . "
-      AND (" . join(" OR ", array_map(function ($i) { return "x.so_no=\"$i\""; }, $filterSoNos)) . ")";
+      AND (" . join(" OR ", array_map(function ($i) { return "y.debtor_code=\"$i\""; }, $filterDebtorCodes)) . ")";
     $whereSoAllotmentClause = $whereSoAllotmentClause . "
-      AND (" . join(" AND ", array_map(function ($i) { return "so_no!=\"$i\""; }, $filterSoNos)) . ")";
+      AND (" . join(" AND ", array_map(function ($i) { return "y.debtor_code!=\"$i\""; }, $filterDebtorCodes)) . ")";
   } else {
-    $whereSoAllotmentClause = $whereSoAllotmentClause . " AND so_no=\"\"";
+    $whereSoAllotmentClause = $whereSoAllotmentClause . " AND y.debtor_code=\"\"";
   }
 
   $results = query("
@@ -111,9 +111,12 @@
         model_no              AS `model_no`,
         SUM(qty)              AS `qty_allotted`
       FROM
-        `so_allotment`
+        `so_allotment` AS x
+      LEFT JOIN
+        `so_header` AS y
+      ON x.so_no=y.so_no
       WHERE
-        warehouse_code!=\"\"
+        x.warehouse_code!=\"\"
         $whereSoAllotmentClause
       GROUP BY
         warehouse_code, brand_code, model_no) AS e
@@ -175,9 +178,9 @@
 
   $whereClause = "";
 
-  if (assigned($filterSoNos) && count($filterSoNos) > 0) {
+  if (assigned($filterDebtorCodes) && count($filterDebtorCodes) > 0) {
     $whereClause = $whereClause . "
-      AND (" . join(" OR ", array_map(function ($i) { return "a.so_no=\"$i\""; }, $filterSoNos)) . ")";
+      AND (" . join(" OR ", array_map(function ($i) { return "b.debtor_code=\"$i\""; }, $filterDebtorCodes)) . ")";
   }
 
   $results = query("
@@ -323,32 +326,44 @@
 
   if (assigned($filterWarehouseCodes) && count($filterWarehouseCodes) > 0) {
     $filterWhereClause = $filterWhereClause . "
-      AND (" . join(" OR ", array_map(function ($i) { return "warehouse_code=\"$i\""; }, $filterWarehouseCodes)) . ")";
+      AND (" . join(" OR ", array_map(function ($i) { return "y.warehouse_code=\"$i\""; }, $filterWarehouseCodes)) . ")";
   } else if (count($warehouses) > 0) {
     $filterWhereClause = $filterWhereClause . "
-      AND (" . join(" OR ", array_map(function ($wh) { return "warehouse_code=\"" . $wh["code"] . "\""; }, $warehouses)) . ")";
+      AND (" . join(" OR ", array_map(function ($wh) { return "y.warehouse_code=\"" . $wh["code"] . "\""; }, $warehouses)) . ")";
   }
 
-  $sos = query("
+  $debtors = query("
     SELECT DISTINCT
-      a.so_no AS `so_no`
+      a.debtor_code                       AS `code`,
+      IFNULL(b.english_name, 'Unknown')   AS `name`
     FROM
-      `so_model` AS a
+      `so_header` AS a
     LEFT JOIN
-      `so_header` AS b
-    ON a.so_no=b.so_no
+      `debtor` AS b
+    ON a.debtor_code=b.code
     LEFT JOIN
       (SELECT
-        warehouse_code, brand_code, model_no
+        z.so_no                 AS `so_no`,
+        SUM(z.qty_outstanding)  AS `qty_outstanding`
       FROM
-        `stock`
-      WHERE
-        warehouse_code IS NOT NULL
-        $filterWhereClause) AS c
-    ON a.brand_code=c.brand_code AND a.model_no=c.model_no
+        (SELECT
+          x.so_no,
+          x.qty_outstanding
+        FROM
+          `so_model` AS x
+        LEFT JOIN
+          `stock` AS y
+        ON
+          x.brand_code=y.brand_code AND x.model_no=y.model_no
+        WHERE
+          y.warehouse_code IS NOT NULL
+          $filterWhereClause) AS z
+      GROUP BY
+        z.so_no) AS c
+    ON a.so_no=c.so_no
     WHERE
-      a.qty_outstanding > 0 AND b.status=\"POSTED\" AND c.warehouse_code IS NOT NULL
+      c.qty_outstanding > 0 AND a.status=\"POSTED\"
     ORDER BY
-      a.so_no ASC
+      a.debtor_code ASC
   ");
 ?>

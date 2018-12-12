@@ -21,7 +21,7 @@
         <table id="stock-input">
           <tr>
             <th>Warehouse:</th>
-            <th>SO No.:</th>
+            <th>Customer:</th>
           </tr>
           <tr>
             <td>
@@ -37,12 +37,13 @@
               </select>
             </td>
             <td>
-              <select name="filter_so_no[]" multiple>
+              <select name="filter_debtor_code[]" multiple>
                 <?php
-                  foreach ($sos as $so) {
-                    $soNo = $so["so_no"];
-                    $selected = assigned($filterSoNos) && in_array($soNo, $filterSoNos) ? "selected" : "";
-                    echo "<option value=\"$soNo\" $selected>$soNo</option>";
+                  foreach ($debtors as $debtor) {
+                    $code = $debtor["code"];
+                    $name = $debtor["name"];
+                    $selected = assigned($filterDebtorCodes) && in_array($code, $filterDebtorCodes) ? "selected" : "";
+                    echo "<option value=\"$code\" $selected>$code - $name</option>";
                   }
                 ?>
               </select>

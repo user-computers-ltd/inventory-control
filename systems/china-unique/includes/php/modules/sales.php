@@ -26,6 +26,7 @@
 
   define("PACKING_LIST_URL", SALES_URL . "packing-list/");
   define("PACKING_LIST_PRINTOUT_URL", PACKING_LIST_URL . "printout/");
+  define("PACKING_LIST_INTERNAL_PRINTOUT_URL", PACKING_LIST_URL . "internal-printout/");
   define("PACKING_LIST_INVOICE_URL", PACKING_LIST_URL . "invoice/");
   define("PACKING_LIST_SAVED_URL", PACKING_LIST_URL . "saved/");
   define("PACKING_LIST_POSTED_URL", PACKING_LIST_URL . "posted/");
@@ -59,6 +60,7 @@
 
   define("PACKING_LIST_TITLE", "(F5) Delivery Order");
   define("PACKING_LIST_PRINTOUT_TITLE", "Delivery Order");
+  define("PACKING_LIST_INTERNAL_PRINTOUT_TITLE", "Delivery Order (Internal)");
   define("PACKING_LIST_SAVED_TITLE", "(F5a) Saved Delivery Orders");
   define("PACKING_LIST_POSTED_TITLE", "(F5b) Posted Delivery Orders");
 

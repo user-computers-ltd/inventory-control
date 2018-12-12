@@ -108,7 +108,7 @@
               <th>Client</th>
               <th class="number">Total Qty</th>
               <th class="number">Outstanding Qty</th>
-              <th class="number"><?php echo $InBaseCurrency; ?></th>
+              <th class="number">Outstanding Amt <?php echo $InBaseCurrency; ?></th>
             </tr>
           </thead>
           <tbody>

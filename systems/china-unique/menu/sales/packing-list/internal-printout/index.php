@@ -17,7 +17,7 @@
     <?php include_once ROOT_PATH . "includes/components/menu/index.php"; ?>
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
-      <div class="headline"><?php echo PACKING_LIST_PRINTOUT_TITLE . " (" . $plHeader["warehouse"] . ")" ?></div>
+      <div class="headline"><?php echo PACKING_LIST_INTERNAL_PRINTOUT_TITLE . " (" . $plHeader["warehouse"] . ")" ?></div>
 
       <?php if (isset($plHeader)): ?>
         <table id="pl-header">
@@ -62,6 +62,7 @@
             <tbody>
               <?php
                 $totalQty = 0;
+                $totalCost = 0;
                 $subtotalSum = 0;
                 $discount = $plHeader["discount"];
 
@@ -72,9 +73,11 @@
                   $soNo = $plModel["so_no"];
                   $qty = $plModel["qty"];
                   $price = $plModel["price"];
+                  $costAverage = $plModel["cost_average"];
                   $subtotal = $qty * $price;
 
                   $totalQty += $qty;
+                  $totalCost += $qty * $costAverage;
                   $subtotalSum += $subtotal;
 
                   echo "
@@ -117,6 +120,14 @@
                 <th></th>
                 <th class="number"><?php echo number_format($subtotalSum * (100 - $discount) / 100, 2); ?></th>
               </tr>
+              <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td class="number">Total Cost:</td>
+                <td class="number"><?php echo number_format($totalCost, 2); ?></td>
+              </tr>
             </tfoot>
           </table>
         <?php else: ?>
@@ -138,7 +149,7 @@
         </table>
         <?php echo "
           <div class=\"web-only\">
-          " . generateRedirectButton(PACKING_LIST_INTERNAL_PRINTOUT_URL, "Internal printout") . "
+          " . generateRedirectButton(PACKING_LIST_PRINTOUT_URL, "External printout") . "
           </div>
         ";?>
       <?php else: ?>
