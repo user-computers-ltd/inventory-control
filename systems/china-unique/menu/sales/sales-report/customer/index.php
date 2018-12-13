@@ -151,7 +151,7 @@
         </table>
       </div>
     <?php else: ?>
-      <div class="so-customer-no-results">No results</div>";
+      <div class="so-customer-no-results">No results</div>
     <?php endif ?>
   </body>
 </html>

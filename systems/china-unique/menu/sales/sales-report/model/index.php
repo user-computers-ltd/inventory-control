@@ -34,7 +34,7 @@
     ON a.brand_code=c.code
     LEFT JOIN
       `model` AS d
-    ON a.model_no=d.model_no
+    ON a.brand_code=d.brand_code AND a.model_no=d.model_no
     WHERE
       b.status=\"POSTED\"
       $whereClause
@@ -149,7 +149,7 @@
         </table>
       </div>
     <?php else: ?>
-      <div class="so-model-no-results">No results</div>";
+      <div class="so-model-no-results">No results</div>
     <?php endif ?>
   </body>
 </html>

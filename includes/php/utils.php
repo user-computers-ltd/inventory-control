@@ -66,6 +66,7 @@
     $_SESSION["error"] = $error;
     $_SESSION["error"]["url"] = CURRENT_URL;
     header("Location: " . BASE_URL . "error.php");
+    exit(0);
   }
 
   function listDirectory($directory) {
