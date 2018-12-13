@@ -50,7 +50,7 @@
           SET
             a.cost_average=(a.cost_average * b.qty_on_hand + $cost * $qty) / (b.qty_on_hand + $qty)
           WHERE
-            brand_code=\"$brandCode\" AND model_no=\"$modelNo\"
+            a.brand_code=\"$brandCode\" AND a.model_no=\"$modelNo\"
         ");
       }
 
