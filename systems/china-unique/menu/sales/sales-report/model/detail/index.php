@@ -39,7 +39,7 @@
     ON a.brand_code=c.code
     LEFT JOIN
       `model` AS d
-    ON a.model_no=d.model_no
+    ON a.brand_code=d.brand_code AND a.model_no=d.model_no
     WHERE
       b.status=\"POSTED\"
       $whereClause
