@@ -12,55 +12,59 @@
 
   if (assigned($ids) && count($ids) > 0) {
     $whereClause = "
-      AND (" . join(" OR ", array_map(function ($id) { return "c.id=\"$id\""; }, $ids)) . ")";
+      AND (" . join(" OR ", array_map(function ($id) { return "d.id=\"$id\""; }, $ids)) . ")";
   }
 
   $results = query("
     SELECT
-      CONCAT(a.debtor_code, ' - ', IFNULL(c.english_name, 'Unknown'))                     AS `debtor`,
-      DATE_FORMAT(a.so_date, '%d-%m-%Y')                                                  AS `date`,
-      a.id                                                                                AS `so_id`,
-      a.so_no                                                                             AS `so_no`,
-      IFNULL(b.total_qty, 0)                                                              AS `qty`,
-      IFNULL(b.total_qty_outstanding, 0)                                                  AS `qty_outstanding`,
-      a.discount                                                                          AS `discount`,
-      a.currency_code                                                                     AS `currency`,
-      IFNULL(b.total_amt_outstanding, 0) * (100 - a.discount) / 100                       AS `amt_outstanding`,
-      IFNULL(b.total_amt_outstanding, 0) * (100 - a.discount) / 100 * a.exchange_rate     AS `amt_outstanding_base`
+      DATE_FORMAT(b.so_date, '%d-%m-%Y')                                          AS `date`,
+      a.brand_code                                                                AS `brand_code`,
+      c.name                                                                      AS `brand_name`,
+      a.model_no                                                                  AS `model_no`,
+      b.id                                                                        AS `so_id`,
+      b.so_no                                                                     AS `so_no`,
+      a.qty                                                                       AS `qty`,
+      a.qty_outstanding                                                           AS `qty_outstanding`,
+      b.discount                                                                  AS `discount`,
+      b.currency_code                                                             AS `currency`,
+      a.qty_outstanding * a.price                                                 AS `amt_outstanding`,
+      a.qty_outstanding * a.price * (100 - b.discount) / 100 * b.exchange_rate    AS `amt_outstanding_base`
     FROM
-      `so_header` AS a
+      `so_model` AS a
     LEFT JOIN
-      (SELECT
-        so_no                         AS `so_no`,
-        SUM(qty)                      AS `total_qty`,
-        SUM(qty_outstanding)          AS `total_qty_outstanding`,
-        SUM(qty_outstanding * price)  AS `total_amt_outstanding`
-      FROM
-        `so_model`
-      GROUP BY
-        so_no) AS b
+      `so_header` AS b
     ON a.so_no=b.so_no
     LEFT JOIN
-      `debtor` AS c
-    ON a.debtor_code=c.code
+      `brand` AS c
+    ON a.brand_code=c.code
+    LEFT JOIN
+      `model` AS d
+    ON a.model_no=d.model_no
     WHERE
-      a.status=\"POSTED\"
+      b.status=\"POSTED\"
       $whereClause
     ORDER BY
-      a.debtor_code ASC,
-      a.so_date DESC
+      a.model_no ASC,
+      b.so_date DESC
   ");
 
-  $soHeaders = array();
+  $soModels = array();
 
-  foreach ($results as $soHeader) {
-    $customer = $soHeader["debtor"];
+  foreach ($results as $soModel) {
+    $brandCode = $soModel["brand_code"];
+    $brandName = $soModel["brand_name"];
+    $modelNo = $soModel["model_no"];
 
-    if (!isset($soHeaders[$customer])) {
-      $soHeaders[$customer] = array();
+    $arrayPointer = &$soModels;
+
+    if (!isset($arrayPointer[$modelNo])) {
+      $arrayPointer[$modelNo] = array();
+      $arrayPointer[$modelNo]["brand"] = "$brandCode - $brandName";
+      $arrayPointer[$modelNo]["models"] = array();
     }
+    $arrayPointer = &$arrayPointer[$modelNo]["models"];
 
-    array_push($soHeaders[$customer], $soHeader);
+    array_push($arrayPointer, $soModel);
   }
 ?>
 
@@ -74,18 +78,21 @@
     <?php include_once ROOT_PATH . "includes/components/menu/index.php"; ?>
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
-      <div class="headline"><?php echo SALES_REPORT_CUSTOMER_DETAIL_TITLE; ?></div>
+      <div class="headline"><?php echo SALES_REPORT_MODEL_DETAIL_TITLE; ?></div>
       <?php
-        if (count($soHeaders) > 0) {
+        if (count($soModels) > 0) {
 
-          foreach ($soHeaders as $customer => $headers) {
+          foreach ($soModels as $modelNo => $model) {
+            $brand = $model["brand"];
+            $models = $model["models"];
             $totalQty = 0;
             $totalOutstanding = 0;
             $totalAmtBase = 0;
 
             echo "
-              <div class=\"so-customer\">
-                <h4>$customer</h4>
+              <div class=\"so-model\">
+                <h4>$modelNo</h4>
+                <h4 class=\"brand\">$brand</h4>
                 <table class=\"so-results\">
                   <colgroup>
                     <col style=\"width: 80px\">
@@ -102,7 +109,7 @@
                     <tr>
                       <th>Date</th>
                       <th>Order No.</th>
-                      <th class=\"number\">Total Qty</th>
+                      <th class=\"number\">Qty</th>
                       <th class=\"number\">Outstanding Qty</th>
                       <th class=\"number\">Currency</th>
                       <th class=\"number\">Outstanding Amt</th>
@@ -113,17 +120,17 @@
                   <tbody>
             ";
 
-            for ($i = 0; $i < count($headers); $i++) {
-              $soHeader = $headers[$i];
-              $date = $soHeader["date"];
-              $soId = $soHeader["so_id"];
-              $soNo = $soHeader["so_no"];
-              $qty = $soHeader["qty"];
-              $outstandingQty = $soHeader["qty_outstanding"];
-              $discount = $soHeader["discount"];
-              $currency = $soHeader["currency"];
-              $outstandingAmt = $soHeader["amt_outstanding"];
-              $outstandingAmtBase = $soHeader["amt_outstanding_base"];
+            for ($i = 0; $i < count($models); $i++) {
+              $soModel = $models[$i];
+              $date = $soModel["date"];
+              $soId = $soModel["so_id"];
+              $soNo = $soModel["so_no"];
+              $qty = $soModel["qty"];
+              $outstandingQty = $soModel["qty_outstanding"];
+              $discount = $soModel["discount"];
+              $currency = $soModel["currency"];
+              $outstandingAmt = $soModel["amt_outstanding"];
+              $outstandingAmtBase = $soModel["amt_outstanding_base"];
 
               $totalQty += $qty;
               $totalOutstanding += $outstandingQty;
@@ -162,7 +169,7 @@
             ";
           }
         } else {
-          echo "<div class=\"so-customer-no-results\">No results</div>";
+          echo "<div class=\"so-model-no-results\">No results</div>";
         }
       ?>
     </div>
