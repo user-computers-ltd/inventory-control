@@ -46,6 +46,7 @@
               `stock`
             GROUP BY
               brand_code, model_no) AS b
+          ON a.brand_code=b.brand_code AND a.model_no=b.model_no
           SET
             a.cost_average=(a.cost_average * b.qty_on_hand + $cost * $qty) / (b.qty_on_hand + $qty)
           WHERE
