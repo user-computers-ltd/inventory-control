@@ -7,6 +7,7 @@
   $exchangeRate = $_POST["exchange_rate"];
   $discount = $_POST["discount"];
   $tax = $_POST["tax"];
+  $priority = $_POST["priority"];
   $remarks = $_POST["remarks"];
   $status = $_POST["status"];
   $brandCodes = $_POST["brand_code"];
@@ -23,6 +24,7 @@
     assigned($exchangeRate) &&
     assigned($discount) &&
     assigned($tax) &&
+    assigned($priority) &&
     assigned($status) &&
     assigned($brandCodes) &&
     assigned($modelNos) &&
@@ -63,7 +65,7 @@
       array_push($queries, "
         INSERT INTO
           `so_header`
-            (so_no, so_date, debtor_code, currency_code, exchange_rate, discount, tax, status, remarks)
+            (so_no, so_date, debtor_code, currency_code, exchange_rate, discount, tax, priority, status, remarks)
           VALUES
             (
               \"$soNo\",
@@ -73,6 +75,7 @@
               \"$exchangeRate\",
               \"$discount\",
               \"$tax\",
+              \"$priority\",
               \"$status\",
               \"$remarks\"
             )
@@ -146,6 +149,7 @@
       $exchangeRate = $soHeader["exchange_rate"];
       $discount = $soHeader["discount"];
       $tax = $soHeader["tax"];
+      $priority = $soHeader["priority"];
       $remarks = $soHeader["remarks"];
       $status = $soHeader["status"];
       $soModels = query("
@@ -173,6 +177,7 @@
     $exchangeRate = $currencies[COMPANY_CURRENCY];
     $discount = 0;
     $tax = COMPANY_TAX;
+    $priority = 0;
     $status = "DRAFT";
     $soModels = array();
   }

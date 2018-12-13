@@ -6,6 +6,7 @@
   define("SALES_ORDER_INTERNAL_PRINTOUT_URL", SALES_ORDER_URL . "internal-printout/");
   define("SALES_ORDER_SAVED_URL", SALES_ORDER_URL . "saved/");
   define("SALES_ORDER_POSTED_URL", SALES_ORDER_URL . "posted/");
+  define("SALES_ORDER_PRIORITY_URL", SALES_ORDER_URL . "priority/");
 
   define("SALES_REPORT_URL", SALES_URL . "sales-report/");
   define("SALES_REPORT_BRAND_SUMMARY_URL", SALES_REPORT_URL . "brand/");
@@ -40,6 +41,7 @@
   define("SALES_ORDER_CREATE_TITLE", "(F1a) Create Sales Order");
   define("SALES_ORDER_SAVED_TITLE", "(F1b) Saved Sales Orders");
   define("SALES_ORDER_POSTED_TITLE", "(F1c) Posted Sales Orders");
+  define("SALES_ORDER_PRIORITY_TITLE", "(F1d) Sales Order Priorities");
 
   define("SALES_REPORT_TITLE", "(F2) Sales Report");
   define("SALES_REPORT_BRAND_SUMMARY_TITLE", "(F2a) Summary By Brand");
@@ -68,7 +70,8 @@
     SALES_ORDER_TITLE => array(
       SALES_ORDER_CREATE_TITLE              => SALES_ORDER_URL,
       SALES_ORDER_SAVED_TITLE               => SALES_ORDER_SAVED_URL,
-      SALES_ORDER_POSTED_TITLE              => SALES_ORDER_POSTED_URL
+      SALES_ORDER_POSTED_TITLE              => SALES_ORDER_POSTED_URL,
+      SALES_ORDER_PRIORITY_TITLE            => SALES_ORDER_PRIORITY_URL
     ),
     SALES_REPORT_TITLE => array(
       // SALES_REPORT_BRAND_SUMMARY_TITLE      => SALES_REPORT_BRAND_SUMMARY_URL,

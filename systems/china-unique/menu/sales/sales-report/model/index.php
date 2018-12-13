@@ -6,12 +6,18 @@
 
   $InBaseCurrency = "(in " . COMPANY_CURRENCY . ")";
 
+  $brandCodes = $_GET["brand_code"];
   $modelNos = $_GET["model_no"];
 
   $whereClause = "";
 
+  if (assigned($brandCodes) && count($brandCodes) > 0) {
+    $whereClause = $whereClause . "
+      AND (" . join(" OR ", array_map(function ($i) { return "a.brand_code=\"$i\""; }, $brandCodes)) . ")";
+  }
+
   if (assigned($modelNos) && count($modelNos) > 0) {
-    $whereClause = "
+    $whereClause = $whereClause . "
       AND (" . join(" OR ", array_map(function ($m) { return "a.model_no=\"$m\""; }, $modelNos)) . ")";
   }
 
@@ -41,14 +47,38 @@
     GROUP BY
       d.id, a.brand_code, c.name, a.model_no
     ORDER BY
+      a.brand_code ASC,
       a.model_no ASC
   ");
+
+  $brands = query("
+    SELECT DISTINCT
+      a.brand_code  AS `code`,
+      b.name        AS `name`
+    FROM
+      `so_model` AS a
+    LEFT JOIN
+      `brand` AS b
+    ON a.brand_code=b.code
+    ORDER BY
+      a.brand_code ASC
+  ");
+
+  $modelWhereClause = "";
+
+  if (assigned($brandCodes) && count($brandCodes) > 0) {
+    $modelWhereClause = $modelWhereClause . "
+      AND (" . join(" OR ", array_map(function ($i) { return "brand_code=\"$i\""; }, $brandCodes)) . ")";
+  }
 
   $models = query("
     SELECT DISTINCT
       model_no AS `model_no`
     FROM
       `so_model`
+    WHERE
+      model_no IS NOT NULL
+      $modelWhereClause
     ORDER BY
       model_no ASC
   ");
@@ -68,9 +98,22 @@
       <form>
         <table id="so-input">
           <tr>
+            <th>Brand:</th>
             <th>Model No.:</th>
           </tr>
           <tr>
+            <td>
+              <select name="brand_code[]" multiple>
+                <?php
+                  foreach ($brands as $brand) {
+                    $code = $brand["code"];
+                    $name = $brand["name"];
+                    $selected = assigned($brandCodes) && in_array($code, $brandCodes) ? "selected" : "";
+                    echo "<option value=\"$code\" $selected>$code - $name</option>";
+                  }
+                ?>
+              </select>
+            </td>
             <td>
               <select name="model_no[]" multiple>
                 <?php

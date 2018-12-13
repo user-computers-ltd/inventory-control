@@ -25,9 +25,6 @@
       a.brand_code                  AS `brand_code`,
       b.name                        AS `brand_name`,
       a.model_no                    AS `model_no`,
-      a.cost_pri_currency_code      AS `cost_pri_currency_code`,
-      f.rate                        AS `cost_pri_exchange_rate`,
-      a.cost_pri                    AS `cost_pri`,
       a.cost_average                AS `cost_average`,
       IFNULL(c.qty_on_hand, 0)      AS `qty_on_hand`,
       IFNULL(d.qty_on_order, 0)     AS `qty_on_order`,
@@ -66,12 +63,6 @@
       GROUP BY
         model_no, brand_code) AS e
     ON a.model_no=e.model_no AND a.brand_code=e.brand_code
-    LEFT JOIN
-      `currency` AS f
-    ON a.cost_pri_currency_code=f.code
-    LEFT JOIN
-      `currency` AS g
-    ON a.cost_sec_currency_code=g.code
     WHERE
       a.brand_code IS NOT NULL
       $whereClause
@@ -161,9 +152,6 @@
       <?php if (count($results) > 0): ?>
         <table id="model-results">
           <colgroup>
-            <col style="width: 60px;">
-            <col style="width: 130px;">
-            <col style="width: 60px;">
             <col>
             <col>
             <col>
@@ -176,9 +164,6 @@
             <tr>
               <th>Brand</th>
               <th>Model No.</th>
-              <th>Currency (Pri)</th>
-              <th class="number">Exchange Rate (Pri)</th>
-              <th class="number">Cost (Pri)</th>
               <th class="number">Average Cost</th>
               <th class="number">Qty On Hand</th>
               <th class="number">Qty On Order</th>
@@ -190,11 +175,9 @@
               for ($i = 0; $i < count($results); $i++) {
                 $model = $results[$i];
                 $id = $model["id"];
+                $brandCode = $model["brand_code"];
                 $brandName = $model["brand_name"];
                 $modelNo = $model["model_no"];
-                $currencyPri = $model["cost_pri_currency_code"];
-                $exchangeRatePri = $model["cost_pri_exchange_rate"];
-                $costPrimary = $model["cost_pri"];
                 $costAverage = $model["cost_average"];
                 $qtyOnHand = $model["qty_on_hand"];
                 $qtyOnOrder = $model["qty_on_order"];
@@ -202,11 +185,8 @@
 
                 echo "
                   <tr>
-                    <td title=\"$brandName\">$brandName</td>
+                    <td title=\"$brandCode\">$brandCode - $brandName</td>
                     <td title=\"$modelNo\"><a href=\"" . DATA_MODEL_MODEL_DETAIL_URL . "?id=$id\">$modelNo</a></td>
-                    <td title=\"$currencyPri\">$currencyPri</td>
-                    <td class=\"number\" title=\"$exchangeRatePri\">$exchangeRatePri</td>
-                    <td class=\"number\" title=\"$costPrimary\">" . number_format($costPrimary, 2) . "</td>
                     <td class=\"number\" title=\"$costAverage\">" . number_format($costAverage, 2) . "</td>
                     <td class=\"number\" title=\"$qtyOnHand\">$qtyOnHand</td>
                     <td class=\"number\" title=\"$qtyOnOrder\">$qtyOnOrder</td>

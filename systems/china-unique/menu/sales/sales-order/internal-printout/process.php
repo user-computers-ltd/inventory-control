@@ -7,6 +7,7 @@
   $exchangeRate = $_POST["exchange_rate"];
   $discount = $_POST["discount"];
   $tax = $_POST["tax"];
+  $priority = $_POST["priority"];
   $remarks = $_POST["remarks"];
   $status = $_POST["status"];
   $brandCodes = $_POST["brand_code"];
@@ -28,6 +29,7 @@
         exchange_rate                       AS `exchange_rate`,
         discount                            AS `discount`,
         tax                                 AS `tax`,
+        priority                            AS `priority`,
         remarks                             AS `remarks`,
         status                              AS `status`
       FROM
@@ -68,6 +70,7 @@
     assigned($exchangeRate) &&
     assigned($discount) &&
     assigned($tax) &&
+    assigned($priority) &&
     assigned($status)
   ) {
     $brands = query("SELECT code, name FROM `brand`");
@@ -83,6 +86,7 @@
       "exchange_rate" => $exchangeRate,
       "discount"      => $discount,
       "tax"           => $tax,
+      "priority"      => $priority,
       "remarks"       => $remarks,
       "status"        => $status
     );

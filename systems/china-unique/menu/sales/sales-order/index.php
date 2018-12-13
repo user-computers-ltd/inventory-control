@@ -78,8 +78,10 @@
                   onchange="onDiscountChange()"
                   required
                 /><span>%</span>
-                <input id="tax" name="tax" type="number" value="<?php echo $tax; ?>" hidden required />
+                <input id="tax" name="tax" type="hidden" value="<?php echo $tax; ?>" required />
               </td>
+              <td>Priority:</td>
+              <td><input name="priority" type="number" min="0" max="100" value="<?php echo $priority; ?>" required /></td>
             </tr>
             <tr>
               <td colspan="2">

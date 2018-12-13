@@ -52,11 +52,10 @@
           </tr>
         </table>
       </form>
-      <form method="post">
-        <?php
-          if (count($stockResults) > 0) {
-            echo "<button type=\"submit\">Save</button>";
-
+      <?php if (count($stockResults) > 0): ?>
+        <form method="post">
+          <button type="submit">Save</button>
+          <?php
             foreach ($stockResults as $warehouseCode => $warehouse) {
               $warehouseName = $warehouse["name"];
               $models = $warehouse["models"];
@@ -170,32 +169,33 @@
                 }
 
                 echo "
-                      </tbody>
-                      <tfoot>
-                        <tr>
-                          <th></th>
-                          <th class=\"number\">Total:</th>
-                          <th class=\"number\">$totalQty</th>
-                          <th></th>
-                          <th></th>
-                          <th></th>
-                          <th></th>
-                          <th></th>
-                          <th class=\"total-allot-qty number\"></th>
-                        </tr>
-                      </tfoot>
-                    </table>
-                  </div>
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <th></th>
+                        <th class=\"number\">Total:</th>
+                        <th class=\"number\">$totalQty</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th class=\"total-allot-qty number\"></th>
+                      </tr>
+                    </tfoot>
+                  </table>
                 ";
               } else {
                 echo "<div class=\"stock-no-results\">No incoming advice models</div>";
               }
+
+              echo "</div>";
             }
-          } else {
-            echo "<div class=\"stock-no-results\">No results</div>";
-          }
-        ?>
-      </form>
+          ?>
+        </form>
+      <?php else: ?>
+        <div class="stock-no-results">No results</div>
+      <?php endif ?>
     </div>
     <script>
       var stockModels = <?php echo json_encode($stockModels); ?>;

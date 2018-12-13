@@ -36,6 +36,10 @@
           <tr>
             <td>Discount:</td>
             <td><?php echo $soHeader["discount"]; ?>%</td>
+            <td>Priority:</td>
+            <td><?php echo $soHeader["priority"]; ?></td>
+          </tr>
+          <tr>
             <td>Status:</td>
             <td><?php echo $soHeader["status"]; ?></td>
           </tr>

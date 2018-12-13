@@ -8,7 +8,7 @@ CREATE TABLE `so_header` (
   `discount`          DECIMAL(5,2)    DEFAULT 0,
   `tax`               DECIMAL(5,2)    NOT NULL,
   `remarks`           TEXT,
-  `priority`          VARCHAR(50)     DEFAULT "NORMAL",
+  `priority`          INT(12)         DEFAULT 0,
   `status`            VARCHAR(30)     DEFAULT "SAVED",
   PRIMARY KEY (`id`),
   UNIQUE KEY `so_no` (`so_no`)
