@@ -48,7 +48,7 @@
               brand_code, model_no) AS b
           ON a.brand_code=b.brand_code AND a.model_no=b.model_no
           SET
-            a.cost_average=(a.cost_average * b.qty_on_hand + $cost * $qty) / (b.qty_on_hand + $qty)
+            a.cost_average=(a.cost_average * IFNULL(b.qty_on_hand, 0) + $cost * $qty) / (IFNULL(b.qty_on_hand, 0) + $qty)
           WHERE
             a.brand_code=\"$brandCode\" AND a.model_no=\"$modelNo\"
         ");
