@@ -192,6 +192,7 @@
       b.currency_code                     AS `currency_code`,
       b.exchange_rate                     AS `exchange_rate`,
       b.tax                               AS `tax`,
+      b.priority                          AS `priority`,
       a.brand_code                        AS `brand_code`,
       a.model_no                          AS `model_no`,
       a.qty                               AS `qty_order`,

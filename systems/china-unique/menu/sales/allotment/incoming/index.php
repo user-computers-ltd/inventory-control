@@ -59,7 +59,10 @@
               $creditorName = $creditor["name"];
               $creditorModels = $creditor["models"];
 
-              echo "<div class=\"creditor\"><h4>$creditorCode - $creditorName</h4>";
+              echo "
+                <div class=\"creditor\">
+                  <h4>$creditorCode - $creditorName</h4>
+              ";
 
               foreach ($creditorModels as $iaNo => $ia) {
                 $date = $ia["date"];
@@ -70,14 +73,17 @@
                     <table class=\"ia-header\">
                       <tr>
                         <td>DO No.:</td>
-                        <td>
-                          $iaNo
+                        <td>$iaNo</td>
+                        <td>Date:</td>
+                        <td>$date</td>
+                      </tr>
+                      <tr>
+                        <td colspan=\"4\">
+                          <button type=\"button\" class=\"header-button\" onclick=\"allocateByPriorities('$iaNo')\">Allocate by priorities</button>
                           <button type=\"button\" class=\"header-button\" onclick=\"allocateBySoDate('$iaNo')\">Allocate by date</button>
                           <button type=\"button\" class=\"header-button\" onclick=\"allocateBySoProportion('$iaNo')\">Allocate by proportion</button>
                           <button type=\"button\" class=\"header-button\" onclick=\"resetAllotments('$iaNo')\">Reset</button>
                         </td>
-                        <td>Date:</td>
-                        <td>$date</td>
                       </tr>
                     </table>
                 ";
@@ -129,14 +135,16 @@
                     foreach ($matchedModels as $matchedModel) {
                       $soId = $matchedModel["so_id"];
                       $soNo = $matchedModel["so_no"];
+                      $priority = $matchedModel["priority"];
                       $debtorCode = $matchedModel["debtor_code"];
                       $debtorName = $matchedModel["debtor_name"];
                       $date = $matchedModel["date"];
+                      $rowspan = count($matchedModels);
 
                       $modelColumns = $firstModel ? "
-                        <td rowspan=\"" . count($matchedModels) . "\" title=\"$brandName\">$brandName</td>
-                        <td rowspan=\"" . count($matchedModels) . "\" title=\"$modelNo\">$modelNo</td>
-                        <td rowspan=\"" . count($matchedModels) . "\" class=\"number\">$qty</td>
+                        <td rowspan=\"$rowspan\" title=\"$brandName\">$brandName</td>
+                        <td rowspan=\"$rowspan\" title=\"$modelNo\">$modelNo</td>
+                        <td rowspan=\"$rowspan\" class=\"number\">$qty</td>
                       " : "";
                       $soColumns = isset($soNo) ? "
                         <td title=\"$soNo\"><a href=\"" . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?id=$soId\">$soNo</a></td>
@@ -162,11 +170,17 @@
                         </td>
                       " : "<td colspan=\"5\"></td>";
                       $totalColumn = $firstModel ? "
-                        <td rowspan=\"" . count($matchedModels) . "\" class=\"total-model-allot-qty number\">0</td>
+                        <td rowspan=\"$rowspan\" class=\"total-model-allot-qty number\">0</td>
                       " : "";
 
                       echo "
-                        <tr class=\"ia-model\" data-brand_code=\"$brandCode\" data-model_no=\"$modelNo\">
+                        <tr
+                          class=\"ia-model\"
+                          data-brand_code=\"$brandCode\"
+                          data-model_no=\"$modelNo\"
+                          data-priority=\"$priority\"
+                          data-date=\"$date\"
+                        >
                           $modelColumns
                           $soColumns
                           $totalColumn
@@ -197,6 +211,8 @@
                 } else {
                   echo "<div class=\"ia-no-results\">No incoming advice models</div>";
                 }
+
+                echo "</div>";
               }
 
               echo "</div>";
@@ -380,16 +396,11 @@
         }
       }
 
-      function allocateBySoDate(iaNo) {
-        resetAllotments(iaNo);
-
-        var iaModelElements = document.querySelectorAll(".ia-results[data-ia_no=\"" + iaNo + "\"] .ia-model");
-
-        for (var j = 0; j < iaModelElements.length; j++) {
-          var iaModelElement = iaModelElements[j];
-          var brandCode = iaModelElement.dataset.brand_code;
-          var modelNo = iaModelElement.dataset.model_no;
-          var allotQtyElement = iaModelElement.querySelector(".allot-qty");
+      function allocateModels(iaNo, elements) {
+        elements.forEach(function (element) {
+          var brandCode = element.dataset.brand_code;
+          var modelNo = element.dataset.model_no;
+          var allotQtyElement = element.querySelector(".allot-qty");
 
           if (allotQtyElement) {
             var soNo = allotQtyElement.dataset.so_no;
@@ -401,8 +412,42 @@
 
             renderAllotment(iaNo, brandCode, modelNo, soNo);
           }
+        });
+      }
+
+      function allocateByPriorities(iaNo) {
+        resetAllotments(iaNo);
+
+        var iaModelElements = document.querySelectorAll(".ia-results[data-ia_no=\"" + iaNo + "\"] .ia-model");
+        var elements = [];
+
+        for (var i = 0; i < iaModelElements.length; i++) {
+          elements.push(iaModelElements[i]);
         }
 
+        elements.sort(function (a, b) {
+          return b.dataset.priority - a.dataset.priority;
+        });
+
+        allocateModels(iaNo, elements);
+        render();
+      }
+
+      function allocateBySoDate(iaNo) {
+        resetAllotments(iaNo);
+
+        var iaModelElements = document.querySelectorAll(".ia-results[data-ia_no=\"" + iaNo + "\"] .ia-model");
+        var elements = [];
+
+        for (var i = 0; i < iaModelElements.length; i++) {
+          elements.push(iaModelElements[i]);
+        }
+
+        elements.sort(function (a, b) {
+          return getTime(a.dataset.date) - getTime(b.dataset.date);
+        });
+
+        allocateModels(iaNo, elements);
         render();
       }
 

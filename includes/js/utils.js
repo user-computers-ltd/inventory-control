@@ -194,3 +194,16 @@ function downloadTextFile(filename, text) {
 
   document.body.removeChild(element);
 }
+
+function getTime(dateString) {
+  if (dateString) {
+    var parts = dateString.split("-");
+    var date = parts[0];
+    var month = parts[1] - 1;
+    var year = parts[2];
+
+    return new Date(year, month, date).getTime();
+  } else {
+    return 0;
+  }
+}

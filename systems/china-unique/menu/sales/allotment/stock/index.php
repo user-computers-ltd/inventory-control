@@ -61,10 +61,12 @@
               $models = $warehouse["models"];
 
               echo "
-                <div class=\"warehouse\"><h4>$warehouseCode - $warehouseName</h4>
+                <div class=\"warehouse\">
+                  <h4>$warehouseCode - $warehouseName</h4>
                   <table class=\"stock-header\">
                     <tr>
                       <td>
+                        <button type=\"button\" class=\"header-button\" onclick=\"allocateByPriorities('$warehouseCode')\">Allocate by priorities</button>
                         <button type=\"button\" class=\"header-button\" onclick=\"allocateBySoDate('$warehouseCode')\">Allocate by date</button>
                         <button type=\"button\" class=\"header-button\" onclick=\"allocateBySoProportion('$warehouseCode')\">Allocate by proportion</button>
                         <button type=\"button\" class=\"header-button\" onclick=\"resetAllotments('$warehouseCode')\">Reset</button>
@@ -120,14 +122,16 @@
                   foreach ($matchedModels as $matchedModel) {
                     $soId = $matchedModel["so_id"];
                     $soNo = $matchedModel["so_no"];
+                    $priority = $matchedModel["priority"];
                     $debtorCode = $matchedModel["debtor_code"];
                     $debtorName = $matchedModel["debtor_name"];
                     $date = $matchedModel["date"];
+                    $rowspan = count($matchedModels);
 
                     $modelColumns = $firstModel ? "
-                      <td rowspan=\"" . count($matchedModels) . "\" title=\"$brandName\">$brandName</td>
-                      <td rowspan=\"" . count($matchedModels) . "\" title=\"$modelNo\">$modelNo</td>
-                      <td rowspan=\"" . count($matchedModels) . "\" class=\"number\">$qty</td>
+                      <td rowspan=\"$rowspan\" title=\"$brandName\">$brandName</td>
+                      <td rowspan=\"$rowspan\" title=\"$modelNo\">$modelNo</td>
+                      <td rowspan=\"$rowspan\" class=\"number\">$qty</td>
                     " : "";
                     $soColumns = isset($soNo) ? "
                       <td title=\"$soNo\"><a href=\"" . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?id=$soId\">$soNo</a></td>
@@ -153,11 +157,16 @@
                       </td>
                     " : "<td colspan=\"5\"></td>";
                     $totalColumn = $firstModel ? "
-                      <td rowspan=\"" . count($matchedModels) . "\" class=\"total-model-allot-qty number\">0</td>
+                      <td rowspan=\"$rowspan\" class=\"total-model-allot-qty number\">0</td>
                     " : "";
 
                     echo "
-                      <tr class=\"stock-model\" data-brand_code=\"$brandCode\" data-model_no=\"$modelNo\">
+                      <tr class=\"stock-model\"
+                        data-brand_code=\"$brandCode\"
+                        data-model_no=\"$modelNo\"
+                        data-priority=\"$priority\"
+                        data-date=\"$date\"
+                      >
                         $modelColumns
                         $soColumns
                         $totalColumn
@@ -370,16 +379,11 @@
         }
       }
 
-      function allocateBySoDate(warehouseCode) {
-        resetAllotments(warehouseCode);
-
-        var warehouseModelElements = document.querySelectorAll(".stock-results[data-warehouse_code=\"" + warehouseCode + "\"] .stock-model");
-
-        for (var j = 0; j < warehouseModelElements.length; j++) {
-          var warehouseModelElement = warehouseModelElements[j];
-          var brandCode = warehouseModelElement.dataset.brand_code;
-          var modelNo = warehouseModelElement.dataset.model_no;
-          var allotQtyElement = warehouseModelElement.querySelector(".allot-qty");
+      function allocateModels(warehouseCode, elements) {
+        elements.forEach(function (element) {
+          var brandCode = element.dataset.brand_code;
+          var modelNo = element.dataset.model_no;
+          var allotQtyElement = element.querySelector(".allot-qty");
 
           if (allotQtyElement) {
             var soNo = allotQtyElement.dataset.so_no;
@@ -391,8 +395,42 @@
 
             renderAllotment(warehouseCode, brandCode, modelNo, soNo);
           }
+        });
+      }
+
+      function allocateByPriorities(warehouseCode) {
+        resetAllotments(warehouseCode);
+
+        var warehouseModelElements = document.querySelectorAll(".stock-results[data-warehouse_code=\"" + warehouseCode + "\"] .stock-model");
+        var elements = [];
+
+        for (var i = 0; i < warehouseModelElements.length; i++) {
+          elements.push(warehouseModelElements[i]);
         }
 
+        elements.sort(function (a, b) {
+          return b.dataset.priority - a.dataset.priority;
+        });
+
+        allocateModels(warehouseCode, elements);
+        render();
+      }
+
+      function allocateBySoDate(warehouseCode) {
+        resetAllotments(warehouseCode);
+
+        var warehouseModelElements = document.querySelectorAll(".stock-results[data-warehouse_code=\"" + warehouseCode + "\"] .stock-model");
+        var elements = [];
+
+        for (var i = 0; i < warehouseModelElements.length; i++) {
+          elements.push(warehouseModelElements[i]);
+        }
+
+        elements.sort(function (a, b) {
+          return getTime(a.dataset.date) - getTime(b.dataset.date);
+        });
+        
+        allocateModels(warehouseCode, elements);
         render();
       }
 
