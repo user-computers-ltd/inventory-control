@@ -54,12 +54,17 @@
   $brands = query("
     SELECT DISTINCT
       a.brand_code  AS `code`,
-      b.name        AS `name`
+      c.name        AS `name`
     FROM
       `so_model` AS a
     LEFT JOIN
-      `brand` AS b
-    ON a.brand_code=b.code
+      `so_header` AS b
+    ON a.so_no=b.so_no
+    LEFT JOIN
+      `brand` AS c
+    ON a.brand_code=c.code
+    WHERE
+      b.status=\"POSTED\"
     ORDER BY
       a.brand_code ASC
   ");

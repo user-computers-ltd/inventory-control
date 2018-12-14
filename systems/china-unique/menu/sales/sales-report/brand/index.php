@@ -6,60 +6,56 @@
 
   $InBaseCurrency = "(in " . COMPANY_CURRENCY . ")";
 
-  $debtorCodes = $_GET["debtor_code"];
+  $brandCodes = $_GET["brand_code"];
 
   $whereClause = "";
 
-  if (assigned($debtorCodes) && count($debtorCodes) > 0) {
+  if (assigned($brandCodes) && count($brandCodes) > 0) {
     $whereClause = $whereClause . "
-      AND (" . join(" OR ", array_map(function ($d) { return "a.debtor_code=\"$d\""; }, $debtorCodes)) . ")";
+      AND (" . join(" OR ", array_map(function ($i) { return "a.brand_code=\"$i\""; }, $brandCodes)) . ")";
   }
 
-  $soHeaders = query("
+  $soModels = query("
     SELECT
-      c.id                                                                                    AS `id`,
-      CONCAT(a.debtor_code, ' - ', IFNULL(c.english_name, 'Unknown'))                         AS `debtor`,
-      SUM(IFNULL(b.total_qty, 0))                                                             AS `qty`,
-      SUM(IFNULL(b.total_qty_outstanding, 0))                                                 AS `qty_outstanding`,
-      SUM(IFNULL(b.total_amt_outstanding, 0) * (100 - a.discount) / 100 * a.exchange_rate)    AS `amt_outstanding_base`
+      c.id                                                                            AS `id`,
+      a.brand_code                                                                    AS `brand_code`,
+      c.name                                                                          AS `brand_name`,
+      SUM(a.qty)                                                                      AS `qty`,
+      SUM(a.qty_outstanding)                                                          AS `outstanding_qty`,
+      SUM(a.qty_outstanding * a.price * (100 - b.discount) / 100 * b.exchange_rate)   AS `outstanding_amt_base`
     FROM
-      `so_header` AS a
+      `so_model` AS a
     LEFT JOIN
-      (SELECT
-        so_no                         AS `so_no`,
-        SUM(qty)                      AS `total_qty`,
-        SUM(qty_outstanding)          AS `total_qty_outstanding`,
-        SUM(qty_outstanding * price)  AS `total_amt_outstanding`
-      FROM
-        `so_model`
-      GROUP BY
-        so_no) AS b
+      `so_header` AS b
     ON a.so_no=b.so_no
     LEFT JOIN
-      `debtor` AS c
-    ON a.debtor_code=c.code
+      `brand` AS c
+    ON a.brand_code=c.code
     WHERE
-      a.status=\"POSTED\"
+      b.status=\"POSTED\"
       $whereClause
     GROUP BY
-      a.debtor_code
+      c.id, a.brand_code, c.name
     ORDER BY
-      a.debtor_code ASC
+      a.brand_code ASC
   ");
 
-  $debtors = query("
+  $brands = query("
     SELECT DISTINCT
-      a.debtor_code                       AS `code`,
-      IFNULL(b.english_name, 'Unknown')   AS `name`
+      a.brand_code  AS `code`,
+      c.name        AS `name`
     FROM
-      `so_header` AS a
+      `so_model` AS a
     LEFT JOIN
-      `debtor` AS b
-    ON a.debtor_code=b.code
+      `so_header` AS b
+    ON a.so_no=b.so_no
+    LEFT JOIN
+      `brand` AS c
+    ON a.brand_code=c.code
     WHERE
-      a.status=\"POSTED\"
+      b.status=\"POSTED\"
     ORDER BY
-      a.debtor_code ASC
+      a.brand_code ASC
   ");
 ?>
 
@@ -73,20 +69,20 @@
     <?php include_once ROOT_PATH . "includes/components/menu/index.php"; ?>
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
-      <div class="headline"><?php echo SALES_REPORT_CUSTOMER_SUMMARY_TITLE; ?></div>
+      <div class="headline"><?php echo SALES_REPORT_BRAND_SUMMARY_TITLE; ?></div>
       <form>
         <table id="so-input">
           <tr>
-            <th>Customer:</th>
+            <th>Brand:</th>
           </tr>
           <tr>
             <td>
-              <select name="debtor_code[]" multiple>
+              <select name="brand_code[]" multiple>
                 <?php
-                  foreach ($debtors as $debtor) {
-                    $code = $debtor["code"];
-                    $name = $debtor["name"];
-                    $selected = assigned($debtorCodes) && in_array($code, $debtorCodes) ? "selected" : "";
+                  foreach ($brands as $brand) {
+                    $code = $brand["code"];
+                    $name = $brand["name"];
+                    $selected = assigned($brandCodes) && in_array($code, $brandCodes) ? "selected" : "";
                     echo "<option value=\"$code\" $selected>$code - $name</option>";
                   }
                 ?>
@@ -96,7 +92,7 @@
           </tr>
         </table>
       </form>
-      <?php if (count($soHeaders) > 0): ?>
+      <?php if (count($soModels) > 0): ?>
         <table class="so-results">
           <colgroup>
             <col>
@@ -107,7 +103,7 @@
           <thead>
             <tr></tr>
             <tr>
-              <th>Customer</th>
+              <th>Brand</th>
               <th class="number">Total Qty</th>
               <th class="number">Outstanding Qty</th>
               <th class="number">Outstanding Amt <?php echo $InBaseCurrency; ?></th>
@@ -119,13 +115,14 @@
             $totalOutstanding = 0;
             $totalAmtBase = 0;
 
-            for ($i = 0; $i < count($soHeaders); $i++) {
-              $soHeader = $soHeaders[$i];
-              $id = $soHeader["id"];
-              $debtor = $soHeader["debtor"];
-              $qty = $soHeader["qty"];
-              $outstandingQty = $soHeader["qty_outstanding"];
-              $outstandingAmtBase = $soHeader["amt_outstanding_base"];
+            for ($i = 0; $i < count($soModels); $i++) {
+              $soModel = $soModels[$i];
+              $id = $soModel["id"];
+              $brandCode = $soModel["brand_code"];
+              $brandName = $soModel["brand_name"];
+              $qty = $soModel["qty"];
+              $outstandingQty = $soModel["outstanding_qty"];
+              $outstandingAmtBase = $soModel["outstanding_amt_base"];
 
               $totalQty += $qty;
               $totalOutstanding += $outstandingQty;
@@ -133,7 +130,9 @@
 
               echo "
                 <tr>
-                  <td title=\"$debtor\"><a class=\"link\" href=\"" . SALES_REPORT_CUSTOMER_DETAIL_URL . "?id[]=$id\">$debtor</a></td>
+                  <td title=\"$brandCode\">
+                    <a class=\"link\" href=\"" . SALES_REPORT_BRAND_DETAIL_URL . "?id[]=$id\">$brandCode - $brandName</a>
+                  </td>
                   <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
                   <td title=\"$outstandingQty\" class=\"number\">" . number_format($outstandingQty) . "</td>
                   <td title=\"$outstandingAmtBase\" class=\"number\">" . number_format($outstandingAmtBase, 2) . "</td>
@@ -153,7 +152,7 @@
         </table>
       </div>
     <?php else: ?>
-      <div class="so-customer-no-results">No results</div>
+      <div class="so-brand-no-results">No results</div>
     <?php endif ?>
   </body>
 </html>
