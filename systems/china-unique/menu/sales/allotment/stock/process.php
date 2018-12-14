@@ -99,7 +99,7 @@
         `so_header` AS y
       ON x.so_no=y.so_no
       WHERE
-        x.qty_outstanding > 0
+        y.status=\"POSTED\"
         $whereSoModelClause
       GROUP BY
         x.brand_code, x.model_no) AS d
@@ -122,7 +122,7 @@
         warehouse_code, brand_code, model_no) AS e
     ON a.warehouse_code=e.warehouse_code AND a.brand_code=e.brand_code AND a.model_no=e.model_no
     WHERE
-      a.qty > 0 AND d.qty_outstanding > 0
+      a.qty > 0 AND IFNULL(d.qty_outstanding, 0) > 0
       $whereClause
     ORDER BY
       b.code ASC,
