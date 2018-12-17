@@ -17,7 +17,7 @@
   $prices = isset($_POST["price"]) ? $_POST["price"] : array();
   $qtys = $_POST["qty"];
 
-  /* If a form is submitted, update or insert the sales order. */
+  /* If a form is submitted, update or insert the stock in voucher. */
   if (
     assigned($stockInNo) &&
     assigned($stockInDate) &&
@@ -31,13 +31,13 @@
   ) {
     $queries = array();
 
-    /* If an id is given, remove the previous sales order first. */
+    /* If an id is given, remove the previous stock in voucher first. */
     if (assigned($id)) {
       array_push($queries, "DELETE a FROM `stock_in_model` AS a LEFT JOIN `stock_in_header` AS b ON a.stock_in_no=b.stock_in_no WHERE b.id=\"$id\"");
       array_push($queries, "DELETE FROM `stock_in_header` WHERE id=\"$id\"");
     }
 
-    /* If the status is not delete, insert a new sales order. */
+    /* If the status is not delete, insert a new stock in voucher. */
     if ($status != "DELETED") {
 
       $values = array();
@@ -151,7 +151,7 @@
     return strpos($code, "R") === 0 && $code != "R2";
   }, ARRAY_FILTER_USE_KEY);
 
-  /* If an id is given, attempt to retrieve an existing sales order. */
+  /* If an id is given, attempt to retrieve an existing stock in voucher. */
   if (assigned($id)) {
     $headline = STOCK_IN_PRINTOUT_TITLE;
 
@@ -188,12 +188,12 @@
         WHERE
           stock_in_no=\"$stockInNo\"
         ORDER BY
-        stock_in_index ASC
+          stock_in_index ASC
       ");
     }
   }
 
-  /* Else, initialize values for a new sales order. */
+  /* Else, initialize values for a new stock in voucher. */
   else {
     $headline = STOCK_IN_CREATE_TITLE;
     $stockInNo = "SI" . date("YmdHis");

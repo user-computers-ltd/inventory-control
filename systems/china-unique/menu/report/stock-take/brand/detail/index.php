@@ -33,11 +33,10 @@
       c.name                        AS `brand_name`,
       b.id                          AS `model_id`,
       a.model_no                    AS `model_no`,
-      d.total_qty                   AS `qty`,
       a.warehouse_code              AS `warehouse_code`,
-      a.qty                         AS `warehouse_qty`,
+      a.qty                         AS `qty`,
       b.cost_average                AS `cost_average`,
-      d.total_qty * b.cost_average  AS `subtotal`
+      a.qty * b.cost_average        AS `subtotal`
     FROM
       `stock` AS a
     LEFT JOIN
@@ -46,16 +45,6 @@
     LEFT JOIN
       `brand` AS c
     ON a.brand_code=c.code
-    LEFT JOIN
-      (SELECT
-        brand_code    AS `brand_code`,
-        model_no      AS `model_no`,
-        SUM(qty)      AS `total_qty`
-      FROM
-        `stock`
-      GROUP BY
-        brand_code, model_no) AS d
-    ON a.brand_code=d.brand_code AND a.model_no=d.model_no
     WHERE
       a.qty > 0
       $whereClause
@@ -216,7 +205,6 @@
                 <table class=\"brand-results\">
                   <colgroup>
                     <col>
-                    <col style=\"width: 80px;\">
                     <col style=\"width: 40px;\">
                     <col style=\"width: 80px;\">
                     <col style=\"width: 80px;\">
@@ -226,9 +214,8 @@
                     <tr></tr>
                     <tr>
                       <th>Model No.</th>
-                      <th class=\"number\">Qty</th>
                       <th>W.C.</th>
-                      <th class=\"number\">W.C. Qty</th>
+                      <th class=\"number\">Qty</th>
                       <th class=\"number\">Average Cost</th>
                       <th class=\"number\">Subtotal</th>
                     </tr>
@@ -244,7 +231,6 @@
                   $modelStock = $modelStocks[$i];
                   $qty = $modelStock["qty"];
                   $warehouseCode = $modelStock["warehouse_code"];
-                  $warehouseQty = $modelStock["warehouse_qty"];
                   $costAverage = $modelStock["cost_average"];
                   $subtotal = $modelStock["subtotal"];
 
@@ -254,9 +240,6 @@
                   $modelColumns = $i == 0 ? "
                     <td rowspan=\"" . count($modelStocks) . "\" title=\"$modelNo\">
                       <a class=\"link\" href=\"" . DATA_MODEL_MODEL_DETAIL_URL . "?id=$modelId\">$modelNo</a>
-                    </td>
-                    <td rowspan=\"" . count($modelStocks) . "\" title=\"$qty\" class=\"number\">
-                    " . number_format($qty) . "
                     </td>
                   " : "";
                   $amountColumns = $i == 0 ? "
@@ -272,7 +255,7 @@
                     <tr>
                       $modelColumns
                       <td title=\"$warehouseCode\">$warehouseCode</td>
-                      <td title=\"$warehouseQty\" class=\"number\">" . number_format($warehouseQty) . "</td>
+                      <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
                       $amountColumns
                     </tr>
                   ";
@@ -284,9 +267,8 @@
                   <tfoot>
                     <tr>
                       <th class=\"number\">Total:</th>
+                      <th></th>
                       <th class=\"number\">" . number_format($totalQty) . "</th>
-                      <th></th>
-                      <th></th>
                       <th></th>
                       <th class=\"number\">" . number_format($totalAmt, 2) . "</th>
                     </tr>

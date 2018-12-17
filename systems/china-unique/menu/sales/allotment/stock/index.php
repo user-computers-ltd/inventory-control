@@ -350,13 +350,13 @@
         var totalAllotQtyElement = document.querySelector(warehouseSelector + " .total-allot-qty");
         var totalModelAllotQtyElements = document.querySelectorAll(warehouseSelector + " .total-model-allot-qty");
 
-        var totolAllotQty = 0;
+        var totalAllotQty = 0;
 
         for (var i = 0; i < totalModelAllotQtyElements.length; i++) {
-          totolAllotQty += parseFloat(totalModelAllotQtyElements[i].innerHTML);
+          totalAllotQty += parseFloat(totalModelAllotQtyElements[i].innerHTML);
         }
 
-        totalAllotQtyElement.innerHTML = totolAllotQty;
+        totalAllotQtyElement.innerHTML = totalAllotQty;
       }
 
       function onQtyChange(event, warehouseCode, brandCode, modelNo, soNo) {

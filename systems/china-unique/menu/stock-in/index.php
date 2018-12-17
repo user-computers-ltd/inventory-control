@@ -47,7 +47,7 @@
                     foreach ($warehouses as $warehouse) {
                       $code = $warehouse["code"];
                       $name = $warehouse["name"];
-                      $selected = $currencyCode == $code ? "selected" : "";
+                      $selected = $warehouseCode == $code ? "selected" : "";
                       echo "<option value=\"$code\" $selected>$code - $name</option>";
                     }
                   ?>
@@ -179,6 +179,7 @@
                 <td id="discount-amount" class="number"></td>
                 <td></td>
               </tr>
+              <tr>
                 <th></th>
                 <th class="number">Total:</th>
                 <th id="total-qty" class="number"></th>
@@ -186,7 +187,7 @@
                 <th id="total-amount" class="number"></th>
                 <th></th>
               </tr>
-              </tr>
+              <tr>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -240,11 +241,11 @@
           var exchangeRateElement = document.querySelector("#exchange-rate");
           var tableBodyElement = document.querySelector("#stock-in-models tbody");
           var discountRowElements = document.querySelectorAll(".discount-row");
-          var subTotolAmountElement = document.querySelector("#sub-total-amount");
+          var subTotalAmountElement = document.querySelector("#sub-total-amount");
           var discountPercentageElement = document.querySelector("#discount-percentage");
           var discountAmountElement = document.querySelector("#discount-amount");
-          var totolQtyElement = document.querySelector("#total-qty");
-          var totolAmountElement = document.querySelector("#total-amount");
+          var totalQtyElement = document.querySelector("#total-qty");
+          var totalAmountElement = document.querySelector("#total-amount");
           var varianceElement = document.querySelector("#variance");
           var modelListElement = document.querySelector("#model-list");
 
@@ -269,8 +270,8 @@
             var miscellaneous = transactionCode !== "R1" && transactionCode !== "R3";
             var netAmount = netAmountElement.value;
             var discount = discountElement.value;
-            var totolQty = 0;
-            var totolAmount = 0;
+            var totalQty = 0;
+            var totalAmount = 0;
 
             for (var i = 0; i < stockInModels.length; i++) {
               var stockInModel = stockInModels[i];
@@ -348,8 +349,8 @@
 
               newRowElement.innerHTML = rowInnerHTML;
 
-              totolQty += parseFloat(stockInModel["qty"]);
-              totolAmount += parseFloat(stockInModel["price"] * stockInModel["qty"]);
+              totalQty += parseFloat(stockInModel["qty"]);
+              totalAmount += parseFloat(stockInModel["price"] * stockInModel["qty"]);
 
               tableBodyElement.appendChild(newRowElement);
 
@@ -368,14 +369,14 @@
               toggleClass(discountRowElements[k], "show", stockInModels.length > 0 && discount > 0);
             }
 
-            subTotolAmountElement.innerHTML = totolAmount.toFixed(2);
+            subTotalAmountElement.innerHTML = totalAmount.toFixed(2);
 
             discountPercentageElement.innerHTML = "Discount " + discount + "%";
-            discountAmountElement.innerHTML = (totolAmount * (discount) / 100).toFixed(2);
+            discountAmountElement.innerHTML = (totalAmount * (discount) / 100).toFixed(2);
 
-            totolQtyElement.innerHTML = totolQty;
-            totolAmountElement.innerHTML = (totolAmount * (100 - discount) / 100).toFixed(2);
-            varianceElement.innerHTML = (netAmount - totolAmount * (100 - discount) / 100).toFixed(2);
+            totalQtyElement.innerHTML = totalQty;
+            totalAmountElement.innerHTML = (totalAmount * (100 - discount) / 100).toFixed(2);
+            varianceElement.innerHTML = (netAmount - totalAmount * (100 - discount) / 100).toFixed(2);
 
             if (focusedElement) {
               focusedElement.focus();
@@ -439,19 +440,6 @@
           function onFieldBlurred() {
             focusedRow = null;
             focusedFieldName = null;
-          }
-
-          function onPriceStandardChange() {
-            for (var i = 0; i < stockInModels.length; i++) {
-              var stockInModel = stockInModels[i];
-              var matchedModel = getModels(stockInModel["model_no"], stockInModel["brand_code"])[0];
-
-              if (matchedModel) {
-                updateModel(i, matchedModel);
-              }
-            }
-
-            render();
           }
 
           function onTransactionCodeChange() {
