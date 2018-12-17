@@ -10,19 +10,19 @@
   box-sizing: border-box;
 }
 
-#warehouse-results th,
-#warehouse-results td {
+.warehouse-results th,
+.warehouse-results td {
   min-width: 0px;
   max-width: 0px;
 }
 
-#warehouse-results td {
+.warehouse-results td {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-#warehouse-results .number {
+.warehouse-results .number {
   text-align: right;
 }
 

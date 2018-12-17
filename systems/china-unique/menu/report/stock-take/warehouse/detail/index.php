@@ -13,7 +13,7 @@
   $whereClause = "";
 
   if (assigned($ids) && count($ids) > 0) {
-    $whereClause = "
+    $whereClause = $whereClause . "
       AND (" . join(" OR ", array_map(function ($id) { return "d.id=\"$id\""; }, $ids)) . ")";
   }
 
@@ -29,12 +29,12 @@
 
   $results = query("
     SELECT
+      a.warehouse_code              AS `warehouse_code`,
+      d.name                        AS `warehouse_name`,
       a.brand_code                  AS `brand_code`,
       c.name                        AS `brand_name`,
       b.id                          AS `model_id`,
       a.model_no                    AS `model_no`,
-      a.warehouse_code              AS `warehouse_code`,
-      d.name                        AS `warehouse_name`,
       a.qty                         AS `qty`,
       b.cost_average                AS `cost_average`,
       a.qty * b.cost_average        AS `subtotal`
@@ -94,6 +94,21 @@
     array_push($arrayPointer, $stock);
   }
 
+  $brandWhereClause = "";
+  $modelWhereClause = "";
+
+  if (assigned($ids) && count($ids) > 0) {
+    $brandWhereClause = $brandWhereClause . "
+      AND (" . join(" OR ", array_map(function ($id) { return "c.id=\"$id\""; }, $ids)) . ")";
+    $modelWhereClause = $modelWhereClause . "
+      AND (" . join(" OR ", array_map(function ($id) { return "c.id=\"$id\""; }, $ids)) . ")";
+  }
+
+  if (assigned($filterBrandCodes) && count($filterBrandCodes) > 0) {
+    $modelWhereClause = $modelWhereClause . "
+      AND (" . join(" OR ", array_map(function ($i) { return "a.brand_code=\"$i\""; }, $filterBrandCodes)) . ")";
+  }
+
   $brands = query("
     SELECT DISTINCT
       b.code AS `code`,
@@ -103,18 +118,15 @@
     LEFT JOIN
       `brand` AS b
     ON a.brand_code=b.code
+    LEFT JOIN
+      `warehouse` AS c
+    ON a.warehouse_code=c.code
     WHERE
       a.qty > 0
+      $brandWhereClause
     ORDER BY
       b.code ASC
   ");
-
-  $modelWhereClause = "";
-
-  if (assigned($filterBrandCodes) && count($filterBrandCodes) > 0) {
-    $modelWhereClause = $modelWhereClause . "
-      AND (" . join(" OR ", array_map(function ($i) { return "a.brand_code=\"$i\""; }, $filterBrandCodes)) . ")";
-  }
 
   $models = query("
     SELECT DISTINCT
@@ -124,6 +136,9 @@
     LEFT JOIN
       `model` AS b
     ON a.brand_code=b.brand_code AND a.model_no=b.model_no
+    LEFT JOIN
+      `warehouse` AS c
+    ON a.warehouse_code=c.code
     WHERE
       a.qty > 0
       $modelWhereClause
@@ -144,6 +159,13 @@
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo REPORT_STOCK_TAKE_WAREHOUSE_DETAIL_TITLE; ?></div>
       <form>
+        <?php
+          if (assigned($ids) && count($ids) > 0) {
+            echo join(array_map(function ($id) {
+              return "<input type=\"hidden\" name=\"id[]\" value=\"$id\" />";
+            }, $ids));
+          }
+        ?>
         <table id="warehouse-input">
           <tr>
             <th>Brand:</th>

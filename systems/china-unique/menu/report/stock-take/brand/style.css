@@ -10,19 +10,19 @@
   box-sizing: border-box;
 }
 
-#brand-results th,
-#brand-results td {
+.brand-results th,
+.brand-results td {
   min-width: 0px;
   max-width: 0px;
 }
 
-#brand-results td {
+.brand-results td {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-#brand-results .number {
+.brand-results .number {
   text-align: right;
 }
 
