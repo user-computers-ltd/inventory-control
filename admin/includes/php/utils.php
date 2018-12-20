@@ -50,7 +50,7 @@
     $tables = array_map(function ($i) { return $i["name"]; }, listTables($database));
 
     $filename = "export.zip";
-    $path = "/tmp/$filename";
+    $path = TEMP_DIRECTORY . $filename;
     $zip = new ZipArchive;
     $zip->open($path, ZipArchive::CREATE);
 
@@ -264,7 +264,7 @@
 
   function exportTable($database, $table) {
     $filename = "$table.csv";
-    $path = "/tmp/$filename";
+    $path = TEMP_DIRECTORY . $filename;
     $CSVFile = fopen($path, "w");
 
     fwrite($CSVFile, getTableContent($database, $table));
