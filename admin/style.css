@@ -11,8 +11,7 @@
   overflow: auto;
 }
 
-#databases,
-#systems {
+#databases {
   margin: 10px 0px;
   padding: 20px;
   background-color: white;

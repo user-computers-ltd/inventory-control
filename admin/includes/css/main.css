@@ -35,50 +35,9 @@ li > .list-item-right {
 }
 
 li > .list-item-left {
-  line-height: 30px;
+  line-height: 24px;
 }
 
 li > .list-item-right {
   float: right;
-}
-
-.delete-button,
-.clear-button,
-.copy-button,
-.clear-import-button,
-.import-button,
-.export-button {
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  padding: 5px;
-  background-size: 20px;
-  background-repeat: no-repeat;
-  background-position: center;
-  vertical-align: middle;
-  cursor: pointer;
-}
-
-.delete-button {
-  background-image: url("../resources/close.png");
-}
-
-.clear-button {
-  background-image: url("../resources/clear.png");
-}
-
-.copy-button {
-  background-image: url("../resources/copy.png");
-}
-
-.clear-import-button {
-  background-image: url("../resources/clear-import.png");
-}
-
-.import-button {
-  background-image: url("../resources/import.png");
-}
-
-.export-button {
-  background-image: url("../resources/export.png");
 }

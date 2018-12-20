@@ -74,6 +74,54 @@ table thead th {
   display: none;
 }
 
+.image-button {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  padding: 2px;
+  background-size: 20px;
+  background-repeat: no-repeat;
+  background-position: center;
+  vertical-align: middle;
+  cursor: pointer;
+}
+
+.delete-image {
+  background-image: url("../../resources/close.png");
+}
+
+.clear-image {
+  background-image: url("../../resources/clear.png");
+}
+
+.copy-image {
+  background-image: url("../../resources/copy.png");
+}
+
+.clear-import-image {
+  background-image: url("../../resources/clear-import.png");
+}
+
+.import-image {
+  background-image: url("../../resources/import.png");
+}
+
+.export-image {
+  background-image: url("../../resources/export.png");
+}
+
+.expand-all-image {
+  background-image: url("../../resources/expand-all.png");
+}
+
+.collapse-all-image {
+  background-image: url("../../resources/collapse-all.png");
+}
+
+.restart-image {
+  background-image: url("../../resources/restart.png");
+}
+
 @media print {
   .web-only {
     display: none;

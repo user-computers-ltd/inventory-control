@@ -1,14 +1,14 @@
 <?php
-  define("ROOT_PATH", "../../");
-  include_once ROOT_PATH . "includes/php/utils.php";
-  include_once ROOT_PATH . "includes/php/admin.php";
+  define("ADMIN_PATH", "../");
+  include_once ADMIN_PATH . "includes/php/config.php";
+  include_once ADMIN_PATH . "includes/php/utils.php";
 
-  if (!isset($_GET["db"])) {
+  $database = $_GET["db"];
+
+  if (!isset($database)) {
     header("Location: " . BASE_URL . "admin");
     exit(1);
   }
-
-  $database = $_GET["db"];
 
   $tables = listTables($database);
 ?>
@@ -16,28 +16,22 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Inventory Control | Systems > <?php echo "$database > Database"; ?></title>
-    <?php include_once ROOT_PATH . "includes/php/head.php"; ?>
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>admin/admin.css">
+    <?php include_once ADMIN_PATH . "includes/php/head.php"; ?>
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
     <div id="database-wrapper">
       <div id="database">
         <h4>
-          <?php echo "<a href='" . BASE_URL . "admin'>Systems</a>"; ?>
-          <span>></span>
-          <?php echo "<a href='" . BASE_URL . "admin/sys?sys=$database'>$database</a>"; ?>
+          <?php echo "<a href='" . BASE_URL . "admin'>Databases</a>"; ?>
           <span>></span>
         </h4>
-        <h2>Database</h2>
+        <h2><?php echo $database; ?></h2>
         <div id="database-query">
           <textarea></textarea>
           <button onclick="queryDatabase()">query</button>
-          <pre></pre>
         </div>
         <button onclick="createTable()">create</button>
-        <button onclick="createAndImportTable()">create & import</button>
         <ul>
           <?php
             foreach ($tables as $table) {
@@ -45,117 +39,156 @@
               $count = $table["count"];
               $columns = str_replace("\"", "'", json_encode($table["columns"]));
 
-              echo "<li data-table=\"$name\">"
-              . "<div class=\"list-item-left\">"
-              . "<a href=\"" . BASE_URL . "admin/table?db=$database&table=$name\">$name</a>"
-              . "</div>"
-              . "<div class=\"list-item-right\">"
-              . "<div class=\"count\">$count rows</div>"
-              . "<div class=\"clear-import-button\" onclick=\"clearImportTable('$name', $columns)\"></div>"
-              . "<div class=\"import-button\" onclick=\"importTable('$name', $columns)\"></div>"
-              . "<div class=\"export-button\" onclick=\"exportTable('$name')\"></div>"
-              . "<div class=\"copy-button\" onclick=\"copyTable('$name')\"></div>"
-              . "<div class=\"clear-button\" onclick=\"clearTable('$name')\"></div>"
-              . "<div class=\"delete-button\" onclick=\"deleteTable('$name')\"></div>"
-              . "</div>"
-              . "</li>";
+              echo "
+              <li data-table=\"$name\">
+                <div class=\"list-item-left\">
+                  <a href=\"" . BASE_URL . "admin/table?db=$database&table=$name\">$name</a>
+                </div>
+                <div class=\"list-item-right\">
+                  <div class=\"count\">$count rows</div>
+                  <div class=\"image-button clear-import-image\" onclick=\"clearImportTable('$name', $columns)\"></div>
+                  <div class=\"image-button import-image\" onclick=\"importTable('$name', $columns)\"></div>
+                  <div class=\"image-button export-image\" onclick=\"exportTable('$name')\"></div>
+                  <div class=\"image-button copy-image\" onclick=\"copyTable('$name')\"></div>
+                  <div class=\"image-button clear-image\" onclick=\"clearTable('$name')\"></div>
+                  <div class=\"image-button delete-image\" onclick=\"deleteTable('$name')\"></div>
+                </div>
+              </li>
+              ";
             }
           ?>
         </ul>
       </div>
     </div>
-    <?php include_once  "create-import-dialog/index.php"; ?>
-    <?php include_once  "import-dialog/index.php"; ?>
+    <?php include_once ROOT_PATH . "includes/components/import-dialog/index.php"; ?>
     <?php include_once ROOT_PATH . "includes/components/prompt-dialog/index.php"; ?>
     <?php include_once ROOT_PATH . "includes/components/confirm-dialog/index.php"; ?>
-    <?php include_once ROOT_PATH . "includes/components/error-bar/index.php"; ?>
+    <?php include_once ROOT_PATH . "includes/components/message-dialog/index.php"; ?>
+    <?php include_once ROOT_PATH . "includes/components/loading-screen/index.php"; ?>
     <script src="<?php echo BASE_URL; ?>includes/js/utils.js"></script>
     <script>
       var database = "<?php echo $database; ?>";
-      var url = "<?php echo BASE_URL; ?>admin/ajax.php";
-      var queryInput = document.querySelector("#database-query");
-      var textarea = queryInput.querySelector("textarea");
-      var statusText = queryInput.querySelector("pre");
+      var queryInput = document.querySelector("#database-query textarea");
+      var url = "<?php echo BASE_URL; ?>admin/includes/php/ajax.php";
 
-      function updateStatus(message) {
-        if (message === true) {
-          window.location.reload();
-        } else {
-          statusText.innerHTML = JSON.stringify(message);
-        }
-      }
+      function sendRequest(settings) {
+        var reloadPage = typeof settings.reloadPage !== "undefined" ? settings.reloadPage : true;
+        var callback = settings.callback || function () {};
 
-      function queryDatabase() {
-        get({
-          url: "<?php echo BASE_URL; ?>includes/php/query.php",
-          params: {
-            database: database,
-            sql: encodeURIComponent(textarea.value)
+        toggleLoadingScreen(true);
+
+        post({
+          url: url,
+          data: settings.data,
+          urlEncoded: settings.urlEncoded,
+          respondFile: settings.respondFile,
+          resolve: function () {
+            toggleLoadingScreen(false);
+            callback(content);
+
+            if (reloadPage) {
+              window.location.reload();
+            }
           },
-          resolve: updateStatus,
-          reject: updateStatus
+          reject: function (message) {
+            toggleLoadingScreen(false);
+            showMessageDialog(message);
+          }
         });
       }
 
-      function reloadPage() {
-        window.location.reload();
+      function queryDatabase() {
+        sendRequest({
+          data: {
+            action: "query-database",
+            database: database,
+            sql: encodeURIComponent(queryInput.value)
+          }
+        });
       }
 
       function createTable() {
         showPromptDialog("Please enter table name:", function (table) {
           if (table !== null && table.trim() !== "") {
-            post({
-              url: url,
-              data: { action: "create-table", database: database, table: table.trim() },
-              resolve: reloadPage,
-              reject: showErrorBar
+            sendRequest({
+              data: {
+                action: "create-table",
+                database: database,
+                table: table.trim()
+              }
             });
           }
         });
       }
 
+      function clearImportTable(table, columns) {
+        openImportDialog({ table: table, columns: columns, clearImport: true }, function (data) {
+          sendRequest({
+            urlEncoded: false,
+            data: data
+          });
+        });
+      }
+
+      function importTable(table, columns) {
+        openImportDialog({ table: table, columns: columns, clearImport: false }, function (data) {
+          sendRequest({
+            urlEncoded: false,
+            data: data
+          });
+        });
+      }
+
       function exportTable(table) {
-        post({
-          url: url,
-          data: { action: "export-table", database: database, table: table },
-          resolve: function (content) {
-            downloadTextFile(table + ".csv", content);
-          },
-          reject: showErrorBar
+        sendRequest({
+          respondFile: true,
+          reloadPage: false,
+          data: {
+            action: "export-table",
+            database: database,
+            table: table
+          }
         });
       }
 
       function copyTable(table) {
         showPromptDialog("Please enter new table name:", function (newTable) {
           if (newTable !== null && newTable.trim() !== "") {
-            post({
-              url: url,
-              data: { action: "copy-table", table1: database + "." + newTable.trim(), table2: database + "." + table },
-              resolve: reloadPage,
-              reject: showErrorBar
+            sendRequest({
+              data: {
+                action: "copy-table",
+                database1: database,
+                table1: table,
+                database2: database,
+                table2: newTable
+              }
             });
           }
         });
       }
 
       function deleteTable(table) {
-        showConfirmDialog("<b>Delete " + table + "?</b><br/><br/>Deleting a table cannot be undone.", function () {
-          post({
-            url: url,
-            data: { action: "delete-table", database: database, table: table },
-            resolve: reloadPage,
-            reject: showErrorBar
+        showConfirmDialog("<b>Delete \"" + table + "\"?</b><br/><br/>Deleting a table cannot be undone.", function () {
+          sendRequest({
+            data: {
+              action: "delete-table",
+              database: database,
+              table: table
+            }
           });
         });
       }
 
       function clearTable(table) {
-        showConfirmDialog("<b>Truncate " + table + "?</b><br/><br/>Removing all data from a table cannot be undone.", function () {
-          post({
-            url: url,
-            data: { action: "clear-table", database: database, table: table },
-            resolve: reloadPage,
-            reject: showErrorBar
+        showConfirmDialog(
+          "<b>Clear \"" + table + "\"?</b>"
+          + "<br/><br/>Removing all data from a table cannot be undone.", function () {
+          sendRequest({
+            data: {
+              action: "clear-table",
+              database: database,
+              table: table
+            }
           });
         });
       }

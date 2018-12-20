@@ -23,7 +23,8 @@ function ajax(settings = {}) {
   var data = settings.data;
   var params = settings.params;
   var method = settings.method;
-  var contentType = settings.contentType;
+  var urlEncoded = settings.urlEncoded;
+  var respondFile = settings.respondFile;
   var resolve = settings.resolve || function() {};
   var reject = settings.reject || function() {};
 
@@ -37,9 +38,27 @@ function ajax(settings = {}) {
     if (xhttp.readyState == 4) {
       if (xhttp.status === 200) {
         var response = true;
-        try {
-          response = JSON.parse(xhttp.responseText);
-        } catch (error) {}
+        var disposition = xhttp.getResponseHeader("content-disposition");
+        var type = xhttp.getResponseHeader("content-type");
+
+        if (disposition && disposition.indexOf("attachment") !== -1) {
+          var filename = disposition.substring(
+            disposition.indexOf("filename=") + 9
+          );
+          var filename = filename ? filename : "file";
+          var link = document.createElement("a");
+          link.href = window.URL.createObjectURL(
+            new Blob([xhttp.response], { type: type })
+          );
+          link.download = filename;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        } else {
+          try {
+            response = JSON.parse(xhttp.responseText);
+          } catch (error) {}
+        }
 
         resolve(response);
       } else {
@@ -50,8 +69,13 @@ function ajax(settings = {}) {
 
   xhttp.open(method, url, true);
 
-  if (contentType) {
+  if (urlEncoded) {
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    data = toURLParams(data);
+  }
+
+  if (respondFile) {
+    xhttp.responseType = "blob";
   }
 
   xhttp.send(data);
@@ -59,15 +83,20 @@ function ajax(settings = {}) {
 
 function get(settings) {
   settings.method = "get";
-  settings.contentType = false;
+  settings.urlEncoded =
+    typeof settings.urlEncoded !== "undefined" ? settings.urlEncoded : false;
+  settings.respondFile =
+    typeof settings.respondFile !== "undefined" ? settings.respondFile : false;
 
   ajax(settings);
 }
 
 function post(settings) {
   settings.method = "post";
-  settings.contentType = true;
-  settings.data = toURLParams(settings.data);
+  settings.urlEncoded =
+    typeof settings.urlEncoded !== "undefined" ? settings.urlEncoded : true;
+  settings.respondFile =
+    typeof settings.respondFile !== "undefined" ? settings.respondFile : false;
 
   ajax(settings);
 }

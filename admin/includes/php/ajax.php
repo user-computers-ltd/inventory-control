@@ -1,7 +1,7 @@
 <?php
-  define("ROOT_PATH", "../");
-  include_once "../includes/php/utils.php";
-  include_once "../includes/php/admin.php";
+  define("ADMIN_PATH", "../../");
+  define("ROOT_PATH", "../" . ADMIN_PATH);
+  include_once "utils.php";
 
   if (assigned($_POST["action"])) {
     switch ($_POST["action"]) {
@@ -26,6 +26,37 @@
           throwError("missing database name");
         }
         break;
+      case "restart-database":
+        if ($_POST["system"] && $_POST["overwrite"]) {
+          $system = $_POST["system"];
+
+          if ($_POST["overwrite"] == "true") {
+            dropDatabase($system);
+          }
+
+          createDatabase($system);
+          executeSQLFiles($_POST["system"], array_map(function ($table) use ($system) {
+            return ROOT_PATH . "systems/$system/data-model/tables/$table";
+          }, listFile(ROOT_PATH . "systems/$system/data-model/tables")));
+        } else {
+          throwError("missing system");
+        }
+        break;
+      case "query-database":
+        if ($_POST["database"] && $_POST["sql"]) {
+          echo queryDatabase($_POST["database"], $_POST["sql"]);
+        } else {
+          throwError("missing database or sql query");
+        }
+        break;
+      case "export-database":
+        if ($_POST["database"]) {
+          exportDatabase($_POST["database"]);
+        } else {
+          throwError("missing database");
+        }
+        break;
+
       case "create-table":
         if ($_POST["database"] && $_POST["table"]) {
           createTable($_POST["database"], $_POST["table"], array(array(
@@ -90,16 +121,16 @@
         break;
       case "export-table":
         if ($_POST["database"] && $_POST["table"]) {
-          echo json_encode(exportTable($_POST["database"], $_POST["table"]));
+          exportTable($_POST["database"], $_POST["table"]);
         } else {
           throwError("missing database or table");
         }
         break;
       case "copy-table":
-        if ($_POST["table1"] && $_POST["table2"]) {
+        if ($_POST["database1"] && $_POST["table1"] && $_POST["database2"] && $_POST["table2"]) {
           copyTable($_POST["table1"], $_POST["table2"]);
         } else {
-          throwError("missing table names");
+          throwError("missing database or table names");
         }
         break;
       case "delete-table":
@@ -135,22 +166,6 @@
           dropColumn($_POST["database"], $_POST["table"], $_POST["column"]);
         } else {
           throwError("missing database, table or column");
-        }
-        break;
-      case "reinitialize-database":
-        if ($_POST["system"] && $_POST["overwrite"]) {
-          $system = $_POST["system"];
-
-          if ($_POST["overwrite"] == "true") {
-            dropDatabase($system);
-          }
-
-          createDatabase($system);
-          executeSQLFiles($_POST["system"], array_map(function ($table) use ($system) {
-            return ROOT_PATH . "systems/$system/data-model/tables/$table";
-          }, listFile(ROOT_PATH . "systems/$system/data-model/tables")));
-        } else {
-          throwError("missing system");
         }
         break;
       default:

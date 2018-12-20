@@ -1,6 +1,6 @@
 <?php
-  include_once "utils.php";
-  include_once "database.php";
+  include_once ROOT_PATH . "includes/php/utils.php";
+  include_once ROOT_PATH . "includes/php/database.php";
 
   function getColumnString($column) {
     $field = $column["field"];
@@ -24,24 +24,53 @@
   }
 
   function copyDatabase($database1, $database2) {
-    query("CREATE DATABASE `$database1`");
+    $queries = [];
+    array_push($queries, "CREATE DATABASE `$database1`");
 
-    $tables = listTables($database2);
+    $tables = array_map(function ($i) { return $i["name"]; }, listTables($database2));
 
     foreach ($tables as $table) {
-      $table1 = $database1 . "." . $table["name"];
-      $table2 = $database2 . "." . $table["name"];
-
-      copyTable($table1, $table2);
+      array_push($queries, "CREATE TABLE `$database1`.`$table` LIKE `$database2`.`$table`");
+      array_push($queries, "INSERT `$database1`.`$table` SELECT * FROM `$database2`.`$table`");
     }
+
+    execute($queries);
   }
 
   function dropDatabase($database) {
     query("DROP DATABASE `$database`");
   }
 
+  function queryDatabase($database, $sql) {
+    selectDatabase($database);
+    query($sql);
+  }
+
+  function exportDatabase($database) {
+    $tables = array_map(function ($i) { return $i["name"]; }, listTables($database));
+
+    $filename = "export.zip";
+    $path = "/tmp/$filename";
+    $zip = new ZipArchive;
+    $zip->open($path, ZipArchive::CREATE);
+
+    foreach ($tables as $table) {
+      $zip->addFromString("$table.csv", getTableContent($database, $table));
+    }
+
+    $success = $zip->close();
+
+    header("Content-Type: application/zip");
+    header("Content-disposition: attachment; filename=$filename");
+    header("Content-Length: " . filesize($path));
+    readfile($path);
+    unlink($path);
+    exit(1);
+  }
+
   function listTables($database) {
     selectDatabase($database);
+
     return array_map(function ($table) use ($database) {
       $name = $table["Tables_in_$database"];
       return array(
@@ -54,6 +83,7 @@
 
   function createTable($database, $table, $columns) {
     selectDatabase($database);
+
     $columnString = join(", ", array_map(function ($c) { return getColumnString($c); }, $columns));
     query("CREATE TABLE `$table` ($columnString)");
   }
@@ -137,7 +167,7 @@
     ));
   }
 
-  function exportTable($database, $table) {
+  function getTableContent($database, $table) {
     selectDatabase($database);
 
     $results = query("SELECT * FROM `$table`");
@@ -170,10 +200,10 @@
     return join("\r\n", $content);
   }
 
-  function copyTable($table1, $table2) {
+  function copyTable($database1, $table1, $database2, $table2) {
     execute(array(
-      "CREATE TABLE `$table1` LIKE $table2",
-      "INSERT `$table1` SELECT * FROM $table2;"
+      "CREATE TABLE `$database1`.`$table1` LIKE `$database2`.`$table2`",
+      "INSERT `$database1`.`$table1` SELECT * FROM `$database2`.`$table2`;"
     ));
   }
 
@@ -230,5 +260,20 @@
     }
 
     execute($sql);
+  }
+
+  function exportTable($database, $table) {
+    $filename = "$table.csv";
+    $path = "/tmp/$filename";
+    $CSVFile = fopen($path, "w");
+
+    fwrite($CSVFile, getTableContent($database, $table));
+    fclose($CSVFile);
+    header("Content-type: application/csv");
+    header("Content-disposition: attachment; filename=$filename");
+    header("Content-Length: " . filesize($path));
+    readfile($path);
+    unlink($path);
+    exit(1);
   }
 ?>

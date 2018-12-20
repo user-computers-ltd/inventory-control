@@ -61,7 +61,7 @@
   max-height: 30px;
   box-sizing: border-box;
   font-size: 16px;
-  color: #b4b4b4;
+  color: #bbbbbb;
   transition: 0.3s;
   cursor: pointer;
   overflow: hidden;
@@ -69,6 +69,10 @@
 
 #menu-sidebar.show .menu-item {
   max-height: 200px;
+}
+
+#menu-sidebar .menu-item:hover {
+  color: #ffffff;
 }
 
 #menu-sidebar .menu-item.active {
@@ -91,7 +95,7 @@
 
 #menu-sidebar .sub-menu {
   max-height: 0px;
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.1);
   overflow: hidden;
   transition: 0.3s;
 }

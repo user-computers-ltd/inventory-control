@@ -1,62 +1,136 @@
 <?php
-  define("ROOT_PATH", "../../");
-  include_once ROOT_PATH . "includes/php/utils.php";
-  include_once ROOT_PATH . "includes/php/admin.php";
+  define("ADMIN_PATH", "../");
+  include_once ADMIN_PATH . "includes/php/config.php";
+  include_once ADMIN_PATH . "includes/php/utils.php";
 
-  if (!isset($_GET["table"])) {
-    if (!isset($_GET["db"])) {
+  $database = $_GET["db"];
+  $table = $_GET["table"];
+  $sql = assigned($_POST["sql"]) ? $_POST["sql"] : "SELECT * FROM `$table`";
+  $count = isset($_POST["count"]) ? $_POST["count"] : 100;
+  $offset = isset($_POST["offset"]) ? $_POST["offset"] : 0;
+  $pageNo = $offset / $count;
+
+  if (!isset($table)) {
+    if (!isset($database)) {
       header("Location: " . BASE_URL . "admin");
     } else {
-      header("Location: " . BASE_URL . "admin/db/?db=" . $_GET["db"]);
+      header("Location: " . BASE_URL . "admin/db/?db=" . $database);
     }
     exit(1);
   }
 
-  $database = $_GET["db"];
-  $table = $_GET["table"];
+  try {
+    selectDatabase($database);
+    $results = query($sql, true);
+
+    if (!is_array($results)) {
+      $sql = "SELECT * FROM `$table`";
+      $results = query($sql, true);
+    }
+  } catch (\Exception $e) {
+    $error = $e;
+  }
+
+  $pageCount = ceil(count($results) / $count);
+
   $columns = listColumns($database, $table);
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Inventory Control | Systems > <?php echo "$database > Database > $table"; ?></title>
-    <?php include_once ROOT_PATH . "includes/php/head.php"; ?>
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>admin/admin.css">
+    <?php include_once ADMIN_PATH . "includes/php/head.php"; ?>
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
     <div id="table-wrapper">
       <div id="table">
         <h4>
-          <?php echo "<a href='" . BASE_URL . "admin'>Systems</a>"; ?>
+          <?php echo "<a href='" . BASE_URL . "admin'>Databases</a>"; ?>
           <span>></span>
-          <?php echo "<a href='" . BASE_URL . "admin/sys?sys=$database'>$database</a>"; ?>
-          <span>></span>
-          <?php echo "<a href='" . BASE_URL . "admin/db?db=$database'>Database</a>"; ?>
+          <?php echo "<a href='" . BASE_URL . "admin/db?db=$database'>$database</a>"; ?>
           <span>></span>
         </h4>
         <h2><?php echo $table; ?></h2>
         <div id="table-tab">
-          <div class="tablink<?php echo !$showData ? " active" : ""; ?>" onclick="openTab(event, 'structure')">
-            structure
-          </div><div class="tablink<?php echo $showData ? " active" : ""; ?>" onclick="openTab(event, 'content')">
+          <div class="tablink active" onclick="openTab(event, 'content')">
             content
+          </div><div class="tablink" onclick="openTab(event, 'structure')">
+            structure
           </div>
         </div>
-        <div id="structure" class="tabcontent<?php echo !$showData ? " show" : ""; ?>">
-          <button onclick="showCreateDialog()">create column</button>
-          <table id="structure-table">
-            <thead>
-              <tr>
+        <div id="content" class="tabcontent show">
+          <form id="table-query" method="post">
+            <textarea name="sql"><?php echo $sql; ?></textarea>
+            <button type="submit">query</button>
+            <div id="table-query-settings">
               <?php
-                if (count($columns) > 0) {
-                  foreach ($columns[0] as $key => $value) {
-                    echo "<th>$key</th>";
+                for ($i = 0; $i < $pageCount; $i++) {
+                  $index = $i + 1;
+                  if ($pageNo == $i) {
+                    echo "<span>$index</span>";
+                  } else if ($i == 0 || $i == ($pageCount - 1) || ($pageNo != $i && abs($pageNo - $i) < 4)) {
+                    $offsetValue = $i * $count;
+                    echo "<button type=\"submit\" name=\"offset\" value=\"$offsetValue\">$index</button>";
+                  } else if (abs($pageNo - $i) == 4) {
+                    echo "...";
                   }
                 }
               ?>
-              <th></th>
+              <select name="count" onchange="this.form.submit()">
+                <option value="100" <?php echo $count == 100 ? "selected" : ""; ?>>100</option>
+                <option value="200" <?php echo $count == 200 ? "selected" : ""; ?>>200</option>
+                <option value="500" <?php echo $count == 500 ? "selected" : ""; ?>>500</option>
+              </select>
+            </div>
+          </form>
+          <?php if (count($results) > 0): ?>
+            <table id="table-query-results">
+              <thead>
+                <tr>
+                  <?php
+                    foreach ($results[0] as $key => $value) {
+                      echo "<th>$key</th>";
+                    }
+                  ?>
+                </tr>
+              </thead>
+              <tbody>
+                <?php
+                  for ($i = $offset; $i < count($results) && $i < $offset + $count; $i++) {
+                    echo "<tr>";
+
+                    foreach ($results[$i] as $key => $value) {
+                      echo "<td>$value</td>";
+                    }
+
+                    echo "</tr>";
+                  }
+                ?>
+              </tbody>
+            </table>
+          <?php elseif (isset($error)): ?>
+            <div id="table-query-error"><?php echo $error; ?></div>
+          <?php else: ?>
+            <div id="table-query-no-results">No results</div>
+          <?php endif ?>
+        </div>
+        <div id="structure" class="tabcontent">
+          <button onclick="showCreateDialog()">create column</button>
+          <table id="structure-table">
+            <colgroup>
+              <col style="width: 50px;">
+            </colgroup>
+            <thead>
+              <tr>
+                <th></th>
+                <?php
+                  if (count($columns) > 0) {
+                    foreach ($columns[0] as $key => $value) {
+                      echo "<th>$key</th>";
+                    }
+                  }
+                ?>
               </tr>
             </thead>
             <tbody>
@@ -64,23 +138,18 @@
                 foreach ($columns as $column) {
                   $name = $column["field"];
                   echo "<tr>";
+
+                  echo "<td><div class=\"image-button delete-image\" onclick=\"deleteColumn('$name')\"></div></td>";
+
                   foreach ($column as $key => $value) {
                     echo "<td>$value</td>";
                   }
-                  echo "<td><div class=\"delete-button\" onclick=\"deleteColumn('$name')\"></div></td>";
+
                   echo "</tr>";
                 }
               ?>
             </tbody>
           </table>
-        </div>
-        <div id="content" class="tabcontent<?php echo $showData ? " show" : ""; ?>">
-          <?php
-            $tableId = "content-table";
-            $query = "SELECT * FROM $table";
-
-            include ROOT_PATH . "includes/components/query-table/index.php";
-          ?>
         </div>
       </div>
     </div>

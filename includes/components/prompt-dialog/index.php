@@ -4,7 +4,7 @@
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>includes/components/prompt-dialog/style.css">
   </head>
   <body>
-    <div id="prompt-overlay" class="overlay">
+    <div id="prompt-overlay">
       <form onsubmit="promptSubmitHandler(event)">
         <div id="prompt-close" onclick="closePromptHandler(event)">&times;</div>
         <div id="prompt-message"></div>

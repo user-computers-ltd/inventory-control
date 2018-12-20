@@ -30,7 +30,7 @@
   </head>
   <body>
     <?php if (isset($SITEMAP)) : ?>
-      <div id="menu-sidebar" class="web-only">
+      <div id="menu-sidebar" class="web-only show">
         <button class="toggle-button" onclick="toggleNav()"></button>
         <?php echo generateSitemap($SITEMAP, ""); ?>
       </div>

@@ -4,11 +4,11 @@
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>includes/components/message-dialog/style.css">
   </head>
   <body>
-    <div id="message-overlay" class="overlay">
+    <div id="message-overlay">
       <form onsubmit="messageSubmitHandler(event)">
         <div id="message-close" onclick="closeMessageHandler(event)">&times;</div>
         <div id="message-message"></div>
-        <button type="button" onclick="closeMessageHandler(event)">Cancel</button>
+        <button type="button" onclick="closeMessageHandler(event)">Close</button>
       </form>
     </div>
     <script src="<?php echo BASE_URL; ?>includes/js/utils.js"></script>

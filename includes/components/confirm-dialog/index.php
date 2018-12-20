@@ -4,7 +4,7 @@
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>includes/components/confirm-dialog/style.css">
   </head>
   <body>
-    <div id="confirm-overlay" class="overlay">
+    <div id="confirm-overlay">
       <form onsubmit="confirmSubmitHandler(event)">
         <div id="confirm-close" onclick="closeConfirmHandler(event)">&times;</div>
         <div id="confirm-message"></div>
