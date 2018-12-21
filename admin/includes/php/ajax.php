@@ -26,25 +26,24 @@
           throwError("missing database name");
         }
         break;
+      case "clear-database":
+        if ($_POST["database"]) {
+          clearDatabase($_POST["database"]);
+        } else {
+          throwError("missing database");
+        }
+        break;
       case "restart-database":
         if ($_POST["system"] && $_POST["overwrite"]) {
-          $system = $_POST["system"];
-
-          if ($_POST["overwrite"] == "true") {
-            dropDatabase($system);
-          }
-
-          createDatabase($system);
-          executeSQLFiles($_POST["system"], array_map(function ($table) use ($system) {
-            return ROOT_PATH . "systems/$system/data-model/tables/$table";
-          }, listFile(ROOT_PATH . "systems/$system/data-model/tables")));
+          restartDatabase($_POST["system"], $_POST["overwrite"]);
         } else {
           throwError("missing system");
         }
         break;
       case "query-database":
         if ($_POST["database"] && $_POST["sql"]) {
-          echo queryDatabase($_POST["database"], $_POST["sql"]);
+          selectDatabase($_POST["database"]);
+          echo query($_POST["sql"]);
         } else {
           throwError("missing database or sql query");
         }
@@ -67,25 +66,6 @@
           )));
         } else {
           throwError("missing database or table name");
-        }
-        break;
-      case "create-import-table":
-        if ($_POST["database"] && $_POST["table"] && $_POST["field"] && $_POST["name"] && $_POST["type"] && $_FILES["import"]) {
-          $columns = array();
-
-          for ($i = 0; $i < count($_POST["field"]); $i++) {
-            array_push($columns, array(
-              "field" => $_POST["field"][$i],
-              "name" => $_POST["name"][$i],
-              "type" => $_POST["type"][$i],
-              "length" => $_POST["length"][$i],
-              "extra" => $_POST["extra"][$i]
-            ));
-          }
-
-          createAndImportTable($_POST["database"], $_POST["table"], $columns, $_FILES["import"]);
-        } else {
-          throwError("missing database, table, columns or import file");
         }
         break;
       case "import-table":
@@ -114,6 +94,7 @@
               "name" => $_POST["name"][$i]
             ));
           }
+
           clearImportTable($_POST["database"], $_POST["table"], $columns, $_FILES["import"]);
         } else {
           throwError("missing database, table, columns or import file");

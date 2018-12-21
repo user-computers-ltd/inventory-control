@@ -127,7 +127,7 @@ function serialize(form) {
 
   var query = [];
   for (var i = form.elements.length - 1; i >= 0; i--) {
-    if (form.elements[i].name === "") {
+    if (form.elements[i].name === "" || form.elements[i].disabled) {
       continue;
     }
 

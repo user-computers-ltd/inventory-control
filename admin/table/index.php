@@ -116,14 +116,9 @@
           <?php endif ?>
         </div>
         <div id="structure" class="tabcontent">
-          <button onclick="showCreateDialog()">create column</button>
           <table id="structure-table">
-            <colgroup>
-              <col style="width: 50px;">
-            </colgroup>
             <thead>
               <tr>
-                <th></th>
                 <?php
                   if (count($columns) > 0) {
                     foreach ($columns[0] as $key => $value) {
@@ -139,8 +134,6 @@
                   $name = $column["field"];
                   echo "<tr>";
 
-                  echo "<td><div class=\"image-button delete-image\" onclick=\"deleteColumn('$name')\"></div></td>";
-
                   foreach ($column as $key => $value) {
                     echo "<td>$value</td>";
                   }
@@ -153,48 +146,23 @@
         </div>
       </div>
     </div>
-    <?php include_once  "create-dialog/index.php"; ?>
     <?php include_once ROOT_PATH . "includes/components/confirm-dialog/index.php"; ?>
-    <?php include_once ROOT_PATH . "includes/components/error-bar/index.php"; ?>
     <script src="<?php echo BASE_URL; ?>includes/js/utils.js"></script>
     <script>
-      var database = "<?php echo $database; ?>";
-      var table = "<?php echo $table; ?>";
-      var url = "<?php echo BASE_URL; ?>admin/ajax.php";
-      var createOverlay = document.querySelector("#create-overlay");
-      var createForm = createOverlay.querySelector("form");
-
       function openTab(event, tabName) {
         var tabcontent = document.querySelectorAll(".tabcontent");
         var tablink = document.querySelectorAll(".tablink");
 
         for (var i = 0; i < tabcontent.length; i++) {
-          tabcontent[i].className = tabcontent[i].className.replace(" show", "");
+          toggleClass(tabcontent[i], "show", false);
         }
 
         for (var i = 0; i < tablink.length; i++) {
-          tablink[i].className = tablink[i].className.replace(" active", "");
+          toggleClass(tablink[i], "active", false);
         }
 
-        document.querySelector("#" + tabName).className += " show";
-        event.target.className += " active";
-      }
-
-      function reloadPage() {
-        window.location.reload();
-      }
-
-      function deleteColumn(column) {
-        var response = confirm("Deleting a column cannot be undone.");
-
-        if (response === true) {
-          post({
-            url: url,
-            data: { action: "delete-column", database: database, table: table, column: column },
-            resolve: reloadPage,
-            reject: showErrorBar
-          });
-        }
+        toggleClass(document.querySelector("#" + tabName), "show", true);
+        toggleClass(event.target, "active", true);
       }
     </script>
   </body>

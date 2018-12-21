@@ -8,7 +8,7 @@
     <div id="import-overlay" class="overlay">
       <form onsubmit="importSubmitHandler(event)">
         <div id="import-close" onclick="closeImportHandler(event)">&times;</div>
-        <input type="text" name="table" hidden required />
+        <h4 id="import-title"></h4>
         <div id="import-table-wrapper">
           <table id="import-table">
             <thead>
@@ -28,22 +28,20 @@
       var importButton = document.querySelector("#import");
       var importOverlay = document.querySelector("#import-overlay");
       var importForm = importOverlay.querySelector("form");
-      var importTableInput = importForm.querySelector("input[name=\"table\"]");
+      var importTableTitle = importForm.querySelector("#import-title");
       var importTableHead = importForm.querySelector("#import-table thead");
       var importTableBody = importForm.querySelector("#import-table tbody");
       var columnCount = importForm.querySelector("#column-count");
       var dataCount = importForm.querySelector("#data-count");
       var tableColumns = [];
-      var clearImport = false;
       var importCallback = function () {};
       var importFile = null;
 
       function openImportDialog(settings, callback = function () {}) {
         tableColumns = settings.columns;
-        clearImport = settings.clearImport;
-        importCallback = callback;
         importFile = settings.file;
-        importTableInput.setAttribute("value", settings.table);
+        importTableTitle.innerHTML = settings.table;
+        importCallback = callback;
 
         if (importFile) {
           handleImportFile(importFile);
@@ -56,6 +54,7 @@
         if (event.target === importOverlay || event.target === importClose) {
           importOverlay.className = "";
           importOverlay.removeEventListener("click", this);
+          importCallback();
         }
       }
 
@@ -63,7 +62,6 @@
         importForm.reset();
         importOverlay.className = "show";
         importOverlay.addEventListener("click", closeImportHandler);
-        importError.innerHTML = "";
 
         updateColumnSelection();
       }
@@ -164,13 +162,18 @@
           event.preventDefault();
         }
 
-        var data = new FormData(importForm);
+        var data = [];
+        var fieldInputs = importForm.elements["field[]"];
+        var nameInputs = importForm.elements["name[]"];
 
-        data.append("action", clearImport ? "clear-import-table" : "import-table");
-        data.append("database", database);
-        data.append("import", importFile);
+        for (var i = 0; i < fieldInputs.length; i++) {
+          if (!fieldInputs[i].disabled) {
+            data.push({ key: "field[]", value: fieldInputs[i].value });
+            data.push({ key: "name[]", value: nameInputs[i].value });
+          }
+        }
 
-        importCallback(data);
+        importCallback(data, importFile);
 
         return false;
       }

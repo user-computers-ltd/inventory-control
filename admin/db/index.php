@@ -74,6 +74,7 @@
       function sendRequest(settings) {
         var reloadPage = typeof settings.reloadPage !== "undefined" ? settings.reloadPage : true;
         var callback = settings.callback || function () {};
+        var onError = settings.onError || function () {};
 
         toggleLoadingScreen(true);
 
@@ -83,16 +84,17 @@
           urlEncoded: settings.urlEncoded,
           respondFile: settings.respondFile,
           resolve: function () {
-            toggleLoadingScreen(false);
-            callback(content);
-
             if (reloadPage) {
               window.location.reload();
+            } else {
+              toggleLoadingScreen(false);
+              callback(content);
             }
           },
           reject: function (message) {
-            toggleLoadingScreen(false);
             showMessageDialog(message);
+            toggleLoadingScreen(false);
+            onError(message);
           }
         });
       }
@@ -122,20 +124,46 @@
       }
 
       function clearImportTable(table, columns) {
-        openImportDialog({ table: table, columns: columns, clearImport: true }, function (data) {
-          sendRequest({
-            urlEncoded: false,
-            data: data
-          });
+        openImportDialog({ table: table, columns: columns }, function (data, file) {
+          if (data && file) {
+            var formData = new FormData();
+
+            formData.append("action", "clear-import-table");
+            formData.append("database", database);
+            formData.append("table", table);
+            formData.append("import", file);
+
+            for (var i = 0; i < data.length; i++) {
+              formData.append(data[i].key, data[i].value);
+            }
+
+            sendRequest({
+              urlEncoded: false,
+              data: formData
+            });
+          }
         });
       }
 
       function importTable(table, columns) {
-        openImportDialog({ table: table, columns: columns, clearImport: false }, function (data) {
-          sendRequest({
-            urlEncoded: false,
-            data: data
-          });
+        openImportDialog({ table: table, columns: columns }, function (data, file) {
+          if (data && file) {
+            var formData = new FormData();
+
+            formData.append("action", "import-table");
+            formData.append("database", database);
+            formData.append("table", table);
+            formData.append("import", file);
+
+            for (var i = 0; i < data.length; i++) {
+              formData.append(data[i].key, data[i].value);
+            }
+
+            sendRequest({
+              urlEncoded: false,
+              data: formData
+            });
+          }
         });
       }
 

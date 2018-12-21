@@ -37,6 +37,18 @@
     execute($queries);
   }
 
+  function clearDatabase($database) {
+    $queries = array();
+
+    $tables = array_map(function ($i) { return $i["name"]; }, listTables($database));
+
+    foreach ($tables as $table) {
+      array_push($queries, "TRUNCATE TABLE `$table`");
+    }
+
+    execute($queries);
+  }
+
   function dropDatabase($database) {
     query("DROP DATABASE `$database`");
   }
@@ -68,6 +80,36 @@
     exit(1);
   }
 
+  function restartDatabase($system, $overwrite) {
+    $queries = array();
+
+    if ($overwrite == "true") {
+      array_push($queries, "DROP DATABASE `$database`");
+    }
+
+    array_push($queries, "CREATE DATABASE `$database`");
+
+    selectDatabase($database);
+
+    array_push($queries, "SET SESSION sql_mode = ''");
+
+    $files = array_map(function ($table) use ($system) {
+      return ROOT_PATH . "systems/$system/data-model/tables/$table";
+    }, listFile(ROOT_PATH . "systems/$system/data-model/tables"));
+
+    for ($i = 0; $i < count($files); $i++) {
+      $file = $files[$i];
+      $handle = fopen($file, "r");
+      $contents = fread($handle, filesize($file));
+
+      array_push($queries, $contents);
+
+      fclose($handle);
+    }
+
+    execute($queries);
+  }
+
   function listTables($database) {
     selectDatabase($database);
 
@@ -75,8 +117,8 @@
       $name = $table["Tables_in_$database"];
       return array(
         "name" => $name,
-        "columns" => array_map(function ($column) { return $column["Field"]; }, query("DESCRIBE $name")),
-        "count" => query("SELECT COUNT(*) FROM $name")[0]["COUNT(*)"]
+        "columns" => array_map(function ($column) { return $column["Field"]; }, query("DESCRIBE `$name`")),
+        "count" => query("SELECT COUNT(*) FROM `$name`")[0]["COUNT(*)"]
       );
     }, query("SHOW TABLES"));
   }
@@ -134,18 +176,6 @@
     fclose($handle);
 
     return $statement;
-  }
-
-  function createAndImportTable($database, $table, $columns, $file) {
-    selectDatabase($database);
-
-    $columnString = join(", ", array_map(function ($c) { return getColumnString($c); }, $columns));
-
-    execute(array(
-      "SET SESSION sql_mode = ''",
-      "CREATE TABLE $table ($columnString)",
-      generateInsertStatment($table, $columns, $file)
-    ));
   }
 
   function importTable($database, $table, $columns, $file) {
@@ -226,7 +256,7 @@
         "default" => $column["Default"],
         "extra" => $column["Key"] . " " . $column["Extra"]
       );
-    }, query("DESCRIBE $table"));
+    }, query("DESCRIBE `$table`"));
   }
 
   function createColumn($database, $table, $field, $type, $extra) {
@@ -242,24 +272,6 @@
   function dropColumn($database, $table, $column) {
     selectDatabase($database);
     query("ALTER TABLE `$table` DROP COLUMN $column");
-  }
-
-  function executeSQLFiles($database, $files) {
-    selectDatabase($database);
-
-    $sql = array("SET SESSION sql_mode = ''");
-
-    for ($i = 0; $i < count($files); $i++) {
-      $file = $files[$i];
-      $handle = fopen($file, "r");
-      $contents = fread($handle, filesize($file));
-
-      array_push($sql, $contents);
-
-      fclose($handle);
-    }
-
-    execute($sql);
   }
 
   function exportTable($database, $table) {
