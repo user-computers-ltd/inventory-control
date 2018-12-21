@@ -55,7 +55,7 @@
       WHERE
         d.id=\"$id\"
       GROUP BY
-        a.brand_code, a.model_no, a.so_no, a.price, c.cost_average
+        a.brand_code, a.model_no, a.so_no, a.price
       ORDER BY
         a.brand_code ASC,
         a.model_no ASC
