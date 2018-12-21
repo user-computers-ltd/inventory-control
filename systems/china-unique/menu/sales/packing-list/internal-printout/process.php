@@ -48,14 +48,14 @@
       ON a.brand_code=b.code
       LEFT JOIN
         `model` AS c
-      ON a.model_no=c.model_no
+      ON a.brand_code=c.brand_code AND a.model_no=c.model_no
       LEFT JOIN
         `pl_header` AS d
       ON a.pl_no=d.pl_no
       WHERE
         d.id=\"$id\"
       GROUP BY
-        a.brand_code, a.model_no, a.so_no, a.price
+        a.brand_code, a.model_no, a.so_no, a.price, c.cost_average
       ORDER BY
         a.brand_code ASC,
         a.model_no ASC
