@@ -129,6 +129,7 @@
         var tableMap = databaseMap[database];
         var failedTables = [];
         var missingTables = [];
+        var abortedFiles = [];
         var files = [];
 
         for (var i = 0; i < fileNodeList.length; i++) {
@@ -142,29 +143,37 @@
 
             if (table && columns) {
               openImportDialog({ file: file, table: table, columns: columns }, function (data, importFile) {
-                var formData = new FormData();
+                if (data && data.length > 0 && importFile) {
+                  var formData = new FormData();
 
-                formData.append("action", action);
-                formData.append("database", database);
-                formData.append("table", table);
-                formData.append("import", importFile);
+                  formData.append("action", action);
+                  formData.append("database", database);
+                  formData.append("table", table);
+                  formData.append("import", importFile);
 
-                for (var i = 0; i < data.length; i++) {
-                  formData.append(data[i].key, data[i].value);
+                  for (var i = 0; i < data.length; i++) {
+                    formData.append(data[i].key, data[i].value);
+                  }
+
+                  setLoadingMessage("Importing \"" + table + "\"...");
+
+                  sendRequest({
+                    urlEncoded: false,
+                    reloadPage: false,
+                    callback: function () { chainImportFile(files.shift()); },
+                    onError: function () {
+                      failedTables.push(table);
+                      chainImportFile(files.shift());
+                    },
+                    data: formData
+                  });
+                } else {
+                  if (typeof data === "undefined") {
+                    abortedFiles.push(table);
+                  }
+
+                  chainImportFile(files.shift());
                 }
-
-                setLoadingMessage("Importing \"" + table + "\"...");
-
-                sendRequest({
-                  urlEncoded: false,
-                  reloadPage: false,
-                  callback: function () { chainImportFile(files.shift()); },
-                  onError: function () {
-                    failedTables.push(table);
-                    chainImportFile(files.shift());
-                  },
-                  data: formData
-                });
               });
             } else {
               missingTables.push(table);
@@ -173,17 +182,24 @@
           } else {
             var message = "";
 
-            if (missingTables.length > 0) {
-              message += "Files are not import due to missing tables:"
-              + "<br/><ul>"
-              + missingTables.map(function (t) { return "<li> - " + t + ".csv</li>"; })
-              + "</ul>";
-            }
-
             if (failedTables.length > 0) {
               message += "Importation failed for the following tables:"
               + "<br/><ul>"
-              + failedTables.map(function (t) { return "<li> - " + t + "</li>"; })
+              + failedTables.map(function (t) { return "<li> - " + t + "</li>"; }).join("")
+              + "</ul>";
+            }
+
+            if (missingTables.length > 0) {
+              message += "Files are not imported due to missing tables:"
+              + "<br/><ul>"
+              + missingTables.map(function (t) { return "<li> - " + t + ".csv</li>"; }).join("")
+              + "</ul>";
+            }
+
+            if (abortedFiles.length > 0) {
+              message += "Files are not import by cancellation:"
+              + "<br/><ul>"
+              + abortedFiles.map(function (t) { return "<li> - " + t + ".csv</li>"; }).join("")
               + "</ul>";
             }
 

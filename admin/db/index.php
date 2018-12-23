@@ -123,47 +123,35 @@
         });
       }
 
+      function importTableFileHandler(action, table, data, importFile) {
+        if (data && data.length > 0 && importFile) {
+          var formData = new FormData();
+
+          formData.append("action", action);
+          formData.append("database", database);
+          formData.append("table", table);
+          formData.append("import", importFile);
+
+          for (var i = 0; i < data.length; i++) {
+            formData.append(data[i].key, data[i].value);
+          }
+
+          sendRequest({
+            urlEncoded: false,
+            data: formData
+          });
+        }
+      }
+
       function clearImportTable(table, columns) {
         openImportDialog({ table: table, columns: columns }, function (data, file) {
-          if (data && file) {
-            var formData = new FormData();
-
-            formData.append("action", "clear-import-table");
-            formData.append("database", database);
-            formData.append("table", table);
-            formData.append("import", file);
-
-            for (var i = 0; i < data.length; i++) {
-              formData.append(data[i].key, data[i].value);
-            }
-
-            sendRequest({
-              urlEncoded: false,
-              data: formData
-            });
-          }
+          importTableFileHandler("clear-import-table", table, data, file);
         });
       }
 
       function importTable(table, columns) {
         openImportDialog({ table: table, columns: columns }, function (data, file) {
-          if (data && file) {
-            var formData = new FormData();
-
-            formData.append("action", "import-table");
-            formData.append("database", database);
-            formData.append("table", table);
-            formData.append("import", file);
-
-            for (var i = 0; i < data.length; i++) {
-              formData.append(data[i].key, data[i].value);
-            }
-
-            sendRequest({
-              urlEncoded: false,
-              data: formData
-            });
-          }
+          importTableFileHandler("import-table", table, data, file);
         });
       }
 

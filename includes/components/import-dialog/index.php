@@ -73,7 +73,10 @@
           var result = event.target.result;
           var lines = result.substring(result.indexOf("\"") + 1, result.lastIndexOf("\"")).split(/\"\r\n\"|\"\n\"/);
 
-          if (lines.length > 0) {
+          importTableHead.innerHTML = "<tr></tr>";
+          importTableBody.innerHTML = "";
+
+          if (lines.length > 1) {
             var firstLine = lines[0];
             var headers = firstLine.split("\",\"");
 
@@ -94,8 +97,6 @@
               return html;
             }).join("") + "</tr><tr>" + headers.map(function (h) { return "<th>" + h + "</th>"; }).join("") + "</tr>";
 
-            importTableBody.innerHTML = "";
-
             for (var i = 1; i <= 5 && i < lines.length; i++) {
               var line = lines[i].replace(/,,/g, ",\"\",").replace(/,,/g, ",\"\",");
               var values = line.split("\",\"");
@@ -115,6 +116,8 @@
             } else {
               importSubmitHandler();
             }
+          } else {
+            importSubmitHandler();
           }
         };
 
@@ -163,8 +166,8 @@
         }
 
         var data = [];
-        var fieldInputs = importForm.elements["field[]"];
-        var nameInputs = importForm.elements["name[]"];
+        var fieldInputs = importForm.elements["field[]"] || [];
+        var nameInputs = importForm.elements["name[]"] || [];
 
         for (var i = 0; i < fieldInputs.length; i++) {
           if (!fieldInputs[i].disabled) {
@@ -173,6 +176,8 @@
           }
         }
 
+        importOverlay.className = "";
+        importOverlay.removeEventListener("click", this);
         importCallback(data, importFile);
 
         return false;
