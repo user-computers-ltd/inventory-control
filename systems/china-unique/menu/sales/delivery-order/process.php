@@ -5,7 +5,6 @@
   $invoiceNo = $_POST["invoice_no"];
   $remarks = $_POST["remarks"];
   $status = $_POST["status"];
-  $paid = $_POST["paid"];
 
   $doHeader = null;
   $doModels = array();
@@ -22,16 +21,9 @@
         "do_no=\"$doNo\"",
         "do_date=\"$doDate\"",
         "invoice_no=\"$invoiceNo\"",
-        "remarks=\"$remarks\""
+        "remarks=\"$remarks\"",
+        "status=\"$status\""
       );
-
-      if (assigned($status)) {
-        array_push($setValues, "status=\"$status\"");
-      }
-
-      if (assigned($paid)) {
-        array_push($setValues, "paid=\"$paid\"");
-      }
 
       array_push($queries, "UPDATE `do_model` AS a LEFT JOIN `do_header` AS b ON a.do_no=b.do_no SET a.do_no=\"$doNo\" WHERE b.id=\"$id\"");
       array_push($queries, "UPDATE `do_header` SET " . join(", ", $setValues) . " WHERE id=\"$id\"");
@@ -65,8 +57,7 @@
         a.tax                                 AS `tax`,
         a.invoice_no                          AS `invoice_no`,
         a.remarks                             AS `remarks`,
-        a.status                              AS `status`,
-        a.paid                                AS `paid`
+        a.status                              AS `status`
       FROM
         `do_header` AS a
       LEFT JOIN

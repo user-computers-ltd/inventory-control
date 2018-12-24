@@ -40,12 +40,6 @@
               <td>Status:</td>
               <td><?php echo $doHeader["status"]; ?></td>
             </tr>
-            <tr>
-              <td></td>
-              <td></td>
-              <td>Invoice:</td>
-              <td><?php echo $doHeader["paid"] == "TRUE" ? "PAID" : "PENDING"; ?></td>
-            </tr>
           </table>
           <?php if (count($doModels) > 0) : ?>
             <table id="do-models">
@@ -153,11 +147,6 @@
           <button name="status" type="submit" value="<?php echo $doHeader["status"]; ?>" formaction="<?php echo DELIVERY_ORDER_PRINTOUT_URL . "?id=$id"; ?>">Print</button>
           <?php if ($doHeader["status"] == "SAVED" && !$hasIncoming): ?>
             <button name="status" type="submit" value="POSTED">Post</button>
-          <?php endif ?>
-          <?php if ($doHeader["paid"] == "FALSE"): ?>
-            <button name="paid" type="submit" value="TRUE">Set Paid</button>
-          <?php elseif ($doHeader["paid"] == "TRUE"): ?>
-            <button name="paid" type="submit" value="FALSE">Set Unpaid</button>
           <?php endif ?>
           <?php if ($doHeader["status"] == "SAVED"): ?>
             <button name="status" type="submit" value="DELETED">Delete</button>
