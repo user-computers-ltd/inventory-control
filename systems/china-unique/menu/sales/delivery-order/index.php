@@ -18,37 +18,37 @@
     <?php include_once ROOT_PATH . "includes/components/menu/index.php"; ?>
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
-      <div class="headline"><?php echo PACKING_LIST_PRINTOUT_TITLE; ?></div>
-      <?php if (isset($plHeader)): ?>
+      <div class="headline"><?php echo DELIVERY_ORDER_PRINTOUT_TITLE; ?></div>
+      <?php if (isset($doHeader)): ?>
         <form method="post">
-          <table id="pl-header">
+          <table id="do-header">
             <tr>
               <td>Order No.:</td>
-              <td><input type="text" name="pl_no" value="<?php echo $plHeader["pl_no"]; ?>" required /></td>
+              <td><input type="text" name="do_no" value="<?php echo $doHeader["do_no"]; ?>" required /></td>
               <td>Date:</td>
-              <td><input type="date" name="pl_date" value="<?php echo $plHeader["pl_date"]; ?>" max="<?php echo date("Y-m-d"); ?>" required /></td>
+              <td><input type="date" name="do_date" value="<?php echo $doHeader["do_date"]; ?>" max="<?php echo date("Y-m-d"); ?>" required /></td>
             </tr>
             <tr>
               <td>Client:</td>
-              <td><?php echo $plHeader["debtor_code"] . " - " . $plHeader["debtor_name"]; ?></td>
+              <td><?php echo $doHeader["debtor_code"] . " - " . $doHeader["debtor_name"]; ?></td>
               <td>Currency:</td>
-              <td><?php echo $plHeader["currency_code"] . " @ " . $plHeader["exchange_rate"]; ?></td>
+              <td><?php echo $doHeader["currency_code"] . " @ " . $doHeader["exchange_rate"]; ?></td>
             </tr>
             <tr>
               <td>Discount:</td>
-              <td><?php echo $plHeader["discount"]; ?>%</td>
+              <td><?php echo $doHeader["discount"]; ?>%</td>
               <td>Status:</td>
-              <td><?php echo $plHeader["status"]; ?></td>
+              <td><?php echo $doHeader["status"]; ?></td>
             </tr>
             <tr>
               <td></td>
               <td></td>
               <td>Invoice:</td>
-              <td><?php echo $plHeader["paid"] == "TRUE" ? "PAID" : "PENDING"; ?></td>
+              <td><?php echo $doHeader["paid"] == "TRUE" ? "PAID" : "PENDING"; ?></td>
             </tr>
           </table>
-          <?php if (count($plModels) > 0) : ?>
-            <table id="pl-models">
+          <?php if (count($doModels) > 0) : ?>
+            <table id="do-models">
               <thead>
                 <tr></tr>
                 <tr>
@@ -65,18 +65,18 @@
                 <?php
                   $totalQty = 0;
                   $subtotalSum = 0;
-                  $discount = $plHeader["discount"];
+                  $discount = $doHeader["discount"];
                   $hasIncoming = false;
 
-                  for ($i = 0; $i < count($plModels); $i++) {
-                    $plModel = $plModels[$i];
-                    $iaNo = $plModel["ia_no"];
-                    $soId = $plModel["so_id"];
-                    $soNo = $plModel["so_no"];
-                    $brand = $plModel["brand"];
-                    $modelNo = $plModel["model_no"];
-                    $price = $plModel["price"];
-                    $qty = $plModel["qty"];
+                  for ($i = 0; $i < count($doModels); $i++) {
+                    $doModel = $doModels[$i];
+                    $iaNo = $doModel["ia_no"];
+                    $soId = $doModel["so_id"];
+                    $soNo = $doModel["so_no"];
+                    $brand = $doModel["brand"];
+                    $modelNo = $doModel["model_no"];
+                    $price = $doModel["price"];
+                    $qty = $doModel["qty"];
                     $subtotal = $qty * $price;
                     $status = "On Hand";
 
@@ -135,36 +135,36 @@
               </tfoot>
             </table>
           <?php else: ?>
-            <div id="pl-models-no-results">No models</div>
+            <div id="do-models-no-results">No models</div>
           <?php endif ?>
-          <table id="pl-footer">
+          <table id="do-footer">
             <tr>
-              <td>Reference No.:</td>
-              <td><input id="ref-no" name="ref_no" value="<?php echo $plHeader["ref_no"]; ?>" /></td>
+              <td>Invoice No.:</td>
+              <td><input id="ref-no" name="invoice_no" value="<?php echo $doHeader["invoice_no"]; ?>" /></td>
             </tr>
             <tr>
               <td>Remarks:</td>
-              <td><textarea id="remarks" name="remarks"><?php echo $plHeader["remarks"]; ?></textarea></td>
+              <td><textarea id="remarks" name="remarks"><?php echo $doHeader["remarks"]; ?></textarea></td>
             </tr>
           </table>
-          <?php if ($plHeader["status"] == "SAVED"): ?>
+          <?php if ($doHeader["status"] == "SAVED"): ?>
             <button name="status" type="submit" value="SAVED">Save</button>
           <?php endif ?>
-          <button name="status" type="submit" value="<?php echo $plHeader["status"]; ?>" formaction="<?php echo PACKING_LIST_PRINTOUT_URL . "?id=$id"; ?>">Print</button>
-          <?php if ($plHeader["status"] == "SAVED" && !$hasIncoming): ?>
+          <button name="status" type="submit" value="<?php echo $doHeader["status"]; ?>" formaction="<?php echo DELIVERY_ORDER_PRINTOUT_URL . "?id=$id"; ?>">Print</button>
+          <?php if ($doHeader["status"] == "SAVED" && !$hasIncoming): ?>
             <button name="status" type="submit" value="POSTED">Post</button>
           <?php endif ?>
-          <?php if ($plHeader["paid"] == "FALSE"): ?>
+          <?php if ($doHeader["paid"] == "FALSE"): ?>
             <button name="paid" type="submit" value="TRUE">Set Paid</button>
-          <?php elseif ($plHeader["paid"] == "TRUE"): ?>
+          <?php elseif ($doHeader["paid"] == "TRUE"): ?>
             <button name="paid" type="submit" value="FALSE">Set Unpaid</button>
           <?php endif ?>
-          <?php if ($plHeader["status"] == "SAVED"): ?>
+          <?php if ($doHeader["status"] == "SAVED"): ?>
             <button name="status" type="submit" value="DELETED">Delete</button>
           <?php endif ?>
         </form>
       <?php else: ?>
-        <div id="pl-not-found"><?php echo PACKING_LIST_PRINTOUT_TITLE; ?> not found</div>
+        <div id="do-not-found"><?php echo DELIVERY_ORDER_PRINTOUT_TITLE; ?> not found</div>
       <?php endif ?>
     </div>
   </body>

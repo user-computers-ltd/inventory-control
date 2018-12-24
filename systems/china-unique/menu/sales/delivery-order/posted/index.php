@@ -13,19 +13,19 @@
 
   if (assigned($from)) {
     $whereClause = $whereClause . "
-      AND a.pl_date >= \"$from\"";
+      AND a.do_date >= \"$from\"";
   }
 
   if (assigned($to)) {
     $whereClause = $whereClause . "
-      AND a.pl_date <= \"$to\"";
+      AND a.do_date <= \"$to\"";
   }
 
-  $plHeaders = query("
+  $doHeaders = query("
     SELECT
-      a.id                                                                    AS `pl_id`,
-      DATE_FORMAT(a.pl_date, '%d-%m-%Y')                                      AS `date`,
-      a.pl_no                                                                 AS `pl_no`,
+      a.id                                                                    AS `do_id`,
+      DATE_FORMAT(a.do_date, '%d-%m-%Y')                                      AS `date`,
+      a.do_no                                                                 AS `do_no`,
       CONCAT(a.debtor_code, ' - ', IFNULL(c.english_name, 'Unknown'))         AS `debtor`,
       IFNULL(b.total_qty, 0)                                                  AS `qty`,
       a.discount                                                              AS `discount`,
@@ -33,23 +33,23 @@
       IFNULL(b.total_amt, 0) * (100 - a.discount) / 100                       AS `total_amt`,
       IFNULL(b.total_amt, 0) * (100 - a.discount) / 100 * a.exchange_rate     AS `total_amt_base`
     FROM
-      `pl_header` AS a
+      `do_header` AS a
     LEFT JOIN
       (SELECT
-        pl_no, SUM(qty) as total_qty, SUM(qty * price) as total_amt
+        do_no, SUM(qty) as total_qty, SUM(qty * price) as total_amt
       FROM
-        `pl_model`
+        `do_model`
       GROUP BY
-        pl_no) AS b
-    ON a.pl_no=b.pl_no
+        do_no) AS b
+    ON a.do_no=b.do_no
     LEFT JOIN
       `debtor` AS c
     ON a.debtor_code=c.code
     WHERE
-      a.status=\"SAVED\"
+      a.status=\"POSTED\"
       $whereClause
     ORDER BY
-      a.pl_date DESC
+      a.do_date DESC
   ");
 ?>
 
@@ -63,9 +63,9 @@
     <?php include_once ROOT_PATH . "includes/components/menu/index.php"; ?>
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
-      <div class="headline"><?php echo PACKING_LIST_SAVED_TITLE; ?></div>
+      <div class="headline"><?php echo DELIVERY_ORDER_POSTED_TITLE; ?></div>
       <form>
-        <table id="pl-input">
+        <table id="do-input">
           <tr>
             <th>From:</th>
             <th>To:</th>
@@ -77,8 +77,8 @@
           </tr>
         </table>
       </form>
-      <?php if (count($plHeaders) > 0): ?>
-        <table id="pl-results">
+      <?php if (count($doHeaders) > 0): ?>
+        <table id="do-results">
           <colgroup>
             <col style="width: 70px">
             <col>
@@ -107,17 +107,17 @@
               $totalQty = 0;
               $totalAmtBaseSum = 0;
 
-              for ($i = 0; $i < count($plHeaders); $i++) {
-                $plHeader = $plHeaders[$i];
-                $plId = $plHeader["pl_id"];
-                $date = $plHeader["date"];
-                $debtor = $plHeader["debtor"];
-                $plNo = $plHeader["pl_no"];
-                $qty = $plHeader["qty"];
-                $discount = $plHeader["discount"];
-                $currency = $plHeader["currency"];
-                $totalAmt = $plHeader["total_amt"];
-                $totalAmtBase = $plHeader["total_amt_base"];
+              for ($i = 0; $i < count($doHeaders); $i++) {
+                $doHeader = $doHeaders[$i];
+                $doId = $doHeader["do_id"];
+                $date = $doHeader["date"];
+                $debtor = $doHeader["debtor"];
+                $doNo = $doHeader["do_no"];
+                $qty = $doHeader["qty"];
+                $discount = $doHeader["discount"];
+                $currency = $doHeader["currency"];
+                $totalAmt = $doHeader["total_amt"];
+                $totalAmtBase = $doHeader["total_amt_base"];
 
                 $totalQty += $qty;
                 $totalAmtBaseSum += $totalAmtBase;
@@ -125,7 +125,7 @@
                 echo "
                   <tr>
                     <td title=\"$date\">$date</td>
-                    <td title=\"$plNo\"><a class=\"link\" href=\"" . PACKING_LIST_URL . "?id=$plId\">$plNo</a></td>
+                    <td title=\"$doNo\"><a class=\"link\" href=\"" . DELIVERY_ORDER_PRINTOUT_URL . "?id=$doId\">$doNo</a></td>
                     <td title=\"$debtor\">$debtor</td>
                     <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
                     <td title=\"$discount\" class=\"number\">" . number_format($discount, 2) . "%</td>
@@ -151,7 +151,7 @@
           </tfoot>
         </table>
       <?php else: ?>
-        <div class="pl-customer-no-results">No results</div>
+        <div class="do-customer-no-results">No results</div>
       <?php endif ?>
     </div>
   </body>

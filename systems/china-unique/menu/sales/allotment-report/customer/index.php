@@ -57,17 +57,17 @@
 
                   foreach ($taxAllotments as $warehouseCode => $warehouseAllotments) {
 
-                    foreach ($warehouseAllotments as $plNo => $pl) {
-                      $plId = $pl["id"];
-                      $plAllotments = $pl["models"];
+                    foreach ($warehouseAllotments as $doNo => $do) {
+                      $doId = $do["id"];
+                      $doAllotments = $do["models"];
                       $option = "";
 
-                      if ($plId == "") {
-                        $option = "<button type=\"submit\">Create " . PACKING_LIST_PRINTOUT_TITLE . "</button>";
+                      if ($doId == "") {
+                        $option = "<button type=\"submit\">Create " . DELIVERY_ORDER_PRINTOUT_TITLE . "</button>";
                       } else {
                         $option = "
-                          <span class=\"packing-list\">
-                            " . PACKING_LIST_PRINTOUT_TITLE . ": <a href=\"" . PACKING_LIST_URL . "?id=$plId\">$plNo</a>
+                          <span class=\"delivery-order\">
+                            " . DELIVERY_ORDER_PRINTOUT_TITLE . ": <a href=\"" . DELIVERY_ORDER_URL . "?id=$doId\">$doNo</a>
                           </span>
                         ";
                       }
@@ -87,7 +87,7 @@
                           </div>
                       ";
 
-                      if (count($plAllotments) > 0) {
+                      if (count($doAllotments) > 0) {
                         echo "
                           <table class=\"so-customer-results\">
                             <colgroup>
@@ -122,7 +122,7 @@
                         $totalAllottedQty = 0;
                         $totalAmt = 0;
 
-                        foreach ($plAllotments as $models) {
+                        foreach ($doAllotments as $models) {
 
                           for ($i = 0; $i < count($models); $i++) {
                             $allotment = $models[$i];

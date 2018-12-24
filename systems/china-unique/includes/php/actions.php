@@ -32,84 +32,88 @@
       $cost = $price * $discountFactor / $taxFactor * $exchangeRate;
       $stockChange = strpos($transactionCode, "R") === 0 ? $qty : -$qty;
 
-      /* Update model average cost. */
-      if ($transactionCode == "R1" || $transactionCode == "R2") {
+      if ($qty > 0) {
+        /* Update model average cost. */
+        if ($transactionCode == "R1" || $transactionCode == "R2") {
+          array_push($queries, "
+            UPDATE
+              `model` AS a
+            LEFT JOIN
+              (SELECT
+                brand_code,
+                model_no,
+                SUM(qty) AS `qty_on_hand`
+              FROM
+                `stock`
+              GROUP BY
+                brand_code, model_no) AS b
+            ON a.brand_code=b.brand_code AND a.model_no=b.model_no
+            SET
+              a.cost_average=(a.cost_average * IFNULL(b.qty_on_hand, 0) + $cost * $qty) / (IFNULL(b.qty_on_hand, 0) + $qty)
+            WHERE
+              a.brand_code=\"$brandCode\" AND a.model_no=\"$modelNo\"
+          ");
+        }
+
+        /* Update or insert stock. */
         array_push($queries, "
-          UPDATE
-            `model` AS a
-          LEFT JOIN
-            (SELECT
-              brand_code,
-              model_no,
-              SUM(qty) AS `qty_on_hand`
-            FROM
-              `stock`
-            GROUP BY
-              brand_code, model_no) AS b
-          ON a.brand_code=b.brand_code AND a.model_no=b.model_no
-          SET
-            a.cost_average=(a.cost_average * IFNULL(b.qty_on_hand, 0) + $cost * $qty) / (IFNULL(b.qty_on_hand, 0) + $qty)
-          WHERE
-            a.brand_code=\"$brandCode\" AND a.model_no=\"$modelNo\"
+          INSERT INTO
+            `stock`
+            (warehouse_code, brand_code, model_no, qty)
+          VALUES
+            (\"$warehouseCode\", \"$brandCode\", \"$modelNo\", \"$stockChange\")
+          ON DUPLICATE KEY UPDATE qty=qty + $stockChange;
+        ");
+
+        /* Collect transaction values for insertion. */
+        array_push($transactionValues, "
+          (
+            \"$headerNo\",
+            \"$transactionCode\",
+            \"$date\",
+            \"$clientCode\",
+            \"$currencyCode\",
+            \"$exchangeRate\",
+            \"$brandCode\",
+            \"$modelNo\",
+            (SELECT cost_average FROM `model` WHERE brand_code=\"$brandCode\" AND model_no=\"$modelNo\"),
+            \"$price\",
+            \"$qty\",
+            \"$discount\",
+            \"$tax\",
+            \"$warehouseCode\"
+          )
         ");
       }
-
-      /* Update or insert stock. */
-      array_push($queries, "
-        INSERT INTO
-          `stock`
-          (warehouse_code, brand_code, model_no, qty)
-        VALUES
-          (\"$warehouseCode\", \"$brandCode\", \"$modelNo\", \"$stockChange\")
-        ON DUPLICATE KEY UPDATE qty=qty + $stockChange;
-      ");
-
-      /* Collect transaction values for insertion. */
-      array_push($transactionValues, "
-        (
-          \"$headerNo\",
-          \"$transactionCode\",
-          \"$date\",
-          \"$clientCode\",
-          \"$currencyCode\",
-          \"$exchangeRate\",
-          \"$brandCode\",
-          \"$modelNo\",
-          (SELECT cost_average FROM `model` WHERE brand_code=\"$brandCode\" AND model_no=\"$modelNo\"),
-          \"$price\",
-          \"$qty\",
-          \"$discount\",
-          \"$tax\",
-          \"$warehouseCode\"
-        )
-      ");
     }
 
-    $transactionValues = join(", ", $transactionValues);
+    if (count($transactionValues) > 0) {
+      $transactionValues = join(", ", $transactionValues);
 
-    /* Insert transactions. */
-    array_push($queries, "
-      INSERT INTO
-        `transaction`
-      (
-        header_no,
-        transaction_code,
-        transaction_date,
-        client_code,
-        currency_code,
-        exchange_rate,
-        brand_code,
-        model_no,
-        cost_average,
-        price,
-        qty,
-        discount,
-        tax,
-        warehouse_code
-      )
-      VALUES
-        $transactionValues
-    ");
+      /* Insert transactions. */
+      array_push($queries, "
+        INSERT INTO
+          `transaction`
+        (
+          header_no,
+          transaction_code,
+          transaction_date,
+          client_code,
+          currency_code,
+          exchange_rate,
+          brand_code,
+          model_no,
+          cost_average,
+          price,
+          qty,
+          discount,
+          tax,
+          warehouse_code
+        )
+        VALUES
+          $transactionValues
+      ");
+    }
 
     return $queries;
   }
@@ -240,25 +244,10 @@
     return concat($queries, $postTransactionQueries);
   }
 
-  function onPostPackingList($plNo) {
+  function onPostDeliveryOrder($doNo) {
     $queries = array();
 
-    $plHeader = query("
-      SELECT
-        pl_date,
-        debtor_code,
-        currency_code,
-        exchange_rate,
-        discount,
-        tax,
-        warehouse_code
-      FROM
-        `pl_header`
-      WHERE
-        pl_no=\"$plNo\"
-    ")[0];
-
-    $soModelRefs = query("
+    $doModels = query("
       SELECT
         so_no           AS `so_no`,
         brand_code      AS `brand_code`,
@@ -266,36 +255,20 @@
         price           AS `price`,
         SUM(qty)        AS `qty`
       FROM
-        `pl_model`
+        `do_model`
       WHERE
-        pl_no=\"$plNo\"
+        do_no=\"$doNo\"
       GROUP BY
         so_no, brand_code, model_no, price
     ");
 
-    $allotmentRefs = query("
-      SELECT
-        b.warehouse_code    AS `warehouse_code`,
-        a.so_no             AS `so_no`,
-        a.brand_code        AS `brand_code`,
-        a.model_no          AS `model_no`,
-        a.price             AS `price`,
-        a.qty               AS `qty`
-      FROM
-        `pl_model` AS a
-      LEFT JOIN
-        `pl_header` AS b
-      ON a.pl_no=b.pl_no
-      WHERE
-        a.pl_no=\"$plNo\"");
+    /* Update sales order outstanding quantities. */
+    foreach ($doModels as $doModel) {
+      $soNo = $doModel["so_no"];
+      $brandCode = $doModel["brand_code"];
+      $modelNo = $doModel["model_no"];
+      $qty = $doModel["qty"];
 
-    foreach ($soModelRefs as $soModelRef) {
-      $soNo = $soModelRef["so_no"];
-      $brandCode = $soModelRef["brand_code"];
-      $modelNo = $soModelRef["model_no"];
-      $qty = $soModelRef["qty"];
-
-      /* Update sales order outsanding quantities. */
       array_push($queries, "
         UPDATE
           `so_model`
@@ -306,12 +279,28 @@
       ");
     }
 
+    $allotments = query("
+      SELECT
+        b.warehouse_code    AS `warehouse_code`,
+        a.so_no             AS `so_no`,
+        a.brand_code        AS `brand_code`,
+        a.model_no          AS `model_no`,
+        a.price             AS `price`,
+        a.qty               AS `qty`
+      FROM
+        `do_model` AS a
+      LEFT JOIN
+        `do_header` AS b
+      ON a.do_no=b.do_no
+      WHERE
+        a.do_no=\"$doNo\"");
+
     /* Remove corresponding allotments. */
-    foreach ($allotmentRefs as $allotmentRef) {
-      $warehouseCode = $allotmentRef["warehouse_code"];
-      $soNo = $allotmentRef["so_no"];
-      $brandCode = $allotmentRef["brand_code"];
-      $modelNo = $allotmentRef["model_no"];
+    foreach ($allotments as $allotment) {
+      $warehouseCode = $allotment["warehouse_code"];
+      $soNo = $allotment["so_no"];
+      $brandCode = $allotment["brand_code"];
+      $modelNo = $allotment["model_no"];
 
       array_push($queries, "
         DELETE FROM
@@ -325,36 +314,137 @@
       ");
     }
 
-    /* Insert corresponding transactions. */
+    $doHeader = query("
+      SELECT
+        do_date,
+        debtor_code,
+        currency_code,
+        exchange_rate,
+        discount,
+        tax,
+        warehouse_code
+      FROM
+        `do_header`
+      WHERE
+        do_no=\"$doNo\"
+    ")[0];
+
     $brandCodes = array();
     $modelNos = array();
     $prices = array();
     $qtys = array();
 
-    foreach ($allotmentRefs as $allotmentRef) {
-      array_push($brandCodes, $allotmentRef["brand_code"]);
-      array_push($modelNos, $allotmentRef["model_no"]);
-      array_push($prices, $allotmentRef["price"]);
-      array_push($qtys, $allotmentRef["qty"]);
+    foreach ($allotments as $allotment) {
+      array_push($brandCodes, $allotment["brand_code"]);
+      array_push($modelNos, $allotment["model_no"]);
+      array_push($prices, $allotment["price"]);
+      array_push($qtys, $allotment["qty"]);
     }
 
-    $postTransactionQueries = postTransactions(
-      $plNo,
+    /* Insert corresponding transactions. */
+    $queries = concat($queries, postTransactions(
+      $doNo,
       "S2",
-      $plHeader["pl_date"],
-      $plHeader["debtor_code"],
-      $plHeader["currency_code"],
-      $plHeader["exchange_rate"],
-      $plHeader["discount"],
-      $plHeader["tax"],
-      $plHeader["warehouse_code"],
+      $doHeader["do_date"],
+      $doHeader["debtor_code"],
+      $doHeader["currency_code"],
+      $doHeader["exchange_rate"],
+      $doHeader["discount"],
+      $doHeader["tax"],
+      $doHeader["warehouse_code"],
       $brandCodes,
       $modelNos,
       $prices,
       $qtys
-    );
+    ));
 
-    return concat($queries, $postTransactionQueries);
+    return $queries;
+  }
+
+  function onPostIncomingAdvice($iaNo) {
+    $queries = array();
+
+    $poAllotments = query("
+      SELECT
+        a.po_no           AS `po_no`,
+        c.currency_code   AS `currency_code`,
+        c.exchange_rate   AS `exchange_rate`,
+        c.discount        AS `discount`,
+        c.tax             AS `tax`,
+        a.brand_code      AS `brand_code`,
+        a.model_no        AS `model_no`,
+        b.cost            AS `cost`,
+        a.qty             AS `qty`
+      FROM
+        `po_allotment` AS a
+      LEFT JOIN
+        `po_model` AS b
+      ON a.po_no=b.po_no AND a.brand_code=b.brand_code AND a.model_no=b.model_no
+      LEFT JOIN
+        `po_header` AS c
+      ON a.po_no=c.po_no
+      WHERE
+        a.ia_no=\"$iaNo\"
+    ");
+
+    /* Update purchase order outstanding quantities. */
+    foreach ($poAllotments as $poAllotment) {
+      $poNo = $poAllotment["po_no"];
+      $brandCode = $poAllotment["brand_code"];
+      $modelNo = $poAllotment["model_no"];
+      $qty = $poAllotment["qty"];
+
+      array_push($queries, "
+        UPDATE
+          `po_model`
+        SET
+          qty_outstanding=qty_outstanding-$qty
+        WHERE
+          po_no=\"$poNo\" AND brand_code=\"$brandCode\" AND model_no=\"$modelNo\"
+      ");
+    }
+
+    $iaHeader = query("
+      SELECT
+        do_no,
+        ia_date,
+        creditor_code,
+        warehouse_code
+      FROM
+        `ia_header`
+      WHERE
+        ia_no=\"$iaNo\"
+    ")[0];
+
+    /* Insert corresponding transactions. */
+    foreach ($poAllotments as $poAllotment) {
+      $currencyCode = $poAllotment["currency_code"];
+      $ExchangeRate = $poAllotment["exchange_rate"];
+      $discount = $poAllotment["discount"];
+      $tax = $poAllotment["tax"];
+      $brandCode = $poAllotment["brand_code"];
+      $modelNo = $poAllotment["model_no"];
+      $cost = $poAllotment["cost"];
+      $qty = $poAllotment["qty"];
+
+      $queries = concat($queries, postTransactions(
+        $iaHeader["do_no"],
+        "R2",
+        $iaHeader["ia_date"],
+        $iaHeader["creditor_code"],
+        $currencyCode,
+        $ExchangeRate,
+        $discount,
+        $tax,
+        $iaHeader["warehouse_code"],
+        array($brandCode),
+        array($modelNo),
+        array($cost),
+        array($qty)
+      ));
+    }
+
+    return $queries;
   }
 
   function processDOStockIn() {
@@ -488,8 +578,8 @@
 
     $postedPackingListModels = query("
       SELECT
-        a.pl_no             AS `pl_no`,
-        a.pl_index          AS `pl_index`,
+        a.do_no             AS `do_no`,
+        a.do_index          AS `do_index`,
         a.ia_no             AS `ia_no`,
         b.warehouse_code    AS `warehouse_code`,
         a.so_no             AS `so_no`,
@@ -498,10 +588,10 @@
         a.price             AS `price`,
         a.qty               AS `qty`
       FROM
-        `pl_model` AS a
+        `do_model` AS a
       LEFT JOIN
-        `pl_header` AS b
-      ON a.pl_no=b.pl_no
+        `do_header` AS b
+      ON a.do_no=b.do_no
       LEFT JOIN
         `ia_header` AS c
       ON a.ia_no=c.ia_no
@@ -518,10 +608,10 @@
         a.model_no          AS `model_no`,
         a.qty               AS `qty`
       FROM
-        `pl_model` AS a
+        `do_model` AS a
       LEFT JOIN
-        `pl_header` AS b
-      ON a.pl_no=b.pl_no
+        `do_header` AS b
+      ON a.do_no=b.do_no
       WHERE
         a.ia_no=''
     ");
@@ -529,10 +619,10 @@
     /* Delete the packing list models which is linked with the posted incoming advice. */
     array_push($queries, "
       DELETE a FROM
-        `pl_model` AS a
+        `do_model` AS a
       LEFT JOIN
-        `pl_header` AS b
-      ON a.pl_no=b.pl_no
+        `do_header` AS b
+      ON a.do_no=b.do_no
       LEFT JOIN
         `ia_header` AS c
       ON a.ia_no=c.ia_no
@@ -544,8 +634,8 @@
     $packingListModelValues = array();
 
     foreach ($postedPackingListModels as $postedPackingListModel) {
-      $plNo = $postedPackingListModel["pl_no"];
-      $plIndex = $postedPackingListModel["pl_index"];
+      $doNo = $postedPackingListModel["do_no"];
+      $doIndex = $postedPackingListModel["do_index"];
       $iaNo = $postedPackingListModel["ia_no"];
       $warehouseCode = $postedPackingListModel["warehouse_code"];
       $soNo = $postedPackingListModel["so_no"];
@@ -565,10 +655,10 @@
       if (isset($existingStockPackingListModel)) {
         array_push($queries, "
           UPDATE
-            `pl_model` AS a
+            `do_model` AS a
           LEFT JOIN
-            `pl_header` AS b
-          ON a.pl_no=b.pl_no
+            `do_header` AS b
+          ON a.do_no=b.do_no
           SET
             a.qty=a.qty+$qty
           WHERE
@@ -583,8 +673,8 @@
       else {
         array_push($packingListModelValues, "
           (
-            \"$plNo\",
-            \"$plIndex\",
+            \"$doNo\",
+            \"$doIndex\",
             \"\",
             \"$soNo\",
             \"$brandCode\",
@@ -602,10 +692,10 @@
 
       array_push($queries, "
         INSERT INTO
-          `pl_model`
+          `do_model`
           (
-            pl_no,
-            pl_index,
+            do_no,
+            do_index,
             ia_no,
             so_no,
             brand_code,

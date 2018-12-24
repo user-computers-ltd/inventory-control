@@ -302,7 +302,7 @@
             allotments[iaNo][brandCode][modelNo][soNo] = allotments[iaNo][brandCode][modelNo][soNo] || {};
 
             var allotment = allotments[iaNo][brandCode][modelNo][soNo];
-            allotment["pl_no"] = allotment["pl_no"] || "";
+            allotment["do_no"] = allotment["do_no"] || "";
             allotment["qty"] = allotment["qty"] || 0;
 
             renderAllotment(iaNo, brandCode, modelNo, soNo);
@@ -326,7 +326,7 @@
 
           var allotment = allotments[iaNo][brandCode][modelNo][soNo];
           var allotQty = parseFloat(allotment["qty"]);
-          var plNo = allotment["pl_no"] ? allotment["pl_no"] : "";
+          var plNo = allotment["do_no"] ? allotment["do_no"] : "";
           var outstandingQty = parseFloat(soModels[brandCode][modelNo][soNo]["qty_outstanding"]);
           var availableQty = parseFloat(iaModels[iaNo][brandCode][modelNo]["qty"]);
           var otherAllotedIaQty = getOtherIaAllottedQty(iaNo, brandCode, modelNo, soNo);
@@ -504,7 +504,7 @@
             var soNo = allotQtyElement.dataset.so_no;
             var allotment = allotments[iaNo][brandCode][modelNo][soNo];
 
-            if (allotment["pl_no"] === "") {
+            if (allotment["do_no"] === "") {
               allotment["qty"] = 0;
             }
           }

@@ -285,7 +285,7 @@
             allotments[warehouseCode][brandCode][modelNo][soNo] = allotments[warehouseCode][brandCode][modelNo][soNo] || {};
 
             var allotment = allotments[warehouseCode][brandCode][modelNo][soNo];
-            allotment["pl_no"] = allotment["pl_no"] || "";
+            allotment["do_no"] = allotment["do_no"] || "";
             allotment["qty"] = allotment["qty"] || 0;
 
             renderAllotment(warehouseCode, brandCode, modelNo, soNo);
@@ -309,7 +309,7 @@
 
           var allotment = allotments[warehouseCode][brandCode][modelNo][soNo];
           var allotQty = parseFloat(allotment["qty"]);
-          var plNo = allotment["pl_no"] ? allotment["pl_no"] : "";
+          var plNo = allotment["do_no"] ? allotment["do_no"] : "";
           var outstandingQty = parseFloat(soModels[brandCode][modelNo][soNo]["qty_outstanding"]);
           var availableQty = parseFloat(stockModels[warehouseCode][brandCode][modelNo]["qty"]);
           var otherAllotedIaQty = getOtherWarehouseAllottedQty(warehouseCode, brandCode, modelNo, soNo);
@@ -487,7 +487,7 @@
             var soNo = allotQtyElement.dataset.so_no;
             var allotment = allotments[warehouseCode][brandCode][modelNo][soNo];
 
-            if (allotment["pl_no"] === "") {
+            if (allotment["do_no"] === "") {
               allotment["qty"] = 0;
             }
           }

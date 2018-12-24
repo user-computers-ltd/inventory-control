@@ -244,7 +244,7 @@
 
   $results = query("
     SELECT
-      IFNULL(b.pl_no, '')     AS `pl_no`,
+      IFNULL(b.do_no, '')     AS `do_no`,
       a.ia_no                 AS `ia_no`,
       a.so_no                 AS `so_no`,
       a.brand_code            AS `brand_code`,
@@ -253,7 +253,7 @@
     FROM
       `so_allotment` AS a
     LEFT JOIN
-      `pl_model` AS b
+      `do_model` AS b
     ON
       a.ia_no=b.ia_no AND
       a.so_no=b.so_no AND

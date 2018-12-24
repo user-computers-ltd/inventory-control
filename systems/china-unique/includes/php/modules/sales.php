@@ -25,12 +25,12 @@
   define("ALLOTMENT_REPORT_URL", SALES_URL . "allotment-report/");
   define("ALLOTMENT_REPORT_CUSTOMER_URL", ALLOTMENT_REPORT_URL . "customer/");
 
-  define("PACKING_LIST_URL", SALES_URL . "packing-list/");
-  define("PACKING_LIST_PRINTOUT_URL", PACKING_LIST_URL . "printout/");
-  define("PACKING_LIST_INTERNAL_PRINTOUT_URL", PACKING_LIST_URL . "internal-printout/");
-  define("PACKING_LIST_INVOICE_URL", PACKING_LIST_URL . "invoice/");
-  define("PACKING_LIST_SAVED_URL", PACKING_LIST_URL . "saved/");
-  define("PACKING_LIST_POSTED_URL", PACKING_LIST_URL . "posted/");
+  define("DELIVERY_ORDER_URL", SALES_URL . "delivery-order/");
+  define("DELIVERY_ORDER_PRINTOUT_URL", DELIVERY_ORDER_URL . "printout/");
+  define("DELIVERY_ORDER_INTERNAL_PRINTOUT_URL", DELIVERY_ORDER_URL . "internal-printout/");
+  define("DELIVERY_ORDER_INVOICE_URL", DELIVERY_ORDER_URL . "invoice/");
+  define("DELIVERY_ORDER_SAVED_URL", DELIVERY_ORDER_URL . "saved/");
+  define("DELIVERY_ORDER_POSTED_URL", DELIVERY_ORDER_URL . "posted/");
 
 
   /* Title configurations. */
@@ -60,11 +60,11 @@
   define("ALLOTMENT_REPORT_TITLE", "(F4) Allotment Report");
   define("ALLOTMENT_REPORT_CUSTOMER_TITLE", "(F4a) Allotment Report By Customer");
 
-  define("PACKING_LIST_TITLE", "(F5) Delivery Order");
-  define("PACKING_LIST_PRINTOUT_TITLE", "Delivery Order");
-  define("PACKING_LIST_INTERNAL_PRINTOUT_TITLE", "Delivery Order (Internal)");
-  define("PACKING_LIST_SAVED_TITLE", "(F5a) Saved Delivery Orders");
-  define("PACKING_LIST_POSTED_TITLE", "(F5b) Posted Delivery Orders");
+  define("DELIVERY_ORDER_TITLE", "(F5) Delivery Order");
+  define("DELIVERY_ORDER_PRINTOUT_TITLE", "Delivery Order");
+  define("DELIVERY_ORDER_INTERNAL_PRINTOUT_TITLE", "Delivery Order (Internal)");
+  define("DELIVERY_ORDER_SAVED_TITLE", "(F5a) Saved Delivery Orders");
+  define("DELIVERY_ORDER_POSTED_TITLE", "(F5b) Posted Delivery Orders");
 
   $SALES_MODULE = array(
     SALES_ORDER_TITLE => array(
@@ -90,9 +90,9 @@
     ALLOTMENT_REPORT_TITLE => array(
       ALLOTMENT_REPORT_CUSTOMER_TITLE       => ALLOTMENT_REPORT_CUSTOMER_URL
     ),
-    PACKING_LIST_TITLE => array(
-      PACKING_LIST_SAVED_TITLE              => PACKING_LIST_SAVED_URL,
-      PACKING_LIST_POSTED_TITLE             => PACKING_LIST_POSTED_URL
+    DELIVERY_ORDER_TITLE => array(
+      DELIVERY_ORDER_SAVED_TITLE              => DELIVERY_ORDER_SAVED_URL,
+      DELIVERY_ORDER_POSTED_TITLE             => DELIVERY_ORDER_POSTED_URL
     )
   );
 ?>

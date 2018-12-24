@@ -32,16 +32,16 @@
   ) {
     $queries = array();
 
-    $plNo = "PL" . date("YmdHis");
+    $doNo = "DO" . date("YmdHis");
     $date = date("Y-m-d");
 
     array_push($queries, "
       INSERT INTO
-        `pl_header`
-          (pl_no, pl_date, debtor_code, currency_code, exchange_rate, discount, tax, warehouse_code)
+        `do_header`
+          (do_no, do_date, debtor_code, currency_code, exchange_rate, discount, tax, warehouse_code)
         VALUES
           (
-            \"$plNo\",
+            \"$doNo\",
             \"$date\",
             \"$debtorCode\",
             \"$currencyCode\",
@@ -62,23 +62,23 @@
       $price = $prices[$i];
       $qty = $qtys[$i];
 
-      array_push($values, "(\"$plNo\", \"$i\", \"$iaNo\", \"$soNo\", \"$brandCode\", \"$modelNo\", \"$price\", \"$qty\")");
+      array_push($values, "(\"$doNo\", \"$i\", \"$iaNo\", \"$soNo\", \"$brandCode\", \"$modelNo\", \"$price\", \"$qty\")");
     }
 
     if (count($values) > 0) {
       array_push($queries, "
         INSERT INTO
-          `pl_model`
-          (pl_no, pl_index, ia_no, so_no, brand_code, model_no, price, qty)
+          `do_model`
+          (do_no, do_index, ia_no, so_no, brand_code, model_no, price, qty)
         VALUES
         " . join(", ", $values));
     }
 
     execute($queries);
 
-    $plId = query("SELECT id FROM `pl_header` WHERE pl_no=\"$plNo\"")[0]["id"];
+    $doId = query("SELECT id FROM `do_header` WHERE do_no=\"$doNo\"")[0]["id"];
 
-    header("Location: " . PACKING_LIST_URL . "?id=$plId");
+    header("Location: " . DELIVERY_ORDER_URL . "?id=$doId");
   }
 
   else {
@@ -97,8 +97,8 @@
         c.exchange_rate                                               AS `exchange_rate`,
         c.discount                                                    AS `discount`,
         c.tax                                                         AS `tax`,
-        IFNULL(h.pl_id, '')                                           AS `pl_id`,
-        IFNULL(h.pl_no, '')                                           AS `pl_no`,
+        IFNULL(h.do_id, '')                                           AS `do_id`,
+        IFNULL(h.do_no, '')                                           AS `do_no`,
         IF(a.warehouse_code='', g.warehouse_code, a.warehouse_code)   AS `warehouse_code`,
         a.so_no                                                       AS `so_no`,
         c.id                                                          AS `so_id`,
@@ -132,18 +132,18 @@
       ON a.ia_no=g.ia_no
       LEFT JOIN
         (SELECT
-          y.id              AS `pl_id`,
-          x.pl_no           AS `pl_no`,
+          y.id              AS `do_id`,
+          x.do_no           AS `do_no`,
           x.ia_no           AS `ia_no`,
           y.warehouse_code  AS `warehouse_code`,
           x.so_no           AS `so_no`,
           x.brand_code      AS `brand_code`,
           x.model_no        AS `model_no`
         FROM
-          `pl_model` AS x
+          `do_model` AS x
         LEFT JOIN
-          `pl_header` AS y
-        ON x.pl_no=y.pl_no) AS h
+          `do_header` AS y
+        ON x.do_no=y.do_no) AS h
       ON
         a.ia_no=h.ia_no AND
         IF(a.warehouse_code='', g.warehouse_code, a.warehouse_code)=h.warehouse_code AND
@@ -158,7 +158,7 @@
         CONCAT(c.currency_code, '-', c.exchange_rate) ASC,
         c.discount ASC,
         c.tax ASC,
-        h.pl_no,
+        h.do_no,
         a.brand_code ASC,
         a.model_no ASC,
         a.so_no ASC
@@ -174,8 +174,8 @@
       $discount = $allotment["discount"];
       $tax = $allotment["tax"];
       $warehouseCode = $allotment["warehouse_code"];
-      $plId = $allotment["pl_id"];
-      $plNo = $allotment["pl_no"];
+      $doId = $allotment["do_id"];
+      $doNo = $allotment["do_no"];
       $allotmentModel = $allotment["so_no"] . "-" . $allotment["brand_code"] . "-" . $allotment["model_no"];
 
       $arrayPointer = &$allotments;
@@ -209,12 +209,12 @@
       }
       $arrayPointer = &$arrayPointer[$warehouseCode];
 
-      if (!isset($arrayPointer[$plNo])) {
-        $arrayPointer[$plNo] = array();
-        $arrayPointer[$plNo]["id"] = $plId;
-        $arrayPointer[$plNo]["models"] = array();
+      if (!isset($arrayPointer[$doNo])) {
+        $arrayPointer[$doNo] = array();
+        $arrayPointer[$doNo]["id"] = $doId;
+        $arrayPointer[$doNo]["models"] = array();
       }
-      $arrayPointer = &$arrayPointer[$plNo]["models"];
+      $arrayPointer = &$arrayPointer[$doNo]["models"];
 
       if (!isset($arrayPointer[$allotmentModel])) {
         $arrayPointer[$allotmentModel] = array();

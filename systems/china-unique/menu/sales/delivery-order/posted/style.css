@@ -1,15 +1,15 @@
-#pl-input td {
+#do-input td {
   border: none;
   font-size: 13px;
 }
 
-#pl-input input,
-#pl-input select {
+#do-input input,
+#do-input select {
   width: 100%;
   box-sizing: border-box;
 }
 
-#pl-results td {
+#do-results td {
   min-width: 0px;
   max-width: 0px;
   white-space: nowrap;
@@ -17,11 +17,11 @@
   text-overflow: ellipsis;
 }
 
-#pl-results .number {
+#do-results .number {
   text-align: right;
 }
 
-.pl-customer-no-results {
+.do-customer-no-results {
   margin: 100px 0px;
   text-align: center;
   font-size: 40px;

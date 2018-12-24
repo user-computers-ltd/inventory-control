@@ -1,7 +1,7 @@
-CREATE TABLE `pl_model` (
+CREATE TABLE `do_model` (
   `id`                INT(12)         NOT NULL AUTO_INCREMENT,
-  `pl_no`             VARCHAR(30)     NOT NULL,
-  `pl_index`          INT(12)         NOT NULL,
+  `do_no`             VARCHAR(30)     NOT NULL,
+  `do_index`          INT(12)         NOT NULL,
   `ia_no`             VARCHAR(30)     NOT NULL,
   `so_no`             VARCHAR(30)     NOT NULL,
   `brand_code`        VARCHAR(30)     NOT NULL,

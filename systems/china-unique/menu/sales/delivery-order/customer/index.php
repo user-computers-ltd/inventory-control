@@ -17,25 +17,25 @@
 
   $results = query("
     SELECT
-      a.id                                                                                AS `pl_id`,
+      a.id                                                                                AS `do_id`,
       CONCAT(a.debtor_code, ' - ', IFNULL(c.english_name, 'Unknown'))                     AS `debtor`,
-      DATE_FORMAT(a.pl_date, '%d-%m-%Y')                                                  AS `date`,
-      a.pl_no                                                                             AS `pl_no`,
+      DATE_FORMAT(a.do_date, '%d-%m-%Y')                                                  AS `date`,
+      a.do_no                                                                             AS `do_no`,
       IFNULL(b.total_qty, 0)                                                              AS `qty`,
       a.discount                                                                          AS `discount`,
       a.currency_code                                                                     AS `currency`,
       IFNULL(b.total_amt, 0) * (100 - a.discount) / 100                                   AS `total_amt`,
       IFNULL(b.total_amt, 0) * (100 - a.discount) / 100 * a.exchange_rate                 AS `total_amt_base`
     FROM
-      `pl_header` AS a
+      `do_header` AS a
     LEFT JOIN
       (SELECT
-        pl_no, SUM(qty) as total_qty, SUM(qty * price) as total_amt
+        do_no, SUM(qty) as total_qty, SUM(qty * price) as total_amt
       FROM
-        `pl_model`
+        `do_model`
       GROUP BY
-        pl_no) AS b
-    ON a.pl_no=b.pl_no
+        do_no) AS b
+    ON a.do_no=b.do_no
     LEFT JOIN
       `debtor` AS c
     ON a.debtor_code=c.code
@@ -44,19 +44,19 @@
       $whereClause
     ORDER BY
       CONCAT(a.debtor_code, ' - ', IFNULL(c.english_name, 'Unknown')) ASC,
-      a.pl_date DESC
+      a.do_date DESC
   ");
 
-  $plHeaders = array();
+  $doHeaders = array();
 
-  foreach ($results as $plHeader) {
-    $customer = $plHeader["debtor"];
+  foreach ($results as $doHeader) {
+    $customer = $doHeader["debtor"];
 
-    if (!isset($plHeaders[$customer])) {
-      $plHeaders[$customer] = array();
+    if (!isset($doHeaders[$customer])) {
+      $doHeaders[$customer] = array();
     }
 
-    array_push($plHeaders[$customer], $plHeader);
+    array_push($doHeaders[$customer], $doHeader);
   }
 
   $debtors = query("
@@ -64,7 +64,7 @@
       a.debtor_code                       AS `code`,
       IFNULL(b.english_name, 'Unknown')   AS `name`
     FROM
-      `pl_header` AS a
+      `do_header` AS a
     LEFT JOIN
       `debtor` AS b
       ON a.debtor_code=b.code
@@ -83,14 +83,14 @@
     <?php include_once ROOT_PATH . "includes/components/menu/index.php"; ?>
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
-      <div class="headline"><?php echo PACKING_LIST_CUSTOMER_TITLE; ?></div>
+      <div class="headline"><?php echo DELIVERY_ORDER_CUSTOMER_TITLE; ?></div>
       <form>
-        <table id="pl-input">
+        <table id="do-input">
           <colgroup>
             <col style="width: 100px">
           </colgroup>
           <tr>
-            <td><label for="pl-debtors">Customer:</label></td>
+            <td><label for="do-debtors">Customer:</label></td>
             <td>
               <select name="debtor_code[]" multiple>
                 <?php
@@ -108,17 +108,17 @@
         </table>
       </form>
       <?php
-        if (count($plHeaders) > 0) {
+        if (count($doHeaders) > 0) {
 
-          foreach ($plHeaders as $customer => $headers) {
+          foreach ($doHeaders as $customer => $headers) {
             $totalQtySum = 0;
             $totalAmtSum = 0;
             $totalAmtSumBase = 0;
 
             echo "
-              <div class=\"pl-customer\">
+              <div class=\"do-customer\">
                 <h4>$customer</h4>
-                <table class=\"pl-results\">
+                <table class=\"do-results\">
                   <colgroup>
                     <col>
                     <col>
@@ -144,16 +144,16 @@
             ";
 
             for ($i = 0; $i < count($headers); $i++) {
-              $plHeader = $headers[$i];
-              $plId = $plHeader["pl_id"];
-              $date = $plHeader["date"];
-              $debtor = $plHeader["debtor"];
-              $plNo = $plHeader["pl_no"];
-              $totalQty = $plHeader["qty"];
-              $discount = $plHeader["discount"];
-              $currency = $plHeader["currency"];
-              $totalAmt = $plHeader["total_amt"];
-              $totalAmtBase = $plHeader["total_amt_base"];
+              $doHeader = $headers[$i];
+              $doId = $doHeader["do_id"];
+              $date = $doHeader["date"];
+              $debtor = $doHeader["debtor"];
+              $doNo = $doHeader["do_no"];
+              $totalQty = $doHeader["qty"];
+              $discount = $doHeader["discount"];
+              $currency = $doHeader["currency"];
+              $totalAmt = $doHeader["total_amt"];
+              $totalAmtBase = $doHeader["total_amt_base"];
 
               $totalQtySum += $totalQty;
               $totalAmtSum += $totalAmt;
@@ -162,7 +162,7 @@
               echo "
                 <tr>
                   <td title=\"$date\">$date</td>
-                  <td title=\"$plNo\"><a class=\"link\" href=\"" . PACKING_LIST_URL . "?id=$plId\">$plNo</a></td>
+                  <td title=\"$doNo\"><a class=\"link\" href=\"" . DELIVERY_ORDER_URL . "?id=$doId\">$doNo</a></td>
                   <td title=\"$totalQty\" class=\"number\">" . number_format($totalQty) . "</td>
                   <td title=\"$discount\" class=\"number\">" . number_format($discount, 2) . "%</td>
                   <td title=\"$currency\" class=\"number\">$currency</td>
@@ -190,7 +190,7 @@
             ";
           }
         } else {
-          echo "<div class=\"pl-customer-no-results\">No results</div>";
+          echo "<div class=\"do-customer-no-results\">No results</div>";
         }
       ?>
     </div>
