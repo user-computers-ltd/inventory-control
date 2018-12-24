@@ -44,6 +44,7 @@
       b.status=\"POSTED\"
       $whereClause
     ORDER BY
+      a.brand_code ASC,
       b.so_date DESC
   ");
 
