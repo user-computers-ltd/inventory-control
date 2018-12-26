@@ -6,5 +6,6 @@ CREATE TABLE `stock_in_model` (
   `model_no`          VARCHAR(30)     NOT NULL,
   `price`             DECIMAL(16,6)   NOT NULL,
   `qty`               INT(12)         NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_index` (`stock_in_no`, `brand_code`,`model_no`)
 );

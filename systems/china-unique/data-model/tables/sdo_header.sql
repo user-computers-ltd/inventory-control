@@ -1,4 +1,4 @@
-CREATE TABLE `do_header` (
+CREATE TABLE `sdo_header` (
   `id`                INT(12)         NOT NULL AUTO_INCREMENT,
   `do_no`             VARCHAR(30)     NOT NULL,
   `do_date`           DATETIME        NOT NULL,

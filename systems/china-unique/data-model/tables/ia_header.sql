@@ -5,7 +5,6 @@ CREATE TABLE `ia_header` (
   `do_no`             VARCHAR(30)     NOT NULL,
   `creditor_code`     VARCHAR(30)     NOT NULL,
   `warehouse_code`    VARCHAR(30)     NOT NULL,
-  `invoice_no`        VARCHAR(30)     NOT NULL,
   `remarks`           TEXT,
   `status`            VARCHAR(30)     DEFAULT "SAVED",
   PRIMARY KEY (`id`),

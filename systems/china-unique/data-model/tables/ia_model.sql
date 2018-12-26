@@ -5,5 +5,6 @@ CREATE TABLE `ia_model` (
   `brand_code`        VARCHAR(30)     NOT NULL,
   `model_no`          VARCHAR(30)     NOT NULL,
   `qty`               INT(12)         NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_index` (`ia_no`, `brand_code`,`model_no`)
 );

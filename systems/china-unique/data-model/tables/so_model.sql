@@ -7,5 +7,6 @@ CREATE TABLE `so_model` (
   `price`             DECIMAL(16,6)   NOT NULL,
   `qty`               INT(12)         NOT NULL,
   `qty_outstanding`   INT(12)         NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_index` (`so_no`, `brand_code`,`model_no`)
 );
