@@ -3,19 +3,13 @@
   font-size: 13px;
 }
 
-#so-input input,
 #so-input select {
   width: 100%;
   box-sizing: border-box;
 }
 
-.so-model h4 {
-  display: inline-block;
-  margin-bottom: 0px;
-}
-
-.so-model h4.brand {
-  float: right;
+#so-input #input-outstanding-only {
+  margin: 0px;
 }
 
 .so-results td {
@@ -30,7 +24,7 @@
   text-align: right;
 }
 
-.so-p-l-no-results {
+.so-customer-no-results {
   margin: 100px 0px;
   text-align: center;
   font-size: 40px;

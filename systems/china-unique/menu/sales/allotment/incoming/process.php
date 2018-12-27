@@ -46,7 +46,7 @@
 
     execute($queries);
 
-    header("Location: " . ALLOTMENT_REPORT_CUSTOMER_URL);
+    header("Location: " . SALES_ALLOTMENT_REPORT_CUSTOMER_URL);
   }
 
   $filterIaNos = $_GET["filter_ia_no"];
@@ -253,7 +253,7 @@
     FROM
       `so_allotment` AS a
     LEFT JOIN
-      `do_model` AS b
+      `sdo_model` AS b
     ON
       a.ia_no=b.ia_no AND
       a.so_no=b.so_no AND

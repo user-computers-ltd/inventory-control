@@ -37,7 +37,7 @@
 
     array_push($queries, "
       INSERT INTO
-        `do_header`
+        `sdo_header`
           (do_no, do_date, debtor_code, currency_code, exchange_rate, discount, tax, warehouse_code)
         VALUES
           (
@@ -68,7 +68,7 @@
     if (count($values) > 0) {
       array_push($queries, "
         INSERT INTO
-          `do_model`
+          `sdo_model`
           (do_no, do_index, ia_no, so_no, brand_code, model_no, price, qty)
         VALUES
         " . join(", ", $values));
@@ -76,9 +76,9 @@
 
     execute($queries);
 
-    $doId = query("SELECT id FROM `do_header` WHERE do_no=\"$doNo\"")[0]["id"];
+    $doId = query("SELECT id FROM `sdo_header` WHERE do_no=\"$doNo\"")[0]["id"];
 
-    header("Location: " . DELIVERY_ORDER_URL . "?id=$doId");
+    header("Location: " . SALES_DELIVERY_ORDER_URL . "?id=$doId");
   }
 
   else {
@@ -140,9 +140,9 @@
           x.brand_code      AS `brand_code`,
           x.model_no        AS `model_no`
         FROM
-          `do_model` AS x
+          `sdo_model` AS x
         LEFT JOIN
-          `do_header` AS y
+          `sdo_header` AS y
         ON x.do_no=y.do_no) AS h
       ON
         a.ia_no=h.ia_no AND

@@ -3,19 +3,23 @@
   font-size: 13px;
 }
 
-#so-input input,
 #so-input select {
   width: 100%;
   box-sizing: border-box;
 }
 
-.so-results th,
-.so-results td {
-  min-width: 0px;
-  max-width: 0px;
+.so-model h4 {
+  display: inline-block;
+  margin-bottom: 0px;
+}
+
+.so-model h4:nth-child(2) {
+  float: right;
 }
 
 .so-results td {
+  min-width: 0px;
+  max-width: 0px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -25,7 +29,7 @@
   text-align: right;
 }
 
-.so-brand-no-results {
+.so-p-l-no-results {
   margin: 100px 0px;
   text-align: center;
   font-size: 40px;

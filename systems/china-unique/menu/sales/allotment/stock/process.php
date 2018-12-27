@@ -46,7 +46,7 @@
 
     execute($queries);
 
-    header("Location: " . ALLOTMENT_REPORT_CUSTOMER_URL);
+    header("Location: " . SALES_ALLOTMENT_REPORT_CUSTOMER_URL);
   }
 
   $filterWarehouseCodes = $_GET["filter_warehouse_code"];
@@ -263,9 +263,9 @@
         x.model_no        AS `model_no`,
         x.qty             AS `qty`
       FROM
-        `do_model` AS x
+        `sdo_model` AS x
       LEFT JOIN
-        `do_header` AS y
+        `sdo_header` AS y
       ON x.do_no=y.do_no) AS b
     ON
       a.warehouse_code=b.warehouse_code AND

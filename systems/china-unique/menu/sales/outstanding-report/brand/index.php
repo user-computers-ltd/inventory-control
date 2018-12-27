@@ -7,6 +7,7 @@
   $InBaseCurrency = "(in " . COMPANY_CURRENCY . ")";
 
   $brandCodes = $_GET["brand_code"];
+  $outstandingOnly = $_GET["outstanding_only"];
 
   $whereClause = "";
 
@@ -15,9 +16,13 @@
       AND (" . join(" OR ", array_map(function ($i) { return "a.brand_code=\"$i\""; }, $brandCodes)) . ")";
   }
 
+  if ($outstandingOnly == "on") {
+    $whereClause = $whereClause . "
+      AND a.qty_outstanding > 0";
+  }
+
   $soModels = query("
     SELECT
-      c.id                                                                            AS `id`,
       a.brand_code                                                                    AS `brand_code`,
       c.name                                                                          AS `brand_name`,
       SUM(a.qty)                                                                      AS `qty`,
@@ -35,7 +40,7 @@
       b.status=\"POSTED\"
       $whereClause
     GROUP BY
-      c.id, a.brand_code, c.name
+      a.brand_code, c.name
     ORDER BY
       a.brand_code ASC
   ");
@@ -90,6 +95,18 @@
             </td>
             <td><button type="submit">Go</button></td>
           </tr>
+          <tr>
+            <th>
+              <input
+                id="input-outstanding-only"
+                type="checkbox"
+                name="outstanding_only"
+                onchange="this.form.submit()"
+                <?php echo $outstandingOnly == "on" ? "checked" : "" ?>
+              />
+              <label for="input-outstanding-only">Outstanding only</label>
+            </th>
+          </tr>
         </table>
       </form>
       <?php if (count($soModels) > 0): ?>
@@ -117,7 +134,6 @@
 
             for ($i = 0; $i < count($soModels); $i++) {
               $soModel = $soModels[$i];
-              $id = $soModel["id"];
               $brandCode = $soModel["brand_code"];
               $brandName = $soModel["brand_name"];
               $qty = $soModel["qty"];
@@ -131,7 +147,7 @@
               echo "
                 <tr>
                   <td title=\"$brandCode\">
-                    <a class=\"link\" href=\"" . SALES_REPORT_BRAND_DETAIL_URL . "?id[]=$id\">$brandCode - $brandName</a>
+                    <a class=\"link\" href=\"" . SALES_REPORT_BRAND_DETAIL_URL . "?brand_code[]=$brandCode\">$brandCode - $brandName</a>
                   </td>
                   <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
                   <td title=\"$outstandingQty\" class=\"number\">" . number_format($outstandingQty) . "</td>

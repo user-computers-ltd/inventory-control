@@ -16,7 +16,7 @@
     <?php include_once ROOT_PATH . "includes/components/menu/index.php"; ?>
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
-      <div class="headline"><?php echo ALLOTMENT_INCOMING_TITLE ?></div>
+      <div class="headline"><?php echo SALES_ALLOTMENT_INCOMING_TITLE ?></div>
       <form>
         <table id="ia-input">
           <tr>

@@ -25,21 +25,21 @@
         "status=\"$status\""
       );
 
-      array_push($queries, "UPDATE `do_model` AS a LEFT JOIN `do_header` AS b ON a.do_no=b.do_no SET a.do_no=\"$doNo\" WHERE b.id=\"$id\"");
-      array_push($queries, "UPDATE `do_header` SET " . join(", ", $setValues) . " WHERE id=\"$id\"");
+      array_push($queries, "UPDATE `sdo_model` AS a LEFT JOIN `sdo_header` AS b ON a.do_no=b.do_no SET a.do_no=\"$doNo\" WHERE b.id=\"$id\"");
+      array_push($queries, "UPDATE `sdo_header` SET " . join(", ", $setValues) . " WHERE id=\"$id\"");
 
       if ($status == "POSTED") {
-        $queries = concat($queries, onPostDeliveryOrder($doNo));
+        $queries = concat($queries, onPostSalesDeliveryOrder($doNo));
       } else if ($status == "DELETED") {
         $queries = array(
-          "DELETE FROM `do_header` WHERE id=\"$id\"",
-          "DELETE a FROM `do_model` AS a LEFT JOIN `do_header` AS b ON a.do_no=b.do_no WHERE b.id=\"$id\""
+          "DELETE FROM `sdo_header` WHERE id=\"$id\"",
+          "DELETE a FROM `sdo_model` AS a LEFT JOIN `sdo_header` AS b ON a.do_no=b.do_no WHERE b.id=\"$id\""
         );
       }
 
       execute($queries);
 
-      header("Location: " . DELIVERY_ORDER_SAVED_URL);
+      header("Location: " . SALES_DELIVERY_ORDER_SAVED_URL);
     }
 
     /* Attempt to retrieve an existing sales order. */
@@ -59,7 +59,7 @@
         a.remarks                             AS `remarks`,
         a.status                              AS `status`
       FROM
-        `do_header` AS a
+        `sdo_header` AS a
       LEFT JOIN
         `debtor` AS b
       ON a.debtor_code=b.code
@@ -77,7 +77,7 @@
         a.price                       AS `price`,
         a.qty                         AS `qty`
       FROM
-        `do_model` AS a
+        `sdo_model` AS a
       LEFT JOIN
         `brand` AS b
       ON a.brand_code=b.code
@@ -85,7 +85,7 @@
         `so_header` AS c
       ON a.so_no=c.so_no
       LEFT JOIN
-        `do_header` AS d
+        `sdo_header` AS d
       ON a.do_no=d.do_no
       WHERE
         d.id=\"$id\"

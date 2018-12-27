@@ -27,12 +27,12 @@
       IFNULL(b.total_amt, 0) * (100 - a.discount) / 100                                   AS `total_amt`,
       IFNULL(b.total_amt, 0) * (100 - a.discount) / 100 * a.exchange_rate                 AS `total_amt_base`
     FROM
-      `do_header` AS a
+      `sdo_header` AS a
     LEFT JOIN
       (SELECT
         do_no, SUM(qty) as total_qty, SUM(qty * price) as total_amt
       FROM
-        `do_model`
+        `sdo_model`
       GROUP BY
         do_no) AS b
     ON a.do_no=b.do_no
@@ -64,7 +64,7 @@
       a.debtor_code                       AS `code`,
       IFNULL(b.english_name, 'Unknown')   AS `name`
     FROM
-      `do_header` AS a
+      `sdo_header` AS a
     LEFT JOIN
       `debtor` AS b
       ON a.debtor_code=b.code
@@ -83,7 +83,7 @@
     <?php include_once ROOT_PATH . "includes/components/menu/index.php"; ?>
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
-      <div class="headline"><?php echo DELIVERY_ORDER_CUSTOMER_TITLE; ?></div>
+      <div class="headline"><?php echo SALES_DELIVERY_ORDER_CUSTOMER_TITLE; ?></div>
       <form>
         <table id="do-input">
           <colgroup>
@@ -162,7 +162,7 @@
               echo "
                 <tr>
                   <td title=\"$date\">$date</td>
-                  <td title=\"$doNo\"><a class=\"link\" href=\"" . DELIVERY_ORDER_URL . "?id=$doId\">$doNo</a></td>
+                  <td title=\"$doNo\"><a class=\"link\" href=\"" . SALES_DELIVERY_ORDER_URL . "?id=$doId\">$doNo</a></td>
                   <td title=\"$totalQty\" class=\"number\">" . number_format($totalQty) . "</td>
                   <td title=\"$discount\" class=\"number\">" . number_format($discount, 2) . "%</td>
                   <td title=\"$currency\" class=\"number\">$currency</td>

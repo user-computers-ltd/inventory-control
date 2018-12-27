@@ -3,10 +3,13 @@
   font-size: 13px;
 }
 
-#so-input input,
 #so-input select {
   width: 100%;
   box-sizing: border-box;
+}
+
+#so-input #input-outstanding-only {
+  margin: 0px;
 }
 
 .so-results th,
@@ -25,7 +28,7 @@
   text-align: right;
 }
 
-.so-model-no-results {
+.so-customer-no-results {
   margin: 100px 0px;
   text-align: center;
   font-size: 40px;

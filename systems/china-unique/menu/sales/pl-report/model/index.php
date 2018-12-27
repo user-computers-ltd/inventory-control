@@ -23,7 +23,6 @@
 
   $soModels = query("
     SELECT
-      d.id                                                                          AS `id`,
       a.brand_code                                                                  AS `brand_code`,
       c.name                                                                        AS `brand_name`,
       a.model_no                                                                    AS `model_no`,
@@ -99,7 +98,7 @@
     <?php include_once ROOT_PATH . "includes/components/menu/index.php"; ?>
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
-      <div class="headline"><?php echo SALES_REPORT_PL_SUMMARY_TITLE; ?></div>
+      <div class="headline"><?php echo SALES_PL_REPORT_MODEL_SUMMARY_TITLE; ?></div>
       <form>
         <table id="so-input">
           <tr>
@@ -166,7 +165,6 @@
 
             for ($i = 0; $i < count($soModels); $i++) {
               $soModel = $soModels[$i];
-              $id = $soModel["id"];
               $brandCode = $soModel["brand_code"];
               $brandName = $soModel["brand_name"];
               $modelNo = $soModel["model_no"];
@@ -184,7 +182,7 @@
               echo "
                 <tr>
                   <td title=\"$brandCode\">$brandName</td>
-                  <td title=\"$modelNo\"><a class=\"link\" href=\"" . SALES_REPORT_PL_DETAIL_URL . "?id[]=$id\">$modelNo</a></td>
+                  <td title=\"$modelNo\"><a class=\"link\" href=\"" . SALES_PL_REPORT_MODEL_DETAIL_URL . "?brand_code[]=$brandCode&model_no[]=$modelNo\">$modelNo</a></td>
                   <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
                   <td title=\"$netAmtBase\" class=\"number\">" . number_format($netAmtBase, 2) . "</td>
                   <td title=\"$totalCost\" class=\"number\">" . number_format($totalCost, 2) . "</td>

@@ -6,13 +6,25 @@
 
   $InBaseCurrency = "(in " . COMPANY_CURRENCY . ")";
 
-  $ids = $_GET["id"];
+  $brandCodes = $_GET["brand_code"];
+  $modelNos = $_GET["model_no"];
+  $outstandingOnly = $_GET["outstanding_only"];
 
   $whereClause = "";
 
-  if (assigned($ids) && count($ids) > 0) {
-    $whereClause = "
-      AND (" . join(" OR ", array_map(function ($id) { return "d.id=\"$id\""; }, $ids)) . ")";
+  if (assigned($brandCodes) && count($brandCodes) > 0) {
+    $whereClause = $whereClause . "
+      AND (" . join(" OR ", array_map(function ($i) { return "a.brand_code=\"$i\""; }, $brandCodes)) . ")";
+  }
+
+  if (assigned($modelNos) && count($modelNos) > 0) {
+    $whereClause = $whereClause . "
+      AND (" . join(" OR ", array_map(function ($m) { return "a.model_no=\"$m\""; }, $modelNos)) . ")";
+  }
+
+  if ($outstandingOnly == "on") {
+    $whereClause = $whereClause . "
+      AND a.qty_outstanding > 0";
   }
 
   $results = query("
@@ -66,6 +78,43 @@
 
     array_push($arrayPointer, $soModel);
   }
+
+  $brands = query("
+    SELECT DISTINCT
+      a.brand_code  AS `code`,
+      c.name        AS `name`
+    FROM
+      `so_model` AS a
+    LEFT JOIN
+      `so_header` AS b
+    ON a.so_no=b.so_no
+    LEFT JOIN
+      `brand` AS c
+    ON a.brand_code=c.code
+    WHERE
+      b.status=\"POSTED\"
+    ORDER BY
+      a.brand_code ASC
+  ");
+
+  $modelWhereClause = "";
+
+  if (assigned($brandCodes) && count($brandCodes) > 0) {
+    $modelWhereClause = $modelWhereClause . "
+      AND (" . join(" OR ", array_map(function ($i) { return "brand_code=\"$i\""; }, $brandCodes)) . ")";
+  }
+
+  $models = query("
+    SELECT DISTINCT
+      model_no AS `model_no`
+    FROM
+      `so_model`
+    WHERE
+      model_no IS NOT NULL
+      $modelWhereClause
+    ORDER BY
+      model_no ASC
+  ");
 ?>
 
 <!DOCTYPE html>
@@ -79,6 +128,52 @@
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo SALES_REPORT_MODEL_DETAIL_TITLE; ?></div>
+      <form>
+        <table id="so-input">
+          <tr>
+            <th>Brand:</th>
+            <th>Model No.:</th>
+          </tr>
+          <tr>
+            <td>
+              <select name="brand_code[]" multiple>
+                <?php
+                  foreach ($brands as $brand) {
+                    $code = $brand["code"];
+                    $name = $brand["name"];
+                    $selected = assigned($brandCodes) && in_array($code, $brandCodes) ? "selected" : "";
+                    echo "<option value=\"$code\" $selected>$code - $name</option>";
+                  }
+                ?>
+              </select>
+            </td>
+            <td>
+              <select name="model_no[]" multiple>
+                <?php
+                  foreach ($models as $model) {
+                    $modelNo = $model["model_no"];
+                    $selected = assigned($modelNos) && in_array($modelNo, $modelNos) ? "selected" : "";
+                    echo "<option value=\"$modelNo\" $selected>$modelNo</option>";
+                  }
+                ?>
+              </select>
+            </td>
+            <td><button type="submit">Go</button></td>
+          </tr>
+          <tr>
+            <th>
+              <input
+                id="input-outstanding-only"
+                type="checkbox"
+                name="outstanding_only"
+                onchange="this.form.submit()"
+                <?php echo $outstandingOnly == "on" ? "checked" : "" ?>
+              />
+              <label for="input-outstanding-only">Outstanding only</label>
+            </th>
+          </tr>
+        </table>
+      </form>
       <?php
         if (count($soModels) > 0) {
 

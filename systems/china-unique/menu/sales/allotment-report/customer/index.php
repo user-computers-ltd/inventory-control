@@ -16,7 +16,7 @@
     <?php include_once ROOT_PATH . "includes/components/menu/index.php"; ?>
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
-      <div class="headline"><?php echo ALLOTMENT_REPORT_CUSTOMER_TITLE ?></div>
+      <div class="headline"><?php echo SALES_ALLOTMENT_REPORT_CUSTOMER_TITLE ?></div>
       <form>
         <table id="so-input">
           <tr>
@@ -63,11 +63,11 @@
                       $option = "";
 
                       if ($doId == "") {
-                        $option = "<button type=\"submit\">Create " . DELIVERY_ORDER_PRINTOUT_TITLE . "</button>";
+                        $option = "<button type=\"submit\">Create " . SALES_DELIVERY_ORDER_PRINTOUT_TITLE . "</button>";
                       } else {
                         $option = "
                           <span class=\"delivery-order\">
-                            " . DELIVERY_ORDER_PRINTOUT_TITLE . ": <a href=\"" . DELIVERY_ORDER_URL . "?id=$doId\">$doNo</a>
+                            " . SALES_DELIVERY_ORDER_PRINTOUT_TITLE . ": <a href=\"" . SALES_DELIVERY_ORDER_URL . "?id=$doId\">$doNo</a>
                           </span>
                         ";
                       }

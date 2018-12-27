@@ -22,7 +22,7 @@
         a.remarks                                         AS `remarks`,
         a.status                                          AS `status`
       FROM
-        `do_header` AS a
+        `sdo_header` AS a
       LEFT JOIN
         `debtor` AS b
       ON a.debtor_code=b.code
@@ -42,7 +42,7 @@
         c.cost_average    AS `cost_average`,
         SUM(a.qty)        AS `qty`
       FROM
-        `do_model` AS a
+        `sdo_model` AS a
       LEFT JOIN
         `brand` AS b
       ON a.brand_code=b.code
@@ -50,7 +50,7 @@
         `model` AS c
       ON a.brand_code=c.brand_code AND a.model_no=c.model_no
       LEFT JOIN
-        `do_header` AS d
+        `sdo_header` AS d
       ON a.do_no=d.do_no
       WHERE
         d.id=\"$id\"

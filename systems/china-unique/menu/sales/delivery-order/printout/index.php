@@ -17,7 +17,7 @@
     <?php include_once ROOT_PATH . "includes/components/menu/index.php"; ?>
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
-      <div class="headline"><?php echo DELIVERY_ORDER_PRINTOUT_TITLE . " (" . $doHeader["warehouse"] . ")" ?></div>
+      <div class="headline"><?php echo SALES_DELIVERY_ORDER_PRINTOUT_TITLE . " (" . $doHeader["warehouse"] . ")" ?></div>
 
       <?php if (isset($doHeader)): ?>
         <table id="do-header">
@@ -138,11 +138,11 @@
         </table>
         <?php echo "
           <div class=\"web-only\">
-          " . generateRedirectButton(DELIVERY_ORDER_INTERNAL_PRINTOUT_URL, "Internal printout") . "
+          " . generateRedirectButton(SALES_DELIVERY_ORDER_INTERNAL_PRINTOUT_URL, "Internal printout") . "
           </div>
         ";?>
       <?php else: ?>
-        <div id="do-not-found"><?php echo DELIVERY_ORDER_PRINTOUT_TITLE; ?> not found</div>
+        <div id="do-not-found"><?php echo SALES_DELIVERY_ORDER_PRINTOUT_TITLE; ?> not found</div>
       <?php endif ?>
     </div>
   </body>

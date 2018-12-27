@@ -7,6 +7,7 @@
   $InBaseCurrency = "(in " . COMPANY_CURRENCY . ")";
 
   $debtorCodes = $_GET["debtor_code"];
+  $outstandingOnly = $_GET["outstanding_only"];
 
   $whereClause = "";
 
@@ -15,9 +16,14 @@
       AND (" . join(" OR ", array_map(function ($d) { return "a.debtor_code=\"$d\""; }, $debtorCodes)) . ")";
   }
 
+  if ($outstandingOnly == "on") {
+    $whereClause = $whereClause . "
+      AND IFNULL(b.total_qty_outstanding, 0) > 0";
+  }
+
   $soHeaders = query("
     SELECT
-      c.id                                                                                    AS `id`,
+      a.debtor_code                                                                           AS `debtor_code`,
       CONCAT(a.debtor_code, ' - ', IFNULL(c.english_name, 'Unknown'))                         AS `debtor`,
       SUM(IFNULL(b.total_qty, 0))                                                             AS `qty`,
       SUM(IFNULL(b.total_qty_outstanding, 0))                                                 AS `qty_outstanding`,
@@ -94,6 +100,18 @@
             </td>
             <td><button type="submit">Go</button></td>
           </tr>
+          <tr>
+            <th>
+              <input
+                id="input-outstanding-only"
+                type="checkbox"
+                name="outstanding_only"
+                onchange="this.form.submit()"
+                <?php echo $outstandingOnly == "on" ? "checked" : "" ?>
+              />
+              <label for="input-outstanding-only">Outstanding only</label>
+            </th>
+          </tr>
         </table>
       </form>
       <?php if (count($soHeaders) > 0): ?>
@@ -121,7 +139,7 @@
 
             for ($i = 0; $i < count($soHeaders); $i++) {
               $soHeader = $soHeaders[$i];
-              $id = $soHeader["id"];
+              $debtorCode = $soHeader["debtor_code"];
               $debtor = $soHeader["debtor"];
               $qty = $soHeader["qty"];
               $outstandingQty = $soHeader["qty_outstanding"];
@@ -133,7 +151,7 @@
 
               echo "
                 <tr>
-                  <td title=\"$debtor\"><a class=\"link\" href=\"" . SALES_REPORT_CUSTOMER_DETAIL_URL . "?id[]=$id\">$debtor</a></td>
+                  <td title=\"$debtor\"><a class=\"link\" href=\"" . SALES_REPORT_CUSTOMER_DETAIL_URL . "?debtor_code[]=$debtorCode\">$debtor</a></td>
                   <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
                   <td title=\"$outstandingQty\" class=\"number\">" . number_format($outstandingQty) . "</td>
                   <td title=\"$outstandingAmtBase\" class=\"number\">" . number_format($outstandingAmtBase, 2) . "</td>

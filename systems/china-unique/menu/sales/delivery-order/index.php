@@ -18,7 +18,7 @@
     <?php include_once ROOT_PATH . "includes/components/menu/index.php"; ?>
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
-      <div class="headline"><?php echo DELIVERY_ORDER_PRINTOUT_TITLE; ?></div>
+      <div class="headline"><?php echo SALES_DELIVERY_ORDER_PRINTOUT_TITLE; ?></div>
       <?php if (isset($doHeader)): ?>
         <form method="post">
           <table id="do-header">
@@ -144,7 +144,7 @@
           <?php if ($doHeader["status"] == "SAVED"): ?>
             <button name="status" type="submit" value="SAVED">Save</button>
           <?php endif ?>
-          <button name="status" type="submit" value="<?php echo $doHeader["status"]; ?>" formaction="<?php echo DELIVERY_ORDER_PRINTOUT_URL . "?id=$id"; ?>">Print</button>
+          <button name="status" type="submit" value="<?php echo $doHeader["status"]; ?>" formaction="<?php echo SALES_DELIVERY_ORDER_PRINTOUT_URL . "?id=$id"; ?>">Print</button>
           <?php if ($doHeader["status"] == "SAVED" && !$hasIncoming): ?>
             <button name="status" type="submit" value="POSTED">Post</button>
           <?php endif ?>
@@ -153,7 +153,7 @@
           <?php endif ?>
         </form>
       <?php else: ?>
-        <div id="do-not-found"><?php echo DELIVERY_ORDER_PRINTOUT_TITLE; ?> not found</div>
+        <div id="do-not-found"><?php echo SALES_DELIVERY_ORDER_PRINTOUT_TITLE; ?> not found</div>
       <?php endif ?>
     </div>
   </body>

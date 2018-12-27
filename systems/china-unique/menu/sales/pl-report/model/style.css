@@ -3,15 +3,18 @@
   font-size: 13px;
 }
 
-#so-input input,
 #so-input select {
   width: 100%;
   box-sizing: border-box;
 }
 
+.so-results th,
 .so-results td {
   min-width: 0px;
   max-width: 0px;
+}
+
+.so-results td {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -21,7 +24,7 @@
   text-align: right;
 }
 
-.so-customer-no-results {
+.so-p-l-no-results {
   margin: 100px 0px;
   text-align: center;
   font-size: 40px;

@@ -6,13 +6,19 @@
 
   $InBaseCurrency = "(in " . COMPANY_CURRENCY . ")";
 
-  $ids = $_GET["id"];
+  $debtorCodes = $_GET["debtor_code"];
+  $outstandingOnly = $_GET["outstanding_only"];
 
   $whereClause = "";
 
-  if (assigned($ids) && count($ids) > 0) {
-    $whereClause = "
-      AND (" . join(" OR ", array_map(function ($id) { return "c.id=\"$id\""; }, $ids)) . ")";
+  if (assigned($debtorCodes) && count($debtorCodes) > 0) {
+    $whereClause = $whereClause . "
+      AND (" . join(" OR ", array_map(function ($d) { return "a.debtor_code=\"$d\""; }, $debtorCodes)) . ")";
+  }
+
+  if ($outstandingOnly == "on") {
+    $whereClause = $whereClause . "
+      AND IFNULL(b.total_qty_outstanding, 0) > 0";
   }
 
   $results = query("
@@ -62,6 +68,21 @@
 
     array_push($soHeaders[$customer], $soHeader);
   }
+
+  $debtors = query("
+    SELECT DISTINCT
+      a.debtor_code                       AS `code`,
+      IFNULL(b.english_name, 'Unknown')   AS `name`
+    FROM
+      `so_header` AS a
+    LEFT JOIN
+      `debtor` AS b
+    ON a.debtor_code=b.code
+    WHERE
+      a.status=\"POSTED\"
+    ORDER BY
+      a.debtor_code ASC
+  ");
 ?>
 
 <!DOCTYPE html>
@@ -75,6 +96,40 @@
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo SALES_REPORT_CUSTOMER_DETAIL_TITLE; ?></div>
+      <form>
+        <table id="so-input">
+          <tr>
+            <th>Customer:</th>
+          </tr>
+          <tr>
+            <td>
+              <select name="debtor_code[]" multiple>
+                <?php
+                  foreach ($debtors as $debtor) {
+                    $code = $debtor["code"];
+                    $name = $debtor["name"];
+                    $selected = assigned($debtorCodes) && in_array($code, $debtorCodes) ? "selected" : "";
+                    echo "<option value=\"$code\" $selected>$code - $name</option>";
+                  }
+                ?>
+              </select>
+            </td>
+            <td><button type="submit">Go</button></td>
+          </tr>
+          <tr>
+            <th>
+              <input
+                id="input-outstanding-only"
+                type="checkbox"
+                name="outstanding_only"
+                onchange="this.form.submit()"
+                <?php echo $outstandingOnly == "on" ? "checked" : "" ?>
+              />
+              <label for="input-outstanding-only">Outstanding only</label>
+            </th>
+          </tr>
+        </table>
+      </form>
       <?php
         if (count($soHeaders) > 0) {
 
