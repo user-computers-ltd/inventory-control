@@ -244,7 +244,7 @@
     return concat($queries, $postTransactionQueries);
   }
 
-  function onPostDeliveryOrder($doNo) {
+  function onPostSalesDeliveryOrder($doNo) {
     $queries = array();
 
     $doModels = query("
@@ -255,7 +255,7 @@
         price           AS `price`,
         SUM(qty)        AS `qty`
       FROM
-        `do_model`
+        `sdo_model`
       WHERE
         do_no=\"$doNo\"
       GROUP BY
@@ -273,7 +273,7 @@
         UPDATE
           `so_model`
         SET
-          qty_outstanding=qty_outstanding-$qty
+          qty_outstanding=qty_outstanding - $qty
         WHERE
           so_no=\"$soNo\" AND brand_code=\"$brandCode\" AND model_no=\"$modelNo\"
       ");
@@ -288,9 +288,9 @@
         a.price             AS `price`,
         a.qty               AS `qty`
       FROM
-        `do_model` AS a
+        `sdo_model` AS a
       LEFT JOIN
-        `do_header` AS b
+        `sdo_header` AS b
       ON a.do_no=b.do_no
       WHERE
         a.do_no=\"$doNo\"");
@@ -324,7 +324,7 @@
         tax,
         warehouse_code
       FROM
-        `do_header`
+        `sdo_header`
       WHERE
         do_no=\"$doNo\"
     ")[0];
@@ -361,9 +361,88 @@
     return $queries;
   }
 
+  function transferIncomingAllotments($iaNo, $warehouseCode) {
+    $queries = array();
+
+    $soAllotments = query("
+      SELECT
+        ia_no             AS `ia_no`,
+        warehouse_code    AS `warehouse_code`,
+        so_no             AS `so_no`,
+        brand_code        AS `brand_code`,
+        model_no          AS `model_no`,
+        qty               AS `qty`
+      FROM
+        `so_allotment`
+      WHERE
+        ia_no=\"$iaNo\"
+    ");
+
+    /* Delete the sales incoming allotments. */
+    array_push($queries, "DELETE FROM `so_allotment` WHERE ia_no=\"$iaNo\"");
+
+    /* Update or insert those allotments into sales stock allotments. */
+    foreach ($soAllotments as $soAllotment) {
+      $soNo = $soAllotment["so_no"];
+      $brandCode = $soAllotment["brand_code"];
+      $modelNo = $soAllotment["model_no"];
+      $qty = $soAllotment["qty"];
+
+      array_push($queries, "
+        INSERT INTO
+          `so_allotment`
+          (ia_no, warehouse_code, so_no, brand_code, model_no, qty)
+        VALUES
+          (\"\", \"$warehouseCode\", \"$soNo\", \"$brandCode\", \"$modelNo\", \"$qty\")
+        ON DUPLICATE KEY UPDATE qty=qty + $qty;
+      ");
+    }
+
+    $sdoModels = query("
+      SELECT
+        do_no             AS `do_no`,
+        do_index          AS `do_index`,
+        so_no             AS `so_no`,
+        brand_code        AS `brand_code`,
+        model_no          AS `model_no`,
+        price             AS `price`,
+        qty               AS `qty`
+      FROM
+        `sdo_model`
+      WHERE
+        ia_no=\"$iaNo\"
+    ");
+
+    /* Delete the sales incoming delivery order models. */
+    array_push($queries, "DELETE FROM `sdo_model` WHERE ia_no=\"$iaNo\"");
+
+    /* Update or insert those models into sales stock delivery order models. */
+    foreach ($sdoModels as $sdoModel) {
+      $doNo = $sdoModel["do_no"];
+      $doIndex = $sdoModel["do_index"];
+      $soNo = $sdoModel["so_no"];
+      $brandCode = $sdoModel["brand_code"];
+      $modelNo = $sdoModel["model_no"];
+      $price = $sdoModel["price"];
+      $qty = $sdoModel["qty"];
+
+      array_push($queries, "
+        INSERT INTO
+          `sdo_model`
+          (do_no, do_index, ia_no, so_no, brand_code, model_no, price, qty)
+        VALUES
+          (\"$doNo\", \"$doIndex\", \"$iaNo\", \"$soNo\", \"$brandCode\", \"$modelNo\", \"$price\", \"$qty\")
+        ON DUPLICATE KEY UPDATE qty=qty + $qty;
+      ");
+    }
+
+    return $queries;
+  }
+
   function onPostIncomingAdvice($iaNo) {
     $queries = array();
 
+    // TODO: Need to handle ia models with no allotments. 
     $poAllotments = query("
       SELECT
         a.po_no           AS `po_no`,
@@ -373,7 +452,7 @@
         c.tax             AS `tax`,
         a.brand_code      AS `brand_code`,
         a.model_no        AS `model_no`,
-        b.cost            AS `cost`,
+        b.price           AS `price`,
         a.qty             AS `qty`
       FROM
         `po_allotment` AS a
@@ -387,6 +466,88 @@
         a.ia_no=\"$iaNo\"
     ");
 
+    $iaHeader = query("
+      SELECT
+        do_no,
+        ia_date,
+        creditor_code,
+        warehouse_code,
+        remarks
+      FROM
+        `ia_header`
+      WHERE
+        ia_no=\"$iaNo\"
+    ")[0];
+    $doNo = $iaHeader["do_no"];
+    $date = $iaHeader["ia_date"];
+    $creditorCode = $iaHeader["creditor_code"];
+    $warehouseCode = $iaHeader["warehouse_code"];
+    $remarks = $iaHeader["remarks"];
+
+    /* Insert a purchase delivery order as record. */
+    $doValues = array();
+
+    array_push($queries, "
+      INSERT INTO
+        `pdo_header`
+        (do_no, do_date, creditor_code, warehouse_code, remarks)
+      VALUES
+        (\"$doNo\", \"$date\", \"$creditorCode\", \"$warehouseCode\", \"$remarks\")
+    ");
+
+    for ($i = 0; $i < count($poAllotments); $i++) {
+      $poAllotment = $poAllotments[$i];
+      $poNo = $poAllotment["po_no"];
+      $currencyCode = $poAllotment["currency_code"];
+      $exchangeRate = $poAllotment["exchange_rate"];
+      $discount = $poAllotment["discount"];
+      $tax = $poAllotment["tax"];
+      $brandCode = $poAllotment["brand_code"];
+      $modelNo = $poAllotment["model_no"];
+      $price = $poAllotment["price"];
+      $qty = $poAllotment["qty"];
+
+      array_push($doValues, "
+        (
+          \"$doNo\",
+          \"$i\",
+          \"$poNo\",
+          \"$currencyCode\",
+          \"$exchangeRate\",
+          \"$discount\",
+          \"$tax\",
+          \"$brandCode\",
+          \"$modelNo\",
+          \"$price\",
+          \"$qty\"
+        )
+      ");
+    }
+
+    if (count($doValues) > 0) {
+      $doValues = join(", ", $doValues);
+
+      array_push($queries, "
+        INSERT INTO
+          `pdo_model`
+          (
+            do_no,
+            do_index,
+            po_no,
+            currency_code,
+            exchange_rate,
+            discount,
+            tax,
+            brand_code,
+            model_no,
+            price,
+            qty
+          )
+        VALUES
+          $doValues
+      ");
+    }
+
     /* Update purchase order outstanding quantities. */
     foreach ($poAllotments as $poAllotment) {
       $poNo = $poAllotment["po_no"];
@@ -398,23 +559,14 @@
         UPDATE
           `po_model`
         SET
-          qty_outstanding=qty_outstanding-$qty
+          qty_outstanding=qty_outstanding - $qty
         WHERE
           po_no=\"$poNo\" AND brand_code=\"$brandCode\" AND model_no=\"$modelNo\"
       ");
     }
 
-    $iaHeader = query("
-      SELECT
-        do_no,
-        ia_date,
-        creditor_code,
-        warehouse_code
-      FROM
-        `ia_header`
-      WHERE
-        ia_no=\"$iaNo\"
-    ")[0];
+    /* Transfer all the sales incoming allotments to stock allotments. */
+    $queries = concat($queries, transferIncomingAllotments($iaNo, $warehouseCode));
 
     /* Insert corresponding transactions. */
     foreach ($poAllotments as $poAllotment) {
@@ -424,289 +576,30 @@
       $tax = $poAllotment["tax"];
       $brandCode = $poAllotment["brand_code"];
       $modelNo = $poAllotment["model_no"];
-      $cost = $poAllotment["cost"];
+      $price = $poAllotment["price"];
       $qty = $poAllotment["qty"];
 
       $queries = concat($queries, postTransactions(
-        $iaHeader["do_no"],
+        $doNo,
         "R2",
-        $iaHeader["ia_date"],
-        $iaHeader["creditor_code"],
+        $date,
+        $creditorCode,
         $currencyCode,
         $ExchangeRate,
         $discount,
         $tax,
-        $iaHeader["warehouse_code"],
+        $warehouseCode,
         array($brandCode),
         array($modelNo),
-        array($cost),
+        array($price),
         array($qty)
       ));
     }
 
-    return $queries;
-  }
-
-  function processDOStockIn() {
-    $allotmentQueries = updatePostedIncomingAllotments();
-    $packingListQueries = updateOnHandPackingListModels();
-
-    return concat($allotmentQueries, $packingListQueries);
-  }
-
-  function updatePostedIncomingAllotments() {
-    $queries = array();
-
-    $postedAllotments = query("
-      SELECT
-        a.ia_no             AS `ia_no`,
-        b.warehouse_code    AS `warehouse_code`,
-        a.so_no             AS `so_no`,
-        a.brand_code        AS `brand_code`,
-        a.model_no          AS `model_no`,
-        a.qty               AS `qty`
-      FROM
-        `so_allotment` AS a
-      LEFT JOIN
-        `ia_header` AS b
-      ON a.ia_no=b.ia_no
-      WHERE
-        b.ia_no IS NOT NULL AND
-        b.status='POSTED'
-    ");
-
-    $stockAllotments = query("
-      SELECT
-        a.warehouse_code    AS `warehouse_code`,
-        a.so_no             AS `so_no`,
-        a.brand_code        AS `brand_code`,
-        a.model_no          AS `model_no`,
-        a.qty               AS `qty`
-      FROM
-        `so_allotment` AS a
-      LEFT JOIN
-        `warehouse` AS b
-      ON a.warehouse_code=b.code
-      WHERE
-        b.code IS NOT NULL
-    ");
-
-    /* Delete the incoming allotment which are already posted. */
-    array_push($queries, "
-      DELETE a FROM
-        `so_allotment` AS a
-      LEFT JOIN
-        `ia_header` AS b
-      ON a.ia_no=b.ia_no
-      WHERE
-        b.ia_no IS NOT NULL AND
-        b.status='POSTED'
-    ");
-
-    $allotmentValues = array();
-
-    foreach ($postedAllotments as $postedAllotment) {
-      $iaNo = $postedAllotment["ia_no"];
-      $warehouseCode = $postedAllotment["warehouse_code"];
-      $soNo = $postedAllotment["so_no"];
-      $brandCode = $postedAllotment["brand_code"];
-      $modelNo = $postedAllotment["model_no"];
-      $qty = $postedAllotment["qty"];
-      $existingStockAllotment = array_filter($stockAllotments, function ($a) {
-        return
-          $a["warehouse_code"] == $warehouseCode &&
-          $a["so_no"] == $soNo &&
-          $a["brand_code"] == $brandCode &&
-          $a["model_no"] == $modelNo;
-      })[0];
-
-      /* If a stock allotment exists, sum up the quantity with the existing one. */
-      if (isset($existingStockAllotment)) {
-        array_push($queries, "
-          UPDATE
-            `so_allotment`
-          SET
-            qty=qty+$qty
-          WHERE
-            warehouse_code=\"$warehouseCode\" AND
-            so_no=\"$soNo\" AND
-            brand_code=\"$brandCode\" AND
-            model_no=\"$modelNo\"
-        ");
-      }
-
-      /* Else, collect values for new allotment insertion. */
-      else {
-        array_push($allotmentValues, "
-          (
-            \"\",
-            \"$warehouseCode\",
-            \"$soNo\",
-            \"$brandCode\",
-            \"$modelNo\",
-            \"$qty\"
-          )
-        ");
-      }
-    }
-
-    /* Insert new stock allotments. */
-    if (count($allotmentValues) > 0) {
-      $allotmentValues = join(", ", $allotmentValues);
-
-      array_push($queries, "
-        INSERT INTO
-          `so_allotment`
-          (
-            ia_no,
-            warehouse_code,
-            so_no,
-            brand_code,
-            model_no,
-            qty
-          )
-        VALUES
-          $allotmentValues
-      ");
-    }
-
-    return $queries;
-  }
-
-  function updateOnHandPackingListModels() {
-    $queries = array();
-
-    $postedPackingListModels = query("
-      SELECT
-        a.do_no             AS `do_no`,
-        a.do_index          AS `do_index`,
-        a.ia_no             AS `ia_no`,
-        b.warehouse_code    AS `warehouse_code`,
-        a.so_no             AS `so_no`,
-        a.brand_code        AS `brand_code`,
-        a.model_no          AS `model_no`,
-        a.price             AS `price`,
-        a.qty               AS `qty`
-      FROM
-        `do_model` AS a
-      LEFT JOIN
-        `do_header` AS b
-      ON a.do_no=b.do_no
-      LEFT JOIN
-        `ia_header` AS c
-      ON a.ia_no=c.ia_no
-      WHERE
-        c.ia_no IS NOT NULL AND
-        c.status='POSTED'
-    ");
-
-    $stockPackingListModels = query("
-      SELECT
-        b.warehouse_code    AS `warehouse_code`,
-        a.so_no             AS `so_no`,
-        a.brand_code        AS `brand_code`,
-        a.model_no          AS `model_no`,
-        a.qty               AS `qty`
-      FROM
-        `do_model` AS a
-      LEFT JOIN
-        `do_header` AS b
-      ON a.do_no=b.do_no
-      WHERE
-        a.ia_no=''
-    ");
-
-    /* Delete the packing list models which is linked with the posted incoming advice. */
-    array_push($queries, "
-      DELETE a FROM
-        `do_model` AS a
-      LEFT JOIN
-        `do_header` AS b
-      ON a.do_no=b.do_no
-      LEFT JOIN
-        `ia_header` AS c
-      ON a.ia_no=c.ia_no
-      WHERE
-        c.ia_no IS NOT NULL AND
-        c.status='POSTED'
-    ");
-
-    $packingListModelValues = array();
-
-    foreach ($postedPackingListModels as $postedPackingListModel) {
-      $doNo = $postedPackingListModel["do_no"];
-      $doIndex = $postedPackingListModel["do_index"];
-      $iaNo = $postedPackingListModel["ia_no"];
-      $warehouseCode = $postedPackingListModel["warehouse_code"];
-      $soNo = $postedPackingListModel["so_no"];
-      $brandCode = $postedPackingListModel["brand_code"];
-      $modelNo = $postedPackingListModel["model_no"];
-      $price = $postedPackingListModel["price"];
-      $qty = $postedPackingListModel["qty"];
-      $existingStockPackingListModel = array_filter($stockPackingListModels, function ($a) {
-        return
-          $a["warehouse_code"] == $warehouseCode &&
-          $a["so_no"] == $soNo &&
-          $a["brand_code"] == $brandCode &&
-          $a["model_no"] == $modelNo;
-      })[0];
-
-      /* If an on hand packing list model exists, sum up the quantity with the existing one. */
-      if (isset($existingStockPackingListModel)) {
-        array_push($queries, "
-          UPDATE
-            `do_model` AS a
-          LEFT JOIN
-            `do_header` AS b
-          ON a.do_no=b.do_no
-          SET
-            a.qty=a.qty+$qty
-          WHERE
-            b.warehouse_code=\"$warehouseCode\" AND
-            a.so_no=\"$soNo\" AND
-            a.brand_code=\"$brandCode\" AND
-            a.model_no=\"$modelNo\"
-        ");
-      }
-
-      /* Else, collect values for new packing list model insertion. */
-      else {
-        array_push($packingListModelValues, "
-          (
-            \"$doNo\",
-            \"$doIndex\",
-            \"\",
-            \"$soNo\",
-            \"$brandCode\",
-            \"$modelNo\",
-            \"$price\",
-            \"$qty\"
-          )
-        ");
-      }
-    }
-
-    /* Insert new packing list models. */
-    if (count($packingListModelValues) > 0) {
-      $packingListModelValues = join(", ", $packingListModelValues);
-
-      array_push($queries, "
-        INSERT INTO
-          `do_model`
-          (
-            do_no,
-            do_index,
-            ia_no,
-            so_no,
-            brand_code,
-            model_no,
-            price,
-            qty
-          )
-        VALUES
-          $packingListModelValues
-      ");
-    }
+    /* Delete the incoming advice and the purchase allotments. */
+    array_push($queries, "DELETE FROM `ia_header` WHERE ia_no=\"$iaNo\"");
+    array_push($queries, "DELETE FROM `ia_model` WHERE ia_no=\"$iaNo\"");
+    array_push($queries, "DELETE FROM `po_allotment` WHERE ia_no=\"$iaNo\"");
 
     return $queries;
   }
