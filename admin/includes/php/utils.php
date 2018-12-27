@@ -84,13 +84,11 @@
     $queries = array();
 
     if ($overwrite == "true") {
-      array_push($queries, "DROP DATABASE `$database`");
+      array_push($queries, "DROP DATABASE `$system`");
     }
 
-    array_push($queries, "CREATE DATABASE `$database`");
-
-    selectDatabase($database);
-
+    array_push($queries, "CREATE DATABASE `$system`");
+    array_push($queries, "USE `$system`");
     array_push($queries, "SET SESSION sql_mode = ''");
 
     $files = array_map(function ($table) use ($system) {
@@ -106,7 +104,7 @@
 
       fclose($handle);
     }
-
+    
     execute($queries);
   }
 
