@@ -128,7 +128,7 @@
       FROM
         `stock`
       GROUP BY
-        model_no, brand_code) AS b
+        brand_code, model_no) AS b
     ON a.model_no=b.model_no AND a.brand_code=b.brand_code
     LEFT JOIN
       (SELECT
@@ -141,7 +141,7 @@
       WHERE
         h.status='POSTED'
       GROUP BY
-        model_no, m.brand_code) AS c
+        m.brand_code, m.model_no) AS c
     ON a.model_no=c.model_no AND a.brand_code=c.brand_code
     LEFT JOIN
       (SELECT
@@ -149,8 +149,10 @@
       FROM
         `so_allotment`
       GROUP BY
-        model_no, brand_code) AS d
+        brand_code, model_no) AS d
     ON a.model_no=d.model_no AND a.brand_code=d.brand_code
+    ORDER BY
+      a.model_no, a.brand_code
   ");
   $results = query("SELECT code, rate FROM `currency`");
   $currencies = array();

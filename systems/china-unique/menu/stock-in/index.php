@@ -310,10 +310,12 @@
 
               for (var j = 0; j < brands.length; j++) {
                 var code = brands[j]["code"];
+                var selected = stockInModel["brand_code"] === code ? " selected" : "";
                 var disabled = matchedModels.map(function (model) {
                   return model["brand_code"];
                 }).indexOf(code) === -1 ? " disabled hidden" : "";
-                rowInnerHTML += "<option value=\"" + code + "\"" + disabled + ">" + code + "</option>";
+
+                rowInnerHTML += "<option value=\"" + code + "\"" + selected + disabled + ">" + code + "</option>";
               }
 
               rowInnerHTML +=
@@ -534,7 +536,7 @@
           }
 
           function onBrandCodeChange(event, index) {
-            var modelNo = stockInModels[i]["model_no"];
+            var modelNo = stockInModels[index]["model_no"];
             var brandCode = event.target.value;
             var matchedModel =
               modelNo &&
