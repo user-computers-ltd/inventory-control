@@ -201,6 +201,10 @@
           </table>
           <table id="stock-in-footer">
             <tr>
+              <td>Invoice No.:</td>
+              <td><input id="invoice-no" name="invoice_no" value="<?php echo $invoiceNo; ?>" /></td>
+            </tr>
+            <tr>
               <td>Remarks:</td>
               <td><textarea id="remarks" name="remarks"><?php echo $remarks; ?></textarea></td>
             </tr>
@@ -559,6 +563,7 @@
               stockInModel["qty"] &&
               stockInModel["price"]
             ) {
+              updatePrice(index, event.target.value);
               addStockInModel();
             }
           }
@@ -581,6 +586,7 @@
               stockInModel["brand_code"] &&
               stockInModel["qty"]
             ) {
+              updateQuantity(index, event.target.value);
               addStockInModel();
             }
           }

@@ -129,10 +129,10 @@
           <div id="stock-out-models-no-results">No models</div>
         <?php endif ?>
         <table id="stock-out-footer">
-          <?php if (assigned($stockOutHeader["ref_no"])) : ?>
+          <?php if (assigned($stockOutHeader["invoice_no"])) : ?>
             <tr>
-              <td>Ref No.:</td>
-              <td><?php echo $stockOutHeader["ref_no"]; ?></td>
+              <td>Invoice No.:</td>
+              <td><?php echo $stockOutHeader["invoice_no"]; ?></td>
             </tr>
           <?php endif ?>
           <?php if (assigned($stockOutHeader["remarks"])) : ?>

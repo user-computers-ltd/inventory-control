@@ -477,6 +477,7 @@
               soModel["qty"] &&
               soModel["price"]
             ) {
+              updatePrice(index, event.target.value);
               addSalesModel();
             }
           }

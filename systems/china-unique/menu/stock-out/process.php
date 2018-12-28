@@ -10,7 +10,7 @@
   $netAmount = isset($_POST["net_amount"]) ? $_POST["net_amount"] : 0;
   $discount = isset($_POST["discount"]) ? $_POST["discount"] : 0;
   $tax = $_POST["tax"];
-  $refNo = $_POST["ref_no"];
+  $invoiceNo = $_POST["invoice_no"];
   $remarks = $_POST["remarks"];
   $status = $_POST["status"];
   $brandCodes = $_POST["brand_code"];
@@ -75,9 +75,9 @@
               net_amount,
               discount,
               tax,
-              status,
-              ref_no,
-              remarks
+              invoice_no,
+              remarks,
+              status
             )
           VALUES
             (
@@ -91,9 +91,9 @@
               \"$netAmount\",
               \"$discount\",
               \"$tax\",
-              \"$status\",
-              \"$refNo\",
-              \"$remarks\"
+              \"$invoiceNo\",
+              \"$remarks\",
+              \"$status\"
             )
       ");
 
@@ -186,7 +186,7 @@
       $netAmount = $stockOutHeader["net_amount"];
       $discount = $stockOutHeader["discount"];
       $tax = $stockOutHeader["tax"];
-      $refNo = $stockOutHeader["ref_no"];
+      $invoiceNo = $stockOutHeader["invoice_no"];
       $remarks = $stockOutHeader["remarks"];
       $status = $stockOutHeader["status"];
       $stockOutModels = query("

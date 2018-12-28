@@ -201,8 +201,8 @@
           </table>
           <table id="stock-out-footer">
             <tr>
-              <td>Reference No.:</td>
-              <td><input id="ref-no" name="ref_no" value="<?php echo $refNo; ?>" /></td>
+              <td>Invoice No.:</td>
+              <td><input id="invoice-no" name="invoice_no" value="<?php echo $invoiceNo; ?>" /></td>
             </tr>
             <tr>
               <td>Remarks:</td>
@@ -570,6 +570,7 @@
               stockOutModel["qty"] &&
               stockOutModel["price"]
             ) {
+              updatePrice(index, event.target.value);
               addStockOutModel();
             }
           }
@@ -592,6 +593,7 @@
               stockOutModel["brand_code"] &&
               stockOutModel["qty"]
             ) {
+              updateQuantity(index, event.target.value);
               addStockOutModel();
             }
           }
