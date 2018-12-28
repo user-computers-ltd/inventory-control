@@ -32,8 +32,8 @@
         $queries = concat($queries, onPostSalesDeliveryOrder($doNo));
       } else if ($status == "DELETED") {
         $queries = array(
-          "DELETE FROM `sdo_header` WHERE id=\"$id\"",
-          "DELETE a FROM `sdo_model` AS a LEFT JOIN `sdo_header` AS b ON a.do_no=b.do_no WHERE b.id=\"$id\""
+          "DELETE a FROM `sdo_model` AS a LEFT JOIN `sdo_header` AS b ON a.do_no=b.do_no WHERE b.id=\"$id\"",
+          "DELETE FROM `sdo_header` WHERE id=\"$id\""
         );
       }
 
