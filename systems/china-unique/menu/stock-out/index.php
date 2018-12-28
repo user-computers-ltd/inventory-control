@@ -334,6 +334,7 @@
                     + "onchange=\"onQuantityChange(event, " + i + ")\" "
                     + "onfocus=\"onFieldFocused(" + i + ", 'qty[]')\" "
                     + "onblur=\"onFieldBlurred()\" "
+                    + "onkeydown=\"onQuantityKeyDown(event, " + i + ")\" "
                     + "required "
                   + "/>"
                 + "</td>"
@@ -348,6 +349,7 @@
                     + "onchange=\"onPriceChange(event, " + i + ")\" "
                     + "onfocus=\"onFieldFocused(" + i + ", 'price[]')\" "
                     + "onblur=\"onFieldBlurred()\" "
+                    + "onkeydown=\"onPriceKeyDown(event, " + i + ")\" "
                     + "required "
                     + (miscellaneous ? "disabled" : "")
                   + "/>"
@@ -557,9 +559,41 @@
             render();
           }
 
+          function onPriceKeyDown(event, index) {
+            var stockOutModel = stockOutModels[index];
+
+            if (
+              index === stockOutModels.length - 1 &&
+              (event.which || event.keyCode) === 9 &&
+              stockOutModel["model_no"] &&
+              stockOutModel["brand_code"] &&
+              stockOutModel["qty"] &&
+              stockOutModel["price"]
+            ) {
+              addStockOutModel();
+            }
+          }
+
           function onQuantityChange(event, index) {
             updateQuantity(index, event.target.value);
             render();
+          }
+
+          function onQuantityKeyDown(event, index) {
+            var stockOutModel = stockOutModels[index];
+            var transactionCode = transactionCodeElement.value;
+            var miscellaneous = transactionCode !== "S1" && transactionCode !== "S3";
+
+            if (
+              miscellaneous &&
+              index === stockOutModels.length - 1 &&
+              (event.which || event.keyCode) === 9 &&
+              stockOutModel["model_no"] &&
+              stockOutModel["brand_code"] &&
+              stockOutModel["qty"]
+            ) {
+              addStockOutModel();
+            }
           }
 
           window.onload = function () {

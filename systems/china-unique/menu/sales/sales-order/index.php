@@ -284,6 +284,7 @@
                     + "onchange=\"onPriceChange(event, " + i + ")\" "
                     + "onfocus=\"onFieldFocused(" + i + ", 'price[]')\" "
                     + "onblur=\"onFieldBlurred()\" "
+                    + "onkeydown=\"onPriceKeyDown(event, " + i + ")\" "
                     + "required "
                   + "/>"
                 + "</td>"
@@ -463,6 +464,21 @@
           function onPriceChange(event, index) {
             updatePrice(index, event.target.value);
             render();
+          }
+
+          function onPriceKeyDown(event, index) {
+            var soModel = soModels[index];
+
+            if (
+              index === soModels.length - 1 &&
+              (event.which || event.keyCode) === 9 &&
+              soModel["model_no"] &&
+              soModel["brand_code"] &&
+              soModel["qty"] &&
+              soModel["price"]
+            ) {
+              addSalesModel();
+            }
           }
 
           function onQuantityChange(event, index) {
