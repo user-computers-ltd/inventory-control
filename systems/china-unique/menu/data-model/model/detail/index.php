@@ -39,14 +39,18 @@
           <tr>
             <th>Cost Primary (正價):</th>
             <td class="number"><?php echo $model["cost_pri"]; ?></td>
-            <th><?php echo $InBaseCurrency; ?>:</th>
-            <td class="number"><?php echo number_format($model["cost_pri_base"], 6); ?></td>
+            <?php if ($model["cost_pri_currency_code"] != COMPANY_CURRENCY): ?>
+              <th><?php echo $InBaseCurrency; ?>:</th>
+              <td class="number"><?php echo number_format($model["cost_pri_base"], 6); ?></td>
+            <?php endif ?>
           </tr>
           <tr>
             <th>Cost Special (特價):</th>
             <td class="number"><?php echo $model["cost_sec"]; ?></td>
-            <th><?php echo $InBaseCurrency; ?>:</th>
-            <td class="number"><?php echo number_format($model["cost_sec_base"], 6); ?></td>
+            <?php if ($model["cost_sec_currency_code"] != COMPANY_CURRENCY): ?>
+              <th><?php echo $InBaseCurrency; ?>:</th>
+              <td class="number"><?php echo number_format($model["cost_sec_base"], 6); ?></td>
+            <?php endif ?>
           </tr>
           <tr>
             <th>Retail Normal Price (正價):</th>
