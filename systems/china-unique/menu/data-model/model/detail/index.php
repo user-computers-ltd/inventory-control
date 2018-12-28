@@ -58,11 +58,11 @@
           </tr>
           <tr>
             <th>End User Price (廠價):</th>
-            <td class="number"><?php echo number_format($model["wholesale_normal"], 6); ?></td>
+            <td class="number"><?php echo number_format($model["wholesale_special"], 6); ?></td>
           </tr>
           <tr>
             <th>Wholesale Price (批發價):</th>
-            <td class="number"><?php echo number_format($model["wholesale_special"], 6); ?></td>
+            <td class="number"><?php echo number_format($model["wholesale_normal"], 6); ?></td>
           </tr>
           <tr>
             <th>Average Cost:</th>
