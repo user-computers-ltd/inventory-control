@@ -18,7 +18,8 @@
 .so-customer-header .discount,
 .so-customer-header .tax,
 .so-customer-header .warehouse {
-  margin: 5px 10px;
+  display: inline-block;
+  margin: 10px;
   font-size: 13px;
   font-weight: bold;
 }
@@ -28,6 +29,10 @@
 .so-customer-header .tax,
 .so-customer-header .warehouse {
   float: right;
+}
+
+.so-customer-header .delivery-order {
+  margin-left: 0px;
 }
 
 .so-customer-header .currency {
@@ -55,6 +60,21 @@
 
 .so-customer-results .number {
   text-align: right;
+}
+
+.so-customer-results input[type="checkbox"] {
+  margin: 0px;
+  height: 10px;
+}
+
+.so-customer-results button.remove {
+  background: none;
+  padding: 0px 5px;
+  border: none;
+  margin: 0px;
+  line-height: 10px;
+  font-size: 18px;
+  color: rgb(255, 100, 100);
 }
 
 .so-customer-no-results {

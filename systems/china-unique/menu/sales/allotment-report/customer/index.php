@@ -67,7 +67,7 @@
                       } else {
                         $option = "
                           <span class=\"delivery-order\">
-                            " . SALES_DELIVERY_ORDER_PRINTOUT_TITLE . ": <a href=\"" . SALES_DELIVERY_ORDER_URL . "?id=$doId\">$doNo</a>
+                          " . SALES_DELIVERY_ORDER_PRINTOUT_TITLE . ": <a href=\"" . SALES_DELIVERY_ORDER_URL . "?id=$doId\">$doNo</a>
                           </span>
                         ";
                       }
@@ -91,6 +91,7 @@
                         echo "
                           <table class=\"so-customer-results\">
                             <colgroup>
+                              <col class=\"web-only\" style=\"width: 30px\">
                               <col style=\"width: 80px\">
                               <col style=\"width: 70px\">
                               <col style=\"width: 120px\">
@@ -99,11 +100,12 @@
                               <col style=\"width: 80px\">
                               <col style=\"width: 80px\">
                               <col style=\"width: 80px\">
-                              <col style=\"width: 80px\">
+                              <col class=\"web-only\" style=\"width: 30px\">
                             </colgroup>
                             <thead>
                               <tr></tr>
                               <tr>
+                                <th class=\"web-only\"></th>
                                 <th>DO No. / On Hand</th>
                                 <th>Brand</th>
                                 <th>Model No.</th>
@@ -112,7 +114,7 @@
                                 <th class=\"number\">Allotted Qty</th>
                                 <th class=\"number\">Price</th>
                                 <th class=\"number\">Allotted Subtotal</th>
-                                <th class=\"number\">$InBaseCurrency</th>
+                                <th class=\"web-only\"></th>
                               </tr>
                             </thead>
                             <tbody>
@@ -122,6 +124,7 @@
                         $totalAllottedQty = 0;
                         $totalAmt = 0;
 
+                        $d = 0;
                         foreach ($doAllotments as $models) {
 
                           for ($i = 0; $i < count($models); $i++) {
@@ -138,14 +141,22 @@
                             $iaNo = $allotment["ia_no"];
                             $warehouseCode = $allotment["warehouse_code"];
                             $subTotal = $price * $qty;
-                            $subTotalBase = $subTotal * $exchangeRate;
                             $costAverage = $allotment["cost_average"];
                             $totalCost = $costAverage * $qty;
-                            $margin = 100 - ($price * $discountFactor / $taxFactor * $exchangeRate / $costAverage) * 100;
-
+                            $removeIndex = $d * count($models) + $i;
                             $totalOutstanding += $outstandingQty;
                             $totalAllottedQty += $qty;
                             $totalAmt += $subTotal;
+
+                            $checkboxColumn = $doId == "" ? "
+                              <td class=\"web-only\">
+                                <input type=\"checkbox\" onchange=\"disableAllotment(event)\" checked />
+                              </td>
+                            " : "<td class=\"web-only\"></td>";
+
+                            $sourceColumn = assigned($iaNo) ? "
+                              <td><a class=\"link\">$iaNo</a></td>
+                            " : "<td>On Hand</td>";
 
                             $modelColumns = $i == 0 ? "
                               <td rowspan=\"" . count($models) . "\" title=\"$brandName\">
@@ -162,27 +173,34 @@
                               </td>
                             " : "";
 
-                            $sourceColumn = "<td>" . (assigned($iaNo) ? "<a class=\"link\">$iaNo</a>" : "On Hand") . "</td>";
+                            $removeColumn = $doId == "" ? "
+                              <td class=\"web-only\">
+                                <button type=\"submit\" name=\"remove_index\" value=\"$removeIndex\" class=\"remove\">×</button>
+                              </td>
+                            " : "<td class=\"web-only\"></td>";
 
                             echo "
                               <tr>
+                                $checkboxColumn
                                 $sourceColumn
                                 $modelColumns
                                 <td class=\"number\">
                                   " . number_format($qty) . "
-                                  <input name=\"ia_no[]\" value=\"$iaNo\" hidden />
-                                  <input name=\"so_no[]\" value=\"$soNo\" hidden />
-                                  <input name=\"brand_code[]\" value=\"$brandCode\" hidden />
-                                  <input name=\"model_no[]\" value=\"$modelNo\" hidden />
-                                  <input name=\"price[]\" value=\"$price\" hidden />
-                                  <input name=\"qty[]\" value=\"$qty\" hidden />
+                                  <input type=\"hidden\" name=\"ia_no[]\" value=\"$iaNo\" />
+                                  <input type=\"hidden\" name=\"so_no[]\" value=\"$soNo\" />
+                                  <input type=\"hidden\" name=\"brand_code[]\" value=\"$brandCode\" />
+                                  <input type=\"hidden\" name=\"model_no[]\" value=\"$modelNo\" />
+                                  <input type=\"hidden\" name=\"price[]\" value=\"$price\" />
+                                  <input type=\"hidden\" name=\"qty[]\" value=\"$qty\" />
                                 </td>
                                 <td class=\"number\">" . number_format($price, 2) . "</td>
                                 <td class=\"number\">" . number_format($subTotal, 2) . "</td>
-                                <td class=\"number\">" . number_format($subTotalBase, 2) . "</td>
+                                $removeColumn
                               </tr>
                             ";
                           }
+
+                          $d++;
                         }
 
                         echo "
@@ -193,29 +211,32 @@
                         if ($discount > 0) {
                           echo "
                             <tr>
+                              <td class=\"web-only\"></td>
                               <td colspan=\"6\"></td>
                               <td></td>
                               <th class=\"number\">" . number_format($totalAmt, 2) . "</th>
-                              <td></td>
+                              <td class=\"web-only\"></td>
                             </tr>
                             <tr>
+                              <td class=\"web-only\"></td>
                               <td colspan=\"6\"></td>
                               <td class=\"number\">Disc. $discount%</td>
                               <td class=\"number\">" . number_format($totalAmt * $discount / 100, 2) . "</td>
-                              <td></td>
+                              <td class=\"web-only\"></td>
                             </tr>
                           ";
                         }
 
                         echo "
                               <tr>
+                                <td class=\"web-only\"></td>
                                 <td colspan=\"3\"></th>
                                 <th class=\"number\">Total:</th>
                                 <th class=\"number\">" . number_format($totalOutstanding) . "</th>
                                 <th class=\"number\">" . number_format($totalAllottedQty) . "</th>
                                 <th></th>
                                 <th class=\"number\">" . number_format($totalAmt * $discountFactor, 2) . "</th>
-                                <th class=\"number\">" . number_format($totalAmt * $discountFactor * $exchangeRate, 2) . "</th>
+                                <th class=\"web-only\"></th>
                               </tr>
                             </tfoot>
                           </table>
@@ -238,5 +259,14 @@
         }
       ?>
     </div>
+    <script>
+      function disableAllotment(event) {
+        var inputs = event.target.parentNode.parentNode.querySelectorAll("input[type=\"hidden\"]");
+
+        for (var i = 0; i < inputs.length; i++) {
+          inputs[i].disabled = !event.target.checked;
+        }
+      }
+    </script>
   </body>
 </html>
