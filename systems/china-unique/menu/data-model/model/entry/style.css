@@ -10,6 +10,7 @@
 
 #model-table td:nth-child(2n + 1) {
   font-weight: bold;
+  line-height: 24px;
 }
 
 #model-table td > * {

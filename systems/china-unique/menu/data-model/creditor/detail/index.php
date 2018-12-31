@@ -17,64 +17,64 @@
     <?php include_once ROOT_PATH . "includes/components/menu/index.php"; ?>
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
-      <div class="headline"><?php echo DATA_MODEL_DEBTOR_DETAIL_TITLE; ?></div>
-      <?php if (isset($debtor)) : ?>
-        <form class="web-only" action="<?php echo DATA_MODEL_DEBTOR_ENTRY_URL; ?>">
+      <div class="headline"><?php echo DATA_MODEL_CREDITOR_DETAIL_TITLE; ?></div>
+      <?php if (isset($creditor)) : ?>
+        <form class="web-only" action="<?php echo DATA_MODEL_CREDITOR_ENTRY_URL; ?>">
           <input type="hidden" name="id" value="<?php echo $id; ?>" />
           <button type="submit">Edit</button>
         </form>
-        <table id="debtor-header">
+        <table id="creditor-header">
           <tr>
-            <th>Debtor Code:</th>
-            <td class="number"><?php echo $debtor["code"]; ?></td>
+            <th>Creditor Code:</th>
+            <td class="number"><?php echo $creditor["code"]; ?></td>
           </tr>
           <tr>
             <th>English Name:</th>
-            <td class="number"><?php echo $debtor["english_name"]; ?></td>
+            <td class="number"><?php echo $creditor["english_name"]; ?></td>
           </tr>
           <tr>
             <th>Chinese Name:</th>
-            <td class="number"><?php echo $debtor["chinese_name"]; ?></td>
+            <td class="number"><?php echo $creditor["chinese_name"]; ?></td>
           </tr>
           <tr>
             <th>Billing Address:</th>
-            <td class="number multi-line"><?php echo $debtor["billing_address"]; ?></td>
+            <td class="number multi-line"><?php echo $creditor["billing_address"]; ?></td>
           </tr>
           <tr>
             <th>Factory Address:</th>
-            <td class="number multi-line"><?php echo $debtor["factory_address"]; ?></td>
+            <td class="number multi-line"><?php echo $creditor["factory_address"]; ?></td>
           </tr>
           <tr>
             <th>Contact:</th>
-            <td class="number"><?php echo $debtor["contact"]; ?></td>
+            <td class="number"><?php echo $creditor["contact"]; ?></td>
           </tr>
           <tr>
             <th>Telephone:</th>
-            <td class="number"><?php echo $debtor["tel"]; ?></td>
+            <td class="number"><?php echo $creditor["tel"]; ?></td>
           </tr>
           <tr>
             <th>Fax:</th>
-            <td class="number"><?php echo $debtor["fax"]; ?></td>
+            <td class="number"><?php echo $creditor["fax"]; ?></td>
           </tr>
           <tr>
             <th>Email:</th>
-            <td class="number"><?php echo $debtor["email"]; ?></td>
+            <td class="number"><?php echo $creditor["email"]; ?></td>
           </tr>
           <tr>
             <th>Credit Term:</th>
-            <td class="number"><?php echo $debtor["credit_term"]; ?></td>
+            <td class="number"><?php echo $creditor["credit_term"]; ?></td>
           </tr>
           <tr>
             <th>Profile:</th>
-            <td class="number multi-line"><?php echo $debtor["profile"]; ?></td>
+            <td class="number multi-line"><?php echo $creditor["profile"]; ?></td>
           </tr>
           <tr>
             <th>Remarks:</th>
-            <td class="number multi-line"><?php echo $debtor["remarks"]; ?></td>
+            <td class="number multi-line"><?php echo $creditor["remarks"]; ?></td>
           </tr>
         </table>
       <?php else : ?>
-        <div class="debtor-no-result">Debtor not found</div>
+        <div class="creditor-no-result">Creditor not found</div>
       <?php endif ?>
     </div>
   </body>

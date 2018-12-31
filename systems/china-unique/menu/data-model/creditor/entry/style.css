@@ -1,19 +1,19 @@
-#debtor-table {
+#creditor-table {
   width: 100%;
   font-size: 13px;
 }
 
-#debtor-table td {
+#creditor-table td {
   border: none;
   vertical-align: top;
 }
 
-#debtor-table td:nth-child(2n + 1) {
+#creditor-table td:nth-child(2n + 1) {
   font-weight: bold;
   line-height: 24px;
 }
 
-#debtor-table td > * {
+#creditor-table td > * {
   display: inline-block;
   width: 100%;
   height: 25px;
@@ -21,15 +21,15 @@
   box-sizing: border-box;
 }
 
-#debtor-table td input[readonly=""] {
+#creditor-table td input[readonly=""] {
   border-color: transparent;
 }
 
-#debtor-table td input[type="number"] {
+#creditor-table td input[type="number"] {
   text-align: right;
 }
 
-#debtor-table td textarea {
+#creditor-table td textarea {
   padding: 5px;
   width: 100%;
   height: 80px;
@@ -39,7 +39,7 @@
   box-sizing: border-box;
 }
 
-.debtor-no-result {
+.creditor-no-result {
   margin: 100px 0px;
   text-align: center;
   font-size: 40px;

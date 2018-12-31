@@ -18,12 +18,12 @@
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo $headline; ?></div>
-      <?php if (!assigned($id) || isset($debtor)) : ?>
+      <?php if (!assigned($id) || isset($creditor)) : ?>
         <form method="post">
-          <table id="debtor-table">
+          <table id="creditor-table">
             <tr>
-              <td>Debtor Code:</td>
-              <td><input type="text" name="code" value="<?php echo $debtorCode; ?>" <?php echo $editMode ? "readonly" : ""; ?> required /></td>
+              <td>Creditor Code:</td>
+              <td><input type="text" name="code" value="<?php echo $creditorCode; ?>" <?php echo $editMode ? "readonly" : ""; ?> required /></td>
             </tr>
             <tr>
               <td>English Name:</td>
@@ -62,6 +62,10 @@
               <td><input type="number" name="credit_term" value="<?php echo $creditTerm; ?>" /></td>
             </tr>
             <tr>
+              <td>Credit Limit:</td>
+              <td><input type="number" name="credit_limit" value="<?php echo $creditLimit; ?>" /></td>
+            </tr>
+            <tr>
               <td>Profile:</td>
               <td><textarea name="profile"><?php echo $profile; ?></textarea></td>
             </tr>
@@ -73,7 +77,7 @@
           <button type="submit"><?php echo $editMode ? "Edit" : "Create"; ?></button>
         </form>
       <?php else : ?>
-        <div class="debtor-no-result">Model not found</div>
+        <div class="creditor-no-result">Model not found</div>
       <?php endif ?>
     </div>
   </body>

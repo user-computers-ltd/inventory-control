@@ -14,6 +14,9 @@
   define("DATA_MODEL_DEBTOR_DETAIL_URL", DATA_MODEL_DEBTOR_URL . "detail/");
   define("DATA_MODEL_DEBTOR_ENTRY_URL", DATA_MODEL_DEBTOR_URL . "entry/");
 
+  define("DATA_MODEL_CREDITOR_URL", DATA_MODEL_URL . "creditor/");
+  define("DATA_MODEL_CREDITOR_DETAIL_URL", DATA_MODEL_CREDITOR_URL . "detail/");
+  define("DATA_MODEL_CREDITOR_ENTRY_URL", DATA_MODEL_CREDITOR_URL . "entry/");
 
   /* Title configurations. */
   define("DATA_MODEL_TITLE", "(B) Data Model");
@@ -32,11 +35,17 @@
   define("DATA_MODEL_DEBTOR_EDIT_TITLE", "(B5b) Edit Debtor");
   define("DATA_MODEL_DEBTOR_DETAIL_TITLE", "(B5c) Debtor Detail");
 
+  define("DATA_MODEL_CREDITOR_TITLE", "(B6) Creditors");
+  define("DATA_MODEL_CREDITOR_CREATE_TITLE", "(B6a) Create Creditor");
+  define("DATA_MODEL_CREDITOR_EDIT_TITLE", "(B6b) Edit Creditor");
+  define("DATA_MODEL_CREDITOR_DETAIL_TITLE", "(B6c) Creditor Detail");
+
   $DATA_MODEL_MODULE = array(
     DATA_MODEL_MODEL_TITLE                     => DATA_MODEL_MODEL_URL,
     // DATA_MODEL_BRAND_TITLE                  => DATA_MODEL_BRAND_URL,
     // DATA_MODEL_WAREHOUSE_TITLE              => DATA_MODEL_WAREHOUSE_URL,
     // DATA_MODEL_EXCHANGE_RATE_TITLE          => DATA_MODEL_EXCHANGE_RATE_URL,
-    DATA_MODEL_DEBTOR_TITLE                    => DATA_MODEL_DEBTOR_URL
+    DATA_MODEL_DEBTOR_TITLE                    => DATA_MODEL_DEBTOR_URL,
+    DATA_MODEL_CREDITOR_TITLE                  => DATA_MODEL_CREDITOR_URL
   );
 ?>

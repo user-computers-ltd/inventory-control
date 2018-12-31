@@ -5,13 +5,13 @@
   include_once ROOT_PATH . "includes/php/utils.php";
   include_once ROOT_PATH . "includes/php/database.php";
 
-  $filterDebtorCodes = $_GET["filter_debtor_code"];
+  $filterCreditorCodes = $_GET["filter_creditor_code"];
 
   $whereClause = "";
 
-  if (assigned($filterDebtorCodes) && count($filterDebtorCodes) > 0) {
+  if (assigned($filterCreditorCodes) && count($filterCreditorCodes) > 0) {
     $whereClause = $whereClause . "
-      AND (" . join(" OR ", array_map(function ($i) { return "code=\"$i\""; }, $filterDebtorCodes)) . ")";
+      AND (" . join(" OR ", array_map(function ($i) { return "code=\"$i\""; }, $filterCreditorCodes)) . ")";
   }
 
   $results = query("
@@ -22,7 +22,7 @@
       chinese_name                AS `chinese_name`,
       contact                     AS `contact`
     FROM
-      `debtor`
+      `creditor`
     WHERE
       code IS NOT NULL
       $whereClause
@@ -30,12 +30,12 @@
       code ASC
   ");
 
-  $debtors = query("
+  $creditors = query("
     SELECT DISTINCT
       code          AS `code`,
       english_name  AS `name`
     FROM
-      `debtor`
+      `creditor`
     ORDER BY
       code ASC
   ");
@@ -51,20 +51,20 @@
     <?php include_once ROOT_PATH . "includes/components/menu/index.php"; ?>
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
-      <div class="headline"><?php echo DATA_MODEL_DEBTOR_TITLE; ?></div>
+      <div class="headline"><?php echo DATA_MODEL_CREDITOR_TITLE; ?></div>
       <form>
-        <table id="debtor-input">
+        <table id="creditor-input">
           <tr>
-            <th>Debtor:</th>
+            <th>Creditor:</th>
           </tr>
           <tr>
             <td>
-              <select name="filter_debtor_code[]" multiple>
+              <select name="filter_creditor_code[]" multiple>
                 <?php
-                  foreach ($debtors as $debtor) {
-                    $code = $debtor["code"];
-                    $name = $debtor["name"];
-                    $selected = assigned($filterDebtorCodes) && in_array($code, $filterDebtorCodes) ? "selected" : "";
+                  foreach ($creditors as $creditor) {
+                    $code = $creditor["code"];
+                    $name = $creditor["name"];
+                    $selected = assigned($filterCreditorCodes) && in_array($code, $filterCreditorCodes) ? "selected" : "";
                     echo "<option value=\"$code\" $selected>$code - $name</option>";
                   }
                 ?>
@@ -74,11 +74,11 @@
           </tr>
         </table>
       </form>
-      <form action="<?php echo DATA_MODEL_DEBTOR_ENTRY_URL; ?>">
+      <form action="<?php echo DATA_MODEL_CREDITOR_ENTRY_URL; ?>">
         <button type="submit">Create</button>
       </form>
       <?php if (count($results) > 0): ?>
-        <table id="debtor-results">
+        <table id="creditor-results">
           <colgroup>
             <col>
             <col>
@@ -97,16 +97,16 @@
           <tbody>
             <?php
               for ($i = 0; $i < count($results); $i++) {
-                $debtor = $results[$i];
-                $id = $debtor["id"];
-                $code = $debtor["code"];
-                $englishName = $debtor["english_name"];
-                $chineseName = $debtor["chinese_name"];
-                $contact = $debtor["contact"];
+                $creditor = $results[$i];
+                $id = $creditor["id"];
+                $code = $creditor["code"];
+                $englishName = $creditor["english_name"];
+                $chineseName = $creditor["chinese_name"];
+                $contact = $creditor["contact"];
 
                 echo "
                   <tr>
-                    <td title=\"$code\"><a href=\"" . DATA_MODEL_DEBTOR_DETAIL_URL . "?id=$id\">$code</a></td>
+                    <td title=\"$code\"><a href=\"" . DATA_MODEL_CREDITOR_DETAIL_URL . "?id=$id\">$code</a></td>
                     <td title=\"$englishName\">$englishName</td>
                     <td title=\"$chineseName\">$chineseName</td>
                     <td title=\"$contact\">$contact</td>
@@ -117,7 +117,7 @@
           </tbody>
         </table>
       <?php else: ?>
-        <div class="debtor-no-results">No results</div>
+        <div class="creditor-no-results">No results</div>
       <?php endif ?>
     </div>
   </body>

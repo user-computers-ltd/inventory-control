@@ -1,0 +1,36 @@
+#creditor-stock {
+  width: 50%;
+}
+
+#creditor-header td {
+  border: none;
+  font-size: 13px;
+  padding: 0px 5px;
+}
+
+#creditor-header th {
+  vertical-align: top;
+}
+
+#creditor-header input,
+#creditor-header select {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#creditor-header .number {
+  text-align: right;
+}
+
+#creditor-header .multi-line {
+  white-space: pre;
+}
+
+.creditor-no-result {
+  margin: 100px 0px;
+  text-align: center;
+  font-size: 40px;
+  font-weight: bold;
+  line-height: 48px;
+  opacity: 0.3;
+}

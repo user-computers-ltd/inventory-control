@@ -1,0 +1,36 @@
+#creditor-input td {
+  border: none;
+  font-size: 13px;
+  padding: 0px 5px;
+}
+
+#creditor-input input,
+#creditor-input select {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#creditor-results th,
+#creditor-results td {
+  min-width: 0px;
+  max-width: 0px;
+}
+
+#creditor-results td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#creditor-results .number {
+  text-align: right;
+}
+
+.creditor-no-results {
+  margin: 100px 0px;
+  text-align: center;
+  font-size: 40px;
+  font-weight: bold;
+  line-height: 48px;
+  opacity: 0.3;
+}
