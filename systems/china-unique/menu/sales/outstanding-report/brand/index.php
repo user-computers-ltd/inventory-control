@@ -7,7 +7,7 @@
   $InBaseCurrency = "(in " . COMPANY_CURRENCY . ")";
 
   $brandCodes = $_GET["brand_code"];
-  $outstandingOnly = $_GET["outstanding_only"];
+  $showMode = assigned($_GET["show_mode"]) ? $_GET["show_mode"] : "outstanding_only";
 
   $whereClause = "";
 
@@ -16,7 +16,7 @@
       AND (" . join(" OR ", array_map(function ($i) { return "a.brand_code=\"$i\""; }, $brandCodes)) . ")";
   }
 
-  if ($outstandingOnly == "on") {
+  if ($showMode == "outstanding_only") {
     $whereClause = $whereClause . "
       AND a.qty_outstanding > 0";
   }
@@ -26,9 +26,9 @@
       a.brand_code                                                                    AS `brand_code`,
       c.name                                                                          AS `brand_name`,
       SUM(a.qty)                                                                      AS `qty`,
-      SUM(a.qty_outstanding)                                                          AS `outstanding_qty`,
-      SUM(a.qty_outstanding * a.price * (100 - b.discount) / 100 * b.exchange_rate)   AS `outstanding_amt_base`,
-      SUM(a.qty_outstanding * a.price * b.exchange_rate)                              AS `outstanding_amt_gross_base`
+      SUM(a.qty_outstanding)                                                          AS `qty_outstanding`,
+      SUM(a.qty_outstanding * a.price * (100 - b.discount) / 100 * b.exchange_rate)   AS `amt_outstanding_base`,
+      SUM(a.qty_outstanding * a.price * b.exchange_rate)                              AS `amt_outstanding_gross_base`
     FROM
       `so_model` AS a
     LEFT JOIN
@@ -101,11 +101,16 @@
               <input
                 id="input-outstanding-only"
                 type="checkbox"
-                name="outstanding_only"
-                onchange="this.form.submit()"
-                <?php echo $outstandingOnly == "on" ? "checked" : "" ?>
+                onchange="onOutstandingOnlyChanged(event)"
+                <?php echo $showMode == "outstanding_only" ? "checked" : "" ?>
               />
               <label for="input-outstanding-only">Outstanding only</label>
+              <input
+                id="input-show-mode"
+                type="hidden"
+                name="show_mode"
+                value="<?php echo $showMode; ?>"
+              />
             </th>
           </tr>
         </table>
@@ -126,7 +131,7 @@
               <th class="number">Total Qty</th>
               <th class="number">Outstanding Qty</th>
               <th class="number">Outstanding Amt <?php echo $InBaseCurrency; ?></th>
-              <th class="number">Outstanding Gross <?php echo $InBaseCurrency; ?></th>
+              <th class="number">(Exc. Discount)</th>
             </tr>
           </thead>
           <tbody>
@@ -141,9 +146,9 @@
               $brandCode = $soModel["brand_code"];
               $brandName = $soModel["brand_name"];
               $qty = $soModel["qty"];
-              $outstandingQty = $soModel["outstanding_qty"];
-              $outstandingAmtBase = $soModel["outstanding_amt_base"];
-              $outstandingGrossBase = $soModel["outstanding_amt_gross_base"];
+              $outstandingQty = $soModel["qty_outstanding"];
+              $outstandingAmtBase = $soModel["amt_outstanding_base"];
+              $outstandingGrossBase = $soModel["amt_outstanding_gross_base"];
 
               $totalQty += $qty;
               $totalOutstanding += $outstandingQty;
@@ -178,5 +183,12 @@
     <?php else: ?>
       <div class="so-brand-no-results">No results</div>
     <?php endif ?>
+    <script>
+      function onOutstandingOnlyChanged(event) {
+        var showMode = event.target.checked ? "outstanding_only" : "show_all";
+        document.querySelector("#input-show-mode").value = showMode;
+        event.target.form.submit();
+      }
+    </script>
   </body>
 </html>

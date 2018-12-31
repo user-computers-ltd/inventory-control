@@ -18,7 +18,7 @@
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo DATA_MODEL_MODEL_DETAIL_TITLE; ?></div>
-      <?php if (isset($model)): ?>
+      <?php if (isset($model)) : ?>
         <form class="web-only" action="<?php echo DATA_MODEL_MODEL_ENTRY_URL; ?>">
           <input type="hidden" name="id" value="<?php echo $id; ?>" />
           <button type="submit">Edit</button>
@@ -37,17 +37,17 @@
             <td class="number"><?php echo $model["brand_code"] . " - " . $model["brand_name"]; ?></td>
           </tr>
           <tr>
-            <th>Cost Primary (正價):</th>
+            <th>Normal Cost (正價):</th>
             <td class="number"><?php echo $model["cost_pri"]; ?></td>
-            <?php if ($model["cost_pri_currency_code"] != COMPANY_CURRENCY): ?>
+            <?php if ($model["cost_pri_currency_code"] != COMPANY_CURRENCY) : ?>
               <th><?php echo $InBaseCurrency; ?>:</th>
               <td class="number"><?php echo number_format($model["cost_pri_base"], 6); ?></td>
             <?php endif ?>
           </tr>
           <tr>
-            <th>Cost Special (特價):</th>
+            <th>Special Cost (特價):</th>
             <td class="number"><?php echo $model["cost_sec"]; ?></td>
-            <?php if ($model["cost_sec_currency_code"] != COMPANY_CURRENCY): ?>
+            <?php if ($model["cost_sec_currency_code"] != COMPANY_CURRENCY) : ?>
               <th><?php echo $InBaseCurrency; ?>:</th>
               <td class="number"><?php echo number_format($model["cost_sec_base"], 6); ?></td>
             <?php endif ?>
@@ -157,7 +157,7 @@
             ?>
           </tbody>
         </table>
-        <?php if (count($warehouseStocks) > 0): ?>
+        <?php if (count($warehouseStocks) > 0) : ?>
           <table id="model-stock">
             <thead>
               <tr>
@@ -183,10 +183,10 @@
               ?>
             </tbody>
           </table>
-        <?php else: ?>
+        <?php else : ?>
           <div class="model-no-result">No stocks</div>
         <?php endif ?>
-      <?php else: ?>
+      <?php else : ?>
         <div class="model-no-result">Model not found</div>
       <?php endif ?>
     </div>

@@ -15,7 +15,7 @@
         a.do_no                                           AS `do_no`,
         DATE_FORMAT(a.do_date, '%d-%m-%Y')                AS `date`,
         IFNULL(b.english_name, 'Unknown')                 AS `customer_name`,
-        b.bill_address                                    AS `customer_address`,
+        b.billing_address                                 AS `customer_address`,
         b.contact                                         AS `customer_contact`,
         b.tel                                             AS `customer_tel`,
         CONCAT(a.currency_code, ' @ ', a.exchange_rate)   AS `currency`,

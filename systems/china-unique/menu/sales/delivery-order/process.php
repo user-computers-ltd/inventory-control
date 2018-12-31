@@ -49,7 +49,7 @@
         DATE_FORMAT(a.do_date, '%Y-%m-%d')    AS `do_date`,
         a.debtor_code                         AS `debtor_code`,
         IFNULL(b.english_name, 'Unknown')     AS `debtor_name`,
-        IFNULL(b.bill_address, 'Unknown')     AS `debtor_address`,
+        IFNULL(b.billing_address, 'Unknown')  AS `debtor_address`,
         IFNULL(b.contact, 'Unknown')          AS `debtor_contact`,
         a.currency_code                       AS `currency_code`,
         a.exchange_rate                       AS `exchange_rate`,

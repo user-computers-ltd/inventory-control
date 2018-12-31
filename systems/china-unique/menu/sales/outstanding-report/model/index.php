@@ -8,7 +8,7 @@
 
   $brandCodes = $_GET["brand_code"];
   $modelNos = $_GET["model_no"];
-  $outstandingOnly = $_GET["outstanding_only"];
+  $showMode = assigned($_GET["show_mode"]) ? $_GET["show_mode"] : "outstanding_only";
 
   $whereClause = "";
 
@@ -22,7 +22,7 @@
       AND (" . join(" OR ", array_map(function ($m) { return "a.model_no=\"$m\""; }, $modelNos)) . ")";
   }
 
-  if ($outstandingOnly == "on") {
+  if ($showMode == "outstanding_only") {
     $whereClause = $whereClause . "
       AND a.qty_outstanding > 0";
   }
@@ -33,8 +33,9 @@
       c.name                                                                          AS `brand_name`,
       a.model_no                                                                      AS `model_no`,
       SUM(a.qty)                                                                      AS `qty`,
-      SUM(a.qty_outstanding)                                                          AS `outstanding_qty`,
-      SUM(a.qty_outstanding * a.price * (100 - b.discount) / 100 * b.exchange_rate)   AS `outstanding_amt_base`
+      SUM(a.qty_outstanding)                                                          AS `qty_outstanding`,
+      SUM(a.qty_outstanding * a.price * (100 - b.discount) / 100 * b.exchange_rate)   AS `amt_outstanding_base`,
+      SUM(a.qty_outstanding * a.price * b.exchange_rate)                              AS `amt_outstanding_gross_base`
     FROM
       `so_model` AS a
     LEFT JOIN
@@ -142,11 +143,16 @@
               <input
                 id="input-outstanding-only"
                 type="checkbox"
-                name="outstanding_only"
-                onchange="this.form.submit()"
-                <?php echo $outstandingOnly == "on" ? "checked" : "" ?>
+                onchange="onOutstandingOnlyChanged(event)"
+                <?php echo $showMode == "outstanding_only" ? "checked" : "" ?>
               />
               <label for="input-outstanding-only">Outstanding only</label>
+              <input
+                id="input-show-mode"
+                type="hidden"
+                name="show_mode"
+                value="<?php echo $showMode; ?>"
+              />
             </th>
           </tr>
         </table>
@@ -159,6 +165,7 @@
             <col style="width: 100px">
             <col style="width: 100px">
             <col style="width: 100px">
+            <col style="width: 100px">
           </colgroup>
           <thead>
             <tr></tr>
@@ -168,6 +175,7 @@
               <th class="number">Total Qty</th>
               <th class="number">Outstanding Qty</th>
               <th class="number">Outstanding Amt <?php echo $InBaseCurrency; ?></th>
+              <th class="number">(Exc. Discount)</th>
             </tr>
           </thead>
           <tbody>
@@ -175,6 +183,7 @@
             $totalQty = 0;
             $totalOutstanding = 0;
             $totalAmtBase = 0;
+            $totalGrossBase = 0;
 
             for ($i = 0; $i < count($soModels); $i++) {
               $soModel = $soModels[$i];
@@ -182,12 +191,14 @@
               $brandName = $soModel["brand_name"];
               $modelNo = $soModel["model_no"];
               $qty = $soModel["qty"];
-              $outstandingQty = $soModel["outstanding_qty"];
-              $outstandingAmtBase = $soModel["outstanding_amt_base"];
+              $outstandingQty = $soModel["qty_outstanding"];
+              $outstandingAmtBase = $soModel["amt_outstanding_base"];
+              $outstandingGrossBase = $soModel["amt_outstanding_gross_base"];
 
               $totalQty += $qty;
               $totalOutstanding += $outstandingQty;
               $totalAmtBase += $outstandingAmtBase;
+              $totalGrossBase += $outstandingGrossBase;
 
               echo "
                 <tr>
@@ -196,6 +207,7 @@
                   <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
                   <td title=\"$outstandingQty\" class=\"number\">" . number_format($outstandingQty) . "</td>
                   <td title=\"$outstandingAmtBase\" class=\"number\">" . number_format($outstandingAmtBase, 2) . "</td>
+                  <td title=\"$outstandingGrossBase\" class=\"number\">" . number_format($outstandingGrossBase, 2) . "</td>
                 </tr>
               ";
             }
@@ -208,6 +220,7 @@
               <th class="number"><?php echo number_format($totalQty); ?></th>
               <th class="number"><?php echo number_format($totalOutstanding); ?></th>
               <th class="number"><?php echo number_format($totalAmtBase, 2); ?></th>
+              <th class="number"><?php echo number_format($totalGrossBase, 2); ?></th>
             </tr>
           </tfoot>
         </table>
@@ -215,5 +228,12 @@
     <?php else: ?>
       <div class="so-model-no-results">No results</div>
     <?php endif ?>
+    <script>
+      function onOutstandingOnlyChanged(event) {
+        var showMode = event.target.checked ? "outstanding_only" : "show_all";
+        document.querySelector("#input-show-mode").value = showMode;
+        event.target.form.submit();
+      }
+    </script>
   </body>
 </html>
