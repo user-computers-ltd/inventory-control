@@ -12,6 +12,7 @@
     $headerWhereClause = join(" OR ", array_map(function ($i) { return "id=\"$i\""; }, $doIds));
     $modelWhereClause = join(" OR ", array_map(function ($i) { return "b.id=\"$i\""; }, $doIds));
     $printoutParams = join("&", array_map(function ($i) { return "id[]=$i"; }, $doIds));
+    $postDoNos = array_map(function ($i) { return $i["do_no"]; }, query("SELECT do_no FROM `sdo_header` WHERE $headerWhereClause"));
 
     if ($action == "delete") {
       array_push($queries, "DELETE a FROM `sdo_model` AS a LEFT JOIN `sdo_header` AS b ON a.do_no=b.do_no WHERE $modelWhereClause");
@@ -19,7 +20,7 @@
     } else if ($action == "post") {
       array_push($queries, "UPDATE `sdo_header` SET status=\"POSTED\" WHERE $headerWhereClause");
 
-      foreach ($doNos as $doNo) {
+      foreach ($postDoNos as $doNo) {
         $queries = concat($queries, onPostSalesDeliveryOrder($doNo));
       }
     } else if ($action == "print") {
