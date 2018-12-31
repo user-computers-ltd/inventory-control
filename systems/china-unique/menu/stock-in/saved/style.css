@@ -21,6 +21,11 @@
   text-align: right;
 }
 
+#stock-in-results input[type="checkbox"] {
+  margin: 0px;
+  height: 10px;
+}
+
 .stock-in-customer-no-results {
   margin: 100px 0px;
   text-align: center;

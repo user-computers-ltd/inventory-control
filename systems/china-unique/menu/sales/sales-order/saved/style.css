@@ -21,6 +21,11 @@
   text-align: right;
 }
 
+#so-results input[type="checkbox"] {
+  margin: 0px;
+  height: 10px;
+}
+
 .so-customer-no-results {
   margin: 100px 0px;
   text-align: center;

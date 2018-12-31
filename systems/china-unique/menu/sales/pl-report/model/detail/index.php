@@ -224,7 +224,7 @@
               echo "
                 <tr>
                   <td title=\"$date\">$date</td>
-                  <td title=\"$soNo\"><a class=\"link\" href=\"" . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?id=$soId\">$soNo</a></td>
+                  <td title=\"$soNo\"><a class=\"link\" href=\"" . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?id[]=$soId\">$soNo</a></td>
                   <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
                   <td title=\"$currency\" class=\"number\">$currency</td>
                   <td title=\"$discount\" class=\"number\">" . number_format($discount, 2) . "%</td>

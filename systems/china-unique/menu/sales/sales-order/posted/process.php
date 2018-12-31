@@ -7,23 +7,12 @@
   $soIds = $_POST["so_id"];
 
   if (assigned($action) && assigned($soIds) && count($soIds) > 0) {
-    $queries = array();
-
-    $headerWhereClause = join(" OR ", array_map(function ($i) { return "id=\"$i\""; }, $soIds));
-    $modelWhereClause = join(" OR ", array_map(function ($i) { return "b.id=\"$i\""; }, $soIds));
     $printoutParams = join("&", array_map(function ($i) { return "id[]=$i"; }, $soIds));
 
-    if ($action == "delete") {
-      array_push($queries, "DELETE a FROM `so_model` AS a LEFT JOIN `so_header` AS b ON a.so_no=b.so_no WHERE $modelWhereClause");
-      array_push($queries, "DELETE FROM `so_header` WHERE $headerWhereClause");
-    } else if ($action == "post") {
-      array_push($queries, "UPDATE `so_header` SET status=\"POSTED\" WHERE $headerWhereClause");
-    } else if ($action == "print") {
+    if ($action == "print") {
       header("Location: " . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?$printoutParams");
       exit(0);
     }
-
-    execute($queries);
   }
 
   $whereClause = "";
@@ -67,7 +56,7 @@
       `debtor` AS c
     ON a.debtor_code=c.code
     WHERE
-      a.status=\"SAVED\"
+      a.status=\"POSTED\"
       $whereClause
     ORDER BY
       a.so_date DESC

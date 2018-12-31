@@ -1,5 +1,5 @@
 <?php
-  $id = $_GET["id"];
+  $ids = $_GET["id"];
   $stockInNo = $_POST["stock_in_no"];
   $stockInDate = $_POST["stock_in_date"];
   $transactionCode = $_POST["transaction_code"];
@@ -17,12 +17,16 @@
   $prices = $_POST["price"];
   $qtys = $_POST["qty"];
 
-  $stockInHeader = null;
+  $stockInHeaders = array();
+  $stockInModelList = array();
   $stockInModels = array();
 
   /* If an id is given, retrieve from an existing stock in voucher. */
-  if (assigned($id)) {
-    $stockInHeader = query("
+  if (assigned($ids) && count($ids) > 0) {
+    $headerWhereClause = join(" OR ", array_map(function ($i) { return "id=\"$i\""; }, $ids));
+    $modelWhereClause = join(" OR ", array_map(function ($i) { return "c.id=\"$i\""; }, $ids));
+
+    $stockInHeaders = query("
       SELECT
         stock_in_no                              AS `stock_in_no`,
         transaction_code                         AS `transaction_code`,
@@ -39,11 +43,12 @@
       FROM
         `stock_in_header`
       WHERE
-        id=\"$id\"
-    ")[0];
+        $headerWhereClause
+    ");
 
-    $stockInModels = query("
+    $stockInModelList = query("
       SELECT
+        a.stock_in_no                           AS `stock_in_no`,
         b.name                                  AS `brand`,
         a.model_no                              AS `model_no`,
         a.price                                 AS `price`,
@@ -58,8 +63,9 @@
         `stock_in_header` AS c
       ON a.stock_in_no=c.stock_in_no
       WHERE
-        c.id=\"$id\"
+        $modelWhereClause
       ORDER BY
+        a.stock_in_no ASC,
         a.stock_in_index ASC
     ");
   }
@@ -78,7 +84,10 @@
       $brands[$brand["code"]] = $brand["name"];
     }
 
-    $stockInHeader = array(
+    $stockInDate = new DateTime($stockInDate);
+    $stockInDate = $stockInDate->format("d-m-Y");
+
+    $stockInHeaders = array(array(
       "stock_in_no"         => $stockInNo,
       "transaction_code"    => $transactionCode,
       "warehouse_code"      => $warehouseCode,
@@ -91,12 +100,11 @@
       "tax"                 => $tax,
       "remarks"             => $remarks,
       "status"              => $status
-    );
-
-    $stockInModels = array();
+    ));
 
     for ($i = 0; $i < count($brandCodes); $i++) {
-      array_push($stockInModels, array(
+      array_push($stockInModelList, array(
+        "stock_in_no"       => $stockInNo,
         "brand"             => $brands[$brandCodes[$i]],
         "model_no"          => $modelNos[$i],
         "price"             => $prices[$i],
@@ -106,15 +114,31 @@
     }
   }
 
-  if (isset($stockInHeader)) {
-    $creditor = query("SELECT english_name AS name FROM `creditor` WHERE code=\"" . $stockInHeader["creditor_code"] . "\"")[0];
-    $warehouse = query("SELECT name FROM `warehouse` WHERE code=\"" . $stockInHeader["warehouse_code"] . "\"")[0];
+  if (count($stockInHeaders) > 0) {
+    foreach ($stockInHeaders as &$stockInHeader) {
+      $creditor = query("SELECT english_name AS name FROM `creditor` WHERE code=\"" . $stockInHeader["creditor_code"] . "\"")[0];
+      $warehouse = query("SELECT name FROM `warehouse` WHERE code=\"" . $stockInHeader["warehouse_code"] . "\"")[0];
 
-    $stockInHeader["transaction_type"] = $stockInHeader["transaction_code"] . " - " . $TRANSACTION_CODES[$stockInHeader["transaction_code"]];
-    $stockInHeader["warehouse"] = $stockInHeader["warehouse_code"] . " - " . (isset($warehouse) ? $warehouse["name"] : "Unknown");
-    $stockInHeader["creditor"] = $stockInHeader["creditor_code"] . " - " . (isset($creditor) ? $creditor["name"] : "Unknown");
-    $stockInHeader["currency"] = $stockInHeader["currency_code"] . " @ " . $stockInHeader["exchange_rate"];
+      $stockInHeader["transaction_type"] = $stockInHeader["transaction_code"] . " - " . $TRANSACTION_CODES[$stockInHeader["transaction_code"]];
+      $stockInHeader["warehouse"] = $stockInHeader["warehouse_code"] . " - " . (isset($warehouse) ? $warehouse["name"] : "Unknown");
+      $stockInHeader["creditor"] = $stockInHeader["creditor_code"] . " - " . (isset($creditor) ? $creditor["name"] : "Unknown");
+      $stockInHeader["currency"] = $stockInHeader["currency_code"] . " @ " . $stockInHeader["exchange_rate"];
+      $stockInHeader["miscellaneous"] = $stockInHeader["transaction_code"] != "R1" && $stockInHeader["transaction_code"] != "R3";
+    }
   }
 
-  $miscellaneous = $stockInHeader["transaction_code"] != "R1" && $stockInHeader["transaction_code"] != "R3";
+  if (count($stockInModelList) > 0) {
+    foreach ($stockInModelList as $stockInModel) {
+      $stockInNo = $stockInModel["stock_in_no"];
+
+      $arrayPointer = &$stockInModels;
+
+      if (!isset($arrayPointer[$stockInNo])) {
+        $arrayPointer[$stockInNo] = array();
+      }
+      $arrayPointer = &$arrayPointer[$stockInNo];
+
+      array_push($arrayPointer, $stockInModel);
+    }
+  }
 ?>

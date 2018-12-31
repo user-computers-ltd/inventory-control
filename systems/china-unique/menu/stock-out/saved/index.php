@@ -35,6 +35,7 @@
       <?php if (count($stockOutHeaders) > 0): ?>
         <form method="post">
           <button type="submit" name="action" value="post">Post</button>
+          <button type="submit" name="action" value="print">Print</button>
           <button type="submit" name="action" value="delete">Delete</button>
           <table id="stock-out-results">
             <colgroup>
@@ -56,7 +57,7 @@
                 <th class="web-only"></th>
                 <th>Date</th>
                 <th class="number">#</th>
-                <th>Order No.</th>
+                <th>Voucher No.</th>
                 <th>Client</th>
                 <th class="number">Total Qty</th>
                 <th class="number">Discount</th>
@@ -92,7 +93,7 @@
 
                   echo "
                     <tr>
-                      <td class=\"web-only\"><input type=\"checkbox\" name=\"stock_out_no[]\" value=\"$stockOutNo\" /></td>
+                      <td class=\"web-only\"><input type=\"checkbox\" name=\"stock_out_id[]\" value=\"$id\" /></td>
                       <td title=\"$date\">$date</td>
                       <td title=\"$count\" class=\"number\">$count</td>
                       <td title=\"$stockOutNo\"><a class=\"link\" href=\"" . STOCK_OUT_URL . "?id=$id\">$stockOutNo</a></td>

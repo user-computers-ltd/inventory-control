@@ -1,12 +1,16 @@
 <?php
-  $id = $_GET["id"];
+  $ids = $_GET["id"];
 
-  $doHeader = null;
+  $doHeaders = array();
+  $doModelList = array();
   $doModels = array();
 
   /* Only populate the data if an id is given. */
-  if (assigned($id)) {
-    $doHeader = query("
+  if (assigned($ids) && count($ids) > 0) {
+    $headerWhereClause = join(" OR ", array_map(function ($i) { return "a.id=\"$i\""; }, $ids));
+    $modelWhereClause = join(" OR ", array_map(function ($i) { return "d.id=\"$i\""; }, $ids));
+
+    $doHeaders = query("
       SELECT
         a.do_no                                           AS `do_no`,
         DATE_FORMAT(a.do_date, '%d-%m-%Y')                AS `date`,
@@ -30,11 +34,12 @@
         `warehouse` AS c
       ON a.warehouse_code=c.code
       WHERE
-        a.id=\"$id\"
-    ")[0];
+        $headerWhereClause
+    ");
 
-    $doModels = query("
+    $doModelList = query("
       SELECT
+        a.do_no           AS `do_no`,
         b.name            AS `brand`,
         a.model_no        AS `model_no`,
         a.so_no           AS `so_no`,
@@ -53,12 +58,28 @@
         `sdo_header` AS d
       ON a.do_no=d.do_no
       WHERE
-        d.id=\"$id\"
+        $modelWhereClause
       GROUP BY
-        a.brand_code, a.model_no, a.so_no, a.price, c.cost_average
+        a.do_no, a.brand_code, a.model_no, a.so_no, a.price, c.cost_average
       ORDER BY
+        a.do_no ASC,
         a.brand_code ASC,
         a.model_no ASC
     ");
+  }
+
+  if (count($doModelList) > 0) {
+    foreach ($doModelList as $doModel) {
+      $doNo = $doModel["do_no"];
+
+      $arrayPointer = &$doModels;
+
+      if (!isset($arrayPointer[$doNo])) {
+        $arrayPointer[$doNo] = array();
+      }
+      $arrayPointer = &$arrayPointer[$doNo];
+
+      array_push($arrayPointer, $doModel);
+    }
   }
 ?>

@@ -16,7 +16,7 @@
   <body>
     <?php include_once ROOT_PATH . "includes/components/menu/index.php"; ?>
     <div class="page-wrapper">
-      <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
+      <?php include SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo SALES_ORDER_SAVED_TITLE; ?></div>
       <form>
         <table id="so-input">
@@ -34,6 +34,7 @@
       <?php if (count($soHeaders) > 0): ?>
         <form method="post">
           <button type="submit" name="action" value="post">Post</button>
+          <button type="submit" name="action" value="print">Print</button>
           <button type="submit" name="action" value="delete">Delete</button>
           <table id="so-results">
             <colgroup>
@@ -88,7 +89,7 @@
 
                   echo "
                     <tr>
-                      <td class=\"web-only\"><input type=\"checkbox\" name=\"so_no[]\" value=\"$soNo\" /></td>
+                      <td class=\"web-only\"><input type=\"checkbox\" name=\"so_id[]\" value=\"$id\" /></td>
                       <td title=\"$date\">$date</td>
                       <td title=\"$soNo\"><a class=\"link\" href=\"" . SALES_ORDER_URL . "?id=$id\">$soNo</a></td>
                       <td title=\"$debtorName\">$debtorName</td>

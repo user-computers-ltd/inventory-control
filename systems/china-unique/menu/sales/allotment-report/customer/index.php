@@ -166,7 +166,7 @@
                                 $modelNo
                               </td>
                               <td rowspan=\"" . count($models) . "\" title=\"$soNo\">
-                                <a class=\"link\" href=\"" . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?id=$soId\">$soNo</a>
+                                <a class=\"link\" href=\"" . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?id[]=$soId\">$soNo</a>
                               </td>
                               <td rowspan=\"" . count($models) . "\" class=\"number\" title=\"$outstandingQty\">
                               " . number_format($outstandingQty) . "

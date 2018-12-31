@@ -1,60 +1,10 @@
 <?php
   define("SYSTEM_PATH", "../../../../");
+
   include_once SYSTEM_PATH . "includes/php/config.php";
   include_once ROOT_PATH . "includes/php/utils.php";
   include_once ROOT_PATH . "includes/php/database.php";
-
-  $InBaseCurrency = "(in " . COMPANY_CURRENCY . ")";
-
-  $from = $_GET["from"];
-  $to = $_GET["to"];
-
-  $whereClause = "";
-
-  if (assigned($from)) {
-    $whereClause = $whereClause . "
-      AND a.so_date >= \"$from\"";
-  }
-
-  if (assigned($to)) {
-    $whereClause = $whereClause . "
-      AND a.so_date <= \"$to\"";
-  }
-
-  $soHeaders = query("
-    SELECT
-      a.id                                                                                AS `id`,
-      DATE_FORMAT(a.so_date, '%d-%m-%Y')                                                  AS `date`,
-      a.so_no                                                                             AS `so_no`,
-      IFNULL(c.english_name, 'Unknown')                                                   AS `debtor_name`,
-      IFNULL(b.total_qty, 0)                                                              AS `qty`,
-      IFNULL(b.total_qty_outstanding, 0)                                                  AS `outstanding_qty`,
-      a.discount                                                                          AS `discount`,
-      a.currency_code                                                                     AS `currency`,
-      IFNULL(b.total_outstanding_amt, 0) * (100 - a.discount) / 100                       AS `outstanding_amt`,
-      IFNULL(b.total_outstanding_amt, 0) * (100 - a.discount) / 100 * a.exchange_rate     AS `outstanding_amt_base`
-    FROM
-      `so_header` AS a
-    LEFT JOIN
-      (SELECT
-        so_no                         AS `so_no`,
-        SUM(qty)                      AS `total_qty`,
-        SUM(qty_outstanding)          AS `total_qty_outstanding`,
-        SUM(qty_outstanding * price)  AS `total_outstanding_amt`
-      FROM
-        `so_model`
-      GROUP BY
-        so_no) AS b
-    ON a.so_no=b.so_no
-    LEFT JOIN
-      `debtor` AS c
-    ON a.debtor_code=c.code
-    WHERE
-      a.status=\"POSTED\"
-      $whereClause
-    ORDER BY
-      a.so_date DESC
-  ");
+  include_once "process.php";
 ?>
 
 <!DOCTYPE html>
@@ -82,85 +32,92 @@
         </table>
       </form>
       <?php if (count($soHeaders) > 0): ?>
-        <table id="so-results">
-          <colgroup>
-            <col style="width: 70px">
-            <col>
-            <col>
-            <col style="width: 80px">
-            <col style="width: 80px">
-            <col style="width: 60px">
-            <col style="width: 60px">
-            <col style="width: 80px">
-            <col style="width: 80px">
-          </colgroup>
-          <thead>
-            <tr></tr>
-            <tr>
-              <th>Date</th>
-              <th>Order No.</th>
-              <th>Customer</th>
-              <th class="number">Total Qty</th>
-              <th class="number">Outstanding Qty</th>
-              <th class="number">Discount</th>
-              <th class="number">Currency</th>
-              <th class="number">Outstanding Amt</th>
-              <th class="number"><?php echo $InBaseCurrency; ?></th>
-            </tr>
-          </thead>
-          <tbody>
-            <?php
-              $totalQty = 0;
-              $totalOutstanding = 0;
-              $totalAmtBase = 0;
+        <form method="post">
+          <button type="submit" name="action" value="print">Print</button>
+          <table id="so-results">
+            <colgroup>
+              <col class="web-only" style="width: 30px">
+              <col style="width: 70px">
+              <col>
+              <col>
+              <col style="width: 80px">
+              <col style="width: 80px">
+              <col style="width: 60px">
+              <col style="width: 60px">
+              <col style="width: 80px">
+              <col style="width: 80px">
+            </colgroup>
+            <thead>
+              <tr></tr>
+              <tr>
+                <th class="web-only"></th>
+                <th>Date</th>
+                <th>Order No.</th>
+                <th>Customer</th>
+                <th class="number">Total Qty</th>
+                <th class="number">Outstanding Qty</th>
+                <th class="number">Discount</th>
+                <th class="number">Currency</th>
+                <th class="number">Outstanding Amt</th>
+                <th class="number"><?php echo $InBaseCurrency; ?></th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php
+                $totalQty = 0;
+                $totalOutstanding = 0;
+                $totalAmtBase = 0;
 
-              for ($i = 0; $i < count($soHeaders); $i++) {
-                $soHeader = $soHeaders[$i];
-                $id = $soHeader["id"];
-                $date = $soHeader["date"];
-                $soNo = $soHeader["so_no"];
-                $debtorName = $soHeader["debtor_name"];
-                $qty = $soHeader["qty"];
-                $outstandingQty = $soHeader["outstanding_qty"];
-                $discount = $soHeader["discount"];
-                $currency = $soHeader["currency"];
-                $outstandingAmt = $soHeader["outstanding_amt"];
-                $outstandingAmtBase = $soHeader["outstanding_amt_base"];
+                for ($i = 0; $i < count($soHeaders); $i++) {
+                  $soHeader = $soHeaders[$i];
+                  $id = $soHeader["id"];
+                  $date = $soHeader["date"];
+                  $soNo = $soHeader["so_no"];
+                  $debtorName = $soHeader["debtor_name"];
+                  $qty = $soHeader["qty"];
+                  $outstandingQty = $soHeader["outstanding_qty"];
+                  $discount = $soHeader["discount"];
+                  $currency = $soHeader["currency"];
+                  $outstandingAmt = $soHeader["outstanding_amt"];
+                  $outstandingAmtBase = $soHeader["outstanding_amt_base"];
 
-                $totalQty += $qty;
-                $totalOutstanding += $outstandingQty;
-                $totalAmtBase += $outstandingAmtBase;
+                  $totalQty += $qty;
+                  $totalOutstanding += $outstandingQty;
+                  $totalAmtBase += $outstandingAmtBase;
 
-                echo "
-                  <tr>
-                    <td title=\"$date\">$date</td>
-                    <td title=\"$soNo\"><a class=\"link\" href=\"" . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?id=$id\">$soNo</a></td>
-                    <td title=\"$debtorName\">$debtorName</td>
-                    <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
-                    <td title=\"$outstandingQty\" class=\"number\">" . number_format($outstandingQty) . "</td>
-                    <td title=\"$discount\" class=\"number\">" . number_format($discount, 2) . "%</td>
-                    <td title=\"$currency\" class=\"number\">$currency</td>
-                    <td title=\"$outstandingAmt\" class=\"number\">" . number_format($outstandingAmt, 2) . "</td>
-                    <td title=\"$outstandingAmtBase\" class=\"number\">" . number_format($outstandingAmtBase, 2) . "</td>
-                  </tr>
-                ";
-              }
-            ?>
-          </tbody>
-          <tfoot>
-            <tr>
-              <th></th>
-              <th></th>
-              <th class="number">Total:</th>
-              <th class="number"><?php echo number_format($totalQty); ?></th>
-              <th class="number"><?php echo number_format($totalOutstanding); ?></th>
-              <th></th>
-              <th></th>
-              <th></th>
-              <th class="number"><?php echo number_format($totalAmtBase, 2); ?></th>
-            </tr>
-          </tfoot>
-        </table>
+                  echo "
+                    <tr>
+                      <td class=\"web-only\"><input type=\"checkbox\" name=\"so_id[]\" value=\"$id\" /></td>
+                      <td title=\"$date\">$date</td>
+                      <td title=\"$soNo\"><a class=\"link\" href=\"" . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?id[]=$id\">$soNo</a></td>
+                      <td title=\"$debtorName\">$debtorName</td>
+                      <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
+                      <td title=\"$outstandingQty\" class=\"number\">" . number_format($outstandingQty) . "</td>
+                      <td title=\"$discount\" class=\"number\">" . number_format($discount, 2) . "%</td>
+                      <td title=\"$currency\" class=\"number\">$currency</td>
+                      <td title=\"$outstandingAmt\" class=\"number\">" . number_format($outstandingAmt, 2) . "</td>
+                      <td title=\"$outstandingAmtBase\" class=\"number\">" . number_format($outstandingAmtBase, 2) . "</td>
+                    </tr>
+                  ";
+                }
+              ?>
+            </tbody>
+            <tfoot>
+              <tr>
+                <th class="web-only"></th>
+                <th></th>
+                <th></th>
+                <th class="number">Total:</th>
+                <th class="number"><?php echo number_format($totalQty); ?></th>
+                <th class="number"><?php echo number_format($totalOutstanding); ?></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th class="number"><?php echo number_format($totalAmtBase, 2); ?></th>
+              </tr>
+            </tfoot>
+          </table>
+        </form>
       <?php else: ?>
         <div class="so-customer-no-results">No results</div>
       <?php endif ?>

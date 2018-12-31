@@ -4,31 +4,15 @@
   $from = $_GET["from"];
   $to = $_GET["to"];
   $action = $_POST["action"];
-  $stockOutIds = $_POST["stock_out_no"];
+  $stockOutIds = $_POST["stock_out_id"];
 
   if (assigned($action) && assigned($stockOutIds) && count($stockOutIds) > 0) {
-    $queries = array();
+    $printoutParams = join("&", array_map(function ($i) { return "id[]=$i"; }, $stockOutIds));
 
-    $headerWhereClause = join(" OR ", array_map(function ($i) { return "id=\"$i\""; }, $stockInIds));
-    $modelWhereClause = join(" OR ", array_map(function ($i) { return "b.id=\"$i\""; }, $stockInIds));
-    $printoutParams = join("&", array_map(function ($i) { return "id[]=$i"; }, $stockInIds));
-    $postStockOutNos = array_map(function ($i) { return $i["stock_out_no"]; }, query("SELECT stock_out_no FROM `stock_out_header` WHERE $headerWhereClause"));
-
-    if ($action == "delete") {
-      array_push($queries, "DELETE a FROM `stock_out_model` AS a LEFT JOIN `stock_out_header` AS b ON a.stock_out_no=b.stock_out_no WHERE $modelWhereClause");
-      array_push($queries, "DELETE FROM `stock_out_header` WHERE $headerWhereClause");
-    } else if ($action == "post") {
-      array_push($queries, "UPDATE `stock_out_header` SET status=\"POSTED\" WHERE $headerWhereClause");
-
-      foreach ($postStockOutNos as $stockOutNo) {
-        $queries = concat($queries, onPostStockOutVoucher($stockOutNo));
-      }
-    } else if ($action == "print") {
-      header("Location: " . STOCK_IN_PRINTOUT_URL . "?$printoutParams");
+    if ($action == "print") {
+      header("Location: " . STOCK_OUT_PRINTOUT_URL . "?$printoutParams");
       exit(0);
     }
-
-    execute($queries);
   }
 
   $whereClause = "";
@@ -61,7 +45,7 @@
     LEFT JOIN
       (SELECT
         COUNT(*)                      AS `count`,
-        stock_out_no                  AS `stock_out_no`,
+        stock_out_no                   AS `stock_out_no`,
         SUM(qty)                      AS `total_qty`,
         SUM(qty * price)              AS `total_amt`
       FROM
@@ -73,7 +57,7 @@
       `debtor` AS c
     ON a.debtor_code=c.code
     WHERE
-      a.status=\"SAVED\"
+      a.status=\"POSTED\"
       $whereClause
     ORDER BY
       a.stock_out_date DESC

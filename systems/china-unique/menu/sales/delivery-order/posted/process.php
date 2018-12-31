@@ -7,27 +7,12 @@
   $doIds = $_POST["do_id"];
 
   if (assigned($action) && assigned($doIds) && count($doIds) > 0) {
-    $queries = array();
-
-    $headerWhereClause = join(" OR ", array_map(function ($i) { return "id=\"$i\""; }, $doIds));
-    $modelWhereClause = join(" OR ", array_map(function ($i) { return "b.id=\"$i\""; }, $doIds));
     $printoutParams = join("&", array_map(function ($i) { return "id[]=$i"; }, $doIds));
 
-    if ($action == "delete") {
-      array_push($queries, "DELETE a FROM `sdo_model` AS a LEFT JOIN `sdo_header` AS b ON a.do_no=b.do_no WHERE $modelWhereClause");
-      array_push($queries, "DELETE FROM `sdo_header` WHERE $headerWhereClause");
-    } else if ($action == "post") {
-      array_push($queries, "UPDATE `sdo_header` SET status=\"POSTED\" WHERE $headerWhereClause");
-
-      foreach ($doNos as $doNo) {
-        $queries = concat($queries, onPostSalesDeliveryOrder($doNo));
-      }
-    } else if ($action == "print") {
+    if ($action == "print") {
       header("Location: " . SALES_DELIVERY_ORDER_PRINTOUT_URL . "?$printoutParams");
       exit(0);
     }
-
-    execute($queries);
   }
 
   $whereClause = "";
@@ -67,7 +52,7 @@
       `debtor` AS c
     ON a.debtor_code=c.code
     WHERE
-      a.status=\"SAVED\"
+      a.status=\"POSTED\"
       $whereClause
     ORDER BY
       a.do_date DESC

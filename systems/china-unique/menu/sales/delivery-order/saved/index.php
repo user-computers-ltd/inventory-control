@@ -35,6 +35,7 @@
       <?php if (count($doHeaders) > 0): ?>
         <form method="post">
           <button type="submit" name="action" value="post">Post</button>
+          <button type="submit" name="action" value="print">Print</button>
           <button type="submit" name="action" value="delete">Delete</button>
           <table id="do-results">
             <colgroup>
@@ -84,7 +85,7 @@
 
                   echo "
                     <tr>
-                      <td class=\"web-only\"><input type=\"checkbox\" name=\"do_no[]\" value=\"$doNo\" /></td>
+                      <td class=\"web-only\"><input type=\"checkbox\" name=\"do_id[]\" value=\"$doId\" /></td>
                       <td title=\"$date\">$date</td>
                       <td title=\"$doNo\"><a class=\"link\" href=\"" . SALES_DELIVERY_ORDER_URL . "?id=$doId\">$doNo</a></td>
                       <td title=\"$debtor\">$debtor</td>

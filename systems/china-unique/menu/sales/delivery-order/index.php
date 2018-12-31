@@ -85,7 +85,7 @@
                     echo "
                       <tr>
                         <td title=\"$status\">$status</td>
-                        <td title=\"$soNo\"><a class=\"link\" href=\"" . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?id=$soId\">$soNo</a></td>
+                        <td title=\"$soNo\"><a class=\"link\" href=\"" . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?id[]=$soId\">$soNo</a></td>
                         <td title=\"$brand\">$brand</td>
                         <td title=\"$modelNo\">$modelNo</td>
                         <td title=\"$price\" class=\"number\">" . number_format($price, 2) . "</td>
@@ -144,7 +144,7 @@
           <?php if ($doHeader["status"] == "SAVED"): ?>
             <button name="status" type="submit" value="SAVED">Save</button>
           <?php endif ?>
-          <button name="status" type="submit" value="<?php echo $doHeader["status"]; ?>" formaction="<?php echo SALES_DELIVERY_ORDER_PRINTOUT_URL . "?id=$id"; ?>">Print</button>
+          <button name="status" type="submit" value="<?php echo $doHeader["status"]; ?>" formaction="<?php echo SALES_DELIVERY_ORDER_PRINTOUT_URL . "?id[]=$id"; ?>">Print</button>
           <?php if ($doHeader["status"] == "SAVED" && !$hasIncoming): ?>
             <button name="status" type="submit" value="POSTED">Post</button>
           <?php endif ?>

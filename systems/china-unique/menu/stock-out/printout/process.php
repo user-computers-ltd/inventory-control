@@ -1,5 +1,5 @@
 <?php
-  $id = $_GET["id"];
+  $ids = $_GET["id"];
   $stockOutNo = $_POST["stock_out_no"];
   $stockOutDate = $_POST["stock_out_date"];
   $transactionCode = $_POST["transaction_code"];
@@ -18,12 +18,16 @@
   $prices = $_POST["price"];
   $qtys = $_POST["qty"];
 
-  $stockOutHeader = null;
+  $stockOutHeaders = array();
+  $stockOutModelList = array();
   $stockOutModels = array();
 
   /* If an id is given, retrieve from an existing stock out voucher. */
-  if (assigned($id)) {
-    $stockOutHeader = query("
+  if (assigned($ids) && count($ids) > 0) {
+    $headerWhereClause = join(" OR ", array_map(function ($i) { return "id=\"$i\""; }, $ids));
+    $modelWhereClause = join(" OR ", array_map(function ($i) { return "c.id=\"$i\""; }, $ids));
+
+    $stockOutHeaders = query("
       SELECT
         stock_out_no                              AS `stock_out_no`,
         transaction_code                          AS `transaction_code`,
@@ -41,11 +45,12 @@
       FROM
         `stock_out_header`
       WHERE
-        id=\"$id\"
-    ")[0];
+        $headerWhereClause
+    ");
 
-    $stockOutModels = query("
+    $stockOutModelList = query("
       SELECT
+        a.stock_out_no                          AS `stock_out_no`,
         b.name                                  AS `brand`,
         a.model_no                              AS `model_no`,
         a.price                                 AS `price`,
@@ -60,8 +65,9 @@
         `stock_out_header` AS c
       ON a.stock_out_no=c.stock_out_no
       WHERE
-        c.id=\"$id\"
+        $modelWhereClause
       ORDER BY
+        a.stock_out_no ASC,
         a.stock_out_index ASC
     ");
   }
@@ -80,7 +86,10 @@
       $brands[$brand["code"]] = $brand["name"];
     }
 
-    $stockOutHeader = array(
+    $stockOutDate = new DateTime($stockOutDate);
+    $stockOutDate = $stockOutDate->format("d-m-Y");
+
+    $stockOutHeaders = array(array(
       "stock_out_no"        => $stockOutNo,
       "transaction_code"    => $transactionCode,
       "warehouse_code"      => $warehouseCode,
@@ -94,12 +103,11 @@
       "invoice_no"          => $invoiceNo,
       "remarks"             => $remarks,
       "status"              => $status
-    );
-
-    $stockOutModels = array();
+    ));
 
     for ($i = 0; $i < count($brandCodes); $i++) {
-      array_push($stockOutModels, array(
+      array_push($stockOutModelList, array(
+        "stock_out_no"       => $stockOutNo,
         "brand"             => $brands[$brandCodes[$i]],
         "model_no"          => $modelNos[$i],
         "price"             => $prices[$i],
@@ -109,15 +117,31 @@
     }
   }
 
-  if (isset($stockOutHeader)) {
-    $debtor = query("SELECT english_name AS name FROM `debtor` WHERE code=\"" . $stockOutHeader["debtor_code"] . "\"")[0];
-    $warehouse = query("SELECT name FROM `warehouse` WHERE code=\"" . $stockOutHeader["warehouse_code"] . "\"")[0];
+  if (count($stockOutHeaders) > 0) {
+    foreach ($stockOutHeaders as &$stockOutHeader) {
+      $debtor = query("SELECT english_name AS name FROM `debtor` WHERE code=\"" . $stockOutHeader["debtor_code"] . "\"")[0];
+      $warehouse = query("SELECT name FROM `warehouse` WHERE code=\"" . $stockOutHeader["warehouse_code"] . "\"")[0];
 
-    $stockOutHeader["transaction_type"] = $stockOutHeader["transaction_code"] . " - " . $TRANSACTION_CODES[$stockOutHeader["transaction_code"]];
-    $stockOutHeader["warehouse"] = $stockOutHeader["warehouse_code"] . " - " . (isset($warehouse) ? $warehouse["name"] : "Unknown");
-    $stockOutHeader["debtor"] = $stockOutHeader["debtor_code"] . " - " . (isset($debtor) ? $debtor["name"] : "Unknown");
-    $stockOutHeader["currency"] = $stockOutHeader["currency_code"] . " @ " . $stockOutHeader["exchange_rate"];
+      $stockOutHeader["transaction_type"] = $stockOutHeader["transaction_code"] . " - " . $TRANSACTION_CODES[$stockOutHeader["transaction_code"]];
+      $stockOutHeader["warehouse"] = $stockOutHeader["warehouse_code"] . " - " . (isset($warehouse) ? $warehouse["name"] : "Unknown");
+      $stockOutHeader["debtor"] = $stockOutHeader["debtor_code"] . " - " . (isset($debtor) ? $debtor["name"] : "Unknown");
+      $stockOutHeader["currency"] = $stockOutHeader["currency_code"] . " @ " . $stockOutHeader["exchange_rate"];
+      $stockOutHeader["miscellaneous"] = $stockOutHeader["transaction_code"] != "S1" && $stockOutHeader["transaction_code"] != "S3";
+    }
   }
 
-  $miscellaneous = $stockOutHeader["transaction_code"] != "S1" && $stockOutHeader["transaction_code"] != "S3";
+  if (count($stockOutModelList) > 0) {
+    foreach ($stockOutModelList as $stockOutModel) {
+      $stockOutNo = $stockOutModel["stock_out_no"];
+
+      $arrayPointer = &$stockOutModels;
+
+      if (!isset($arrayPointer[$stockOutNo])) {
+        $arrayPointer[$stockOutNo] = array();
+      }
+      $arrayPointer = &$arrayPointer[$stockOutNo];
+
+      array_push($arrayPointer, $stockOutModel);
+    }
+  }
 ?>

@@ -27,7 +27,8 @@
       c.name                                                                          AS `brand_name`,
       SUM(a.qty)                                                                      AS `qty`,
       SUM(a.qty_outstanding)                                                          AS `outstanding_qty`,
-      SUM(a.qty_outstanding * a.price * (100 - b.discount) / 100 * b.exchange_rate)   AS `outstanding_amt_base`
+      SUM(a.qty_outstanding * a.price * (100 - b.discount) / 100 * b.exchange_rate)   AS `outstanding_amt_base`,
+      SUM(a.qty_outstanding * a.price * b.exchange_rate)                              AS `outstanding_amt_gross_base`
     FROM
       `so_model` AS a
     LEFT JOIN
@@ -116,6 +117,7 @@
             <col style="width: 100px">
             <col style="width: 100px">
             <col style="width: 100px">
+            <col style="width: 100px">
           </colgroup>
           <thead>
             <tr></tr>
@@ -124,6 +126,7 @@
               <th class="number">Total Qty</th>
               <th class="number">Outstanding Qty</th>
               <th class="number">Outstanding Amt <?php echo $InBaseCurrency; ?></th>
+              <th class="number">Outstanding Gross <?php echo $InBaseCurrency; ?></th>
             </tr>
           </thead>
           <tbody>
@@ -131,6 +134,7 @@
             $totalQty = 0;
             $totalOutstanding = 0;
             $totalAmtBase = 0;
+            $totalGrossBase = 0;
 
             for ($i = 0; $i < count($soModels); $i++) {
               $soModel = $soModels[$i];
@@ -139,10 +143,12 @@
               $qty = $soModel["qty"];
               $outstandingQty = $soModel["outstanding_qty"];
               $outstandingAmtBase = $soModel["outstanding_amt_base"];
+              $outstandingGrossBase = $soModel["outstanding_amt_gross_base"];
 
               $totalQty += $qty;
               $totalOutstanding += $outstandingQty;
               $totalAmtBase += $outstandingAmtBase;
+              $totalGrossBase += $outstandingGrossBase;
 
               echo "
                 <tr>
@@ -152,6 +158,7 @@
                   <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
                   <td title=\"$outstandingQty\" class=\"number\">" . number_format($outstandingQty) . "</td>
                   <td title=\"$outstandingAmtBase\" class=\"number\">" . number_format($outstandingAmtBase, 2) . "</td>
+                  <td title=\"$outstandingGrossBase\" class=\"number\">" . number_format($outstandingGrossBase, 2) . "</td>
                 </tr>
               ";
             }
@@ -163,6 +170,7 @@
               <th class="number"><?php echo number_format($totalQty); ?></th>
               <th class="number"><?php echo number_format($totalOutstanding); ?></th>
               <th class="number"><?php echo number_format($totalAmtBase, 2); ?></th>
+              <th class="number"><?php echo number_format($totalGrossBase, 2); ?></th>
             </tr>
           </tfoot>
         </table>
