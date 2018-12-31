@@ -26,15 +26,15 @@
         <table id="creditor-header">
           <tr>
             <th>Creditor Code:</th>
-            <td class="number"><?php echo $creditor["code"]; ?></td>
+            <td><?php echo $creditor["code"]; ?></td>
           </tr>
           <tr>
             <th>English Name:</th>
-            <td class="number"><?php echo $creditor["english_name"]; ?></td>
+            <td><?php echo $creditor["english_name"]; ?></td>
           </tr>
           <tr>
             <th>Chinese Name:</th>
-            <td class="number"><?php echo $creditor["chinese_name"]; ?></td>
+            <td><?php echo $creditor["chinese_name"]; ?></td>
           </tr>
           <tr>
             <th>Billing Address:</th>
@@ -46,23 +46,23 @@
           </tr>
           <tr>
             <th>Contact:</th>
-            <td class="number"><?php echo $creditor["contact"]; ?></td>
+            <td><?php echo $creditor["contact"]; ?></td>
           </tr>
           <tr>
             <th>Telephone:</th>
-            <td class="number"><?php echo $creditor["tel"]; ?></td>
+            <td><?php echo $creditor["tel"]; ?></td>
           </tr>
           <tr>
             <th>Fax:</th>
-            <td class="number"><?php echo $creditor["fax"]; ?></td>
+            <td><?php echo $creditor["fax"]; ?></td>
           </tr>
           <tr>
             <th>Email:</th>
-            <td class="number"><?php echo $creditor["email"]; ?></td>
+            <td><?php echo $creditor["email"]; ?></td>
           </tr>
           <tr>
             <th>Credit Term:</th>
-            <td class="number"><?php echo $creditor["credit_term"]; ?></td>
+            <td><?php echo $creditor["credit_term"]; ?></td>
           </tr>
           <tr>
             <th>Profile:</th>

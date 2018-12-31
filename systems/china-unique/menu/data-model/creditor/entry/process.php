@@ -35,7 +35,7 @@
           email=\"$email\",
           credit_term=\"$creditTerm\",
           credit_limit=\"$creditLimit\",
-          profile=\"$profile\"
+          profile=\"$profile\",
           remarks=\"$remarks\"
         WHERE
           id=\"$id\"

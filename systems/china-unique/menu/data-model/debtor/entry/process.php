@@ -33,7 +33,7 @@
           fax=\"$fax\",
           email=\"$email\",
           credit_term=\"$creditTerm\",
-          profile=\"$profile\"
+          profile=\"$profile\",
           remarks=\"$remarks\"
         WHERE
           id=\"$id\"

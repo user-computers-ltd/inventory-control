@@ -26,15 +26,15 @@
         <table id="debtor-header">
           <tr>
             <th>Debtor Code:</th>
-            <td class="number"><?php echo $debtor["code"]; ?></td>
+            <td><?php echo $debtor["code"]; ?></td>
           </tr>
           <tr>
             <th>English Name:</th>
-            <td class="number"><?php echo $debtor["english_name"]; ?></td>
+            <td><?php echo $debtor["english_name"]; ?></td>
           </tr>
           <tr>
             <th>Chinese Name:</th>
-            <td class="number"><?php echo $debtor["chinese_name"]; ?></td>
+            <td><?php echo $debtor["chinese_name"]; ?></td>
           </tr>
           <tr>
             <th>Billing Address:</th>
@@ -46,23 +46,23 @@
           </tr>
           <tr>
             <th>Contact:</th>
-            <td class="number"><?php echo $debtor["contact"]; ?></td>
+            <td><?php echo $debtor["contact"]; ?></td>
           </tr>
           <tr>
             <th>Telephone:</th>
-            <td class="number"><?php echo $debtor["tel"]; ?></td>
+            <td><?php echo $debtor["tel"]; ?></td>
           </tr>
           <tr>
             <th>Fax:</th>
-            <td class="number"><?php echo $debtor["fax"]; ?></td>
+            <td><?php echo $debtor["fax"]; ?></td>
           </tr>
           <tr>
             <th>Email:</th>
-            <td class="number"><?php echo $debtor["email"]; ?></td>
+            <td><?php echo $debtor["email"]; ?></td>
           </tr>
           <tr>
             <th>Credit Term:</th>
-            <td class="number"><?php echo $debtor["credit_term"]; ?></td>
+            <td><?php echo $debtor["credit_term"]; ?></td>
           </tr>
           <tr>
             <th>Profile:</th>
