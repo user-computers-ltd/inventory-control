@@ -38,11 +38,11 @@
           </tr>
           <tr>
             <th>Billing Address:</th>
-            <td class="number multi-line"><?php echo $creditor["billing_address"]; ?></td>
+            <td class="multi-line"><?php echo $creditor["billing_address"]; ?></td>
           </tr>
           <tr>
             <th>Factory Address:</th>
-            <td class="number multi-line"><?php echo $creditor["factory_address"]; ?></td>
+            <td class="multi-line"><?php echo $creditor["factory_address"]; ?></td>
           </tr>
           <tr>
             <th>Contact:</th>
@@ -66,11 +66,11 @@
           </tr>
           <tr>
             <th>Profile:</th>
-            <td class="number multi-line"><?php echo $creditor["profile"]; ?></td>
+            <td class="multi-line"><?php echo $creditor["profile"]; ?></td>
           </tr>
           <tr>
             <th>Remarks:</th>
-            <td class="number multi-line"><?php echo $creditor["remarks"]; ?></td>
+            <td class="multi-line"><?php echo $creditor["remarks"]; ?></td>
           </tr>
         </table>
       <?php else : ?>
