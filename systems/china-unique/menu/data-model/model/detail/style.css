@@ -2,10 +2,13 @@
   width: 50%;
 }
 
+#model-header th,
+#model-header td {
+  font-size: 13px;
+}
+
 #model-header td {
   border: none;
-  font-size: 13px;
-  padding: 0px 5px;
 }
 
 #model-header th {

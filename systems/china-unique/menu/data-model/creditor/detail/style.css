@@ -2,13 +2,18 @@
   width: 50%;
 }
 
+#creditor-header th,
+#creditor-header td {
+  font-size: 13px;
+}
+
 #creditor-header td {
   border: none;
 }
 
 #creditor-header th {
   vertical-align: top;
-  width: 150px;
+  width: 200px;
 }
 
 #creditor-header input,

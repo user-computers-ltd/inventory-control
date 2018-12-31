@@ -2,13 +2,18 @@
   width: 50%;
 }
 
+#debtor-header th,
+#debtor-header td {
+  font-size: 13px;
+}
+
 #debtor-header td {
   border: none;
 }
 
 #debtor-header th {
   vertical-align: top;
-  width: 150px;
+  width: 200px;
 }
 
 #debtor-header input,
