@@ -7,7 +7,7 @@
   $InBaseCurrency = "(in " . COMPANY_CURRENCY . ")";
 
   $debtorCodes = $_GET["debtor_code"];
-  $outstandingOnly = $_GET["outstanding_only"];
+  $showMode = assigned($_GET["show_mode"]) ? $_GET["show_mode"] : "outstanding_only";
 
   $whereClause = "";
 
@@ -16,7 +16,7 @@
       AND (" . join(" OR ", array_map(function ($d) { return "a.debtor_code=\"$d\""; }, $debtorCodes)) . ")";
   }
 
-  if ($outstandingOnly == "on") {
+  if ($showMode == "outstanding_only") {
     $whereClause = $whereClause . "
       AND IFNULL(b.total_qty_outstanding, 0) > 0";
   }
@@ -121,11 +121,16 @@
               <input
                 id="input-outstanding-only"
                 type="checkbox"
-                name="outstanding_only"
-                onchange="this.form.submit()"
-                <?php echo $outstandingOnly == "on" ? "checked" : "" ?>
+                onchange="onOutstandingOnlyChanged(event)"
+                <?php echo $showMode == "outstanding_only" ? "checked" : "" ?>
               />
               <label for="input-outstanding-only">Outstanding only</label>
+              <input
+                id="input-show-mode"
+                type="hidden"
+                name="show_mode"
+                value="<?php echo $showMode; ?>"
+              />
             </th>
           </tr>
         </table>
@@ -187,7 +192,9 @@
               echo "
                 <tr>
                   <td title=\"$date\">$date</td>
-                  <td title=\"$soNo\"><a class=\"link\" href=\"" . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?id[]=$soId\">$soNo</a></td>
+                  <td title=\"$soNo\">
+                    <a class=\"link\" href=\"" . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?id[]=$soId\">$soNo</a>
+                  </td>
                   <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
                   <td title=\"$outstandingQty\" class=\"number\">" . number_format($outstandingQty) . "</td>
                   <td title=\"$currency\" class=\"number\">$currency</td>
@@ -221,5 +228,12 @@
         }
       ?>
     </div>
+    <script>
+      function onOutstandingOnlyChanged(event) {
+        var showMode = event.target.checked ? "outstanding_only" : "show_all";
+        document.querySelector("#input-show-mode").value = showMode;
+        event.target.form.submit();
+      }
+    </script>
   </body>
 </html>

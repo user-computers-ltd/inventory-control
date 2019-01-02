@@ -7,7 +7,7 @@
   $InBaseCurrency = "(in " . COMPANY_CURRENCY . ")";
 
   $brandCodes = $_GET["brand_code"];
-  $outstandingOnly = $_GET["outstanding_only"];
+  $showMode = assigned($_GET["show_mode"]) ? $_GET["show_mode"] : "outstanding_only";
 
   $whereClause = "";
 
@@ -16,7 +16,7 @@
       AND (" . join(" OR ", array_map(function ($i) { return "a.brand_code=\"$i\""; }, $brandCodes)) . ")";
   }
 
-  if ($outstandingOnly == "on") {
+  if ($showMode == "outstanding_only") {
     $whereClause = $whereClause . "
       AND a.qty_outstanding > 0";
   }
@@ -33,7 +33,7 @@
       a.qty_outstanding                                                           AS `qty_outstanding`,
       b.discount                                                                  AS `discount`,
       b.currency_code                                                             AS `currency`,
-      a.qty_outstanding * a.price                                                 AS `amt_outstanding`,
+      a.qty_outstanding * a.price * (100 - b.discount) / 100                      AS `amt_outstanding`,
       a.qty_outstanding * a.price * (100 - b.discount) / 100 * b.exchange_rate    AS `amt_outstanding_base`
     FROM
       `so_model` AS a
@@ -125,11 +125,16 @@
               <input
                 id="input-outstanding-only"
                 type="checkbox"
-                name="outstanding_only"
-                onchange="this.form.submit()"
-                <?php echo $outstandingOnly == "on" ? "checked" : "" ?>
+                onchange="onOutstandingOnlyChanged(event)"
+                <?php echo $showMode == "outstanding_only" ? "checked" : "" ?>
               />
               <label for="input-outstanding-only">Outstanding only</label>
+              <input
+                id="input-show-mode"
+                type="hidden"
+                name="show_mode"
+                value="<?php echo $showMode; ?>"
+              />
             </th>
           </tr>
         </table>
@@ -230,5 +235,12 @@
         }
       ?>
     </div>
+    <script>
+      function onOutstandingOnlyChanged(event) {
+        var showMode = event.target.checked ? "outstanding_only" : "show_all";
+        document.querySelector("#input-show-mode").value = showMode;
+        event.target.form.submit();
+      }
+    </script>
   </body>
 </html>

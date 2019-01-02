@@ -203,7 +203,9 @@
               echo "
                 <tr>
                   <td title=\"$brandCode\">$brandCode - $brandName</td>
-                  <td title=\"$modelNo\"><a class=\"link\" href=\"" . SALES_REPORT_MODEL_DETAIL_URL . "?brand_code[]=$brandCode&model_no[]=$modelNo\">$modelNo</a></td>
+                  <td title=\"$modelNo\">
+                    <a class=\"link\" href=\"" . SALES_REPORT_MODEL_DETAIL_URL . "?show_mode=$showMode&brand_code[]=$brandCode&model_no[]=$modelNo\">$modelNo</a>
+                  </td>
                   <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
                   <td title=\"$outstandingQty\" class=\"number\">" . number_format($outstandingQty) . "</td>
                   <td title=\"$outstandingAmtBase\" class=\"number\">" . number_format($outstandingAmtBase, 2) . "</td>

@@ -158,7 +158,7 @@
               echo "
                 <tr>
                   <td title=\"$brandCode\">
-                    <a class=\"link\" href=\"" . SALES_REPORT_BRAND_DETAIL_URL . "?brand_code[]=$brandCode\">$brandCode - $brandName</a>
+                    <a class=\"link\" href=\"" . SALES_REPORT_BRAND_DETAIL_URL . "?show_mode=$showMode&brand_code[]=$brandCode\">$brandCode - $brandName</a>
                   </td>
                   <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
                   <td title=\"$outstandingQty\" class=\"number\">" . number_format($outstandingQty) . "</td>

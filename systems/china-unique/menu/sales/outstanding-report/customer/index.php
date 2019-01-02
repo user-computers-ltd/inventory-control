@@ -162,7 +162,9 @@
 
               echo "
                 <tr>
-                  <td title=\"$debtor\"><a class=\"link\" href=\"" . SALES_REPORT_CUSTOMER_DETAIL_URL . "?debtor_code[]=$debtorCode\">$debtor</a></td>
+                  <td title=\"$debtor\">
+                    <a class=\"link\" href=\"" . SALES_REPORT_CUSTOMER_DETAIL_URL . "?show_mode=$showMode&debtor_code[]=$debtorCode\">$debtor</a>
+                  </td>
                   <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
                   <td title=\"$outstandingQty\" class=\"number\">" . number_format($outstandingQty) . "</td>
                   <td title=\"$outstandingAmtBase\" class=\"number\">" . number_format($outstandingAmtBase, 2) . "</td>
