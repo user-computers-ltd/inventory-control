@@ -10,6 +10,7 @@
   $netAmount = $_POST["net_amount"];
   $discount = $_POST["discount"];
   $tax = $_POST["tax"];
+  $invoiceNo = $_POST["invoice_no"];
   $remarks = $_POST["remarks"];
   $status = $_POST["status"];
   $brandCodes = $_POST["brand_code"];
@@ -38,6 +39,7 @@
         net_amount                               AS `net_amount`,
         discount                                 AS `discount`,
         tax                                      AS `tax`,
+        invoice_no                                AS `invoice_no`,
         remarks                                  AS `remarks`,
         status                                   AS `status`
       FROM
@@ -98,6 +100,7 @@
       "net_amount"          => $netAmount,
       "discount"            => $discount,
       "tax"                 => $tax,
+      "invoice_no"          => $invoiceNo,
       "remarks"             => $remarks,
       "status"              => $status
     ));

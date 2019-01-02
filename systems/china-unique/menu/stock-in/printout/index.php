@@ -130,6 +130,12 @@
               <div class="stock-in-models-no-results">No models</div>
             <?php endif ?>
             <table class="stock-in-footer">
+              <?php if (assigned($stockInHeader["invoice_no"])) : ?>
+                <tr>
+                  <td>Invoice No.:</td>
+                  <td><?php echo $stockInHeader["invoice_no"]; ?></td>
+                </tr>
+              <?php endif ?>
               <?php if (assigned($stockInHeader["remarks"])) : ?>
                 <tr>
                   <td>Remarks:</td>

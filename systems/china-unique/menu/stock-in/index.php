@@ -116,7 +116,6 @@
                   class="option-field"
                   name="net_amount"
                   type="number"
-                  step="1"
                   min="0"
                   value="<?php echo $netAmount; ?>"
                   onchange="onNetAmountChange()"
