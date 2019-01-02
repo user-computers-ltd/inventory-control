@@ -4,7 +4,7 @@
   $from = $_GET["from"];
   $to = $_GET["to"];
   $action = $_POST["action"];
-  $stockOutIds = $_POST["stock_out_no"];
+  $stockOutIds = $_POST["stock_out_id"];
 
   if (assigned($action) && assigned($stockOutIds) && count($stockOutIds) > 0) {
     $queries = array();
