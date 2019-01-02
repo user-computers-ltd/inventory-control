@@ -117,6 +117,7 @@
                   name="net_amount"
                   type="number"
                   min="0"
+                  step="0.01"
                   value="<?php echo $netAmount; ?>"
                   onchange="onNetAmountChange()"
                   required
