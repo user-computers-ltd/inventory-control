@@ -9,9 +9,9 @@
   if (assigned($action) && assigned($stockOutIds) && count($stockOutIds) > 0) {
     $queries = array();
 
-    $headerWhereClause = join(" OR ", array_map(function ($i) { return "id=\"$i\""; }, $stockInIds));
-    $modelWhereClause = join(" OR ", array_map(function ($i) { return "b.id=\"$i\""; }, $stockInIds));
-    $printoutParams = join("&", array_map(function ($i) { return "id[]=$i"; }, $stockInIds));
+    $headerWhereClause = join(" OR ", array_map(function ($i) { return "id=\"$i\""; }, $stockOutIds));
+    $modelWhereClause = join(" OR ", array_map(function ($i) { return "b.id=\"$i\""; }, $stockOutIds));
+    $printoutParams = join("&", array_map(function ($i) { return "id[]=$i"; }, $stockOutIds));
     $postStockOutNos = array_map(function ($i) { return $i["stock_out_no"]; }, query("SELECT stock_out_no FROM `stock_out_header` WHERE $headerWhereClause"));
 
     if ($action == "delete") {
