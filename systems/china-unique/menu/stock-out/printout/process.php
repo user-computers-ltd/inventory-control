@@ -54,6 +54,7 @@
         b.name                                  AS `brand`,
         a.model_no                              AS `model_no`,
         a.price                                 AS `price`,
+        d.cost_average                          AS `cost_average`,
         a.qty                                   AS `qty`,
         a.qty * a.price                         AS `subtotal`
       FROM
@@ -64,6 +65,9 @@
       LEFT JOIN
         `stock_out_header` AS c
       ON a.stock_out_no=c.stock_out_no
+      LEFT JOIN
+        `model` AS d
+      ON a.brand_code=d.brand_code AND a.model_no=d.model_no
       WHERE
         $modelWhereClause
       ORDER BY

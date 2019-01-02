@@ -61,15 +61,16 @@
                   <tr>
                     <th>Brand</th>
                     <th>Model No.</th>
-                    <?php if (!$miscellaneous): ?><th class="number">Price</th><?php endif ?>
+                    <?php if (!$miscellaneous) : ?><th class="number">Price</th><?php endif ?>
                     <th class="number">Qty</th>
-                    <?php if (!$miscellaneous): ?><th class="number">Subtotal</th><?php endif ?>
+                    <?php if (!$miscellaneous) : ?><th class="number">Subtotal</th><?php endif ?>
                   </tr>
                 </thead>
                 <tbody>
                   <?php
                     $totalQty = 0;
                     $subtotalSum = 0;
+                    $totalCost = 0;
                     $discount = $stockOutHeader["discount"];
                     $models = $stockOutModels[$stockOutHeader["stock_out_no"]];
 
@@ -78,11 +79,13 @@
                       $brand = $model["brand"];
                       $modelNo = $model["model_no"];
                       $price = $model["price"];
+                      $costAverage = $model["cost_average"];
                       $qty = $model["qty"];
                       $subtotal = $model["subtotal"];
 
                       $totalQty += $qty;
                       $subtotalSum += $subtotal;
+                      $totalCost += $qty * $costAverage;
 
                       echo "
                         <tr>
@@ -100,32 +103,41 @@
                   <?php if ($discount > 0) : ?>
                     <tr>
                       <td></td>
-                      <?php if (!$miscellaneous): ?><td></td><?php endif ?>
+                      <?php if (!$miscellaneous) : ?><td></td><?php endif ?>
                       <td></td>
                       <th></th>
-                      <?php if (!$miscellaneous): ?>
+                      <?php if (!$miscellaneous) : ?>
                         <th class="number"><?php echo number_format($subtotalSum, 2); ?></th>
                       <?php endif ?>
                     </tr>
                     <tr>
                       <td></td>
-                      <?php if (!$miscellaneous): ?><td></td><?php endif ?>
+                      <?php if (!$miscellaneous) : ?><td></td><?php endif ?>
                       <td></td>
                       <td class="number">Discount <?php echo $discount; ?>%</td>
-                      <?php if (!$miscellaneous): ?>
+                      <?php if (!$miscellaneous) : ?>
                         <td class="number"><?php echo number_format($subtotalSum * $discount / 100, 2); ?></td>
                       <?php endif ?>
                     </tr>
                   <?php endif ?>
                   <tr>
                     <th></th>
-                    <?php if (!$miscellaneous): ?><th></th><?php endif ?>
+                    <?php if (!$miscellaneous) : ?><th></th><?php endif ?>
                     <th class="number">Total:</th>
                     <th class="number"><?php echo number_format($totalQty); ?></th>
-                    <?php if (!$miscellaneous): ?>
+                    <?php if (!$miscellaneous) : ?>
                       <th class="number"><?php echo number_format($subtotalSum * (100 - $discount) / 100, 2); ?></th>
                     <?php endif ?>
                   </tr>
+                  <?php if (!$miscellaneous) : ?>
+                    <tr>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td class="number">Total Cost:</th>
+                      <td class="number"><?php echo number_format($totalCost, 2); ?></th>
+                    </tr>
+                  <?php endif ?>
                 </tfoot>
               </table>
             <?php else: ?>
