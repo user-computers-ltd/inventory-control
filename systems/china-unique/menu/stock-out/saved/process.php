@@ -24,7 +24,7 @@
         $queries = concat($queries, onPostStockOutVoucher($stockOutNo));
       }
     } else if ($action == "print") {
-      header("Location: " . STOCK_IN_PRINTOUT_URL . "?$printoutParams");
+      header("Location: " . STOCK_OUT_PRINTOUT_URL . "?$printoutParams");
       exit(0);
     }
 
