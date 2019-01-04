@@ -20,7 +20,7 @@
       <form>
         <table id="so-input">
           <tr>
-            <th>Customer:</th>
+            <th>Client:</th>
           </tr>
           <tr>
             <td>
@@ -39,7 +39,7 @@
           </tr>
         </table>
       </form>
-      <?php if (count($soHeaders) > 0): ?>
+      <?php if (count($soHeaders) > 0) : ?>
         <form method="post">
           <button type="submit">Save</button>
           <table class="so-results">
@@ -59,7 +59,7 @@
               <tr></tr>
               <tr>
                 <th>Date</th>
-                <th>Customer</th>
+                <th>Client</th>
                 <th>Order No.</th>
                 <th class="number">Total Qty</th>
                 <th class="number">Outstanding Qty</th>
@@ -132,7 +132,7 @@
           </table>
         </form>
       <?php else: ?>
-        <div class="so-customer-no-results">No results</div>
+        <div class="so-client-no-results">No results</div>
       <?php endif ?>
     </div>
   </body>

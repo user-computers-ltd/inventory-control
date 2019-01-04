@@ -21,9 +21,13 @@
   float: right;
 }
 
+.so-results th,
 .so-results td {
   min-width: 0px;
   max-width: 0px;
+}
+
+.so-results td {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -31,6 +35,10 @@
 
 .so-results .number {
   text-align: right;
+}
+
+.so-results .category {
+  text-align: center;
 }
 
 .so-model-no-results {

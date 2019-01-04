@@ -60,13 +60,13 @@
   $soHeaders = array();
 
   foreach ($results as $soHeader) {
-    $customer = $soHeader["debtor"];
+    $client = $soHeader["debtor"];
 
-    if (!isset($soHeaders[$customer])) {
-      $soHeaders[$customer] = array();
+    if (!isset($soHeaders[$client])) {
+      $soHeaders[$client] = array();
     }
 
-    array_push($soHeaders[$customer], $soHeader);
+    array_push($soHeaders[$client], $soHeader);
   }
 
   $debtors = query("
@@ -99,7 +99,7 @@
       <form>
         <table id="so-input">
           <tr>
-            <th>Customer:</th>
+            <th>Client:</th>
           </tr>
           <tr>
             <td>
@@ -138,14 +138,14 @@
       <?php
         if (count($soHeaders) > 0) {
 
-          foreach ($soHeaders as $customer => $headers) {
+          foreach ($soHeaders as $client => $headers) {
             $totalQty = 0;
             $totalOutstanding = 0;
             $totalAmtBase = 0;
 
             echo "
-              <div class=\"so-customer\">
-                <h4>$customer</h4>
+              <div class=\"so-client\">
+                <h4>$client</h4>
                 <table class=\"so-results\">
                   <colgroup>
                     <col style=\"width: 80px\">
@@ -224,7 +224,7 @@
             ";
           }
         } else {
-          echo "<div class=\"so-customer-no-results\">No results</div>";
+          echo "<div class=\"so-client-no-results\">No results</div>";
         }
       ?>
     </div>

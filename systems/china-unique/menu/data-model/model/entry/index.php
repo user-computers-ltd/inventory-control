@@ -18,7 +18,7 @@
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo $headline; ?></div>
-        <?php if (!assigned($id) || isset($model)): ?>
+        <?php if (!assigned($id) || isset($model)) : ?>
           <form method="post">
             <table id="model-table">
               <tr>
@@ -32,7 +32,7 @@
               <tr>
                 <td>Brand Code:</td>
                 <td>
-                  <?php if ($editMode): ?>
+                  <?php if ($editMode) : ?>
                     <input type="text" name="brand_code" value="<?php echo $brandCode; ?>" <?php echo $editMode ? "readonly" : ""; ?> required />
                   <?php else: ?>
                     <select name="brand_code" required>

@@ -1,13 +1,15 @@
 #model-input td {
   border: none;
   font-size: 13px;
-  padding: 0px 5px;
 }
 
-#model-input input,
 #model-input select {
   width: 100%;
   box-sizing: border-box;
+}
+
+#model-input #input-live-only {
+  margin: 0px;
 }
 
 #model-results th,

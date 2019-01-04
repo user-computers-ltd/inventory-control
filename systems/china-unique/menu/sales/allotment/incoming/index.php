@@ -21,7 +21,7 @@
         <table id="ia-input">
           <tr>
             <th>DO No.:</th>
-            <th>Customer:</th>
+            <th>Client:</th>
           </tr>
           <tr>
             <td>
@@ -51,7 +51,7 @@
           </tr>
         </table>
       </form>
-      <?php if (count($iaResults) > 0): ?>
+      <?php if (count($iaResults) > 0) : ?>
         <form method="post">
           <button type="submit">Save</button>
           <?php
@@ -109,7 +109,7 @@
                           <th>Model No.</th>
                           <th class=\"number\">Available Qty</th>
                           <th>SO No.</th>
-                          <th>Customer</th>
+                          <th>Client</th>
                           <th>Date</th>
                           <th class=\"number\">Outstanding Qty</th>
                           <th class=\"number\">Allot Qty</th>

@@ -210,7 +210,7 @@
             $totalAmt = 0;
 
             echo "
-              <div class=\"warehouse-customer\">
+              <div class=\"warehouse-client\">
                 <h4>$warehouseCode - $warehouseName</h4>
                 <table class=\"warehouse-results\">
                   <colgroup>

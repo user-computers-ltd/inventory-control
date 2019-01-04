@@ -13,39 +13,39 @@
   box-sizing: border-box;
 }
 
-.so-customer-header .delivery-order,
-.so-customer-header .currency,
-.so-customer-header .discount,
-.so-customer-header .tax,
-.so-customer-header .warehouse {
+.so-client-header .delivery-order,
+.so-client-header .currency,
+.so-client-header .discount,
+.so-client-header .tax,
+.so-client-header .warehouse {
   display: inline-block;
   margin: 10px;
   font-size: 13px;
   font-weight: bold;
 }
 
-.so-customer-header .currency,
-.so-customer-header .discount,
-.so-customer-header .tax,
-.so-customer-header .warehouse {
+.so-client-header .currency,
+.so-client-header .discount,
+.so-client-header .tax,
+.so-client-header .warehouse {
   float: right;
 }
 
-.so-customer-header .delivery-order {
+.so-client-header .delivery-order {
   margin-left: 0px;
 }
 
-.so-customer-header .currency {
+.so-client-header .currency {
   margin-right: 0px;
 }
 
-.so-customer-results th,
-.so-customer-results td {
+.so-client-results th,
+.so-client-results td {
   border-left: none;
   border-right: none;
 }
 
-.so-customer-results td {
+.so-client-results td {
   min-width: 0px;
   max-width: 0px;
   white-space: nowrap;
@@ -54,20 +54,20 @@
   vertical-align: top;
 }
 
-.so-customer-results tfoot th {
+.so-client-results tfoot th {
   border-top: 1px solid;
 }
 
-.so-customer-results .number {
+.so-client-results .number {
   text-align: right;
 }
 
-.so-customer-results input[type="checkbox"] {
+.so-client-results input[type="checkbox"] {
   margin: 0px;
   height: 10px;
 }
 
-.so-customer-results button.remove {
+.so-client-results button.remove {
   background: none;
   padding: 0px 5px;
   border: none;
@@ -77,7 +77,7 @@
   color: rgb(255, 100, 100);
 }
 
-.so-customer-no-results {
+.so-client-no-results {
   margin: 100px 0px;
   text-align: center;
   font-size: 40px;

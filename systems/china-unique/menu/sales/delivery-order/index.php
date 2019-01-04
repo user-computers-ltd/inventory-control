@@ -19,7 +19,7 @@
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo SALES_DELIVERY_ORDER_PRINTOUT_TITLE; ?></div>
-      <?php if (isset($doHeader)): ?>
+      <?php if (isset($doHeader)) : ?>
         <form method="post">
           <table id="do-header">
             <tr>
@@ -141,14 +141,14 @@
               <td><textarea id="remarks" name="remarks"><?php echo $doHeader["remarks"]; ?></textarea></td>
             </tr>
           </table>
-          <?php if ($doHeader["status"] == "SAVED"): ?>
+          <?php if ($doHeader["status"] == "SAVED") : ?>
             <button name="status" type="submit" value="SAVED">Save</button>
           <?php endif ?>
           <button name="status" type="submit" value="<?php echo $doHeader["status"]; ?>" formaction="<?php echo SALES_DELIVERY_ORDER_PRINTOUT_URL . "?id[]=$id"; ?>">Print</button>
-          <?php if ($doHeader["status"] == "SAVED" && !$hasIncoming): ?>
+          <?php if ($doHeader["status"] == "SAVED" && !$hasIncoming) : ?>
             <button name="status" type="submit" value="POSTED">Post</button>
           <?php endif ?>
-          <?php if ($doHeader["status"] == "SAVED"): ?>
+          <?php if ($doHeader["status"] == "SAVED") : ?>
             <button name="status" type="submit" value="DELETED">Delete</button>
           <?php endif ?>
         </form>

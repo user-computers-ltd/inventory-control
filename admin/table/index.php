@@ -84,7 +84,7 @@
               </select>
             </div>
           </form>
-          <?php if (count($results) > 0): ?>
+          <?php if (count($results) > 0) : ?>
             <table id="table-query-results">
               <thead>
                 <tr>
@@ -109,7 +109,7 @@
                 ?>
               </tbody>
             </table>
-          <?php elseif (isset($error)): ?>
+          <?php elseif (isset($error)) : ?>
             <div id="table-query-error"><?php echo $error; ?></div>
           <?php else: ?>
             <div id="table-query-no-results">No results</div>

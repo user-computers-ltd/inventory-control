@@ -200,7 +200,7 @@
             $totalAmt = 0;
 
             echo "
-              <div class=\"brand-customer\">
+              <div class=\"brand-client\">
                 <h4>$brandCode - $brandName</h4>
                 <table class=\"brand-results\">
                   <colgroup>
@@ -278,7 +278,7 @@
             ";
           }
         } else {
-          echo "<div class=\"brand-customer-no-results\">No results</div>";
+          echo "<div class=\"brand-client-no-results\">No results</div>";
         }
       ?>
     </div>

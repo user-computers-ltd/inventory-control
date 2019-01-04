@@ -50,13 +50,13 @@
   $doHeaders = array();
 
   foreach ($results as $doHeader) {
-    $customer = $doHeader["debtor"];
+    $client = $doHeader["debtor"];
 
-    if (!isset($doHeaders[$customer])) {
-      $doHeaders[$customer] = array();
+    if (!isset($doHeaders[$client])) {
+      $doHeaders[$client] = array();
     }
 
-    array_push($doHeaders[$customer], $doHeader);
+    array_push($doHeaders[$client], $doHeader);
   }
 
   $debtors = query("
@@ -90,7 +90,7 @@
             <col style="width: 100px">
           </colgroup>
           <tr>
-            <td><label for="do-debtors">Customer:</label></td>
+            <td><label for="do-debtors">Client:</label></td>
             <td>
               <select name="debtor_code[]" multiple>
                 <?php
@@ -110,14 +110,14 @@
       <?php
         if (count($doHeaders) > 0) {
 
-          foreach ($doHeaders as $customer => $headers) {
+          foreach ($doHeaders as $client => $headers) {
             $totalQtySum = 0;
             $totalAmtSum = 0;
             $totalAmtSumBase = 0;
 
             echo "
-              <div class=\"do-customer\">
-                <h4>$customer</h4>
+              <div class=\"do-client\">
+                <h4>$client</h4>
                 <table class=\"do-results\">
                   <colgroup>
                     <col>
@@ -190,7 +190,7 @@
             ";
           }
         } else {
-          echo "<div class=\"do-customer-no-results\">No results</div>";
+          echo "<div class=\"do-client-no-results\">No results</div>";
         }
       ?>
     </div>

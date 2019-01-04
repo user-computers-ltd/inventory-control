@@ -27,15 +27,16 @@
       AND a.qty_outstanding > 0";
   }
 
-  $soModels = query("
+  $results = query("
     SELECT
       a.brand_code                                                                    AS `brand_code`,
       c.name                                                                          AS `brand_name`,
       a.model_no                                                                      AS `model_no`,
-      SUM(a.qty)                                                                      AS `qty`,
+      COUNT(DISTINCT b.debtor_code)                                                   AS `client_count`,
       SUM(a.qty_outstanding)                                                          AS `qty_outstanding`,
-      SUM(a.qty_outstanding * a.price * (100 - b.discount) / 100 * b.exchange_rate)   AS `amt_outstanding_base`,
-      SUM(a.qty_outstanding * a.price * b.exchange_rate)                              AS `amt_outstanding_gross_base`
+      IFNULL(e.qty_on_hand, 0)                                                        AS `qty_on_hand`,
+      IFNULL(f.qty_on_order, 0)                                                       AS `qty_on_order`,
+      IFNULL(g.qty_on_reserve, 0)                                                     AS `qty_on_reserve`
     FROM
       `so_model` AS a
     LEFT JOIN
@@ -47,6 +48,40 @@
     LEFT JOIN
       `model` AS d
     ON a.brand_code=d.brand_code AND a.model_no=d.model_no
+    LEFT JOIN
+      (SELECT
+        model_no, brand_code, SUM(qty) AS `qty_on_hand`
+      FROM
+        `stock`
+      GROUP BY
+        model_no, brand_code) AS e
+    ON a.model_no=e.model_no AND a.brand_code=e.brand_code
+    LEFT JOIN
+      (SELECT
+        m.brand_code, m.model_no, SUM(GREATEST(qty_outstanding, 0)) AS `qty_on_order`
+      FROM
+        `po_model` AS m
+      LEFT JOIN
+        `po_header` AS h
+      ON m.po_no=h.po_no
+      WHERE
+        h.status='POSTED'
+      GROUP BY
+        m.model_no, m.brand_code) AS f
+    ON a.model_no=f.model_no AND a.brand_code=f.brand_code
+    LEFT JOIN
+      (SELECT
+        m.brand_code, m.model_no, SUM(m.qty) AS `qty_on_reserve`
+      FROM
+        `sdo_model` AS m
+      LEFT JOIN
+        `sdo_header` AS h
+      ON m.do_no=h.do_no
+      WHERE
+        h.status=\"SAVED\"
+      GROUP BY
+        m.model_no, m.brand_code) AS g
+    ON a.model_no=g.model_no AND a.brand_code=g.brand_code
     WHERE
       b.status=\"POSTED\"
       $whereClause
@@ -56,6 +91,21 @@
       a.brand_code ASC,
       a.model_no ASC
   ");
+
+  $soModels = array();
+
+  foreach ($results as $soModel) {
+    $brand = $soModel["brand_code"] . " - " . $soModel["brand_name"];
+
+    $arrayPointer = &$soModels;
+
+    if (!isset($arrayPointer[$brand])) {
+      $arrayPointer[$brand] = array();
+    }
+    $arrayPointer = &$arrayPointer[$brand];
+
+    array_push($arrayPointer, $soModel);
+  }
 
   $brands = query("
     SELECT DISTINCT
@@ -157,79 +207,93 @@
           </tr>
         </table>
       </form>
-      <?php if (count($soModels) > 0): ?>
-        <table class="so-results">
-          <colgroup>
-            <col>
-            <col>
-            <col style="width: 100px">
-            <col style="width: 100px">
-            <col style="width: 100px">
-            <col style="width: 100px">
-          </colgroup>
-          <thead>
-            <tr></tr>
-            <tr>
-              <th>Brand</th>
-              <th>Model No.</th>
-              <th class="number">Total Qty</th>
-              <th class="number">Outstanding Qty</th>
-              <th class="number">Outstanding Amt <?php echo $InBaseCurrency; ?></th>
-              <th class="number">(Exc. Discount)</th>
-            </tr>
-          </thead>
-          <tbody>
-          <?php
-            $totalQty = 0;
-            $totalOutstanding = 0;
-            $totalAmtBase = 0;
-            $totalGrossBase = 0;
-
-            for ($i = 0; $i < count($soModels); $i++) {
-              $soModel = $soModels[$i];
-              $brandCode = $soModel["brand_code"];
-              $brandName = $soModel["brand_name"];
-              $modelNo = $soModel["model_no"];
-              $qty = $soModel["qty"];
-              $outstandingQty = $soModel["qty_outstanding"];
-              $outstandingAmtBase = $soModel["amt_outstanding_base"];
-              $outstandingGrossBase = $soModel["amt_outstanding_gross_base"];
-
-              $totalQty += $qty;
-              $totalOutstanding += $outstandingQty;
-              $totalAmtBase += $outstandingAmtBase;
-              $totalGrossBase += $outstandingGrossBase;
-
-              echo "
+      <?php if (count($soModels) > 0) : ?>
+        <?php foreach ($soModels as $brand => &$models) : ?>
+          <div class="so-brand">
+            <h4><?php echo $brand; ?></h4>
+            <table class="so-results">
+              <colgroup>
+                <col>
+                <col style="width: 80px">
+                <col style="width: 100px">
+                <col style="width: 80px">
+                <col style="width: 80px">
+                <col style="width: 80px">
+                <col style="width: 80px">
+                <col style="width: 80px">
+              </colgroup>
+              <thead>
+                <tr></tr>
                 <tr>
-                  <td title=\"$brandCode\">$brandCode - $brandName</td>
-                  <td title=\"$modelNo\">
-                    <a class=\"link\" href=\"" . SALES_REPORT_MODEL_DETAIL_URL . "?show_mode=$showMode&brand_code[]=$brandCode&model_no[]=$modelNo\">$modelNo</a>
-                  </td>
-                  <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
-                  <td title=\"$outstandingQty\" class=\"number\">" . number_format($outstandingQty) . "</td>
-                  <td title=\"$outstandingAmtBase\" class=\"number\">" . number_format($outstandingAmtBase, 2) . "</td>
-                  <td title=\"$outstandingGrossBase\" class=\"number\">" . number_format($outstandingGrossBase, 2) . "</td>
+                  <th rowspan="2">Model No.</th>
+                  <th rowspan="2" class="number"># Clients</th>
+                  <th colspan="6" class="category">Qty</th>
                 </tr>
-              ";
-            }
-          ?>
-          </tbody>
-          <tfoot>
-            <tr>
-              <th></th>
-              <th class="number">Total:</th>
-              <th class="number"><?php echo number_format($totalQty); ?></th>
-              <th class="number"><?php echo number_format($totalOutstanding); ?></th>
-              <th class="number"><?php echo number_format($totalAmtBase, 2); ?></th>
-              <th class="number"><?php echo number_format($totalGrossBase, 2); ?></th>
-            </tr>
-          </tfoot>
-        </table>
-      </div>
-    <?php else: ?>
-      <div class="so-model-no-results">No results</div>
-    <?php endif ?>
+                <tr>
+                  <th class="number">SO Outstanding</th>
+                  <th class="number">On Hand</th>
+                  <th class="number">On Order</th>
+                  <th class="number">On Reserve</th>
+                  <th class="number">Available</th>
+                  <th class="number">To Order</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php
+                  $totalOutstanding = 0;
+
+                  for ($i = 0; $i < count($models); $i++) {
+                    $soModel = $models[$i];
+                    $brandCode = $soModel["brand_code"];
+                    $modelNo = $soModel["model_no"];
+                    $clientCount = $soModel["client_count"];
+                    $outstandingQty = $soModel["qty_outstanding"];
+                    $onHandQty = $soModel["qty_on_hand"];
+                    $onOrderQty = $soModel["qty_on_order"];
+                    $onReserveQty = $soModel["qty_on_reserve"];
+                    $availableQty = $onHandQty - $onReserveQty;
+                    $toOrderQty = max(0, $outstandingQty - $onHandQty - $onOrderQty);
+
+                    $linkParams = "?show_mode=$showMode&brand_code[]=" . urlencode($brandCode) . "&model_no[]=" . urlencode($modelNo);
+
+                    $totalOutstanding += $outstandingQty;
+
+                    echo "
+                      <tr>
+                        <td title=\"$modelNo\">
+                          <a class=\"link\" href=\"" . SALES_REPORT_MODEL_DETAIL_URL . "$linkParams\">$modelNo</a>
+                        </td>
+                        <td title=\"$clientCount\" class=\"number\">" . number_format($clientCount) . "</td>
+                        <td title=\"$outstandingQty\" class=\"number\">" . number_format($outstandingQty) . "</td>
+                        <td title=\"$onHandQty\" class=\"number\">" . number_format($onHandQty) . "</td>
+                        <td title=\"$onOrderQty\" class=\"number\">" . number_format($onOrderQty) . "</td>
+                        <td title=\"$onReserveQty\" class=\"number\">" . number_format($onReserveQty) . "</td>
+                        <td title=\"$availableQty\" class=\"number\">" . number_format($availableQty) . "</td>
+                        <td title=\"$toOrderQty\" class=\"number\">" . number_format($toOrderQty) . "</td>
+                      </tr>
+                    ";
+                  }
+                ?>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th class="number">Total:</th>
+                  <th></th>
+                  <th class="number"><?php echo number_format($totalOutstanding); ?></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <div class="so-model-no-results">No results</div>
+      <?php endif ?>
+    </div>
     <script>
       function onOutstandingOnlyChanged(event) {
         var showMode = event.target.checked ? "outstanding_only" : "show_all";

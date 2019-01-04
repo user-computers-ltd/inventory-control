@@ -47,10 +47,14 @@
 #stock-in-models td {
   min-width: 0px;
   max-width: 0px;
+  border-left: none;
+  border-right: none;
   line-height: 25px;
-  border: none;
-  padding: 2px;
-  overflow: hidden;
+}
+
+#stock-in-models td {
+  border-top: none;
+  border-bottom: none;
 }
 
 #stock-in-models thead th {

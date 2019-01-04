@@ -38,9 +38,14 @@
 #so-models td {
   min-width: 0px;
   max-width: 0px;
+  border-left: none;
+  border-right: none;
   line-height: 25px;
-  border: none;
-  padding: 2px;
+}
+
+#so-models td {
+  border-top: none;
+  border-bottom: none;
 }
 
 #so-models thead th {

@@ -25,6 +25,7 @@
     SELECT
       a.debtor_code                                                                           AS `debtor_code`,
       CONCAT(a.debtor_code, ' - ', IFNULL(c.english_name, 'Unknown'))                         AS `debtor`,
+      COUNT(*)                                                                                AS `count`,
       SUM(IFNULL(b.total_qty, 0))                                                             AS `qty`,
       SUM(IFNULL(b.total_qty_outstanding, 0))                                                 AS `qty_outstanding`,
       SUM(IFNULL(b.total_amt_outstanding, 0) * (100 - a.discount) / 100 * a.exchange_rate)    AS `amt_outstanding_base`,
@@ -84,7 +85,7 @@
       <form>
         <table id="so-input">
           <tr>
-            <th>Customer:</th>
+            <th>Client:</th>
           </tr>
           <tr>
             <td>
@@ -120,10 +121,11 @@
           </tr>
         </table>
       </form>
-      <?php if (count($soHeaders) > 0): ?>
+      <?php if (count($soHeaders) > 0) : ?>
         <table class="so-results">
           <colgroup>
             <col>
+            <col style="width: 60px">
             <col style="width: 100px">
             <col style="width: 100px">
             <col style="width: 100px">
@@ -132,7 +134,8 @@
           <thead>
             <tr></tr>
             <tr>
-              <th>Customer</th>
+              <th>Client</th>
+              <th class="number"># Orders</th>
               <th class="number">Total Qty</th>
               <th class="number">Outstanding Qty</th>
               <th class="number">Outstanding Amt <?php echo $InBaseCurrency; ?></th>
@@ -141,6 +144,7 @@
           </thead>
           <tbody>
           <?php
+            $totalCount = 0;
             $totalQty = 0;
             $totalOutstanding = 0;
             $totalAmtBase = 0;
@@ -150,11 +154,13 @@
               $soHeader = $soHeaders[$i];
               $debtorCode = $soHeader["debtor_code"];
               $debtor = $soHeader["debtor"];
+              $count = $soHeader["count"];
               $qty = $soHeader["qty"];
               $outstandingQty = $soHeader["qty_outstanding"];
               $outstandingAmtBase = $soHeader["amt_outstanding_base"];
               $outstandingGrossBase = $soHeader["amt_outstanding_gross_base"];
 
+              $totalCount += $count;
               $totalQty += $qty;
               $totalOutstanding += $outstandingQty;
               $totalAmtBase += $outstandingAmtBase;
@@ -165,6 +171,7 @@
                   <td title=\"$debtor\">
                     <a class=\"link\" href=\"" . SALES_REPORT_CUSTOMER_DETAIL_URL . "?show_mode=$showMode&debtor_code[]=$debtorCode\">$debtor</a>
                   </td>
+                  <td title=\"$count\" class=\"number\">" . number_format($count) . "</td>
                   <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
                   <td title=\"$outstandingQty\" class=\"number\">" . number_format($outstandingQty) . "</td>
                   <td title=\"$outstandingAmtBase\" class=\"number\">" . number_format($outstandingAmtBase, 2) . "</td>
@@ -177,6 +184,7 @@
           <tfoot>
             <tr>
               <th class="number">Total:</th>
+              <th class="number"><?php echo number_format($totalCount); ?></th>
               <th class="number"><?php echo number_format($totalQty); ?></th>
               <th class="number"><?php echo number_format($totalOutstanding); ?></th>
               <th class="number"><?php echo number_format($totalAmtBase, 2); ?></th>
@@ -186,7 +194,7 @@
         </table>
       </div>
     <?php else: ?>
-      <div class="so-customer-no-results">No results</div>
+      <div class="so-client-no-results">No results</div>
     <?php endif ?>
     <script>
       function onOutstandingOnlyChanged(event) {

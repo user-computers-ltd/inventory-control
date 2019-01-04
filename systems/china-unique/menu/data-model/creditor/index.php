@@ -77,7 +77,7 @@
       <form action="<?php echo DATA_MODEL_CREDITOR_ENTRY_URL; ?>">
         <button type="submit">Create</button>
       </form>
-      <?php if (count($results) > 0): ?>
+      <?php if (count($results) > 0) : ?>
         <table id="creditor-results">
           <colgroup>
             <col>

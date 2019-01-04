@@ -121,7 +121,7 @@
           </tr>
         </table>
       </form>
-      <?php if (count($transactions) > 0): ?>
+      <?php if (count($transactions) > 0) : ?>
         <table id="trans-results">
           <colgroup>
             <col style="width: 70px">
@@ -217,10 +217,10 @@
             </tr>
           </tfoot>
         </table>
-      <?php elseif ($hasFilter): ?>
-        <div class="trans-customer-no-results">No results</div>
+      <?php elseif ($hasFilter) : ?>
+        <div class="trans-client-no-results">No results</div>
       <?php else: ?>
-        <div class="trans-customer-no-results">Please select a date range</div>
+        <div class="trans-client-no-results">Please select a date range</div>
       <?php endif ?>
     </div>
   </body>

@@ -20,7 +20,7 @@
       <form>
         <table id="so-input">
           <tr>
-            <th>Customer:</th>
+            <th>Client:</th>
           </tr>
           <tr>
             <td>
@@ -43,7 +43,7 @@
             $debtorName = $debtorAllotments["name"];
             $debtorAllotmentModels = $debtorAllotments["models"];
 
-            echo "<div class=\"so-customer\"><h4>$debtorCode - $debtorName</h4>";
+            echo "<div class=\"so-client\"><h4>$debtorCode - $debtorName</h4>";
 
             foreach ($debtorAllotmentModels as $currencyCode => $currencyAllotments) {
               $exchangeRate = $currencyAllotments["rate"];
@@ -73,7 +73,7 @@
                       }
                       echo "
                         <form method=\"post\">
-                          <div class=\"so-customer-header\">
+                          <div class=\"so-client-header\">
                             $option
                             <span class=\"currency\">$currencyCode @ $exchangeRate</span>
                             <span class=\"discount\">Discount: $discount%</span>
@@ -89,7 +89,7 @@
 
                       if (count($doAllotments) > 0) {
                         echo "
-                          <table class=\"so-customer-results\">
+                          <table class=\"so-client-results\">
                             <colgroup>
                               <col class=\"web-only\" style=\"width: 30px\">
                               <col style=\"width: 80px\">
@@ -242,7 +242,7 @@
                           </table>
                         ";
                       } else {
-                        echo "<div class=\"so-customer-no-results\">No sales details</div>";
+                        echo "<div class=\"so-client-no-results\">No sales details</div>";
                       }
 
                       echo "</form>";
@@ -255,7 +255,7 @@
             echo "</div>";
           }
         } else {
-          echo "<div class=\"so-customer-no-results\">No results</div>";
+          echo "<div class=\"so-client-no-results\">No results</div>";
         }
       ?>
     </div>

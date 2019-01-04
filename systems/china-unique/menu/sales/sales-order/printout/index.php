@@ -30,7 +30,7 @@
               </tr>
               <tr>
                 <td>Client:</td>
-                <td><?php echo $soHeader["customer"]; ?></td>
+                <td><?php echo $soHeader["client"]; ?></td>
                 <td>Currency:</td>
                 <td><?php echo $soHeader["currency"]; ?></td>
               </tr>

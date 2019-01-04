@@ -28,19 +28,19 @@
               </tr>
               <tr>
                 <td>Client:</td>
-                <td><?php echo $doHeader["customer_name"]; ?></td>
+                <td><?php echo $doHeader["client_name"]; ?></td>
               </tr>
               <tr>
                 <td>Address:</td>
-                <td><?php echo $doHeader["customer_address"]; ?></td>
+                <td><?php echo $doHeader["client_address"]; ?></td>
               </tr>
               <tr>
                 <td>Contact:</td>
-                <td><?php echo $doHeader["customer_contact"]; ?></td>
+                <td><?php echo $doHeader["client_contact"]; ?></td>
               </tr>
               <tr>
                 <td>Tel:</td>
-                <td><?php echo $doHeader["customer_tel"]; ?></td>
+                <td><?php echo $doHeader["client_tel"]; ?></td>
               </tr>
               <tr>
                 <td>Date:</td>

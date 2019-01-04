@@ -7,6 +7,7 @@
 
   $filterBrandCodes = $_GET["filter_brand_code"];
   $filterModelNos = $_GET["filter_model_no"];
+  $showMode = assigned($_GET["show_mode"]) ? $_GET["show_mode"] : "live_only";
 
   $whereClause = "";
 
@@ -18,6 +19,16 @@
   if (assigned($filterModelNos) && count($filterModelNos) > 0) {
     $whereClause = $whereClause . "
       AND (" . join(" OR ", array_map(function ($i) { return "a.model_no=\"$i\""; }, $filterModelNos)) . ")";
+  }
+
+  if ($showMode == "live_only") {
+    $whereClause = $whereClause . "
+      AND (
+        IFNULL(c.qty_on_hand, 0) <> 0 OR
+        IFNULL(d.qty_on_order, 0) <> 0 OR
+        IFNULL(e.qty_on_reserve, 0) <> 0
+      )
+    ";
   }
 
   $results = query("
@@ -58,11 +69,16 @@
     ON a.model_no=d.model_no AND a.brand_code=d.brand_code
     LEFT JOIN
       (SELECT
-        brand_code, model_no, SUM(qty) AS `qty_on_reserve`
+        m.brand_code, m.model_no, SUM(m.qty) AS `qty_on_reserve`
       FROM
-        `so_allotment`
+        `sdo_model` AS m
+      LEFT JOIN
+        `sdo_header` AS h
+      ON m.do_no=h.do_no
+      WHERE
+        h.status=\"SAVED\"
       GROUP BY
-        model_no, brand_code) AS e
+        m.model_no, m.brand_code) AS e
     ON a.model_no=e.model_no AND a.brand_code=e.brand_code
     WHERE
       a.brand_code IS NOT NULL
@@ -145,12 +161,29 @@
             </td>
             <td><button type="submit">Go</button></td>
           </tr>
+          <tr>
+            <th>
+              <input
+                id="input-live-only"
+                type="checkbox"
+                onchange="onLiveOnlyChanged(event)"
+                <?php echo $showMode == "live_only" ? "checked" : "" ?>
+              />
+              <label for="input-live-only">Live only</label>
+              <input
+                id="input-show-mode"
+                type="hidden"
+                name="show_mode"
+                value="<?php echo $showMode; ?>"
+              />
+            </th>
+          </tr>
         </table>
       </form>
       <form action="<?php echo DATA_MODEL_MODEL_ENTRY_URL; ?>">
         <button type="submit">Create</button>
       </form>
-      <?php if (count($results) > 0): ?>
+      <?php if (count($results) > 0) : ?>
         <table id="model-results">
           <colgroup>
             <col>
@@ -202,5 +235,12 @@
         <div class="model-no-results">No results</div>
       <?php endif ?>
     </div>
+    <script>
+      function onLiveOnlyChanged(event) {
+        var showMode = event.target.checked ? "live_only" : "show_all";
+        document.querySelector("#input-show-mode").value = showMode;
+        event.target.form.submit();
+      }
+    </script>
   </body>
 </html>

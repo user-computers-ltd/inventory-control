@@ -31,7 +31,7 @@
           </tr>
         </table>
       </form>
-      <?php if (count($soHeaders) > 0): ?>
+      <?php if (count($soHeaders) > 0) : ?>
         <form method="post">
           <button type="submit" name="action" value="post">Post</button>
           <button type="submit" name="action" value="print">Print</button>
@@ -55,7 +55,7 @@
                 <th class="web-only"></th>
                 <th>Date</th>
                 <th>Order No.</th>
-                <th>Customer</th>
+                <th>Client</th>
                 <th class="number">Total Qty</th>
                 <th class="number">Outstanding Qty</th>
                 <th class="number">Discount</th>
@@ -121,7 +121,7 @@
           </table>
         </form>
       <?php else: ?>
-        <div class="so-customer-no-results">No results</div>
+        <div class="so-client-no-results">No results</div>
       <?php endif ?>
     </div>
   </body>

@@ -18,7 +18,14 @@
 #do-models td {
   min-width: 0px;
   max-width: 0px;
-  border: none;
+  border-left: none;
+  border-right: none;
+  line-height: 25px;
+}
+
+#do-models td {
+  border-top: none;
+  border-bottom: none;
 }
 
 #do-models thead th {

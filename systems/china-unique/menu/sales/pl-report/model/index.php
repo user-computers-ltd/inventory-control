@@ -133,7 +133,7 @@
           </tr>
         </table>
       </form>
-      <?php if (count($soModels) > 0): ?>
+      <?php if (count($soModels) > 0) : ?>
         <table class="so-results">
           <colgroup>
             <col style="width: 100px">

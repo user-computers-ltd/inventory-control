@@ -18,7 +18,7 @@
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo $headline; ?></div>
-      <?php if (assigned($soNo)): ?>
+      <?php if (assigned($soNo)) : ?>
         <form id="so-form" method="post">
           <table id="so-header">
             <tr>
@@ -156,11 +156,11 @@
               <td><textarea id="remarks" name="remarks"><?php echo $remarks; ?></textarea></td>
             </tr>
           </table>
-          <?php if ($status == "DRAFT" || $status == "SAVED"): ?>
+          <?php if ($status == "DRAFT" || $status == "SAVED") : ?>
             <button name="status" type="submit" value="SAVED">Save</button>
           <?php endif ?>
           <button name="status" type="submit" value="<?php echo $status; ?>" formaction="<?php echo SALES_ORDER_PRINTOUT_URL; ?>">Print</button>
-          <?php if ($status == "SAVED"): ?>
+          <?php if ($status == "SAVED") : ?>
             <button name="status" type="submit" value="POSTED">Post</button>
             <button name="status" type="submit" value="DELETED">Delete</button>
           <?php endif ?>

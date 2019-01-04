@@ -32,7 +32,7 @@
           </tr>
         </table>
       </form>
-      <?php if (count($stockInHeaders) > 0): ?>
+      <?php if (count($stockInHeaders) > 0) : ?>
         <form method="post">
           <button type="submit" name="action" value="post">Post</button>
           <button type="submit" name="action" value="print">Print</button>
@@ -127,7 +127,7 @@
           </table>
         </form>
       <?php else: ?>
-        <div class="stock-in-customer-no-results">No results</div>
+        <div class="stock-in-client-no-results">No results</div>
       <?php endif ?>
     </div>
   </body>

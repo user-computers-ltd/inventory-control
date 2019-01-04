@@ -100,27 +100,27 @@
                   <?php if ($discount > 0) : ?>
                     <tr>
                       <td></td>
-                      <?php if (!$miscellaneous): ?><td></td><?php endif ?>
+                      <?php if (!$miscellaneous) : ?><td></td><?php endif ?>
                       <td></td>
                       <th></th>
                       <th class="number"><?php echo number_format($subtotalSum, 2); ?></th>
                     </tr>
                     <tr>
                       <td></td>
-                      <?php if (!$miscellaneous): ?><td></td><?php endif ?>
+                      <?php if (!$miscellaneous) : ?><td></td><?php endif ?>
                       <td></td>
                       <td class="number">Discount <?php echo $discount; ?>%</td>
-                      <?php if (!$miscellaneous): ?>
+                      <?php if (!$miscellaneous) : ?>
                         <td class="number"><?php echo number_format($subtotalSum * $discount / 100, 2); ?></td>
                       <?php endif ?>
                     </tr>
                   <?php endif ?>
                   <tr>
                     <th></th>
-                    <?php if (!$miscellaneous): ?><th></th><?php endif ?>
+                    <?php if (!$miscellaneous) : ?><th></th><?php endif ?>
                     <th class="number">Total:</th>
                     <th class="number"><?php echo number_format($totalQty); ?></th>
-                    <?php if (!$miscellaneous): ?>
+                    <?php if (!$miscellaneous) : ?>
                       <th class="number"><?php echo number_format($subtotalSum * (100 - $discount) / 100, 2); ?></th>
                     <?php endif ?>
                   </tr>
