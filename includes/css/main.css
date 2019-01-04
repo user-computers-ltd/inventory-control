@@ -58,10 +58,8 @@ table thead th {
 }
 
 .page-wrapper {
-  position: absolute;
-  margin-left: -400px;
-  top: 0px;
-  left: 50%;
+  display: block;
+  margin: auto;
   width: 800px;
 }
 

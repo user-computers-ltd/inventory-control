@@ -4,20 +4,13 @@
   page-break-after: always;
 }
 
-.do-header,
-.do-footer {
-  font-size: 16px;
-  line-height: 16px;
-}
-
-.do-header td {
-  vertical-align: top;
-  white-space: pre;
-}
-
 .do-header td,
 .do-footer td {
+  vertical-align: top;
   border: none;
+  white-space: pre;
+  font-size: 16px;
+  line-height: 16px;
 }
 
 .do-header td:nth-child(2n + 1),
