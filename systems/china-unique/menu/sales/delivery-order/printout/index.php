@@ -127,13 +127,13 @@
             <table class="do-footer">
               <?php if (assigned($doHeader["invoice_no"])) : ?>
                 <tr>
-                  <td>Invoice No.:</td>
+                  <td>發票編號:</td>
                   <td><?php echo $doHeader["invoice_no"]; ?></td>
                 </tr>
               <?php endif ?>
               <?php if (assigned($doHeader["remarks"])) : ?>
                 <tr>
-                  <td>Remarks:</td>
+                  <td>備註:</td>
                   <td><?php echo $doHeader["remarks"]; ?></td>
                 </tr>
               <?php endif ?>
