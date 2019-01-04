@@ -28,7 +28,7 @@
               </tr>
               <tr>
                 <td>致:</td>
-                <td><?php echo $doHeader["client_name"]; ?></td>
+                <td><?php echo $doHeader["client_name"] . " (" . $doHeader["client_code"] . ")"; ?></td>
               </tr>
               <tr>
                 <td>地址:</td>

@@ -14,6 +14,7 @@
       SELECT
         a.do_no                                           AS `do_no`,
         DATE_FORMAT(a.do_date, '%d-%m-%Y')                AS `date`,
+        a.debtor_code                                     AS `client_code`,
         IFNULL(b.english_name, 'Unknown')                 AS `client_name`,
         b.billing_address                                 AS `client_address`,
         b.contact                                         AS `client_contact`,

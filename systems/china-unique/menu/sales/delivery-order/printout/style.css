@@ -7,10 +7,12 @@
 .do-header,
 .do-footer {
   font-size: 16px;
+  line-height: 16px;
 }
 
 .do-header td {
   vertical-align: top;
+  white-space: pre;
 }
 
 .do-header td,
