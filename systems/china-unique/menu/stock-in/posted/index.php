@@ -19,7 +19,7 @@
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo STOCK_IN_POSTED_TITLE; ?></div>
       <form>
-        <table id="stock-in-input">
+        <table id="stock-in-input" class="web-only">
           <tr>
             <th>From:</th>
             <th>To:</th>

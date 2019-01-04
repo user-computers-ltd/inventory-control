@@ -18,7 +18,7 @@
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo SALES_ORDER_PRIORITY_TITLE; ?></div>
       <form>
-        <table id="so-input">
+        <table id="so-input" class="web-only">
           <tr>
             <th>Client:</th>
           </tr>

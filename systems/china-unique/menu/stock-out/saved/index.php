@@ -20,7 +20,7 @@
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo STOCK_OUT_SAVED_TITLE; ?></div>
       <form>
-        <table id="stock-out-input">
+        <table id="stock-out-input" class="web-only">
           <tr>
             <th>From:</th>
             <th>To:</th>

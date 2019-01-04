@@ -85,7 +85,7 @@
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo SALES_DELIVERY_ORDER_CUSTOMER_TITLE; ?></div>
       <form>
-        <table id="do-input">
+        <table id="do-input" class="web-only">
           <colgroup>
             <col style="width: 100px">
           </colgroup>

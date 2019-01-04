@@ -53,7 +53,7 @@
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo DATA_MODEL_CREDITOR_TITLE; ?></div>
       <form>
-        <table id="creditor-input">
+        <table id="creditor-input" class="web-only">
           <tr>
             <th>Creditor:</th>
           </tr>

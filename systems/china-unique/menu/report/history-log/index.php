@@ -93,7 +93,7 @@
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo REPORT_HISTORY_LOG_TITLE; ?></div>
       <form>
-        <table id="trans-input">
+        <table id="trans-input" class="web-only">
           <tr>
             <th>From:</th>
             <th>To:</th>

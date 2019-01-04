@@ -156,7 +156,7 @@
             }, $ids));
           }
         ?>
-        <table id="brand-input">
+        <table id="brand-input" class="web-only">
           <tr>
             <th>Warehouse:</th>
             <th>Model No.:</th>

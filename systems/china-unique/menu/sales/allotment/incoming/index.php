@@ -18,7 +18,7 @@
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo SALES_ALLOTMENT_INCOMING_TITLE ?></div>
       <form>
-        <table id="ia-input">
+        <table id="ia-input" class="web-only">
           <tr>
             <th>DO No.:</th>
             <th>Client:</th>

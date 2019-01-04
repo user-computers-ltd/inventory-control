@@ -97,7 +97,7 @@
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo SALES_REPORT_CUSTOMER_DETAIL_TITLE; ?></div>
       <form>
-        <table id="so-input">
+        <table id="so-input" class="web-only">
           <tr>
             <th>Client:</th>
           </tr>

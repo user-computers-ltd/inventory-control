@@ -18,7 +18,7 @@
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo SALES_ALLOTMENT_STOCK_TITLE; ?></div>
       <form>
-        <table id="stock-input">
+        <table id="stock-input" class="web-only">
           <tr>
             <th>Warehouse:</th>
             <th>Client:</th>

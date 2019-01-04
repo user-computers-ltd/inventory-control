@@ -19,7 +19,7 @@
       <?php include SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo SALES_ORDER_SAVED_TITLE; ?></div>
       <form>
-        <table id="so-input">
+        <table id="so-input" class="web-only">
           <tr>
             <th>From:</th>
             <th>To:</th>

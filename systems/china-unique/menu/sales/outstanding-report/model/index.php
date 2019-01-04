@@ -157,7 +157,7 @@
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo SALES_REPORT_MODEL_SUMMARY_TITLE; ?></div>
       <form>
-        <table id="so-input">
+        <table id="so-input" class="web-only">
           <tr>
             <th>Brand:</th>
             <th>Model No.:</th>

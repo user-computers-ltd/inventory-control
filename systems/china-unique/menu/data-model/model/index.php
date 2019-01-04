@@ -130,7 +130,7 @@
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo DATA_MODEL_MODEL_TITLE; ?></div>
       <form>
-        <table id="model-input">
+        <table id="model-input" class="web-only">
           <tr>
             <th>Brand:</th>
             <th>Model No.:</th>
