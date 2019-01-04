@@ -6,11 +6,10 @@
 
 .do-header,
 .do-footer {
-  font-size: 13px;
+  font-size: 16px;
 }
 
 .do-header td {
-  padding: 2px;
   vertical-align: top;
 }
 
@@ -29,8 +28,8 @@
 .do-models td {
   background-color: transparent;
   border: none;
-  padding: 4px;
-  font-size: 13px;
+  font-size: 16px;
+  line-height: 16px;
 }
 
 .do-models .number {

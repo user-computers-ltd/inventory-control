@@ -20,30 +20,30 @@
         <?php foreach($doHeaders as &$doHeader) : ?>
           <div class="do-page">
             <?php include SYSTEM_PATH . "includes/components/header/index.php"; ?>
-            <div class="headline"><?php echo SALES_DELIVERY_ORDER_PRINTOUT_TITLE . " (" . $doHeader["warehouse"] . ")" ?></div>
+            <div class="headline"><?php echo SALES_DELIVERY_ORDER_PRINTOUT_TITLE . " (" . $doHeader["warehouse"] . "發貨)" ?></div>
             <table class="do-header">
               <tr>
-                <td>Order No.:</td>
+                <td>編號:</td>
                 <td><?php echo $doHeader["do_no"]; ?></td>
               </tr>
               <tr>
-                <td>Client:</td>
+                <td>致:</td>
                 <td><?php echo $doHeader["client_name"]; ?></td>
               </tr>
               <tr>
-                <td>Address:</td>
+                <td>地址:</td>
                 <td><?php echo $doHeader["client_address"]; ?></td>
               </tr>
               <tr>
-                <td>Contact:</td>
+                <td>收貨人:</td>
                 <td><?php echo $doHeader["client_contact"]; ?></td>
               </tr>
               <tr>
-                <td>Tel:</td>
+                <td>電話:</td>
                 <td><?php echo $doHeader["client_tel"]; ?></td>
               </tr>
               <tr>
-                <td>Date:</td>
+                <td>日期:</td>
                 <td><?php echo $doHeader["date"]; ?></td>
               </tr>
             </table>
@@ -52,12 +52,12 @@
                 <thead>
                   <tr></tr>
                   <tr>
-                    <th>Brand</th>
-                    <th>Model No.</th>
-                    <th>Order No.</th>
-                    <th class="number">Qty</th>
-                    <th class="number">Unit Price</th>
-                    <th class="number">Subtotal</th>
+                    <th>品牌</th>
+                    <th>型號</th>
+                    <th>訂單編號</th>
+                    <th class="number">數量</th>
+                    <th class="number">含稅單價</th>
+                    <th class="number">含稅總金額</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -107,16 +107,16 @@
                       <td></td>
                       <td></td>
                       <td></td>
-                      <td class="number">Discount <?php echo $discount; ?>%</td>
+                      <td class="number">折扣 <?php echo $discount; ?>%</td>
                       <td class="number"><?php echo number_format($subtotalSum * $discount / 100, 2); ?></td>
                     </tr>
                   <?php endif ?>
                   <tr>
                     <th></th>
                     <th></th>
-                    <th class="number">Total:</th>
+                    <th class="number">總數量:</th>
                     <th class="number"><?php echo number_format($totalQty); ?></th>
-                    <th></th>
+                    <th class="number">總金額:</th>
                     <th class="number"><?php echo number_format($subtotalSum * (100 - $discount) / 100, 2); ?></th>
                   </tr>
                 </tfoot>
@@ -138,6 +138,10 @@
                 </tr>
               <?php endif ?>
             </table>
+            <span>敬請簽收:</span><br/>
+            <br/><br/><br/><br/>
+            <span>____________________________________</span><br/>
+            <span><?php echo $doHeader["client_name"]; ?></span>
           </div>
         <?php endforeach; ?>
         <div class="web-only">
