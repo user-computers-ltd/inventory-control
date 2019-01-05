@@ -1,5 +1,8 @@
-#system-header {
-  margin: 20px 0px;
+.system-header-wrapper {
+  padding: 20px 0px;
+}
+
+.system-header-wrapper .system-header {
   padding: 5px;
   border: 2px solid black;
   font: bold 22px Helvetica, sans-serif;

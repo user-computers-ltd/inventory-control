@@ -1,9 +1,3 @@
-.do-page {
-  display: inline-block;
-  width: 100%;
-  page-break-after: always;
-}
-
 .do-header td,
 .do-footer td {
   vertical-align: top;

@@ -18,7 +18,7 @@
     <div class="page-wrapper">
       <?php if (count($doHeaders) > 0) : ?>
         <?php foreach($doHeaders as &$doHeader) : ?>
-          <div class="do-page">
+          <div class="page">
             <?php include SYSTEM_PATH . "includes/components/header/index.php"; ?>
             <div class="headline"><?php echo SALES_DELIVERY_ORDER_INTERNAL_PRINTOUT_TITLE . " (" . $doHeader["warehouse"] . ")" ?></div>
             <table class="do-header">

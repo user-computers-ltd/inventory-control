@@ -63,6 +63,10 @@ table thead th {
   width: 800px;
 }
 
+.page {
+  page-break-after: always;
+}
+
 .headline {
   display: block;
   margin: 20px;

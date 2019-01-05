@@ -1,9 +1,3 @@
-.stock-out-page {
-  display: inline-block;
-  width: 100%;
-  page-break-after: always;
-}
-
 .stock-out-header,
 .stock-out-footer {
   font-size: 13px;

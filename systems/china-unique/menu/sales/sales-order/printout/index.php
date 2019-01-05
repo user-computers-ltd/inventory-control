@@ -18,7 +18,7 @@
     <div class="page-wrapper">
       <?php if (count($soHeaders) > 0) : ?>
         <?php foreach($soHeaders as &$soHeader) : ?>
-          <div class="so-page">
+          <div class="page">
             <?php include SYSTEM_PATH . "includes/components/header/index.php"; ?>
             <div class="headline"><?php echo SALES_ORDER_PRINTOUT_TITLE ?></div>
             <table class="so-header">

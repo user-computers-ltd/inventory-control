@@ -18,7 +18,7 @@
     <div class="page-wrapper">
       <?php if (count($stockOutHeaders) > 0) : ?>
         <?php foreach($stockOutHeaders as &$stockOutHeader) : ?>
-          <div class="stock-out-page">
+          <div class="page">
             <?php include SYSTEM_PATH . "includes/components/header/index.php"; ?>
             <div class="headline"><?php echo STOCK_OUT_PRINTOUT_TITLE ?></div>
             <table class="stock-out-header">
