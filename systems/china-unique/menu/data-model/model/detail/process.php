@@ -53,11 +53,16 @@
     ON a.model_no=d.model_no AND a.brand_code=d.brand_code
     LEFT JOIN
       (SELECT
-        brand_code, model_no, SUM(qty) AS `qty_on_reserve`
+        m.brand_code, m.model_no, SUM(m.qty) AS `qty_on_reserve`
       FROM
-        `so_allotment`
+        `sdo_model` AS m
+      LEFT JOIN
+        `sdo_header` AS h
+      ON m.do_no=h.do_no
+      WHERE
+        h.status=\"SAVED\"
       GROUP BY
-        model_no, brand_code) AS e
+        m.model_no, m.brand_code) AS e
     ON a.model_no=e.model_no AND a.brand_code=e.brand_code
     LEFT JOIN
       `currency` AS f
