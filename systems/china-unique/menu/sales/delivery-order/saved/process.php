@@ -1,5 +1,5 @@
 <?php
-  $InBaseCurrency = "(in " . COMPANY_CURRENCY . ")";
+  $InBaseCurrency = "(" . COMPANY_CURRENCY . ")";
 
   $from = $_GET["from"];
   $to = $_GET["to"];

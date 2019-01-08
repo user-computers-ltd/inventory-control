@@ -4,13 +4,27 @@
   include_once ROOT_PATH . "includes/php/utils.php";
   include_once ROOT_PATH . "includes/php/database.php";
 
-  $InBaseCurrency = "(in " . COMPANY_CURRENCY . ")";
+  $InBaseCurrency = "(" . COMPANY_CURRENCY . ")";
 
+  $from = $_GET["from"];
+  $to = $_GET["to"];
   $brandCodes = $_GET["brand_code"];
   $modelNos = $_GET["model_no"];
   $showMode = assigned($_GET["show_mode"]) ? $_GET["show_mode"] : "outstanding_only";
+  $showToOrderOnly = assigned($_GET["to_order_only"]) && $_GET["to_order_only"] == "on";
 
   $whereClause = "";
+  $periodWhereClause = "";
+
+  if (assigned($from)) {
+    $periodWhereClause = $periodWhereClause . "
+      AND transaction_date >= \"$from\"";
+  }
+
+  if (assigned($to)) {
+    $periodWhereClause = $periodWhereClause . "
+      AND transaction_date <= \"$to\"";
+  }
 
   if (assigned($brandCodes) && count($brandCodes) > 0) {
     $whereClause = $whereClause . "
@@ -29,14 +43,17 @@
 
   $results = query("
     SELECT
-      a.brand_code                                                                    AS `brand_code`,
-      c.name                                                                          AS `brand_name`,
-      a.model_no                                                                      AS `model_no`,
-      COUNT(DISTINCT b.debtor_code)                                                   AS `client_count`,
-      SUM(a.qty_outstanding)                                                          AS `qty_outstanding`,
-      IFNULL(e.qty_on_hand, 0)                                                        AS `qty_on_hand`,
-      IFNULL(f.qty_on_order, 0)                                                       AS `qty_on_order`,
-      IFNULL(g.qty_on_reserve, 0)                                                     AS `qty_on_reserve`
+      a.brand_code                                                                                AS `brand_code`,
+      c.name                                                                                      AS `brand_name`,
+      a.model_no                                                                                  AS `model_no`,
+      COUNT(DISTINCT b.debtor_code)                                                               AS `client_count`,
+      SUM(a.qty_outstanding)                                                                      AS `qty_outstanding`,
+      IFNULL(e.qty_on_hand, 0)                                                                    AS `qty_on_hand`,
+      IFNULL(f.qty_on_order, 0)                                                                   AS `qty_on_order`,
+      IFNULL(g.qty_on_reserve, 0)                                                                 AS `qty_on_reserve`,
+      GREATEST(0, IFNULL(e.qty_on_hand, 0) - IFNULL(g.qty_on_reserve, 0))                         AS `qty_available`,
+      GREATEST(0, SUM(a.qty_outstanding) - IFNULL(e.qty_on_hand, 0) - IFNULL(f.qty_on_order, 0))  AS `qty_to_order`,
+      IFNULL(h.qty_sold, 0)                                                                       AS `qty_sold`
     FROM
       `so_model` AS a
     LEFT JOIN
@@ -50,12 +67,12 @@
     ON a.brand_code=d.brand_code AND a.model_no=d.model_no
     LEFT JOIN
       (SELECT
-        model_no, brand_code, SUM(qty) AS `qty_on_hand`
+        brand_code, model_no, SUM(qty) AS `qty_on_hand`
       FROM
         `stock`
       GROUP BY
-        model_no, brand_code) AS e
-    ON a.model_no=e.model_no AND a.brand_code=e.brand_code
+        brand_code, model_no) AS e
+    ON a.brand_code=e.brand_code AND a.model_no=e.model_no
     LEFT JOIN
       (SELECT
         m.brand_code, m.model_no, SUM(GREATEST(qty_outstanding, 0)) AS `qty_on_order`
@@ -67,8 +84,8 @@
       WHERE
         h.status='POSTED'
       GROUP BY
-        m.model_no, m.brand_code) AS f
-    ON a.model_no=f.model_no AND a.brand_code=f.brand_code
+        m.brand_code, m.model_no) AS f
+    ON a.brand_code=f.brand_code AND a.model_no=f.model_no
     LEFT JOIN
       (SELECT
         m.brand_code, m.model_no, SUM(m.qty) AS `qty_on_reserve`
@@ -80,8 +97,19 @@
       WHERE
         h.status=\"SAVED\"
       GROUP BY
-        m.model_no, m.brand_code) AS g
-    ON a.model_no=g.model_no AND a.brand_code=g.brand_code
+        m.brand_code, m.model_no) AS g
+    ON a.brand_code=g.brand_code AND a.model_no=g.model_no
+    LEFT JOIN
+      (SELECT
+        brand_code, model_no, SUM(qty) AS `qty_sold`
+      FROM
+        `transaction`
+      WHERE
+        (transaction_code=\"S1\" OR transaction_code=\"S2\")
+        $periodWhereClause
+      GROUP BY
+        brand_code, model_no) AS h
+    ON a.brand_code=h.brand_code AND a.model_no=h.model_no
     WHERE
       b.status=\"POSTED\"
       $whereClause
@@ -95,16 +123,18 @@
   $soModels = array();
 
   foreach ($results as $soModel) {
-    $brand = $soModel["brand_code"] . " - " . $soModel["brand_name"];
+    if (!$showToOrderOnly || $soModel["qty_to_order"] > 0) {
+      $brand = $soModel["brand_code"] . " - " . $soModel["brand_name"];
 
-    $arrayPointer = &$soModels;
+      $arrayPointer = &$soModels;
 
-    if (!isset($arrayPointer[$brand])) {
-      $arrayPointer[$brand] = array();
+      if (!isset($arrayPointer[$brand])) {
+        $arrayPointer[$brand] = array();
+      }
+      $arrayPointer = &$arrayPointer[$brand];
+
+      array_push($arrayPointer, $soModel);
     }
-    $arrayPointer = &$arrayPointer[$brand];
-
-    array_push($arrayPointer, $soModel);
   }
 
   $brands = query("
@@ -161,6 +191,8 @@
           <tr>
             <th>Brand:</th>
             <th>Model No.:</th>
+            <th>Sales From:</th>
+            <th>Sales To:</th>
           </tr>
           <tr>
             <td>
@@ -186,6 +218,8 @@
                 ?>
               </select>
             </td>
+            <td><input type="date" name="from" value="<?php echo $from; ?>" max="<?php echo date("Y-m-d"); ?>" /></td>
+            <td><input type="date" name="to" value="<?php echo $to; ?>" max="<?php echo date("Y-m-d"); ?>" /></td>
             <td><button type="submit">Go</button></td>
           </tr>
           <tr>
@@ -203,6 +237,14 @@
                 name="show_mode"
                 value="<?php echo $showMode; ?>"
               />
+              <input
+                id="input-to-order-only"
+                type="checkbox"
+                name="to_order_only"
+                onchange="this.form.submit()"
+                <?php echo $showToOrderOnly ? "checked" : "" ?>
+              />
+              <label for="input-to-order-only">To order only</label>
             </th>
           </tr>
         </table>
@@ -221,13 +263,14 @@
                 <col style="width: 80px">
                 <col style="width: 80px">
                 <col style="width: 80px">
+                <col style="width: 80px">
               </colgroup>
               <thead>
                 <tr></tr>
                 <tr>
                   <th rowspan="2">Model No.</th>
                   <th rowspan="2" class="number"># Clients</th>
-                  <th colspan="6" class="category">Qty</th>
+                  <th colspan="7" class="category">Qty</th>
                 </tr>
                 <tr>
                   <th class="number">SO Outstanding</th>
@@ -236,6 +279,7 @@
                   <th class="number">On Reserve</th>
                   <th class="number">Available</th>
                   <th class="number">To Order</th>
+                  <th class="number">Sales</th>
                 </tr>
               </thead>
               <tbody>
@@ -251,8 +295,9 @@
                     $onHandQty = $soModel["qty_on_hand"];
                     $onOrderQty = $soModel["qty_on_order"];
                     $onReserveQty = $soModel["qty_on_reserve"];
-                    $availableQty = $onHandQty - $onReserveQty;
-                    $toOrderQty = max(0, $outstandingQty - $onHandQty - $onOrderQty);
+                    $availableQty = $soModel["qty_available"];
+                    $toOrderQty = $soModel["qty_to_order"];
+                    $soldQty = $soModel["qty_sold"];
 
                     $linkParams = "?show_mode=$showMode&brand_code[]=" . urlencode($brandCode) . "&model_no[]=" . urlencode($modelNo);
 
@@ -270,12 +315,11 @@
                         <td title=\"$onReserveQty\" class=\"number\">" . number_format($onReserveQty) . "</td>
                         <td title=\"$availableQty\" class=\"number\">" . number_format($availableQty) . "</td>
                         <td title=\"$toOrderQty\" class=\"number\">" . number_format($toOrderQty) . "</td>
+                        <td title=\"$soldQty\" class=\"number\">" . number_format($soldQty) . "</td>
                       </tr>
                     ";
                   }
                 ?>
-              </tbody>
-              <tfoot>
                 <tr>
                   <th class="number">Total:</th>
                   <th></th>
@@ -285,8 +329,9 @@
                   <th></th>
                   <th></th>
                   <th></th>
+                  <th></th>
                 </tr>
-              </tfoot>
+              </tbody>
             </table>
           </div>
         <?php endforeach; ?>

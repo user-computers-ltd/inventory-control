@@ -4,7 +4,7 @@
   include_once ROOT_PATH . "includes/php/utils.php";
   include_once ROOT_PATH . "includes/php/database.php";
 
-  $InBaseCurrency = "(in " . COMPANY_CURRENCY . ")";
+  $InBaseCurrency = "(" . COMPANY_CURRENCY . ")";
 
   $brandCodes = $_GET["brand_code"];
   $showMode = assigned($_GET["show_mode"]) ? $_GET["show_mode"] : "outstanding_only";
@@ -29,6 +29,7 @@
       a.model_no                                                                  AS `model_no`,
       b.id                                                                        AS `so_id`,
       b.so_no                                                                     AS `so_no`,
+      e.english_name                                                              AS `client`,
       a.qty                                                                       AS `qty`,
       a.qty_outstanding                                                           AS `qty_outstanding`,
       b.discount                                                                  AS `discount`,
@@ -46,12 +47,17 @@
     LEFT JOIN
       `model` AS d
     ON a.brand_code=d.brand_code AND a.model_no=d.model_no
+    LEFT JOIN
+      `debtor` AS e
+    ON b.debtor_code=e.code
     WHERE
       b.status=\"POSTED\"
       $whereClause
     ORDER BY
       a.brand_code ASC,
-      b.so_date DESC
+      b.so_date DESC,
+      b.so_no ASC,
+      a.model_no ASC
   ");
 
   $soModels = array();
@@ -139,101 +145,94 @@
           </tr>
         </table>
       </form>
-      <?php
-        if (count($soModels) > 0) {
-
-          foreach ($soModels as $brand => $models) {
-            $totalQty = 0;
-            $totalOutstanding = 0;
-            $totalAmtBase = 0;
-
-            echo "
-              <div class=\"so-model\">
-                <h4>$brand</h4>
-                <table class=\"so-results\">
-                  <colgroup>
-                    <col style=\"width: 80px\">
-                    <col>
-                    <col>
-                    <col style=\"width: 80px\">
-                    <col style=\"width: 80px\">
-                    <col style=\"width: 60px\">
-                    <col style=\"width: 80px\">
-                    <col style=\"width: 80px\">
-                    <col style=\"width: 40px\">
-                  </colgroup>
-                  <thead>
-                    <tr></tr>
-                    <tr>
-                      <th>Date</th>
-                      <th>Order No.</th>
-                      <th>Model No.</th>
-                      <th class=\"number\">Qty</th>
-                      <th class=\"number\">Outstanding Qty</th>
-                      <th class=\"number\">Currency</th>
-                      <th class=\"number\">Outstanding Amt</th>
-                      <th class=\"number\">$InBaseCurrency</th>
-                      <th class=\"number\">Discount</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-            ";
-
-            for ($i = 0; $i < count($models); $i++) {
-              $soModel = $models[$i];
-              $date = $soModel["date"];
-              $soId = $soModel["so_id"];
-              $soNo = $soModel["so_no"];
-              $modelNo = $soModel["model_no"];
-              $qty = $soModel["qty"];
-              $outstandingQty = $soModel["qty_outstanding"];
-              $discount = $soModel["discount"];
-              $currency = $soModel["currency"];
-              $outstandingAmt = $soModel["amt_outstanding"];
-              $outstandingAmtBase = $soModel["amt_outstanding_base"];
-
-              $totalQty += $qty;
-              $totalOutstanding += $outstandingQty;
-              $totalAmtBase += $outstandingAmtBase;
-
-              echo "
+      <?php if (count($soModels) > 0) : ?>
+        <?php foreach ($soModels as $brand => &$models) : ?>
+          <div class="so-model">
+            <h4><?php echo $brand; ?></h4>
+            <table class="so-results">
+              <colgroup>
+                <col style="width: 80px">
+                <col>
+                <col>
+                <col>
+                <col style="width: 80px">
+                <col style="width: 80px">
+                <col style="width: 60px">
+                <col style="width: 80px">
+                <col style="width: 80px">
+              </colgroup>
+              <thead>
+                <tr></tr>
                 <tr>
-                  <td title=\"$date\">$date</td>
-                  <td title=\"$soNo\"><a class=\"link\" href=\"" . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?id[]=$soId\">$soNo</a></td>
-                  <td title=\"$modelNo\">$modelNo</td>
-                  <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
-                  <td title=\"$outstandingQty\" class=\"number\">" . number_format($outstandingQty) . "</td>
-                  <td title=\"$currency\" class=\"number\">$currency</td>
-                  <td title=\"$outstandingAmt\" class=\"number\">" . number_format($outstandingAmt, 2) . "</td>
-                  <td title=\"$outstandingAmtBase\" class=\"number\">" . number_format($outstandingAmtBase, 2) . "</td>
-                  <td title=\"$discount\" class=\"number\">" . number_format($discount, 2) . "%</td>
+                  <th>Date</th>
+                  <th>Order No.</th>
+                  <th>Client</th>
+                  <th>Model No.</th>
+                  <th class="number">Qty</th>
+                  <th class="number">Outstanding Qty</th>
+                  <th class="number">Currency</th>
+                  <th class="number">Outstanding Amt</th>
+                  <th class="number"><?php echo $InBaseCurrency; ?></th>
                 </tr>
-              ";
-            }
+              </thead>
+              <tbody>
+                <?php
+                  $totalQty = 0;
+                  $totalOutstanding = 0;
+                  $totalAmtBase = 0;
 
-            echo "
-                  </tbody>
-                  <tfoot>
-                    <tr>
-                      <th></th>
-                      <th></th>
-                      <th class=\"number\">Total:</th>
-                      <th class=\"number\">" . number_format($totalQty) . "</th>
-                      <th class=\"number\">" . number_format($totalOutstanding) . "</th>
-                      <th></th>
-                      <th></th>
-                      <th class=\"number\">" . number_format($totalAmtBase, 2) . "</th>
-                      <th></th>
-                    </tr>
-                  </tfoot>
-                </table>
-              </div>
-            ";
-          }
-        } else {
-          echo "<div class=\"so-brand-no-results\">No results</div>";
-        }
-      ?>
+                  for ($i = 0; $i < count($models); $i++) {
+                    $soModel = $models[$i];
+                    $date = $soModel["date"];
+                    $soId = $soModel["so_id"];
+                    $soNo = $soModel["so_no"];
+                    $client = $soModel["client"];
+                    $modelNo = $soModel["model_no"];
+                    $qty = $soModel["qty"];
+                    $outstandingQty = $soModel["qty_outstanding"];
+                    $discount = $soModel["discount"];
+                    $currency = $soModel["currency"];
+                    $outstandingAmt = $soModel["amt_outstanding"];
+                    $outstandingAmtBase = $soModel["amt_outstanding_base"];
+
+                    $totalQty += $qty;
+                    $totalOutstanding += $outstandingQty;
+                    $totalAmtBase += $outstandingAmtBase;
+
+                    echo "
+                      <tr>
+                        <td title=\"$date\">$date</td>
+                        <td title=\"$soNo\"><a class=\"link\" href=\"" . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?id[]=$soId\">$soNo</a></td>
+                        <td title=\"$client\">$client</td>
+                        <td title=\"$modelNo\">$modelNo</td>
+                        <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
+                        <td title=\"$outstandingQty\" class=\"number\">" . number_format($outstandingQty) . "</td>
+                        <td title=\"$currency\" class=\"number\">$currency</td>
+                        <td title=\"$outstandingAmt\" class=\"number\">" . number_format($outstandingAmt, 2) . "</td>
+                        <td title=\"$outstandingAmtBase\" class=\"number\">" . number_format($outstandingAmtBase, 2) . "</td>
+                      </tr>
+                    ";
+                  }
+                ?>
+                <tr>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th class="number">Total:</th>
+                  <th class="number"><?php echo number_format($totalQty); ?></th>
+                  <th class="number"><?php echo number_format($totalOutstanding); ?></th>
+                  <th></th>
+                  <th></th>
+                  <th class="number"><?php echo number_format($totalAmtBase, 2); ?></th>
+                  <th></th>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <div class="so-brand-no-results">No results</div>
+      <?php endif ?>
     </div>
     <script>
       function onOutstandingOnlyChanged(event) {

@@ -4,7 +4,7 @@
   include_once ROOT_PATH . "includes/php/utils.php";
   include_once ROOT_PATH . "includes/php/database.php";
 
-  $InBaseCurrency = "(in " . COMPANY_CURRENCY . ")";
+  $InBaseCurrency = "(" . COMPANY_CURRENCY . ")";
 
   $brandCodes = $_GET["brand_code"];
   $modelNos = $_GET["model_no"];
@@ -37,6 +37,7 @@
       b.so_no                                                                     AS `so_no`,
       e.english_name                                                              AS `client`,
       a.qty                                                                       AS `qty`,
+      a.price                                                                     AS `price`,
       a.qty_outstanding                                                           AS `qty_outstanding`,
       a.qty_outstanding * a.price * (100 - b.discount) / 100 * b.exchange_rate    AS `amt_outstanding_base`,
       a.qty_outstanding * a.price * b.exchange_rate                               AS `amt_outstanding_gross`
@@ -193,8 +194,6 @@
                 <col>
                 <col style="width: 100px">
                 <col style="width: 100px">
-                <col style="width: 100px">
-                <col style="width: 100px">
               </colgroup>
               <thead>
                 <tr></tr>
@@ -202,18 +201,14 @@
                   <th>Date</th>
                   <th>Order No.</th>
                   <th>Client</th>
-                  <th class="number">Qty</th>
+                  <th class="number">Order Qty</th>
                   <th class="number">Outstanding Qty</th>
-                  <th class="number">Outstanding Amt <?php echo $InBaseCurrency; ?></th>
-                  <th class="number">(Exc. Discount)</th>
                 </tr>
               </thead>
               <tbody>
                 <?php
                   $totalQty = 0;
                   $totalOutstanding = 0;
-                  $totalAmtBase = 0;
-                  $totalAmtGross = 0;
 
                   for ($i = 0; $i < count($model["models"]); $i++) {
                     $soModel = $model["models"][$i];
@@ -223,13 +218,9 @@
                     $client = $soModel["client"];
                     $qty = $soModel["qty"];
                     $outstandingQty = $soModel["qty_outstanding"];
-                    $outstandingAmtBase = $soModel["amt_outstanding_base"];
-                    $outstandingAmtGross = $soModel["amt_outstanding_gross"];
 
                     $totalQty += $qty;
                     $totalOutstanding += $outstandingQty;
-                    $totalAmtBase += $outstandingAmtBase;
-                    $totalAmtGross += $outstandingAmtGross;
 
                     echo "
                       <tr>
@@ -238,24 +229,18 @@
                         <td title=\"$client\">$client</td>
                         <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
                         <td title=\"$outstandingQty\" class=\"number\">" . number_format($outstandingQty) . "</td>
-                        <td title=\"$outstandingAmtBase\" class=\"number\">" . number_format($outstandingAmtBase, 2) . "</td>
-                        <td title=\"$outstandingAmtGross\" class=\"number\">" . number_format($outstandingAmtGross, 2) . "</td>
                       </tr>
                     ";
                   }
                 ?>
-              </tbody>
-              <tfoot>
                 <tr>
                   <th></th>
                   <th></th>
                   <th class="number">Total:</th>
                   <th class="number"><?php echo number_format($totalQty); ?></th>
                   <th class="number"><?php echo number_format($totalOutstanding); ?></th>
-                  <th class="number"><?php echo number_format($totalAmtBase, 2); ?></th>
-                  <th class="number"><?php echo number_format($totalAmtGross, 2); ?></th>
                 </tr>
-              </tfoot>
+              </tbody>
             </table>
           </div>
         <?php endforeach; ?>

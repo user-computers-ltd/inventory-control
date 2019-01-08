@@ -4,7 +4,7 @@
   include_once ROOT_PATH . "includes/php/utils.php";
   include_once ROOT_PATH . "includes/php/database.php";
 
-  $InBaseCurrency = "(in " . COMPANY_CURRENCY . ")";
+  $InBaseCurrency = "(" . COMPANY_CURRENCY . ")";
 
   $debtorCodes = $_GET["debtor_code"];
   $showMode = assigned($_GET["show_mode"]) ? $_GET["show_mode"] : "outstanding_only";
@@ -28,8 +28,7 @@
       COUNT(*)                                                                                AS `count`,
       SUM(IFNULL(b.total_qty, 0))                                                             AS `qty`,
       SUM(IFNULL(b.total_qty_outstanding, 0))                                                 AS `qty_outstanding`,
-      SUM(IFNULL(b.total_amt_outstanding, 0) * (100 - a.discount) / 100 * a.exchange_rate)    AS `amt_outstanding_base`,
-      SUM(IFNULL(b.total_amt_outstanding, 0) * a.exchange_rate)                               AS `amt_outstanding_gross_base`
+      SUM(IFNULL(b.total_amt_outstanding, 0) * (100 - a.discount) / 100 * a.exchange_rate)    AS `amt_outstanding_base`
     FROM
       `so_header` AS a
     LEFT JOIN
@@ -126,10 +125,9 @@
           <colgroup>
             <col>
             <col style="width: 60px">
-            <col style="width: 100px">
-            <col style="width: 100px">
-            <col style="width: 100px">
-            <col style="width: 100px">
+            <col style="width: 80px">
+            <col style="width: 80px">
+            <col style="width: 80px">
           </colgroup>
           <thead>
             <tr></tr>
@@ -139,58 +137,50 @@
               <th class="number">Total Qty</th>
               <th class="number">Outstanding Qty</th>
               <th class="number">Outstanding Amt <?php echo $InBaseCurrency; ?></th>
-              <th class="number">(Exc. Discount)</th>
             </tr>
           </thead>
           <tbody>
-          <?php
-            $totalCount = 0;
-            $totalQty = 0;
-            $totalOutstanding = 0;
-            $totalAmtBase = 0;
-            $totalGrossBase = 0;
+            <?php
+              $totalCount = 0;
+              $totalQty = 0;
+              $totalOutstanding = 0;
+              $totalAmtBase = 0;
 
-            for ($i = 0; $i < count($soHeaders); $i++) {
-              $soHeader = $soHeaders[$i];
-              $debtorCode = $soHeader["debtor_code"];
-              $debtor = $soHeader["debtor"];
-              $count = $soHeader["count"];
-              $qty = $soHeader["qty"];
-              $outstandingQty = $soHeader["qty_outstanding"];
-              $outstandingAmtBase = $soHeader["amt_outstanding_base"];
-              $outstandingGrossBase = $soHeader["amt_outstanding_gross_base"];
+              for ($i = 0; $i < count($soHeaders); $i++) {
+                $soHeader = $soHeaders[$i];
+                $debtorCode = $soHeader["debtor_code"];
+                $debtor = $soHeader["debtor"];
+                $count = $soHeader["count"];
+                $qty = $soHeader["qty"];
+                $outstandingQty = $soHeader["qty_outstanding"];
+                $outstandingAmtBase = $soHeader["amt_outstanding_base"];
 
-              $totalCount += $count;
-              $totalQty += $qty;
-              $totalOutstanding += $outstandingQty;
-              $totalAmtBase += $outstandingAmtBase;
-              $totalGrossBase += $outstandingGrossBase;
+                $totalCount += $count;
+                $totalQty += $qty;
+                $totalOutstanding += $outstandingQty;
+                $totalAmtBase += $outstandingAmtBase;
 
-              echo "
-                <tr>
-                  <td title=\"$debtor\">
-                    <a class=\"link\" href=\"" . SALES_REPORT_CUSTOMER_DETAIL_URL . "?show_mode=$showMode&debtor_code[]=$debtorCode\">$debtor</a>
-                  </td>
-                  <td title=\"$count\" class=\"number\">" . number_format($count) . "</td>
-                  <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
-                  <td title=\"$outstandingQty\" class=\"number\">" . number_format($outstandingQty) . "</td>
-                  <td title=\"$outstandingAmtBase\" class=\"number\">" . number_format($outstandingAmtBase, 2) . "</td>
-                  <td title=\"$outstandingGrossBase\" class=\"number\">" . number_format($outstandingGrossBase, 2) . "</td>
-                </tr>
-              ";
-            }
-          ?>
-          </tbody>
-          <tfoot>
+                echo "
+                  <tr>
+                    <td title=\"$debtor\">
+                      <a class=\"link\" href=\"" . SALES_REPORT_CUSTOMER_DETAIL_URL . "?show_mode=$showMode&debtor_code[]=$debtorCode\">$debtor</a>
+                    </td>
+                    <td title=\"$count\" class=\"number\">" . number_format($count) . "</td>
+                    <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
+                    <td title=\"$outstandingQty\" class=\"number\">" . number_format($outstandingQty) . "</td>
+                    <td title=\"$outstandingAmtBase\" class=\"number\">" . number_format($outstandingAmtBase, 2) . "</td>
+                  </tr>
+                ";
+              }
+            ?>
             <tr>
               <th class="number">Total:</th>
               <th class="number"><?php echo number_format($totalCount); ?></th>
               <th class="number"><?php echo number_format($totalQty); ?></th>
               <th class="number"><?php echo number_format($totalOutstanding); ?></th>
               <th class="number"><?php echo number_format($totalAmtBase, 2); ?></th>
-              <th class="number"><?php echo number_format($totalGrossBase, 2); ?></th>
             </tr>
-          </tfoot>
+          </tbody>
         </table>
       </div>
     <?php else: ?>

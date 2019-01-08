@@ -4,7 +4,7 @@
   include_once ROOT_PATH . "includes/php/utils.php";
   include_once ROOT_PATH . "includes/php/database.php";
 
-  $InBaseCurrency = "(in " . COMPANY_CURRENCY . ")";
+  $InBaseCurrency = "(" . COMPANY_CURRENCY . ")";
 
   $brandCodes = $_GET["brand_code"];
   $showMode = assigned($_GET["show_mode"]) ? $_GET["show_mode"] : "outstanding_only";
@@ -135,41 +135,39 @@
             </tr>
           </thead>
           <tbody>
-          <?php
-            $totalQty = 0;
-            $totalOutstanding = 0;
-            $totalAmtBase = 0;
-            $totalGrossBase = 0;
+            <?php
+              $totalQty = 0;
+              $totalOutstanding = 0;
+              $totalAmtBase = 0;
+              $totalGrossBase = 0;
 
-            for ($i = 0; $i < count($soModels); $i++) {
-              $soModel = $soModels[$i];
-              $brandCode = $soModel["brand_code"];
-              $brandName = $soModel["brand_name"];
-              $qty = $soModel["qty"];
-              $outstandingQty = $soModel["qty_outstanding"];
-              $outstandingAmtBase = $soModel["amt_outstanding_base"];
-              $outstandingGrossBase = $soModel["amt_outstanding_gross_base"];
+              for ($i = 0; $i < count($soModels); $i++) {
+                $soModel = $soModels[$i];
+                $brandCode = $soModel["brand_code"];
+                $brandName = $soModel["brand_name"];
+                $qty = $soModel["qty"];
+                $outstandingQty = $soModel["qty_outstanding"];
+                $outstandingAmtBase = $soModel["amt_outstanding_base"];
+                $outstandingGrossBase = $soModel["amt_outstanding_gross_base"];
 
-              $totalQty += $qty;
-              $totalOutstanding += $outstandingQty;
-              $totalAmtBase += $outstandingAmtBase;
-              $totalGrossBase += $outstandingGrossBase;
+                $totalQty += $qty;
+                $totalOutstanding += $outstandingQty;
+                $totalAmtBase += $outstandingAmtBase;
+                $totalGrossBase += $outstandingGrossBase;
 
-              echo "
-                <tr>
-                  <td title=\"$brandCode\">
-                    <a class=\"link\" href=\"" . SALES_REPORT_BRAND_DETAIL_URL . "?show_mode=$showMode&brand_code[]=$brandCode\">$brandCode - $brandName</a>
-                  </td>
-                  <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
-                  <td title=\"$outstandingQty\" class=\"number\">" . number_format($outstandingQty) . "</td>
-                  <td title=\"$outstandingAmtBase\" class=\"number\">" . number_format($outstandingAmtBase, 2) . "</td>
-                  <td title=\"$outstandingGrossBase\" class=\"number\">" . number_format($outstandingGrossBase, 2) . "</td>
-                </tr>
-              ";
-            }
-          ?>
-          </tbody>
-          <tfoot>
+                echo "
+                  <tr>
+                    <td title=\"$brandCode\">
+                      <a class=\"link\" href=\"" . SALES_REPORT_BRAND_DETAIL_URL . "?show_mode=$showMode&brand_code[]=$brandCode\">$brandCode - $brandName</a>
+                    </td>
+                    <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
+                    <td title=\"$outstandingQty\" class=\"number\">" . number_format($outstandingQty) . "</td>
+                    <td title=\"$outstandingAmtBase\" class=\"number\">" . number_format($outstandingAmtBase, 2) . "</td>
+                    <td title=\"$outstandingGrossBase\" class=\"number\">" . number_format($outstandingGrossBase, 2) . "</td>
+                  </tr>
+                ";
+              }
+            ?>
             <tr>
               <th class="number">Total:</th>
               <th class="number"><?php echo number_format($totalQty); ?></th>
@@ -177,7 +175,7 @@
               <th class="number"><?php echo number_format($totalAmtBase, 2); ?></th>
               <th class="number"><?php echo number_format($totalGrossBase, 2); ?></th>
             </tr>
-          </tfoot>
+          </tbody>
         </table>
       </div>
     <?php else: ?>

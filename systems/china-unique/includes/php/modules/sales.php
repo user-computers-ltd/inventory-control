@@ -8,12 +8,12 @@
   define("SALES_ORDER_POSTED_URL", SALES_ORDER_URL . "posted/");
   define("SALES_ORDER_PRIORITY_URL", SALES_ORDER_URL . "priority/");
 
-  define("SALES_OUTSTANDING_REPORT_URL", SALES_URL . "outstanding-report/");
-  define("SALES_REPORT_CUSTOMER_SUMMARY_URL", SALES_OUTSTANDING_REPORT_URL . "client/");
+  define("SALES_SO_REPORT_URL", SALES_URL . "sales-order-report/");
+  define("SALES_REPORT_CUSTOMER_SUMMARY_URL", SALES_SO_REPORT_URL . "client/");
   define("SALES_REPORT_CUSTOMER_DETAIL_URL", SALES_REPORT_CUSTOMER_SUMMARY_URL . "detail/");
-  define("SALES_REPORT_BRAND_SUMMARY_URL", SALES_OUTSTANDING_REPORT_URL . "brand/");
+  define("SALES_REPORT_BRAND_SUMMARY_URL", SALES_SO_REPORT_URL . "brand/");
   define("SALES_REPORT_BRAND_DETAIL_URL", SALES_REPORT_BRAND_SUMMARY_URL . "detail/");
-  define("SALES_REPORT_MODEL_SUMMARY_URL", SALES_OUTSTANDING_REPORT_URL . "model/");
+  define("SALES_REPORT_MODEL_SUMMARY_URL", SALES_SO_REPORT_URL . "model/");
   define("SALES_REPORT_MODEL_DETAIL_URL", SALES_REPORT_MODEL_SUMMARY_URL . "detail/");
 
   define("SALES_PL_REPORT_URL", SALES_URL . "pl-report/");
@@ -45,13 +45,13 @@
   define("SALES_ORDER_POSTED_TITLE", "(F1c) Posted Sales Orders");
   define("SALES_ORDER_PRIORITY_TITLE", "(F1d) Sales Order Priorities");
 
-  define("SALES_OUTSTANDING_REPORT_TITLE", "(F2) Outstanding Report");
-  define("SALES_REPORT_CUSTOMER_SUMMARY_TITLE", "(F2a) Sales Summary By Client");
-  define("SALES_REPORT_CUSTOMER_DETAIL_TITLE", "(F2b) Sales Detail By Client");
-  define("SALES_REPORT_BRAND_SUMMARY_TITLE", "(F2c) Sales Summary By Brand");
-  define("SALES_REPORT_BRAND_DETAIL_TITLE", "(F2d) Sales Detail By Brand");
-  define("SALES_REPORT_MODEL_SUMMARY_TITLE", "(F2e) Sales Summary By Model");
-  define("SALES_REPORT_MODEL_DETAIL_TITLE", "(F2f) Sales Detail By Model");
+  define("SALES_SO_REPORT_TITLE", "(F2) Sales Order Report");
+  define("SALES_REPORT_CUSTOMER_SUMMARY_TITLE", "(F2a) Sales Order Summary By Client");
+  define("SALES_REPORT_CUSTOMER_DETAIL_TITLE", "(F2b) Sales Order Detail By Client");
+  define("SALES_REPORT_BRAND_SUMMARY_TITLE", "(F2c) Sales Order Summary By Brand");
+  define("SALES_REPORT_BRAND_DETAIL_TITLE", "(F2d) Sales Order Detail By Brand");
+  define("SALES_REPORT_MODEL_SUMMARY_TITLE", "(F2e) Sales Order Summary By Model");
+  define("SALES_REPORT_MODEL_DETAIL_TITLE", "(F2f) Sales Order Detail By Model");
 
   define("SALES_PL_REPORT_TITLE", "(F3) P/L Analysis Report");
   define("SALES_PL_REPORT_MODEL_SUMMARY_TITLE", "(F3c) Sales P/L Summary By Model");
@@ -77,7 +77,7 @@
       SALES_ORDER_POSTED_TITLE              => SALES_ORDER_POSTED_URL,
       SALES_ORDER_PRIORITY_TITLE            => SALES_ORDER_PRIORITY_URL
     ),
-    SALES_OUTSTANDING_REPORT_TITLE => array(
+    SALES_SO_REPORT_TITLE => array(
       SALES_REPORT_CUSTOMER_SUMMARY_TITLE   => SALES_REPORT_CUSTOMER_SUMMARY_URL,
       SALES_REPORT_CUSTOMER_DETAIL_TITLE    => SALES_REPORT_CUSTOMER_DETAIL_URL,
       SALES_REPORT_BRAND_SUMMARY_TITLE      => SALES_REPORT_BRAND_SUMMARY_URL,

@@ -12,7 +12,7 @@
     query("UPDATE `so_header` SET priority=(CASE $values END) WHERE $whereClause");
   }
 
-  $InBaseCurrency = "(in " . COMPANY_CURRENCY . ")";
+  $InBaseCurrency = "(" . COMPANY_CURRENCY . ")";
 
   $filterDebtorCodes = $_GET["filter_debtor_code"];
 

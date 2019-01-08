@@ -4,7 +4,7 @@
   include_once ROOT_PATH . "includes/php/utils.php";
   include_once ROOT_PATH . "includes/php/database.php";
 
-  $InBaseCurrency = "(in " . COMPANY_CURRENCY . ")";
+  $InBaseCurrency = "(" . COMPANY_CURRENCY . ")";
 
   $debtorCodes = $_GET["debtor_code"];
   $showMode = assigned($_GET["show_mode"]) ? $_GET["show_mode"] : "outstanding_only";
@@ -135,98 +135,89 @@
           </tr>
         </table>
       </form>
-      <?php
-        if (count($soHeaders) > 0) {
-
-          foreach ($soHeaders as $client => $headers) {
-            $totalQty = 0;
-            $totalOutstanding = 0;
-            $totalAmtBase = 0;
-
-            echo "
-              <div class=\"so-client\">
-                <h4>$client</h4>
-                <table class=\"so-results\">
-                  <colgroup>
-                    <col style=\"width: 80px\">
-                    <col>
-                    <col style=\"width: 80px\">
-                    <col style=\"width: 80px\">
-                    <col style=\"width: 60px\">
-                    <col style=\"width: 80px\">
-                    <col style=\"width: 80px\">
-                    <col style=\"width: 40px\">
-                  </colgroup>
-                  <thead>
-                    <tr></tr>
-                    <tr>
-                      <th>Date</th>
-                      <th>Order No.</th>
-                      <th class=\"number\">Total Qty</th>
-                      <th class=\"number\">Outstanding Qty</th>
-                      <th class=\"number\">Currency</th>
-                      <th class=\"number\">Outstanding Amt</th>
-                      <th class=\"number\">$InBaseCurrency</th>
-                      <th class=\"number\">Discount</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-            ";
-
-            for ($i = 0; $i < count($headers); $i++) {
-              $soHeader = $headers[$i];
-              $date = $soHeader["date"];
-              $soId = $soHeader["so_id"];
-              $soNo = $soHeader["so_no"];
-              $qty = $soHeader["qty"];
-              $outstandingQty = $soHeader["qty_outstanding"];
-              $discount = $soHeader["discount"];
-              $currency = $soHeader["currency"];
-              $outstandingAmt = $soHeader["amt_outstanding"];
-              $outstandingAmtBase = $soHeader["amt_outstanding_base"];
-
-              $totalQty += $qty;
-              $totalOutstanding += $outstandingQty;
-              $totalAmtBase += $outstandingAmtBase;
-
-              echo "
+      <?php if (count($soHeaders) > 0) : ?>
+        <?php foreach ($soHeaders as $client => &$headers) : ?>
+          <div class="so-client">
+            <h4><?php echo $client; ?></h4>
+            <table class="so-results">
+              <colgroup>
+                <col style="width: 80px">
+                <col>
+                <col style="width: 80px">
+                <col style="width: 80px">
+                <col style="width: 60px">
+                <col style="width: 80px">
+                <col style="width: 80px">
+                <col style="width: 40px">
+              </colgroup>
+              <thead>
+                <tr></tr>
                 <tr>
-                  <td title=\"$date\">$date</td>
-                  <td title=\"$soNo\">
-                    <a class=\"link\" href=\"" . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?id[]=$soId\">$soNo</a>
-                  </td>
-                  <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
-                  <td title=\"$outstandingQty\" class=\"number\">" . number_format($outstandingQty) . "</td>
-                  <td title=\"$currency\" class=\"number\">$currency</td>
-                  <td title=\"$outstandingAmt\" class=\"number\">" . number_format($outstandingAmt, 2) . "</td>
-                  <td title=\"$outstandingAmtBase\" class=\"number\">" . number_format($outstandingAmtBase, 2) . "</td>
-                  <td title=\"$discount\" class=\"number\">" . number_format($discount, 2) . "%</td>
+                  <th>Date</th>
+                  <th>Order No.</th>
+                  <th class="number">Total Qty</th>
+                  <th class="number">Outstanding Qty</th>
+                  <th class="number">Currency</th>
+                  <th class="number">Outstanding Amt</th>
+                  <th class="number">$InBaseCurrency</th>
+                  <th class="number">Discount</th>
                 </tr>
-              ";
-            }
+              </thead>
+              <tbody>
+                <?php
+                  $totalQty = 0;
+                  $totalOutstanding = 0;
+                  $totalAmtBase = 0;
 
-            echo "
-                  </tbody>
-                  <tfoot>
-                    <tr>
-                      <th></th>
-                      <th class=\"number\">Total:</th>
-                      <th class=\"number\">" . number_format($totalQty) . "</th>
-                      <th class=\"number\">" . number_format($totalOutstanding) . "</th>
-                      <th></th>
-                      <th></th>
-                      <th class=\"number\">" . number_format($totalAmtBase, 2) . "</th>
-                      <th></th>
-                    </tr>
-                  </tfoot>
-                </table>
-              </div>
-            ";
-          }
-        } else {
-          echo "<div class=\"so-client-no-results\">No results</div>";
-        }
-      ?>
+                  for ($i = 0; $i < count($headers); $i++) {
+                    $soHeader = $headers[$i];
+                    $date = $soHeader["date"];
+                    $soId = $soHeader["so_id"];
+                    $soNo = $soHeader["so_no"];
+                    $qty = $soHeader["qty"];
+                    $outstandingQty = $soHeader["qty_outstanding"];
+                    $discount = $soHeader["discount"];
+                    $currency = $soHeader["currency"];
+                    $outstandingAmt = $soHeader["amt_outstanding"];
+                    $outstandingAmtBase = $soHeader["amt_outstanding_base"];
+
+                    $totalQty += $qty;
+                    $totalOutstanding += $outstandingQty;
+                    $totalAmtBase += $outstandingAmtBase;
+
+                    echo "
+                      <tr>
+                        <td title=\"$date\">$date</td>
+                        <td title=\"$soNo\">
+                          <a class=\"link\" href=\"" . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?id[]=$soId\">$soNo</a>
+                        </td>
+                        <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
+                        <td title=\"$outstandingQty\" class=\"number\">" . number_format($outstandingQty) . "</td>
+                        <td title=\"$currency\" class=\"number\">$currency</td>
+                        <td title=\"$outstandingAmt\" class=\"number\">" . number_format($outstandingAmt, 2) . "</td>
+                        <td title=\"$outstandingAmtBase\" class=\"number\">" . number_format($outstandingAmtBase, 2) . "</td>
+                        <td title=\"$discount\" class=\"number\">" . number_format($discount, 2) . "%</td>
+                      </tr>
+                    ";
+                  }
+                ?>
+                <tr>
+                  <th></th>
+                  <th class="number">Total:</th>
+                  <th class="number"><?php echo number_format($totalQty); ?></th>
+                  <th class="number"><?php echo number_format($totalOutstanding); ?></th>
+                  <th></th>
+                  <th></th>
+                  <th class="number"><?php echo number_format($totalAmtBase, 2); ?></th>
+                  <th></th>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <div class="so-client-no-results">No results</div>
+      <?php endif ?>
     </div>
     <script>
       function onOutstandingOnlyChanged(event) {

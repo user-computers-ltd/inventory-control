@@ -14,7 +14,7 @@
   $qtys = $_POST["qty"];
   $removeIndex = $_POST["remove_index"];
 
-  $InBaseCurrency = "(in " . COMPANY_CURRENCY . ")";
+  $InBaseCurrency = "(" . COMPANY_CURRENCY . ")";
 
   /* If a form is submitted, create a new delivery order. */
   if (

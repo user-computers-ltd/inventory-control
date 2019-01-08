@@ -8,8 +8,13 @@
   box-sizing: border-box;
 }
 
-#so-input #input-outstanding-only {
+#so-input #input-outstanding-only,
+#so-input #input-to-order-only {
   margin: 0px;
+}
+
+#so-input #input-to-order-only {
+  margin-left: 10px;
 }
 
 .so-brand h4 {
