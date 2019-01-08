@@ -431,7 +431,7 @@
           `sdo_model`
           (do_no, do_index, ia_no, so_no, brand_code, model_no, price, qty)
         VALUES
-          (\"$doNo\", \"$doIndex\", \"$iaNo\", \"$soNo\", \"$brandCode\", \"$modelNo\", \"$price\", \"$qty\")
+          (\"$doNo\", \"$doIndex\", \"\", \"$soNo\", \"$brandCode\", \"$modelNo\", \"$price\", \"$qty\")
         ON DUPLICATE KEY UPDATE qty=qty + $qty;
       ");
     }
@@ -442,7 +442,7 @@
   function onPostIncomingAdvice($iaNo) {
     $queries = array();
 
-    // TODO: Need to handle ia models with no allotments. 
+    // TODO: Need to handle ia models with no allotments.
     $poAllotments = query("
       SELECT
         a.po_no           AS `po_no`,
