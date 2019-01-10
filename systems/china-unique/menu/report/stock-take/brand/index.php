@@ -59,72 +59,63 @@
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo REPORT_STOCK_TAKE_BRAND_TITLE; ?></div>
-      <?php
-        if (count($stocks) > 0) {
-
-          foreach ($stocks as $brand => $brandStocks) {
-            $totalQty = 0;
-            $totalAmt = 0;
-
-            echo "
-              <div class=\"brand-name\">
-                <h4>$brand</h4>
-                <table class=\"brand-results\">
-                  <colgroup>
-                    <col>
-                    <col style=\"width: 80px;\">
-                    <col style=\"width: 80px;\">
-                  </colgroup>
-                  <thead>
-                    <tr></tr>
-                    <tr>
-                      <th>Warehouse</th>
-                      <th class=\"number\">Qty</th>
-                      <th class=\"number\">Subtotal</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-            ";
-
-            for ($i = 0; $i < count($brandStocks); $i++) {
-              $brandStock = $brandStocks[$i];
-              $brandId = $brandStock["brand_id"];
-              $warehouseCode = $brandStock["warehouse_code"];
-              $warehouseName = $brandStock["warehouse_name"];
-              $qty = $brandStock["qty"];
-              $subtotal = $brandStock["subtotal"];
-
-              $totalQty += $qty;
-              $totalAmt += $subtotal;
-
-              echo "
+      <?php if (count($stocks) > 0) : ?>
+        <?php foreach ($stocks as $brand => &$brandStocks) : ?>
+          <div class="brand-name">
+            <h4><?php echo $brand; ?></h4>
+            <table class="brand-results">
+              <colgroup>
+                <col>
+                <col style="width: 80px;">
+                <col style="width: 80px;">
+              </colgroup>
+              <thead>
+                <tr></tr>
                 <tr>
-                  <td title=\"$warehouseCode\">
-                    <a href=\"" . REPORT_STOCK_TAKE_BRAND_DETAIL_URL . "?id[]=$brandId&filter_warehouse_code[]=$warehouseCode\">$warehouseCode - $warehouseName</a>
-                  </td>
-                  <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
-                  <td title=\"$subtotal\" class=\"number\">" . number_format($subtotal, 2) . "</td>
+                  <th>Warehouse</th>
+                  <th class="number">Qty</th>
+                  <th class="number">Subtotal</th>
                 </tr>
-              ";
-            }
+              </thead>
+              <tbody>
+                <?php
+                  $totalQty = 0;
+                  $totalAmt = 0;
 
-            echo "
-                  </tbody>
-                  <tfoot>
-                    <tr>
-                      <th class=\"number\">Total:</th>
-                      <th class=\"number\">" . number_format($totalQty) . "</th>
-                      <th class=\"number\">" . number_format($totalAmt, 2) . "</th>
-                    </tr>
-                  </tfoot>
-                </table>
-              </div>
-            ";
-          }
-        } else {
-          echo "<div class=\"brand-no-results\">No results</div>";
-        }
-      ?>
+                  for ($i = 0; $i < count($brandStocks); $i++) {
+                    $brandStock = $brandStocks[$i];
+                    $brandId = $brandStock["brand_id"];
+                    $warehouseCode = $brandStock["warehouse_code"];
+                    $warehouseName = $brandStock["warehouse_name"];
+                    $qty = $brandStock["qty"];
+                    $subtotal = $brandStock["subtotal"];
+
+                    $totalQty += $qty;
+                    $totalAmt += $subtotal;
+
+                    echo "
+                      <tr>
+                        <td title=\"$warehouseCode\">
+                          <a href=\"" . REPORT_STOCK_TAKE_BRAND_DETAIL_URL . "?id[]=$brandId&filter_warehouse_code[]=$warehouseCode\">$warehouseCode - $warehouseName</a>
+                        </td>
+                        <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
+                        <td title=\"$subtotal\" class=\"number\">" . number_format($subtotal, 2) . "</td>
+                      </tr>
+                    ";
+                  }
+                ?>
+                <tr>
+                  <th class="number">Total:</th>
+                  <th class="number"><?php echo number_format($totalQty); ?></th>
+                  <th class="number"><?php echo number_format($totalAmt, 2); ?></th>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        <?php endforeach ?>
+      <?php else : ?>
+        <div class="brand-no-results">No results</div>
+      <?php endif ?>
     </div>
   </body>
 </html>

@@ -59,72 +59,63 @@
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo REPORT_STOCK_TAKE_WAREHOUSE_TITLE; ?></div>
-      <?php
-        if (count($stocks) > 0) {
-
-          foreach ($stocks as $warehouse => $warehouseStocks) {
-            $totalQty = 0;
-            $totalAmt = 0;
-
-            echo "
-              <div class=\"warehouse-name\">
-                <h4>$warehouse</h4>
-                <table class=\"warehouse-results\">
-                  <colgroup>
-                    <col>
-                    <col style=\"width: 80px;\">
-                    <col style=\"width: 80px;\">
-                  </colgroup>
-                  <thead>
-                    <tr></tr>
-                    <tr>
-                      <th>Brand</th>
-                      <th class=\"number\">Qty</th>
-                      <th class=\"number\">Subtotal</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-            ";
-
-            for ($i = 0; $i < count($warehouseStocks); $i++) {
-              $warehouseStock = $warehouseStocks[$i];
-              $warehouseId = $warehouseStock["warehouse_id"];
-              $brandCode = $warehouseStock["brand_code"];
-              $brandName = $warehouseStock["brand_name"];
-              $qty = $warehouseStock["qty"];
-              $subtotal = $warehouseStock["subtotal"];
-
-              $totalQty += $qty;
-              $totalAmt += $subtotal;
-
-              echo "
+      <?php if (count($stocks) > 0) : ?>
+        <?php foreach ($stocks as $warehouse => &$warehouseStocks) : ?>
+          <div class="warehouse-name">
+            <h4><?php echo $warehouse; ?></h4>
+            <table class="warehouse-results">
+              <colgroup>
+                <col>
+                <col style="width: 80px;">
+                <col style="width: 80px;">
+              </colgroup>
+              <thead>
+                <tr></tr>
                 <tr>
-                  <td title=\"$brandCode\">
-                    <a href=\"" . REPORT_STOCK_TAKE_WAREHOUSE_DETAIL_URL . "?id[]=$warehouseId&filter_brand_code[]=$brandCode\">$brandCode - $brandName</a>
-                  </td>
-                  <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
-                  <td title=\"$subtotal\" class=\"number\">" . number_format($subtotal, 2) . "</td>
+                  <th>Brand</th>
+                  <th class="number">Qty</th>
+                  <th class="number">Subtotal</th>
                 </tr>
-              ";
-            }
+              </thead>
+              <tbody>
+                <?php
+                  $totalQty = 0;
+                  $totalAmt = 0;
 
-            echo "
-                  </tbody>
-                  <tfoot>
-                    <tr>
-                      <th class=\"number\">Total:</th>
-                      <th class=\"number\">" . number_format($totalQty) . "</th>
-                      <th class=\"number\">" . number_format($totalAmt, 2) . "</th>
-                    </tr>
-                  </tfoot>
-                </table>
-              </div>
-            ";
-          }
-        } else {
-          echo "<div class=\"warehouse-no-results\">No results</div>";
-        }
-      ?>
+                  for ($i = 0; $i < count($warehouseStocks); $i++) {
+                    $warehouseStock = $warehouseStocks[$i];
+                    $warehouseId = $warehouseStock["warehouse_id"];
+                    $brandCode = $warehouseStock["brand_code"];
+                    $brandName = $warehouseStock["brand_name"];
+                    $qty = $warehouseStock["qty"];
+                    $subtotal = $warehouseStock["subtotal"];
+
+                    $totalQty += $qty;
+                    $totalAmt += $subtotal;
+
+                    echo "
+                      <tr>
+                        <td title=\"$brandCode\">
+                          <a href=\"" . REPORT_STOCK_TAKE_WAREHOUSE_DETAIL_URL . "?id[]=$warehouseId&filter_brand_code[]=$brandCode\">$brandCode - $brandName</a>
+                        </td>
+                        <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
+                        <td title=\"$subtotal\" class=\"number\">" . number_format($subtotal, 2) . "</td>
+                      </tr>
+                    ";
+                  }
+                ?>
+                <tr>
+                  <th class="number">Total:</th>
+                  <th class="number"><?php echo number_format($totalQty); ?></th>
+                  <th class="number"><?php echo number_format($totalAmt, 2); ?></th>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        <?php endforeach ?>
+      <?php else : ?>
+        <div class="warehouse-no-results">No results</div>
+      <?php endif ?>
     </div>
   </body>
 </html>

@@ -199,89 +199,79 @@
           </tr>
         </table>
       </form>
-      <?php
-        if (count($stocks) > 0) {
+      <?php if (count($stocks) > 0) : ?>
+        <?php foreach ($stocks as $warehouseCode => &$warehouse) : ?>
+          <div class="warehouse-client">
+            <h4><?php echo $warehouseCode . " - " . $warehouse["name"]; ?></h4>
+            <table class="warehouse-results">
+              <colgroup>
+                <col>
+                <col>
+                <col style="width: 80px;">
+                <col style="width: 80px;">
+                <col style="width: 80px;">
+              </colgroup>
+              <thead>
+                <tr></tr>
+                <tr>
+                  <th>Brand</th>
+                  <th>Model No.</th>
+                  <th class="number">Qty</th>
+                  <th class="number">Average Cost</th>
+                  <th class="number">Subtotal</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php
+                  $warehouseStocks = $warehouse["stocks"];
 
-          foreach ($stocks as $warehouseCode => $warehouse) {
-            $warehouseName = $warehouse["name"];
-            $warehouseStocks = $warehouse["stocks"];
+                  $totalQty = 0;
+                  $totalAmt = 0;
 
-            $totalQty = 0;
-            $totalAmt = 0;
+                  foreach ($warehouseStocks as $brandCode => $brand) {
+                    $brandName = $brand["name"];
+                    $brandStocks = $brand["stocks"];
 
-            echo "
-              <div class=\"warehouse-client\">
-                <h4>$warehouseCode - $warehouseName</h4>
-                <table class=\"warehouse-results\">
-                  <colgroup>
-                    <col>
-                    <col>
-                    <col style=\"width: 80px;\">
-                    <col style=\"width: 80px;\">
-                    <col style=\"width: 80px;\">
-                  </colgroup>
-                  <thead>
-                    <tr></tr>
-                    <tr>
-                      <th>Brand</th>
-                      <th>Model No.</th>
-                      <th class=\"number\">Qty</th>
-                      <th class=\"number\">Average Cost</th>
-                      <th class=\"number\">Subtotal</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-            ";
+                    foreach ($brandStocks as $modelNo => $model) {
+                      $modelId = $model["id"];
+                      $modelStocks = $model["stocks"];
 
-            foreach ($warehouseStocks as $brandCode => $brand) {
-              $brandName = $brand["name"];
-              $brandStocks = $brand["stocks"];
+                      for ($i = 0; $i < count($modelStocks); $i++) {
+                        $modelStock = $modelStocks[$i];
+                        $qty = $modelStock["qty"];
+                        $costAverage = $modelStock["cost_average"];
+                        $subtotal = $modelStock["subtotal"];
 
-              foreach ($brandStocks as $modelNo => $model) {
-                $modelId = $model["id"];
-                $modelStocks = $model["stocks"];
+                        $totalQty += $qty;
+                        $totalAmt += $subtotal;
 
-                for ($i = 0; $i < count($modelStocks); $i++) {
-                  $modelStock = $modelStocks[$i];
-                  $qty = $modelStock["qty"];
-                  $costAverage = $modelStock["cost_average"];
-                  $subtotal = $modelStock["subtotal"];
-
-                  $totalQty += $qty;
-                  $totalAmt += $subtotal;
-
-                  echo "
-                    <tr>
-                      <td title=\"$brandName\">$brandCode - $brandName</td>
-                      <td title=\"$modelNo\"><a class=\"link\" href=\"" . DATA_MODEL_MODEL_DETAIL_URL . "?id=$modelId\">$modelNo</a></td>
-                      <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
-                      <td title=\"$costAverage\" class=\"number\">" . number_format($costAverage, 2) . "</td>
-                      <td title=\"$subtotal\" class=\"number\">" . number_format($subtotal, 2) . "</td>
-                    </tr>
-                  ";
-                }
-              }
-            }
-
-            echo "
-                  </tbody>
-                  <tfoot>
-                    <tr>
-                      <th></th>
-                      <th class=\"number\">Total:</th>
-                      <th class=\"number\">" . number_format($totalQty) . "</th>
-                      <th></th>
-                      <th class=\"number\">" . number_format($totalAmt, 2) . "</th>
-                    </tr>
-                  </tfoot>
-                </table>
-              </div>
-            ";
-          }
-        } else {
-          echo "<div class=\"warehouse-no-results\">No results</div>";
-        }
-      ?>
+                        echo "
+                          <tr>
+                            <td title=\"$brandName\">$brandCode - $brandName</td>
+                            <td title=\"$modelNo\"><a class=\"link\" href=\"" . DATA_MODEL_MODEL_DETAIL_URL . "?id=$modelId\">$modelNo</a></td>
+                            <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
+                            <td title=\"$costAverage\" class=\"number\">" . number_format($costAverage, 2) . "</td>
+                            <td title=\"$subtotal\" class=\"number\">" . number_format($subtotal, 2) . "</td>
+                          </tr>
+                        ";
+                      }
+                    }
+                  }
+                ?>
+                <tr>
+                  <th></th>
+                  <th class="number">Total:</th>
+                  <th class="number"><?php echo number_format($totalQty); ?></th>
+                  <th></th>
+                  <th class="number"><?php echo number_format($totalAmt, 2); ?></th>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        <?php endforeach ?>
+      <?php else : ?>
+        <div class="warehouse-no-results">No results</div>
+      <?php endif ?>
     </div>
   </body>
 </html>

@@ -114,8 +114,6 @@
                 ";
               }
             ?>
-            </tbody>
-            <tfoot>
               <tr>
                 <th></th>
                 <th></th>
@@ -128,7 +126,7 @@
                 <th></th>
                 <th></th>
               </tr>
-            </tfoot>
+            </tbody>
           </table>
         </form>
       <?php else: ?>

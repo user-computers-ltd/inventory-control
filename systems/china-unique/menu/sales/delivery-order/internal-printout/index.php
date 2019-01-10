@@ -94,8 +94,6 @@
                       ";
                     }
                   ?>
-                </tbody>
-                <tfoot>
                   <?php if ($discount > 0) : ?>
                     <tr>
                       <td></td>
@@ -130,7 +128,7 @@
                     <td class="number">Total Cost:</td>
                     <td class="number"><?php echo number_format($totalCost, 2); ?></td>
                   </tr>
-                </tfoot>
+                </tbody>
               </table>
             <?php else: ?>
               <div class="do-models-no-results">No models</div>

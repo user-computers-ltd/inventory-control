@@ -240,8 +240,6 @@
             $profitPercentageSum = $profitSum / $totalCostSum * 100;
 
             echo "
-                  </tbody>
-                  <tfoot>
                     <tr>
                       <th></th>
                       <th class=\"number\">Total:</th>
@@ -254,7 +252,7 @@
                       <th class=\"number\">" . number_format($profitSum, 2) . "</th>
                       <th class=\"number\">" . number_format($profitPercentageSum, 2) . "%</th>
                     </tr>
-                  </tfoot>
+                  </tbody>
                 </table>
               </div>
             ";

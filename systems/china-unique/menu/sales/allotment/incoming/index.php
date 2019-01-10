@@ -192,8 +192,6 @@
                   }
 
                   echo "
-                      </tbody>
-                      <tfoot>
                         <tr>
                           <th></th>
                           <th class=\"number\">Total:</th>
@@ -205,7 +203,7 @@
                           <th></th>
                           <th class=\"total-allot-qty number\"></th>
                         </tr>
-                      </tfoot>
+                      </tbody>
                     </table>
                   ";
                 } else {

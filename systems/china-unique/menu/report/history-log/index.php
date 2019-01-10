@@ -204,8 +204,6 @@
                 ";
               }
             ?>
-          </tbody>
-          <tfoot>
             <tr>
               <th colspan="6" class="number">Total:</th>
               <th class="number"><?php echo number_format($totalQtyIn); ?></th>
@@ -215,7 +213,7 @@
               <th class="number"><?php echo number_format($totalAmtOut, 2); ?></th>
               <th></th>
             </tr>
-          </tfoot>
+          </tbody>
         </table>
       <?php elseif ($hasFilter) : ?>
         <div class="trans-client-no-results">No results</div>

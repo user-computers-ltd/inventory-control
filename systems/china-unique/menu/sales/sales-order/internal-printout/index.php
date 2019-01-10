@@ -91,8 +91,6 @@
                       ";
                     }
                   ?>
-                </tbody>
-                <tfoot>
                   <?php if ($discount > 0) : ?>
                     <tr>
                       <td></td>
@@ -119,7 +117,7 @@
                     <th class="number"><?php echo number_format($totalQtyOutstanding); ?></th>
                     <th class="number"><?php echo number_format($subtotalSum * (100 - $discount) / 100, 2); ?></th>
                   </tr>
-                </tfoot>
+                </tbody>
               </table>
             <?php else: ?>
               <div class="so-models-no-results">No models</div>

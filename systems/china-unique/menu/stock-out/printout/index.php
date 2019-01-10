@@ -98,8 +98,6 @@
                       ";
                     }
                   ?>
-                </tbody>
-                <tfoot>
                   <?php if ($discount > 0) : ?>
                     <tr>
                       <td></td>
@@ -138,7 +136,7 @@
                       <td class="number"><?php echo number_format($totalCost, 2); ?></th>
                     </tr>
                   <?php endif ?>
-                </tfoot>
+                </tbody>
               </table>
             <?php else: ?>
               <div class="stock-out-models-no-results">No models</div>

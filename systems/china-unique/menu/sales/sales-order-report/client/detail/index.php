@@ -214,8 +214,8 @@
               </tbody>
             </table>
           </div>
-        <?php endforeach; ?>
-      <?php else: ?>
+        <?php endforeach ?>
+      <?php else : ?>
         <div class="so-client-no-results">No results</div>
       <?php endif ?>
     </div>

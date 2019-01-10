@@ -183,7 +183,7 @@
           </tbody>
         </table>
       </div>
-    <?php else: ?>
+    <?php else : ?>
       <div class="so-client-no-results">No results</div>
     <?php endif ?>
     <script>

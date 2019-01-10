@@ -203,11 +203,6 @@
                           $d++;
                         }
 
-                        echo "
-                            </tbody>
-                            <tfoot>
-                        ";
-
                         if ($discount > 0) {
                           echo "
                             <tr>
@@ -238,7 +233,7 @@
                                 <th class=\"number\">" . number_format($totalAmt * $discountFactor, 2) . "</th>
                                 <th class=\"web-only\"></th>
                               </tr>
-                            </tfoot>
+                            </tbody>
                           </table>
                         ";
                       } else {

@@ -157,7 +157,9 @@
         `sdo_model` AS x
       LEFT JOIN
         `sdo_header` AS y
-      ON x.do_no=y.do_no) AS h
+      ON x.do_no=y.do_no
+      WHERE
+        y.status=\"SAVED\") AS h
     ON
       a.ia_no=h.ia_no AND
       IF(a.warehouse_code='', g.warehouse_code, a.warehouse_code)=h.warehouse_code AND

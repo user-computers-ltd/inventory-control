@@ -98,8 +98,6 @@
                   ";
                 }
               ?>
-            </tbody>
-            <tfoot>
               <tr>
                 <th class="web-only"></th>
                 <th></th>
@@ -111,7 +109,7 @@
                 <th></th>
                 <th class="number"><?php echo number_format($totalAmtBaseSum, 2); ?></th>
               </tr>
-            </tfoot>
+            </tbody>
           </table>
         </form>
       <?php else: ?>

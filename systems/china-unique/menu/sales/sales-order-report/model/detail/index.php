@@ -243,8 +243,8 @@
               </tbody>
             </table>
           </div>
-        <?php endforeach; ?>
-      <?php else: ?>
+        <?php endforeach ?>
+      <?php else : ?>
         <div class="so-model-no-results">No results</div>
       <?php endif ?>
     </div>

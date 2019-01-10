@@ -101,9 +101,9 @@
 
 #stock-in-entry-not-found,
 #stock-in-entry-no-model {
-  height: 200px;
   text-align: center;
   font-size: 40px;
   font-weight: bold;
+  line-height: 200px;
   opacity: 0.3;
 }

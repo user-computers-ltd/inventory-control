@@ -36,9 +36,9 @@
 
 .stock-out-models-no-results,
 #stock-out-not-found {
-  margin: 100px 0px;
   text-align: center;
   font-size: 40px;
   font-weight: bold;
+  line-height: 200px;
   opacity: 0.3;
 }

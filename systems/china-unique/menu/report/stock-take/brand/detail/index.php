@@ -189,98 +189,88 @@
           </tr>
         </table>
       </form>
-      <?php
-        if (count($stocks) > 0) {
+      <?php if (count($stocks) > 0) : ?>
+        <?php foreach ($stocks as $brandCode => &$brand) : ?>
+          <div class="brand-client">
+            <h4><?php echo $brandCode . " - " . $brand["name"]; ?></h4>
+            <table class="brand-results">
+              <colgroup>
+                <col>
+                <col style="width: 40px;">
+                <col style="width: 80px;">
+                <col style="width: 80px;">
+                <col style="width: 80px;">
+              </colgroup>
+              <thead>
+                <tr></tr>
+                <tr>
+                  <th>Model No.</th>
+                  <th>W.C.</th>
+                  <th class="number">Qty</th>
+                  <th class="number">Average Cost</th>
+                  <th class="number">Subtotal</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php
+                  $brandStocks = $brand["stocks"];
 
-          foreach ($stocks as $brandCode => $brand) {
-            $brandName = $brand["name"];
-            $brandStocks = $brand["stocks"];
+                  $totalQty = 0;
+                  $totalAmt = 0;
 
-            $totalQty = 0;
-            $totalAmt = 0;
+                  foreach ($brandStocks as $modelNo => &$model) {
+                    $modelId = $model["id"];
+                    $modelStocks = $model["stocks"];
 
-            echo "
-              <div class=\"brand-client\">
-                <h4>$brandCode - $brandName</h4>
-                <table class=\"brand-results\">
-                  <colgroup>
-                    <col>
-                    <col style=\"width: 40px;\">
-                    <col style=\"width: 80px;\">
-                    <col style=\"width: 80px;\">
-                    <col style=\"width: 80px;\">
-                  </colgroup>
-                  <thead>
-                    <tr></tr>
-                    <tr>
-                      <th>Model No.</th>
-                      <th>W.C.</th>
-                      <th class=\"number\">Qty</th>
-                      <th class=\"number\">Average Cost</th>
-                      <th class=\"number\">Subtotal</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-            ";
+                    for ($i = 0; $i < count($modelStocks); $i++) {
+                      $modelStock = $modelStocks[$i];
+                      $qty = $modelStock["qty"];
+                      $warehouseCode = $modelStock["warehouse_code"];
+                      $costAverage = $modelStock["cost_average"];
+                      $subtotal = $modelStock["subtotal"];
 
-            foreach ($brandStocks as $modelNo => $model) {
-              $modelId = $model["id"];
-              $modelStocks = $model["stocks"];
+                      $totalQty += $qty;
+                      $totalAmt += $subtotal;
 
-                for ($i = 0; $i < count($modelStocks); $i++) {
-                  $modelStock = $modelStocks[$i];
-                  $qty = $modelStock["qty"];
-                  $warehouseCode = $modelStock["warehouse_code"];
-                  $costAverage = $modelStock["cost_average"];
-                  $subtotal = $modelStock["subtotal"];
+                      $modelColumns = $i == 0 ? "
+                        <td rowspan=\"" . count($modelStocks) . "\" title=\"$modelNo\">
+                          <a class=\"link\" href=\"" . DATA_MODEL_MODEL_DETAIL_URL . "?id=$modelId\">$modelNo</a>
+                        </td>
+                      " : "";
+                      $amountColumns = $i == 0 ? "
+                        <td rowspan=\"" . count($modelStocks) . "\" title=\"$costAverage\" class=\"number\">
+                        " . number_format($costAverage, 2) . "
+                        </td>
+                        <td rowspan=\"" . count($modelStocks) . "\" title=\"$subtotal\" class=\"number\">
+                        " . number_format($subtotal, 2) . "
+                        </td>
+                      " : "";
 
-                  $totalQty += $qty;
-                  $totalAmt += $subtotal;
-
-                  $modelColumns = $i == 0 ? "
-                    <td rowspan=\"" . count($modelStocks) . "\" title=\"$modelNo\">
-                      <a class=\"link\" href=\"" . DATA_MODEL_MODEL_DETAIL_URL . "?id=$modelId\">$modelNo</a>
-                    </td>
-                  " : "";
-                  $amountColumns = $i == 0 ? "
-                    <td rowspan=\"" . count($modelStocks) . "\" title=\"$costAverage\" class=\"number\">
-                    " . number_format($costAverage, 2) . "
-                    </td>
-                    <td rowspan=\"" . count($modelStocks) . "\" title=\"$subtotal\" class=\"number\">
-                    " . number_format($subtotal, 2) . "
-                    </td>
-                  " : "";
-
-                  echo "
-                    <tr>
-                      $modelColumns
-                      <td title=\"$warehouseCode\">$warehouseCode</td>
-                      <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
-                      $amountColumns
-                    </tr>
-                  ";
-                }
-              }
-
-            echo "
-                  </tbody>
-                  <tfoot>
-                    <tr>
-                      <th class=\"number\">Total:</th>
-                      <th></th>
-                      <th class=\"number\">" . number_format($totalQty) . "</th>
-                      <th></th>
-                      <th class=\"number\">" . number_format($totalAmt, 2) . "</th>
-                    </tr>
-                  </tfoot>
-                </table>
-              </div>
-            ";
-          }
-        } else {
-          echo "<div class=\"brand-client-no-results\">No results</div>";
-        }
-      ?>
+                      echo "
+                        <tr>
+                          $modelColumns
+                          <td title=\"$warehouseCode\">$warehouseCode</td>
+                          <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
+                          $amountColumns
+                        </tr>
+                      ";
+                    }
+                  }
+                ?>
+                <tr>
+                  <th class="number">Total:</th>
+                  <th></th>
+                  <th class="number"><?php echo number_format($totalQty); ?></th>
+                  <th></th>
+                  <th class="number"><?php echo number_format($totalAmt, 2); ?></th>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        <?php endforeach ?>
+      <?php else : ?>
+        <div class="brand-client-no-results">No results</div>
+      <?php endif ?>
     </div>
   </body>
 </html>

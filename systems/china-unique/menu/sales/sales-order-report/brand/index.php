@@ -178,7 +178,7 @@
           </tbody>
         </table>
       </div>
-    <?php else: ?>
+    <?php else : ?>
       <div class="so-brand-no-results">No results</div>
     <?php endif ?>
     <script>

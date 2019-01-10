@@ -229,8 +229,8 @@
               </tbody>
             </table>
           </div>
-        <?php endforeach; ?>
-      <?php else: ?>
+        <?php endforeach ?>
+      <?php else : ?>
         <div class="so-brand-no-results">No results</div>
       <?php endif ?>
     </div>

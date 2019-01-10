@@ -173,8 +173,6 @@
             }
 
             echo "
-                  </tbody>
-                  <tfoot>
                     <tr>
                       <th></th>
                       <th class=\"number\">Total:</th>
@@ -184,7 +182,7 @@
                       <th></th>
                       <th class=\"number\">" . number_format($totalAmtSumBase, 2) . "</th>
                     </tr>
-                  </tfoot>
+                    </tbody>
                 </table>
               </div>
             ";
