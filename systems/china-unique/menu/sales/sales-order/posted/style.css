@@ -9,6 +9,10 @@
   box-sizing: border-box;
 }
 
+button.hide {
+  display: none;
+}
+
 #so-results td {
   min-width: 0px;
   max-width: 0px;
@@ -19,6 +23,11 @@
 
 #so-results .number {
   text-align: right;
+}
+
+#so-results input[type="checkbox"] {
+  margin: 0px;
+  height: 10px;
 }
 
 .so-client-no-results {

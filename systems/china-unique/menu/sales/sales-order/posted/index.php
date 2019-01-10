@@ -34,6 +34,7 @@
       <?php if (count($soHeaders) > 0) : ?>
         <form method="post">
           <button type="submit" name="action" value="print">Print</button>
+          <button type="submit" name="action" value="delete">Delete</button>
           <table id="so-results">
             <colgroup>
               <col class="web-only" style="width: 30px">
@@ -80,6 +81,7 @@
                   $currency = $soHeader["currency"];
                   $outstandingAmt = $soHeader["outstanding_amt"];
                   $outstandingAmtBase = $soHeader["outstanding_amt_base"];
+                  $ongoingDelivery = $outstandingQty < $qty ? "true" : "false";
 
                   $totalQty += $qty;
                   $totalOutstanding += $outstandingQty;
@@ -87,7 +89,9 @@
 
                   echo "
                     <tr>
-                      <td class=\"web-only\"><input type=\"checkbox\" name=\"so_id[]\" value=\"$id\" /></td>
+                      <td class=\"web-only\">
+                        <input type=\"checkbox\" name=\"so_id[]\" value=\"$id\" data-ongoing=\"$ongoingDelivery\" onchange=\"onUpdateSelection()\"/>
+                      </td>
                       <td title=\"$date\">$date</td>
                       <td title=\"$soNo\"><a class=\"link\" href=\"" . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?id[]=$id\">$soNo</a></td>
                       <td title=\"$debtorName\">$debtorName</td>
@@ -122,5 +126,14 @@
         <div class="so-client-no-results">No results</div>
       <?php endif ?>
     </div>
+    <script>
+      var deleteButton = document.querySelector("form button[value=\"delete\"]");
+
+      function onUpdateSelection() {
+        var disableDelete = document.querySelectorAll("form input[name=\"so_id[]\"][data-ongoing=\"true\"]:checked").length > 0;
+
+        toggleClass(deleteButton, "hide", disableDelete);
+      }
+    </script>
   </body>
 </html>
