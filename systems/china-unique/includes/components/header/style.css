@@ -4,9 +4,19 @@
 
 .system-header-wrapper .system-header {
   padding: 5px;
-  border: 2px solid black;
-  font: bold 22px Helvetica, sans-serif;
+  font: 22px Helvetica, sans-serif;
   text-align: center;
   letter-spacing: 1px;
   line-height: 25px;
+}
+
+.system-header-wrapper .system-header .company-name {
+  font-size: 36px;
+  font-weight: bold;
+  line-height: 36px;
+}
+
+.system-header-wrapper .system-header .company-detail {
+  font-size: 18px;
+  line-height: 24px;
 }

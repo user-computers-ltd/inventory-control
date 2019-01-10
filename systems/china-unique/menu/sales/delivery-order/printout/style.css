@@ -1,10 +1,14 @@
+.do-header {
+  margin-top: 0px;
+}
+
 .do-header td,
 .do-footer td {
   vertical-align: top;
   border: none;
   white-space: pre;
-  font-size: 16px;
-  line-height: 16px;
+  font-size: 18px;
+  line-height: 18px;
 }
 
 .do-header td:nth-child(2n + 1),
@@ -16,9 +20,10 @@
 .do-models th,
 .do-models td {
   background-color: transparent;
-  border: none;
-  font-size: 16px;
-  line-height: 16px;
+  border-left: none;
+  border-right: none;
+  font-size: 18px;
+  line-height: 18px;
 }
 
 .do-models .number {
@@ -26,11 +31,12 @@
 }
 
 .do-models thead th {
-  border-bottom: 1px solid;
+  border-top: none;
+  border-bottom: 2px solid;
 }
 
 .do-models tbody tr:last-child th {
-  border-top: 1px solid;
+  border-top: 2px solid;
 }
 
 .do-models-no-results,

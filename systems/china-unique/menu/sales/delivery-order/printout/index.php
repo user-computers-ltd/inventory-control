@@ -20,7 +20,6 @@
         <?php foreach($doHeaders as &$doHeader) : ?>
           <div class="page">
             <?php include SYSTEM_PATH . "includes/components/header/index.php"; ?>
-            <div class="headline"><?php echo SALES_DELIVERY_ORDER_PRINTOUT_TITLE . " (" . $doHeader["warehouse"] . "發貨)" ?></div>
             <table class="do-header">
               <tr>
                 <td>編號:</td>
@@ -47,14 +46,15 @@
                 <td><?php echo $doHeader["date"]; ?></td>
               </tr>
             </table>
+            <div class="headline"><?php echo SALES_DELIVERY_ORDER_PRINTOUT_TITLE . " (" . $doHeader["warehouse"] . "發貨)" ?></div>
             <?php if (count($doModels[$doHeader["do_no"]]) > 0) : ?>
               <table class="do-models">
                 <thead>
                   <tr></tr>
                   <tr>
+                    <th>訂單編號</th>
                     <th>品牌</th>
                     <th>型號</th>
-                    <th>訂單編號</th>
                     <th class="number">數量</th>
                     <th class="number">含稅單價</th>
                     <th class="number">含稅總金額</th>
@@ -69,9 +69,9 @@
 
                     for ($i = 0; $i < count($models); $i++) {
                       $model = $models[$i];
+                      $soNo = $model["so_no"];
                       $brand = $model["brand"];
                       $modelNo = $model["model_no"];
-                      $soNo = $model["so_no"];
                       $qty = $model["qty"];
                       $price = $model["price"];
                       $subtotal = $qty * $price;
@@ -81,9 +81,9 @@
 
                       echo "
                         <tr>
+                          <td>$soNo</td>
                           <td>$brand</td>
                           <td>$modelNo</td>
-                          <td>$soNo</td>
                           <td class=\"number\">" . number_format($qty) . "</td>
                           <td class=\"number\">" . number_format($price, 2) . "</td>
                           <td class=\"number\">" . number_format($subtotal, 2) . "</td>
@@ -135,11 +135,10 @@
                   <td><?php echo $doHeader["remarks"]; ?></td>
                 </tr>
               <?php endif ?>
+              <tr><td colspan="2">敬請簽收:</td></tr>
+              <tr><td colspan="2"><br/><br/><br/><br/>____________________________________</td></tr>
+              <tr><td colspan="2"><?php echo $doHeader["client_name"]; ?></td></tr>
             </table>
-            <span>敬請簽收:</span><br/>
-            <br/><br/><br/><br/>
-            <span>____________________________________</span><br/>
-            <span><?php echo $doHeader["client_name"]; ?></span>
           </div>
         <?php endforeach; ?>
         <div class="web-only">
