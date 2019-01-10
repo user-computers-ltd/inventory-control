@@ -12,7 +12,7 @@
       <div class="system-header">
         <div class="company-name"><?php echo COMPANY_NAME_CHI; ?></div>
         <div class="company-detail"><?php echo COMPANY_ADDRESS; ?></div>
-        <div class="company-detail">郵政編碼: <?php echo COMPANY_POST_NO; ?> 電話: <?php echo COMPANY_TEL; ?></div>
+        <div class="company-detail">電話: <?php echo COMPANY_TEL; ?></div>
       </div>
     </div>
   </body>

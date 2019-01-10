@@ -10,11 +10,10 @@
   define("COMPANY_NAME_CHI", "華裔針車（深圳）有限公司");
   define("COMPANY_ADDRESS", "
     廣東省深圳市福田區
-    濱河大道5022號
+    華富街道濱河路與彩田路交匯處
     聯合廣場 A座
     2210室
   ");
-  define("COMPANY_POST_NO", "518000");
   define("COMPANY_TEL", "0755 2360 4173");
 
   define("COMPANY_TAX", 16);
