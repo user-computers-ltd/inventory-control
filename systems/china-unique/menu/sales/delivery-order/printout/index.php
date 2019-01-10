@@ -93,18 +93,18 @@
                   ?>
                   <?php if ($discount > 0) : ?>
                     <tr>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
+                      <th></th>
+                      <th></th>
+                      <th></th>
+                      <th></th>
                       <th></th>
                       <th class="number"><?php echo number_format($subtotalSum, 2); ?></th>
                     </tr>
                     <tr>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
+                      <th></th>
+                      <th></th>
+                      <th></th>
+                      <th></th>
                       <td class="number">折扣 <?php echo $discount; ?>%</td>
                       <td class="number"><?php echo number_format($subtotalSum * $discount / 100, 2); ?></td>
                     </tr>

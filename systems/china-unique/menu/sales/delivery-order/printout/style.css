@@ -22,12 +22,15 @@
   line-height: 18px;
 }
 
+.do-models th {
+  border-top: none;
+}
+
 .do-models .number {
   text-align: right;
 }
 
 .do-models thead th {
-  border-top: none;
   border-bottom: 2px solid;
 }
 
