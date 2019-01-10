@@ -206,26 +206,38 @@
                         if ($discount > 0) {
                           echo "
                             <tr>
-                              <td class=\"web-only\"></td>
-                              <td colspan=\"6\"></td>
-                              <td></td>
+                              <th class=\"web-only\"></th>
+                              <th></th>
+                              <th></th>
+                              <th></th>
+                              <th></th>
+                              <th></th>
+                              <th></th>
+                              <th></th>
                               <th class=\"number\">" . number_format($totalAmt, 2) . "</th>
-                              <td class=\"web-only\"></td>
+                              <th class=\"web-only\"></th>
                             </tr>
                             <tr>
-                              <td class=\"web-only\"></td>
-                              <td colspan=\"6\"></td>
+                              <th class=\"web-only\"></th>
+                              <th></th>
+                              <th></th>
+                              <th></th>
+                              <td></td>
+                              <td></td>
+                              <td></td>
                               <td class=\"number\">Disc. $discount%</td>
                               <td class=\"number\">" . number_format($totalAmt * $discount / 100, 2) . "</td>
-                              <td class=\"web-only\"></td>
+                              <th class=\"web-only\"></th>
                             </tr>
                           ";
                         }
 
                         echo "
                               <tr>
-                                <td class=\"web-only\"></td>
-                                <td colspan=\"3\"></th>
+                                <th class=\"web-only\"></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
                                 <th class=\"number\">Total:</th>
                                 <th class=\"number\">" . number_format($totalOutstanding) . "</th>
                                 <th class=\"number\">" . number_format($totalAllottedQty) . "</th>

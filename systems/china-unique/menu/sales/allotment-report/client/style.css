@@ -46,16 +46,16 @@
 }
 
 .so-client-results td {
+  border-top: none;
+}
+
+.so-client-results td {
   min-width: 0px;
   max-width: 0px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   vertical-align: top;
-}
-
-.so-client-results tfoot th {
-  border-top: 1px solid;
 }
 
 .so-client-results .number {
