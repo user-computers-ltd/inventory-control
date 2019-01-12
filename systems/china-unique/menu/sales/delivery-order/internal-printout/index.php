@@ -56,11 +56,14 @@
                     <th>品牌</th>
                     <th>型號</th>
                     <th class="number">數量</th>
+                    <th class="number">含稅單價</th>
+                    <th class="number">含稅總金額</th>
                   </tr>
                 </thead>
                 <tbody>
                   <?php
                     $totalQty = 0;
+                    $subtotalSum = 0;
                     $discount = $doHeader["discount"];
                     $models = $doModels[$doHeader["do_no"]];
 
@@ -70,8 +73,11 @@
                       $brand = $model["brand"];
                       $modelNo = $model["model_no"];
                       $qty = $model["qty"];
+                      $price = $model["price"];
+                      $subtotal = $qty * $price;
 
                       $totalQty += $qty;
+                      $subtotalSum += $subtotal;
 
                       echo "
                         <tr>
@@ -79,15 +85,37 @@
                           <td>$brand</td>
                           <td>$modelNo</td>
                           <td class=\"number\">" . number_format($qty) . "</td>
+                          <td class=\"number\">" . number_format($price, 2) . "</td>
+                          <td class=\"number\">" . number_format($subtotal, 2) . "</td>
                         </tr>
                       ";
                     }
                   ?>
+                  <?php if ($discount > 0) : ?>
+                    <tr>
+                      <th></th>
+                      <th></th>
+                      <th></th>
+                      <th></th>
+                      <th></th>
+                      <th class="number"><?php echo number_format($subtotalSum, 2); ?></th>
+                    </tr>
+                    <tr>
+                      <th></th>
+                      <th></th>
+                      <th></th>
+                      <th></th>
+                      <td class="number">折扣 <?php echo $discount; ?>%</td>
+                      <td class="number"><?php echo number_format($subtotalSum * $discount / 100, 2); ?></td>
+                    </tr>
+                  <?php endif ?>
                   <tr>
                     <th></th>
                     <th></th>
                     <th class="number">總數量:</th>
                     <th class="number"><?php echo number_format($totalQty); ?></th>
+                    <th class="number">總金額:</th>
+                    <th class="number"><?php echo number_format($subtotalSum * (100 - $discount) / 100, 2); ?></th>
                   </tr>
                 </tbody>
               </table>
@@ -114,7 +142,7 @@
           </div>
         <?php endforeach; ?>
         <div class="web-only">
-          <?php echo generateRedirectButton(SALES_DELIVERY_ORDER_PRINTOUT_URL, "External printout"); ?>
+          <?php echo generateRedirectButton(SALES_DELIVERY_ORDER_INTERNAL_PRINTOUT_URL, "Internal printout"); ?>
         </div>
       <?php else: ?>
         <div id="do-not-found">Delivery order not found</div>
