@@ -8,16 +8,17 @@
   /* Only populate the data if an id is given. */
   if (assigned($ids) && count($ids) > 0) {
     $headerWhereClause = join(" OR ", array_map(function ($i) { return "a.id=\"$i\""; }, $ids));
-    $modelWhereClause = join(" OR ", array_map(function ($i) { return "d.id=\"$i\""; }, $ids));
+    $modelWhereClause = join(" OR ", array_map(function ($i) { return "c.id=\"$i\""; }, $ids));
 
     $doHeaders = query("
       SELECT
         a.do_no                                           AS `do_no`,
         DATE_FORMAT(a.do_date, '%d-%m-%Y')                AS `date`,
+        a.debtor_code                                     AS `client_code`,
         IFNULL(b.english_name, 'Unknown')                 AS `client_name`,
-        b.billing_address                                 AS `client_address`,
-        b.contact                                         AS `client_contact`,
-        b.tel                                             AS `client_tel`,
+        a.address                                         AS `client_address`,
+        a.contact                                         AS `client_contact`,
+        a.tel                                             AS `client_tel`,
         CONCAT(a.currency_code, ' @ ', a.exchange_rate)   AS `currency`,
         a.discount                                        AS `discount`,
         a.tax                                             AS `tax`,
@@ -44,7 +45,6 @@
         a.model_no        AS `model_no`,
         a.so_no           AS `so_no`,
         a.price           AS `price`,
-        c.cost_average    AS `cost_average`,
         SUM(a.qty)        AS `qty`
       FROM
         `sdo_model` AS a
@@ -52,15 +52,12 @@
         `brand` AS b
       ON a.brand_code=b.code
       LEFT JOIN
-        `model` AS c
-      ON a.brand_code=c.brand_code AND a.model_no=c.model_no
-      LEFT JOIN
-        `sdo_header` AS d
-      ON a.do_no=d.do_no
+        `sdo_header` AS c
+      ON a.do_no=c.do_no
       WHERE
         $modelWhereClause
       GROUP BY
-        a.do_no, a.brand_code, a.model_no, a.so_no, a.price, c.cost_average
+        a.do_no, a.brand_code, a.model_no, a.so_no, a.price
       ORDER BY
         a.do_no ASC,
         a.brand_code ASC,

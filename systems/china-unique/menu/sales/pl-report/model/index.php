@@ -157,45 +157,43 @@
             </tr>
           </thead>
           <tbody>
-          <?php
-            $totalQty = 0;
-            $totalCostSum = 0;
-            $netAmtBaseSum = 0;
-            $profitSum = 0;
+            <?php
+              $totalQty = 0;
+              $totalCostSum = 0;
+              $netAmtBaseSum = 0;
+              $profitSum = 0;
 
-            for ($i = 0; $i < count($soModels); $i++) {
-              $soModel = $soModels[$i];
-              $brandCode = $soModel["brand_code"];
-              $brandName = $soModel["brand_name"];
-              $modelNo = $soModel["model_no"];
-              $qty = $soModel["qty"];
-              $netAmtBase = $soModel["net_amt_base"];
-              $totalCost = $soModel["total_cost"];
-              $profit = $netAmtBase - $totalCost;
-              $profitPercentage = $profit / $totalCost * 100;
+              for ($i = 0; $i < count($soModels); $i++) {
+                $soModel = $soModels[$i];
+                $brandCode = $soModel["brand_code"];
+                $brandName = $soModel["brand_name"];
+                $modelNo = $soModel["model_no"];
+                $qty = $soModel["qty"];
+                $netAmtBase = $soModel["net_amt_base"];
+                $totalCost = $soModel["total_cost"];
+                $profit = $netAmtBase - $totalCost;
+                $profitPercentage = $profit / $totalCost * 100;
 
-              $totalQty += $qty;
-              $totalCostSum += $totalCost;
-              $netAmtBaseSum += $netAmtBase;
-              $profitSum += $profit;
+                $totalQty += $qty;
+                $totalCostSum += $totalCost;
+                $netAmtBaseSum += $netAmtBase;
+                $profitSum += $profit;
 
-              echo "
-                <tr>
-                  <td title=\"$brandCode\">$brandName</td>
-                  <td title=\"$modelNo\"><a class=\"link\" href=\"" . SALES_PL_REPORT_MODEL_DETAIL_URL . "?brand_code[]=$brandCode&model_no[]=$modelNo\">$modelNo</a></td>
-                  <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
-                  <td title=\"$netAmtBase\" class=\"number\">" . number_format($netAmtBase, 2) . "</td>
-                  <td title=\"$totalCost\" class=\"number\">" . number_format($totalCost, 2) . "</td>
-                  <td title=\"$profit\" class=\"number\">" . number_format($profit, 2) . "</td>
-                  <td title=\"$profitPercentage\" class=\"number\">" . number_format($profitPercentage, 2) . "%</td>
-                </tr>
-              ";
-            }
+                echo "
+                  <tr>
+                    <td title=\"$brandCode\">$brandName</td>
+                    <td title=\"$modelNo\"><a class=\"link\" href=\"" . SALES_PL_REPORT_MODEL_DETAIL_URL . "?brand_code[]=$brandCode&model_no[]=$modelNo\">$modelNo</a></td>
+                    <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
+                    <td title=\"$netAmtBase\" class=\"number\">" . number_format($netAmtBase, 2) . "</td>
+                    <td title=\"$totalCost\" class=\"number\">" . number_format($totalCost, 2) . "</td>
+                    <td title=\"$profit\" class=\"number\">" . number_format($profit, 2) . "</td>
+                    <td title=\"$profitPercentage\" class=\"number\">" . number_format($profitPercentage, 2) . "%</td>
+                  </tr>
+                ";
+              }
 
-            $profitPercentageSum = $profitSum / $totalCostSum * 100;
-          ?>
-          </tbody>
-          <tfoot>
+              $profitPercentageSum = $profitSum / $totalCostSum * 100;
+            ?>
             <tr>
               <th></th>
               <th class="number">Total:</th>
@@ -205,7 +203,7 @@
               <th class="number"><?php echo number_format($profitSum, 2); ?></th>
               <th class="number"><?php echo number_format($profitPercentageSum, 2); ?>%</th>
             </tr>
-          </tfoot>
+          </tbody>
         </table>
       </div>
     <?php else: ?>

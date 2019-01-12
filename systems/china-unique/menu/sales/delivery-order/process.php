@@ -2,6 +2,9 @@
   $id = $_GET["id"];
   $doNo = $_POST["do_no"];
   $doDate = $_POST["do_date"];
+  $address = $_POST["address"];
+  $contact = $_POST["contact"];
+  $tel = $_POST["tel"];
   $invoiceNo = $_POST["invoice_no"];
   $remarks = $_POST["remarks"];
   $status = $_POST["status"];
@@ -20,6 +23,9 @@
       $setValues = array(
         "do_no=\"$doNo\"",
         "do_date=\"$doDate\"",
+        "address=\"$address\"",
+        "contact=\"$contact\"",
+        "tel=\"$tel\"",
         "invoice_no=\"$invoiceNo\"",
         "remarks=\"$remarks\"",
         "status=\"$status\""
@@ -49,8 +55,9 @@
         DATE_FORMAT(a.do_date, '%Y-%m-%d')    AS `do_date`,
         a.debtor_code                         AS `debtor_code`,
         IFNULL(b.english_name, 'Unknown')     AS `debtor_name`,
-        IFNULL(b.billing_address, 'Unknown')  AS `debtor_address`,
-        IFNULL(b.contact, 'Unknown')          AS `debtor_contact`,
+        a.address                             AS `debtor_address`,
+        a.contact                             AS `debtor_contact`,
+        a.tel                                 AS `debtor_tel`,
         a.currency_code                       AS `currency_code`,
         a.exchange_rate                       AS `exchange_rate`,
         a.discount                            AS `discount`,

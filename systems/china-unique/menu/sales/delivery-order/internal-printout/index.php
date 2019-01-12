@@ -20,113 +20,74 @@
         <?php foreach($doHeaders as &$doHeader) : ?>
           <div class="page">
             <?php include SYSTEM_PATH . "includes/components/header/index.php"; ?>
-            <div class="headline"><?php echo SALES_DELIVERY_ORDER_INTERNAL_PRINTOUT_TITLE . " (" . $doHeader["warehouse"] . ")" ?></div>
             <table class="do-header">
               <tr>
-                <td>Order No.:</td>
+                <td>編號:</td>
                 <td><?php echo $doHeader["do_no"]; ?></td>
               </tr>
               <tr>
-                <td>Client:</td>
-                <td><?php echo $doHeader["client_name"]; ?></td>
+                <td>致:</td>
+                <td><?php echo $doHeader["client_name"] . " (" . $doHeader["client_code"] . ")"; ?></td>
               </tr>
               <tr>
-                <td>Address:</td>
+                <td>地址:</td>
                 <td><?php echo $doHeader["client_address"]; ?></td>
               </tr>
               <tr>
-                <td>Contact:</td>
+                <td>收貨人:</td>
                 <td><?php echo $doHeader["client_contact"]; ?></td>
               </tr>
               <tr>
-                <td>Tel:</td>
+                <td>電話:</td>
                 <td><?php echo $doHeader["client_tel"]; ?></td>
               </tr>
               <tr>
-                <td>Date:</td>
+                <td>日期:</td>
                 <td><?php echo $doHeader["date"]; ?></td>
               </tr>
             </table>
+            <div class="headline"><?php echo SALES_DELIVERY_ORDER_PRINTOUT_TITLE . " (" . $doHeader["warehouse"] . "發貨)" ?></div>
             <?php if (count($doModels[$doHeader["do_no"]]) > 0) : ?>
               <table class="do-models">
                 <thead>
                   <tr></tr>
                   <tr>
-                    <th>Brand</th>
-                    <th>Model No.</th>
-                    <th>Order No.</th>
-                    <th class="number">Qty</th>
-                    <th class="number">Unit Price</th>
-                    <th class="number">Subtotal</th>
+                    <th>訂單編號</th>
+                    <th>品牌</th>
+                    <th>型號</th>
+                    <th class="number">數量</th>
                   </tr>
                 </thead>
                 <tbody>
                   <?php
                     $totalQty = 0;
-                    $totalCost = 0;
-                    $subtotalSum = 0;
                     $discount = $doHeader["discount"];
                     $models = $doModels[$doHeader["do_no"]];
 
                     for ($i = 0; $i < count($models); $i++) {
                       $model = $models[$i];
+                      $soNo = $model["so_no"];
                       $brand = $model["brand"];
                       $modelNo = $model["model_no"];
-                      $soNo = $model["so_no"];
                       $qty = $model["qty"];
-                      $price = $model["price"];
-                      $costAverage = $model["cost_average"];
-                      $subtotal = $qty * $price;
 
                       $totalQty += $qty;
-                      $totalCost += $qty * $costAverage;
-                      $subtotalSum += $subtotal;
 
                       echo "
                         <tr>
+                          <td>$soNo</td>
                           <td>$brand</td>
                           <td>$modelNo</td>
-                          <td>$soNo</td>
                           <td class=\"number\">" . number_format($qty) . "</td>
-                          <td class=\"number\">" . number_format($price, 2) . "</td>
-                          <td class=\"number\">" . number_format($subtotal, 2) . "</td>
                         </tr>
                       ";
                     }
                   ?>
-                  <?php if ($discount > 0) : ?>
-                    <tr>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <th></th>
-                      <th class="number"><?php echo number_format($subtotalSum, 2); ?></th>
-                    </tr>
-                    <tr>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td class="number">Discount <?php echo $discount; ?>%</td>
-                      <td class="number"><?php echo number_format($subtotalSum * $discount / 100, 2); ?></td>
-                    </tr>
-                  <?php endif ?>
                   <tr>
                     <th></th>
                     <th></th>
-                    <th class="number">Total:</th>
+                    <th class="number">總數量:</th>
                     <th class="number"><?php echo number_format($totalQty); ?></th>
-                    <th></th>
-                    <th class="number"><?php echo number_format($subtotalSum * (100 - $discount) / 100, 2); ?></th>
-                  </tr>
-                  <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td class="number">Total Cost:</td>
-                    <td class="number"><?php echo number_format($totalCost, 2); ?></td>
                   </tr>
                 </tbody>
               </table>
@@ -136,16 +97,19 @@
             <table class="do-footer">
               <?php if (assigned($doHeader["invoice_no"])) : ?>
                 <tr>
-                  <td>Invoice No.:</td>
+                  <td>發票編號:</td>
                   <td><?php echo $doHeader["invoice_no"]; ?></td>
                 </tr>
               <?php endif ?>
               <?php if (assigned($doHeader["remarks"])) : ?>
                 <tr>
-                  <td>Remarks:</td>
+                  <td>備註:</td>
                   <td><?php echo $doHeader["remarks"]; ?></td>
                 </tr>
               <?php endif ?>
+              <tr><td colspan="2">敬請簽收:</td></tr>
+              <tr><td colspan="2"><br/><br/><br/><br/>____________________________________</td></tr>
+              <tr><td colspan="2"><?php echo $doHeader["client_name"]; ?></td></tr>
             </table>
           </div>
         <?php endforeach; ?>

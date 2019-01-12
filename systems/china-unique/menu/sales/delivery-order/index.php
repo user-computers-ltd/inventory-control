@@ -35,10 +35,20 @@
               <td><?php echo $doHeader["currency_code"] . " @ " . $doHeader["exchange_rate"]; ?></td>
             </tr>
             <tr>
+              <td>Address:</td>
+              <td><textarea name="address"><?php echo $doHeader["debtor_address"]; ?></textarea></td>
               <td>Discount:</td>
               <td><?php echo $doHeader["discount"]; ?>%</td>
+            </tr>
+            <tr>
+              <td>Contact:</td>
+              <td><input type="text" name="contact" value="<?php echo $doHeader["debtor_contact"]; ?>" required /></td>
               <td>Status:</td>
               <td><?php echo $doHeader["status"]; ?></td>
+            </tr>
+            <tr>
+              <td>Tel:</td>
+              <td><input type="text" name="tel" value="<?php echo $doHeader["debtor_tel"]; ?>" required /></td>
             </tr>
           </table>
           <?php if (count($doModels) > 0) : ?>
