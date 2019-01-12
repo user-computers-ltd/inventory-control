@@ -3,8 +3,7 @@
   padding: 20px;
   top: 50%;
   left: 50%;
-  width: 500px;
-  max-width: 100%;
+  width: 100%;
   max-height: 100%;
   transform: translate(-50%, -50%);
   box-sizing: border-box;
@@ -12,7 +11,9 @@
 }
 
 #database {
+  margin: auto;
   padding: 20px;
+  width: 500px;
   background-color: white;
   border-radius: 5px;
   border-bottom: 2px solid darkgray;

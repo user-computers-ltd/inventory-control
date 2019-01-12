@@ -114,7 +114,7 @@
           </div>
         <?php endforeach; ?>
         <div class="web-only">
-          <?php echo generateRedirectButton(SALES_DELIVERY_ORDER_PRINTOUT_URL, "External printout"); ?>
+          <?php echo generateRedirectButton(SALES_DELIVERY_ORDER_INTERNAL_PRINTOUT_URL, "Internal printout"); ?>
         </div>
       <?php else: ?>
         <div id="do-not-found">Delivery order not found</div>
