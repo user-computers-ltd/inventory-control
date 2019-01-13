@@ -206,6 +206,10 @@
           </thead>
           <tbody>
             <?php
+              $totalOnHand = 0;
+              $totalOnOrder = 0;
+              $totalOnReserve = 0;
+
               for ($i = 0; $i < count($results); $i++) {
                 $model = $results[$i];
                 $id = $model["id"];
@@ -216,6 +220,10 @@
                 $qtyOnHand = $model["qty_on_hand"];
                 $qtyOnOrder = $model["qty_on_order"];
                 $qtyOnReserve = $model["qty_on_reserve"];
+
+                $totalOnHand += $qtyOnHand;
+                $totalOnOrder += $qtyOnOrder;
+                $totalOnReserve += $qtyOnReserve;
 
                 echo "
                   <tr>
@@ -229,6 +237,14 @@
                 ";
               }
             ?>
+            <tr>
+              <th></th>
+              <th></th>
+              <th class="number">Total:</th>
+              <th class="number" title="<?php echo $totalOnHand; ?>"><?php echo number_format($totalOnHand); ?></th>
+              <th class="number" title="<?php echo $totalOnOrder; ?>"><?php echo number_format($totalOnOrder); ?></th>
+              <th class="number" title="<?php echo $totalOnReserve; ?>"><?php echo number_format($totalOnReserve); ?></th>
+            </tr>
           </tbody>
         </table>
       <?php else: ?>
