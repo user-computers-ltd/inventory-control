@@ -1,3 +1,7 @@
+.so-footer {
+  page-break-inside: avoid;
+}
+
 .so-header,
 .so-footer {
   font-size: 13px;

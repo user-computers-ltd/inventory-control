@@ -1,3 +1,7 @@
+.do-footer {
+  page-break-inside: avoid;
+}
+
 .do-header td,
 .do-footer td {
   vertical-align: top;

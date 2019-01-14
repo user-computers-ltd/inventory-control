@@ -1,3 +1,7 @@
+.stock-out-footer {
+  page-break-inside: avoid;
+}
+
 .stock-out-header,
 .stock-out-footer {
   font-size: 13px;
