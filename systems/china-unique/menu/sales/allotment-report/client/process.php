@@ -47,7 +47,7 @@
 
       $doNo = "DO" . date("YmdHis");
       $date = date("Y-m-d");
-      $debtor = query("SELECT factory_address, contact, tel FROM `debtor` WHERE code=\"$debtorCode\"");
+      $debtor = query("SELECT factory_address, contact, tel FROM `debtor` WHERE code=\"$debtorCode\"")[0];
       $address = $debtor["factory_address"];
       $contact = $debtor["contact"];
       $tel = $debtor["tel"];
