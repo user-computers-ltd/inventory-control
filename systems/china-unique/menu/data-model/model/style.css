@@ -24,6 +24,10 @@
   text-overflow: ellipsis;
 }
 
+#model-results .quantity {
+  text-align: center;
+}
+
 #model-results .number {
   text-align: right;
 }

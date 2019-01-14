@@ -40,7 +40,8 @@
       a.cost_average                AS `cost_average`,
       IFNULL(c.qty_on_hand, 0)      AS `qty_on_hand`,
       IFNULL(d.qty_on_order, 0)     AS `qty_on_order`,
-      IFNULL(e.qty_on_reserve, 0)   AS `qty_on_reserve`
+      IFNULL(e.qty_on_reserve, 0)   AS `qty_on_reserve`,
+      IFNULL(f.qty_outstanding, 0)  AS `qty_outstanding`
     FROM
       `model` AS a
     LEFT JOIN
@@ -79,7 +80,20 @@
         h.status=\"SAVED\"
       GROUP BY
         m.model_no, m.brand_code) AS e
-    ON a.model_no=e.model_no AND a.brand_code=e.brand_code
+    ON a.brand_code=e.brand_code AND a.model_no=e.model_no
+    LEFT JOIN
+      (SELECT
+        m.brand_code, m.model_no, SUM(m.qty_outstanding) AS `qty_outstanding`
+      FROM
+        `so_model` AS m
+      LEFT JOIN
+        `so_header` AS h
+      ON m.so_no=h.so_no
+      WHERE
+        h.status=\"POSTED\"
+      GROUP BY
+        m.brand_code, m.model_no) AS f
+    ON a.brand_code=f.brand_code AND a.model_no=f.model_no
     WHERE
       a.brand_code IS NOT NULL
       $whereClause
@@ -192,23 +206,32 @@
             <col style="width: 80px;">
             <col style="width: 80px;">
             <col style="width: 80px;">
+            <col style="width: 80px;">
+            <col style="width: 80px;">
           </colgroup>
           <thead>
             <tr></tr>
             <tr>
-              <th>Brand</th>
-              <th>Model No.</th>
-              <th class="number">Average Cost</th>
-              <th class="number">Qty On Hand</th>
-              <th class="number">Qty On Order</th>
-              <th class="number">Qty On Reserve</th>
+              <th rowspan="2">Brand</th>
+              <th rowspan="2">Model No.</th>
+              <th rowspan="2" class="number">Average Cost</th>
+              <th colspan="5" class="quantity">Quantity</th>
+            </tr>
+            <tr>
+              <th class="number">On Hand</th>
+              <th class="number">On Reserve</th>
+              <th class="number">On Order</th>
+              <th class="number">Available</th>
+              <th class="number">To Order</th>
             </tr>
           </thead>
           <tbody>
             <?php
               $totalOnHand = 0;
-              $totalOnOrder = 0;
               $totalOnReserve = 0;
+              $totalAvailable = 0;
+              $totalOnOrder = 0;
+              $totalToOrder = 0;
 
               for ($i = 0; $i < count($results); $i++) {
                 $model = $results[$i];
@@ -218,21 +241,27 @@
                 $modelNo = $model["model_no"];
                 $costAverage = $model["cost_average"];
                 $qtyOnHand = $model["qty_on_hand"];
-                $qtyOnOrder = $model["qty_on_order"];
                 $qtyOnReserve = $model["qty_on_reserve"];
+                $qtyAvailable = $qtyOnHand - $qtyOnReserve;
+                $qtyOnOrder = $model["qty_on_order"];
+                $qtyToOrder = max(0, $model["qty_outstanding"] - $qtyOnHand - $qtyOnOrder);
 
                 $totalOnHand += $qtyOnHand;
-                $totalOnOrder += $qtyOnOrder;
                 $totalOnReserve += $qtyOnReserve;
+                $totalAvailable += $qtyAvailable;
+                $totalOnOrder += $qtyOnOrder;
+                $totalToOrder += $qtyToOrder;
 
                 echo "
                   <tr>
                     <td title=\"$brandCode\">$brandCode - $brandName</td>
                     <td title=\"$modelNo\"><a href=\"" . DATA_MODEL_MODEL_DETAIL_URL . "?id=$id\">$modelNo</a></td>
                     <td class=\"number\" title=\"$costAverage\">" . number_format($costAverage, 2) . "</td>
-                    <td class=\"number\" title=\"$qtyOnHand\">$qtyOnHand</td>
-                    <td class=\"number\" title=\"$qtyOnOrder\">$qtyOnOrder</td>
-                    <td class=\"number\" title=\"$qtyOnReserve\">$qtyOnReserve</td>
+                    <td class=\"number\" title=\"$qtyOnHand\">" . number_format($qtyOnHand) . "</td>
+                    <td class=\"number\" title=\"$qtyOnReserve\">" . number_format($qtyOnReserve) . "</td>
+                    <td class=\"number\" title=\"$qtyAvailable\">" . number_format($qtyAvailable) . "</td>
+                    <td class=\"number\" title=\"$qtyOnOrder\">" . number_format($qtyOnOrder) . "</td>
+                    <td class=\"number\" title=\"$qtyToOrder\">" . number_format($qtyToOrder) . "</td>
                   </tr>
                 ";
               }
@@ -242,8 +271,10 @@
               <th></th>
               <th class="number">Total:</th>
               <th class="number" title="<?php echo $totalOnHand; ?>"><?php echo number_format($totalOnHand); ?></th>
-              <th class="number" title="<?php echo $totalOnOrder; ?>"><?php echo number_format($totalOnOrder); ?></th>
               <th class="number" title="<?php echo $totalOnReserve; ?>"><?php echo number_format($totalOnReserve); ?></th>
+              <th class="number" title="<?php echo $totalAvailable; ?>"><?php echo number_format($totalAvailable); ?></th>
+              <th class="number" title="<?php echo $totalOnOrder; ?>"><?php echo number_format($totalOnOrder); ?></th>
+              <th class="number" title="<?php echo $totalToOrder; ?>"><?php echo number_format($totalToOrder); ?></th>
             </tr>
           </tbody>
         </table>
