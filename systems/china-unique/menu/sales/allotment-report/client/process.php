@@ -47,16 +47,35 @@
 
       $doNo = "DO" . date("YmdHis");
       $date = date("Y-m-d");
+      $debtor = query("SELECT factory_address, contact, tel FROM `debtor` WHERE code=\"$debtorCode\"");
+      $address = $debtor["factory_address"];
+      $contact = $debtor["contact"];
+      $tel = $debtor["tel"];
 
       array_push($queries, "
         INSERT INTO
           `sdo_header`
-            (do_no, do_date, debtor_code, currency_code, exchange_rate, discount, tax, warehouse_code)
+            (
+              do_no,
+              do_date,
+              debtor_code,
+              address,
+              contact,
+              tel,
+              currency_code,
+              exchange_rate,
+              discount,
+              tax,
+              warehouse_code
+            )
           VALUES
             (
               \"$doNo\",
               \"$date\",
               \"$debtorCode\",
+              \"$address\",
+              \"$contact\",
+              \"$tel\",
               \"$currencyCode\",
               \"$exchangeRate\",
               \"$discount\",
