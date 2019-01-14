@@ -1,6 +1,11 @@
 <?php
   /* URL configurations. */
   define("SALES_URL", MENU_URL . "sales/");
+
+  define("SALES_ENQUIRY_URL", SALES_URL . "enquiry/");
+  define("SALES_ENQUIRY_PRINTOUT_URL", SALES_ENQUIRY_URL . "printout/");
+  define("SALES_ENQUIRY_INTERNAL_PRINTOUT_URL", SALES_ENQUIRY_URL . "internal-printout/");
+
   define("SALES_ORDER_URL", SALES_URL . "sales-order/");
   define("SALES_ORDER_PRINTOUT_URL", SALES_ORDER_URL . "printout/");
   define("SALES_ORDER_INTERNAL_PRINTOUT_URL", SALES_ORDER_URL . "internal-printout/");
@@ -37,6 +42,11 @@
 
   /* Title configurations. */
   define("SALES_TITLE", "(F) Sales");
+
+  define("SALES_ENQUIRY_PRINTOUT_TITLE", "Sales Enquiry");
+  define("SALES_ENQUIRY_INTERNAL_PRINTOUT_TITLE", "Sales Enquiry (Internal)");
+  define("SALES_ENQUIRY_TITLE", "(F0) Sales Enquiry");
+
   define("SALES_ORDER_PRINTOUT_TITLE", "Sales Order");
   define("SALES_ORDER_INTERNAL_PRINTOUT_TITLE", "Sales Order (Internal)");
   define("SALES_ORDER_TITLE", "(F1) Sales Order");
@@ -71,6 +81,7 @@
   define("SALES_DELIVERY_ORDER_POSTED_TITLE", "(F6b) Posted Delivery Orders");
 
   $SALES_MODULE = array(
+    SALES_ENQUIRY_TITLE                     => SALES_ENQUIRY_URL,
     SALES_ORDER_TITLE => array(
       SALES_ORDER_CREATE_TITLE              => SALES_ORDER_URL,
       SALES_ORDER_SAVED_TITLE               => SALES_ORDER_SAVED_URL,

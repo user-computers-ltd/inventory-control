@@ -156,16 +156,17 @@
       $status = $soHeader["status"];
       $soModels = query("
         SELECT
-          brand_code,
-          model_no,
-          price,
-          qty
+          brand_code              AS `brand_code`,
+          model_no                AS `model_no`,
+          price                   AS `price`,
+          qty                     AS `qty`,
+          qty - qty_outstanding   AS `qty_delivered`
         FROM
           `so_model`
         WHERE
           so_no=\"$soNo\"
         ORDER BY
-        so_index ASC
+          so_index ASC
       ");
     }
   }
@@ -182,5 +183,37 @@
     $priority = 0;
     $status = "DRAFT";
     $soModels = array();
+
+    if (assigned($brandCodes) && assigned($modelNos) && assigned($qtys)) {
+      $modelMap = array();
+
+      foreach ($models as $model) {
+        $brandCode = $model["brand_code"];
+        $modelNo = $model["model_no"];
+
+        $arrayPointer = &$modelMap;
+
+        if (!isset($arrayPointer[$brandCode])) {
+          $arrayPointer[$brandCode] = array();
+        }
+        $arrayPointer = &$arrayPointer[$brandCode];
+
+        $arrayPointer[$modelNo] = $model;
+      }
+
+      for ($i = 0; $i < count($brandCodes); $i++) {
+        $brandCode = $brandCodes[$i];
+        $modelNo = $modelNos[$i];
+        $price = $modelMap[$brandCode][$modelNo]["normal_price"];
+        $qty = $qtys[$i];
+
+        array_push($soModels, array(
+          "brand_code"  => $brandCode,
+          "model_no"    => $modelNo,
+          "price"       => $price,
+          "qty"         => $qty
+        ));
+      }
+    }
   }
 ?>

@@ -64,6 +64,14 @@
   display: table-row;
 }
 
+#so-models td input[readonly=""],
+#so-models td select[readonly=""] {
+  border: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
 #so-models td > .remove {
   display: block;
   width: 20px;
@@ -91,10 +99,10 @@
 }
 
 #so-entry-not-found,
-#so-entry-no-model {
-  height: 200px;
+#so-models td#so-entry-no-model {
   text-align: center;
   font-size: 40px;
   font-weight: bold;
+  line-height: 200px;
   opacity: 0.3;
 }

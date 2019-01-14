@@ -194,7 +194,7 @@
           </tr>
         </table>
       </form>
-      <form action="<?php echo DATA_MODEL_MODEL_ENTRY_URL; ?>">
+      <form action="<?php echo DATA_MODEL_MODEL_ENTRY_URL; ?>" class="web-only">
         <button type="submit">Create</button>
       </form>
       <?php if (count($results) > 0) : ?>

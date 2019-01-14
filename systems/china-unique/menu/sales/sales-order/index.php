@@ -222,6 +222,7 @@
               var soModel = soModels[i];
               var matchedModels = getModels(soModel["model_no"]);
               var newRowElement = document.createElement("tr");
+              var ongoingDelivery = soModel["qty_delivered"] && soModel["qty_delivered"] > 0;
 
               var rowInnerHTML =
                   "<tr>"
@@ -236,6 +237,7 @@
                     + "onblur=\"onModelNoChange(event, " + i + ")\" "
                     + "autocomplete=\"on\" "
                     + "required "
+                    + (ongoingDelivery ? "readonly" : "")
                   + "/>"
                 + "</td>"
                 + "<td>"
@@ -246,7 +248,8 @@
                     + "onchange=\"onBrandCodeChange(event, " + i + ")\" "
                     + "onfocus=\"onFieldFocused(" + i + ", 'brand_code[]')\" "
                     + "onblur=\"onFieldBlurred()\" "
-                    + "required"
+                    + "required "
+                    + (ongoingDelivery ? "readonly" : "")
                   + ">";
 
               for (var j = 0; j < brands.length; j++) {
@@ -266,7 +269,7 @@
                   + "<input "
                     + "class=\"qty number\" "
                     + "type=\"number\" "
-                    + "min=\"0\" "
+                    + "min=\"" + soModel["qty_delivered"] + "\" "
                     + "name=\"qty[]\" "
                     + "value=\"" + soModel["qty"] + "\" "
                     + "onchange=\"onQuantityChange(event, " + i + ")\" "
@@ -416,17 +419,6 @@
           }
 
           function onDiscountChange() {
-          }
-
-          function onPriceStandardChange() {
-            for (var i = 0; i < soModels.length; i++) {
-              var soModel = soModels[i];
-              var matchedModel = getModels(soModel["model_no"], soModel["brand_code"])[0];
-
-              updateModel(i, matchedModel);
-            }
-
-            render();
           }
 
           function onModelNoChange(event, index) {
