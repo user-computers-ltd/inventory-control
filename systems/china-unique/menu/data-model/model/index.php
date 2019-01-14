@@ -220,8 +220,8 @@
             <tr>
               <th class="number">On Hand</th>
               <th class="number">On Reserve</th>
-              <th class="number">On Order</th>
               <th class="number">Available</th>
+              <th class="number">On Order</th>
               <th class="number">To Order</th>
             </tr>
           </thead>
