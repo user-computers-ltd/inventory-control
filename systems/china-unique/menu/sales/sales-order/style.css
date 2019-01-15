@@ -20,6 +20,7 @@
 #so-header td:nth-child(2n + 1),
 #so-footer td:nth-child(2n + 1) {
   font-weight: bold;
+  line-height: 20px;
 }
 
 #so-footer #remarks {

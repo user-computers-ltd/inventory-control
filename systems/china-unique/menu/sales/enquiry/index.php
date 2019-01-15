@@ -369,7 +369,7 @@
           soModel["qty_on_hand"] = parseFloat(model["qty_on_hand"]) || 0;
           soModel["qty_on_order"] = parseFloat(model["qty_on_order"]) || 0;
           soModel["qty_on_reserve"] = parseFloat(model["qty_on_reserve"]) || 0;
-          soModel["qty_available"] = soModel["qty_on_hand"] - soModel["qty_on_reserve"];
+          soModel["qty_available"] = Math.max(0, soModel["qty_on_hand"] - soModel["qty_on_reserve"]);
           soModel["qty_allotted"] = soModel["qty_allotted"] || 0;
           soModel["total_amount"] = (soModel["qty_allotted"] || 0) * soModel["price"];
         }

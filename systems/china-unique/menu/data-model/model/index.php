@@ -242,7 +242,7 @@
                 $costAverage = $model["cost_average"];
                 $qtyOnHand = $model["qty_on_hand"];
                 $qtyOnReserve = $model["qty_on_reserve"];
-                $qtyAvailable = $qtyOnHand - $qtyOnReserve;
+                $qtyAvailable = max(0, $qtyOnHand - $qtyOnReserve);
                 $qtyOnOrder = $model["qty_on_order"];
                 $qtyToOrder = max(0, $model["qty_outstanding"] - $qtyOnHand - $qtyOnOrder);
 

@@ -20,6 +20,7 @@
 #enquiry-header td:nth-child(2n + 1),
 #enquiry-footer td:nth-child(2n + 1) {
   font-weight: bold;
+  line-height: 20px;
 }
 
 #enquiry-footer #remarks {

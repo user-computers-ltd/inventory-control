@@ -93,7 +93,7 @@
       "qty"               => $qtys[$i],
       "qty_on_hand"       => $model["qty_on_hand"],
       "qty_on_reserve"    => $model["qty_on_reserve"],
-      "qty_available"     => $model["qty_on_hand"] - $model["qty_on_reserve"],
+      "qty_available"     => max(0, $model["qty_on_hand"] - $model["qty_on_reserve"]),
       "qty_on_order"      => $model["qty_on_order"],
       "qty_allotted"      => $qtysAllotted[$i]
     ));
