@@ -1,9 +1,9 @@
-.so-footer {
+.enquiry-footer {
   page-break-inside: avoid;
 }
 
-.so-header td,
-.so-footer td {
+.enquiry-header td,
+.enquiry-footer td {
   vertical-align: top;
   border: none;
   white-space: pre;
@@ -11,14 +11,20 @@
   line-height: 18px;
 }
 
-.so-header td:nth-child(2n + 1),
-.so-footer td:nth-child(2n + 1) {
+.enquiry-header td:nth-child(2n + 1),
+.enquiry-footer td:nth-child(2n + 1) {
   width: 100px;
   font-weight: bold;
 }
 
-.so-models th,
-.so-models td {
+.enquiry-precaution {
+  margin-top: 40px;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.enquiry-models th,
+.enquiry-models td {
   background-color: transparent;
   border-left: none;
   border-right: none;
@@ -26,24 +32,24 @@
   line-height: 18px;
 }
 
-.so-models th {
+.enquiry-models th {
   border-top: none;
 }
 
-.so-models .number {
+.enquiry-models .number {
   text-align: right;
 }
 
-.so-models thead th {
+.enquiry-models thead th {
   border-bottom: 2px solid;
 }
 
-.so-models tbody tr:last-child th {
+.enquiry-models tbody tr:last-child th {
   border-top: 2px solid;
 }
 
-.so-models-no-results,
-#so-not-found {
+.enquiry-models-no-results,
+#enquiry-not-found {
   text-align: center;
   font-size: 40px;
   font-weight: bold;

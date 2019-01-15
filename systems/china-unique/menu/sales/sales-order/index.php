@@ -120,7 +120,7 @@
                 <th>Model no.</th>
                 <th>Brand code</th>
                 <th class="number">Quantity</th>
-                <th class="number">Selling Price</th>
+                <th class="number">Price</th>
                 <th class="number">Subtotal</th>
                 <th></th>
               </tr>
@@ -133,7 +133,8 @@
                 <td></td>
               </tr>
               <tr class="discount-row">
-                <td colspan="3"></td>
+                <td colspan="2"></td>
+                <td class="number">Discount:</td>
                 <td id="discount-percentage" class="number"></td>
                 <td id="discount-amount" class="number"></td>
                 <td></td>
@@ -321,7 +322,7 @@
 
             subTotalAmountElement.innerHTML = totalAmount.toFixed(2);
 
-            discountPercentageElement.innerHTML = "Discount " + discount + "%";
+            discountPercentageElement.innerHTML = discount + "%";
             discountAmountElement.innerHTML = (totalAmount * (discount) / 100).toFixed(2);
 
             totalQtyElement.innerHTML = totalQty;
@@ -419,6 +420,7 @@
           }
 
           function onDiscountChange() {
+            render();
           }
 
           function onModelNoChange(event, index) {

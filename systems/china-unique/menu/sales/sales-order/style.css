@@ -14,11 +14,21 @@
 #so-header td,
 #so-footer td {
   border: none;
+  vertical-align: top;
 }
 
 #so-header td:nth-child(2n + 1),
 #so-footer td:nth-child(2n + 1) {
   font-weight: bold;
+}
+
+#so-footer #remarks {
+  padding: 5px;
+  width: 100%;
+  height: 80px;
+  font-family: inherit;
+  font-size: 13px;
+  box-sizing: border-box;
 }
 
 #so-models .number {
@@ -83,19 +93,6 @@
   line-height: 20px;
   color: rgb(255, 100, 100);
   cursor: pointer;
-}
-
-#so-footer td {
-  vertical-align: top;
-}
-
-#so-footer #remarks {
-  padding: 5px;
-  width: 100%;
-  height: 80px;
-  font-family: inherit;
-  font-size: 13px;
-  box-sizing: border-box;
 }
 
 #so-entry-not-found,

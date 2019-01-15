@@ -94,7 +94,7 @@
                       <td></td>
                       <td></td>
                       <td></td>
-                      <td class="number">Discount <?php echo $discount; ?>%</td>
+                      <td class="number">Discount: <?php echo $discount; ?>%</td>
                       <td class="number"><?php echo number_format($subtotalSum * $discount / 100, 2); ?></td>
                     </tr>
                   <?php endif ?>

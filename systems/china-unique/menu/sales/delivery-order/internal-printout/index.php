@@ -105,7 +105,7 @@
                       <th></th>
                       <th></th>
                       <th></th>
-                      <td class="number">折扣 <?php echo $discount; ?>%</td>
+                      <td class="number">折扣: <?php echo $discount; ?>%</td>
                       <td class="number"><?php echo number_format($subtotalSum * $discount / 100, 2); ?></td>
                     </tr>
                   <?php endif ?>

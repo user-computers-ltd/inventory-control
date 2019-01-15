@@ -19,14 +19,26 @@
       <div class="page">
         <?php include SYSTEM_PATH . "includes/components/header/index.php"; ?>
         <div class="headline"><?php echo SALES_ENQUIRY_INTERNAL_PRINTOUT_TITLE ?></div>
-        <table class="so-header">
+        <table class="enquiry-header">
           <tr>
             <td>Date:</td>
             <td><?php echo $date; ?></td>
           </tr>
+          <tr>
+            <td>Client:</td>
+            <td><?php echo $client; ?></td>
+            <td>Currency:</td>
+            <td><?php echo $currency; ?></td>
+          </tr>
+          <tr>
+            <td>Persion In-charge:</td>
+            <td><?php echo $inCharge; ?></td>
+            <td>Discount:</td>
+            <td><?php echo $discount; ?>%</td>
+          </tr>
         </table>
         <?php if (count($items) > 0) : ?>
-          <table class="so-models">
+          <table class="enquiry-models">
             <colgroup>
               <col>
               <col>
@@ -107,8 +119,16 @@
             </tbody>
           </table>
         <?php else: ?>
-          <div class="so-models-no-results">No models</div>
+          <div class="enquiry-models-no-results">No models</div>
         <?php endif ?>
+        <table class="enquiry-footer">
+          <?php if (assigned($remarks)) : ?>
+            <tr>
+              <td>Remarks:</td>
+              <td><?php echo $remarks; ?></td>
+            </tr>
+          <?php endif ?>
+        </table>
       </div>
       <div class="web-only">
         <?php echo generateRedirectButton(SALES_ENQUIRY_PRINTOUT_URL, "External printout"); ?>

@@ -176,35 +176,19 @@
     $headline = SALES_ORDER_CREATE_TITLE;
     $soNo = "SO" . date("YmdHis");
     $soDate = date("Y-m-d");
-    $currencyCode = COMPANY_CURRENCY;
-    $exchangeRate = $currencies[COMPANY_CURRENCY];
-    $discount = 0;
+    $currencyCode = assigned($currencyCode) ? $currencyCode : COMPANY_CURRENCY;
+    $exchangeRate = assigned($exchangeRate) ? $exchangeRate : $currencies[$currencyCode];
+    $discount = assigned($discount) ? $discount : 0;
     $tax = COMPANY_TAX;
     $priority = 0;
     $status = "DRAFT";
     $soModels = array();
 
-    if (assigned($brandCodes) && assigned($modelNos) && assigned($qtys)) {
-      $modelMap = array();
-
-      foreach ($models as $model) {
-        $brandCode = $model["brand_code"];
-        $modelNo = $model["model_no"];
-
-        $arrayPointer = &$modelMap;
-
-        if (!isset($arrayPointer[$brandCode])) {
-          $arrayPointer[$brandCode] = array();
-        }
-        $arrayPointer = &$arrayPointer[$brandCode];
-
-        $arrayPointer[$modelNo] = $model;
-      }
-
+    if (assigned($brandCodes) && assigned($modelNos) && assigned($prices) && assigned($qtys)) {
       for ($i = 0; $i < count($brandCodes); $i++) {
         $brandCode = $brandCodes[$i];
         $modelNo = $modelNos[$i];
-        $price = $modelMap[$brandCode][$modelNo]["normal_price"];
+        $price = $prices[$i];
         $qty = $qtys[$i];
 
         array_push($soModels, array(

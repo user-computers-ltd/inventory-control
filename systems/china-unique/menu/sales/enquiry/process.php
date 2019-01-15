@@ -5,6 +5,8 @@
     SELECT
       a.brand_code                AS `brand_code`,
       a.model_no                  AS `model_no`,
+      a.retail_normal             AS `normal_price`,
+      a.retail_special            AS `special_price`,
       IFNULL(b.qty_on_hand, 0)    AS `qty_on_hand`,
       IFNULL(c.qty_on_order, 0)   AS `qty_on_order`,
       IFNULL(d.qty_on_reserve, 0) AS `qty_on_reserve`
@@ -47,4 +49,12 @@
     ORDER BY
       a.brand_code, a.model_no
   ");
+  $results = query("SELECT code, rate FROM `currency`");
+  $currencies = array();
+  foreach ($results as $currency) {
+    $currencies[$currency["code"]] = $currency["rate"];
+  }
+  $discount = 0;
+  $currencyCode = COMPANY_CURRENCY;
+  $exchangeRate = $currencies[COMPANY_CURRENCY];
 ?>
