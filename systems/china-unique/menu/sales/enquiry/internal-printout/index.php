@@ -33,8 +33,10 @@
           <tr>
             <td>Persion In-charge:</td>
             <td><?php echo $inCharge; ?></td>
-            <td>Discount:</td>
-            <td><?php echo $discount; ?>%</td>
+            <?php if ($discount > 0) : ?>
+              <td>Discount:</td>
+              <td><?php echo $discount; ?>%</td>
+            <?php endif ?>
           </tr>
         </table>
         <?php if (count($items) > 0) : ?>

@@ -33,8 +33,10 @@
           <tr>
             <td>經手人:</td>
             <td><?php echo $inCharge; ?></td>
-            <td>折扣:</td>
-            <td><?php echo $discount; ?>%</td>
+            <?php if ($discount > 0) : ?>
+              <td>折扣:</td>
+              <td><?php echo $discount; ?>%</td>
+            <?php endif ?>
           </tr>
         </table>
         <?php if (count($items) > 0) : ?>

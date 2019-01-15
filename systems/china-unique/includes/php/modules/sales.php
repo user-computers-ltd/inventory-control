@@ -43,7 +43,7 @@
   /* Title configurations. */
   define("SALES_TITLE", "(F) Sales");
 
-  define("SALES_ENQUIRY_PRINTOUT_TITLE", "銷售查詢");
+  define("SALES_ENQUIRY_PRINTOUT_TITLE", "貨物查詢");
   define("SALES_ENQUIRY_INTERNAL_PRINTOUT_TITLE", "Sales Enquiry (Internal)");
   define("SALES_ENQUIRY_TITLE", "(F0) Sales Enquiry");
 
