@@ -23,17 +23,22 @@
           <tr>
             <td>Client:</td>
             <td>
-              <select id="debtor-code" name="debtor_code" required>
+              <select id="debtor-code" name="debtor_code" onchange="onDebtorCodeChange()" equired>
                 <?php
                   foreach ($debtors as $debtor) {
                     $code = $debtor["code"];
                     $label = $debtor["code"] . " - " . $debtor["name"];
-                    $selected = $debtorCode == $code ? "selected" : "";
-                    echo "<option value=\"$code\" $selected>$label</option>";
+                    echo "<option value=\"$code\">$label</option>";
                   }
                 ?>
               </select>
             </td>
+            <td class="debtor-name show">Name:</td>
+            <td class="debtor-name show"><input name="debtor_name" type="text" required /></td>
+          </tr>
+          <tr>
+            <td>Person In-charge:</td>
+            <td><input type="text" name="in_charge" required/></td>
             <td>Currency:</td>
             <td>
               <select id="currency-code" name="currency_code" onchange="onCurrencyCodeChange()" required>
@@ -58,24 +63,6 @@
             </td>
           </tr>
           <tr>
-            <td>Person In-charge:</td>
-            <td><input type="text" name="in_charge" required/></td>
-            <td>Discount:</td>
-            <td>
-              <input
-                id="discount"
-                name="discount"
-                type="number"
-                step="0.01"
-                min="0"
-                max="100"
-                value="<?php echo $discount; ?>"
-                onchange="onDiscountChange()"
-                required
-              /><span>%</span>
-            </td>
-          </tr>
-          <tr>
             <td colspan="2">
               <input
                 id="normal-price"
@@ -95,6 +82,20 @@
               />
               <label for="special-price">Special Price</label>
             </td>
+            <td>Discount:</td>
+            <td>
+              <input
+                id="discount"
+                name="discount"
+                type="number"
+                step="0.01"
+                min="0"
+                max="100"
+                value="<?php echo $discount; ?>"
+                onchange="onDiscountChange()"
+                required
+              /><span>%</span>
+            </td>
           </tr>
         </table>
         <button type="button" onclick="addItem()">Add</button>
@@ -102,6 +103,7 @@
           <colgroup>
             <col>
             <col style="width: 80px">
+            <col style="width: 60px">
             <col style="width: 60px">
             <col style="width: 60px">
             <col style="width: 60px">
@@ -116,28 +118,29 @@
             <tr>
               <th rowspan="2">Model no.</th>
               <th rowspan="2">Brand code</th>
-              <th colspan="6" class="quantity">Quantity</th>
+              <th colspan="7" class="quantity">Quantity</th>
               <th rowspan="2" class="number">Price</th>
               <th rowspan="2" class="number">Subtotal</th>
               <th rowspan="2"></th>
             <tr>
               <th class="number">Request</th>
               <th class="number">On Hand</th>
-              <th class="number">Reserved</th>
+              <th class="number">Assigned</th>
               <th class="number">Available</th>
-              <th class="number">On Order</th>
+              <th class="number">Incoming</th>
+              <th class="number">Reserved</th>
               <th class="number">Allot</th>
             </tr>
           </thead>
           <tfoot>
             <tr class="discount-row">
-              <td colspan="8"></td>
+              <td colspan="9"></td>
               <th></th>
               <th id="sub-total-amount" class="number"></th>
               <td></td>
             </tr>
             <tr class="discount-row">
-              <td colspan="7"></td>
+              <td colspan="8"></td>
               <td class="number">Discount:</td>
               <td id="discount-percentage" class="number"></td>
               <td id="discount-amount" class="number"></td>
@@ -147,7 +150,7 @@
               <th></th>
               <th class="number">Total:</th>
               <th id="total-qty" class="number"></th>
-              <th colspan="4"></th>
+              <th colspan="5"></th>
               <th id="total-qty-allotted" class="number"></th>
               <th></th>
               <th id="total-amount" class="number"></th>
@@ -175,8 +178,9 @@
              . "\" data-normal_price=\"" . $model["normal_price"]
              . "\" data-special_price=\"" . $model["special_price"]
              . "\" data-qty_on_hand=\"" . $model["qty_on_hand"]
-             . "\" data-qty_on_reserve=\"" . $model["qty_on_reserve"]
-             . "\" data-qty_on_order=\"" . $model["qty_on_order"]
+             . "\" data-qty_on_hand_reserve=\"" . $model["qty_on_hand_reserve"]
+             . "\" data-qty_incoming=\"" . $model["qty_incoming"]
+             . "\" data-qty_incoming_reserve=\"" . $model["qty_incoming_reserve"]
              . "\">" . $model["model_no"] . "</option>";
           }
         ?>
@@ -188,6 +192,9 @@
         var focusedRow = null;
         var focusedFieldName = null;
 
+        var debtorCodeElement = document.querySelector("#debtor-code");
+        var debtorNameElements = document.querySelectorAll(".debtor-name");
+        var debtorNameFieldElement = document.querySelector(".debtor-name input");
         var discountElement = document.querySelector("#discount");
         var currencyCodeElement = document.querySelector("#currency-code");
         var exchangeRateElement = document.querySelector("#exchange-rate");
@@ -282,9 +289,10 @@
                 + "/>"
               + "</td>"
               + "<td class=\"number\">" + soModel["qty_on_hand"] + "</td>"
-              + "<td class=\"number\">" + soModel["qty_on_reserve"] + "</td>"
+              + "<td class=\"number\">" + soModel["qty_on_hand_reserve"] + "</td>"
               + "<td class=\"number " + insufficient + "\">" + soModel["qty_available"] + "</td>"
-              + "<td class=\"number\">" + soModel["qty_on_order"] + "</td>"
+              + "<td class=\"number\">" + soModel["qty_incoming"] + "</td>"
+              + "<td class=\"number\">" + soModel["qty_incoming_reserve"] + "</td>"
               + "<td>"
                 + "<input "
                   + "class=\"qty number\" "
@@ -323,7 +331,7 @@
             totalQty += parseFloat(soModel["qty"]);
             totalQtyAllotted += parseFloat(soModel["qty_allotted"]);
             totalAmount += parseFloat(soModel["price"] * soModel["qty_allotted"]);
-            console.log(soModel["total_amount"]);
+
             tableBodyElement.appendChild(newRowElement);
 
             if (i === focusedRow) {
@@ -333,7 +341,7 @@
 
           if (soModels.length === 0) {
             var rowElement = document.createElement("tr");
-            rowElement.innerHTML = "<td colspan=\"10\" id=\"enquiry-entry-no-model\">No models</td>";
+            rowElement.innerHTML = "<td colspan=\"12\" id=\"enquiry-entry-no-model\">No models</td>";
             tableBodyElement.appendChild(rowElement);
           }
 
@@ -367,9 +375,10 @@
           soModel["price"] = parseFloat(model[priceStandard]) || 0;
           soModel["qty"] = soModel["qty"] || 0;
           soModel["qty_on_hand"] = parseFloat(model["qty_on_hand"]) || 0;
-          soModel["qty_on_order"] = parseFloat(model["qty_on_order"]) || 0;
-          soModel["qty_on_reserve"] = parseFloat(model["qty_on_reserve"]) || 0;
-          soModel["qty_available"] = Math.max(0, soModel["qty_on_hand"] - soModel["qty_on_reserve"]);
+          soModel["qty_on_hand_reserve"] = parseFloat(model["qty_on_hand_reserve"]) || 0;
+          soModel["qty_incoming"] = parseFloat(model["qty_incoming"]) || 0;
+          soModel["qty_incoming_reserve"] = parseFloat(model["qty_incoming_reserve"]) || 0;
+          soModel["qty_available"] = Math.max(0, soModel["qty_on_hand"] - soModel["qty_on_hand_reserve"]);
           soModel["qty_allotted"] = soModel["qty_allotted"] || 0;
           soModel["total_amount"] = (soModel["qty_allotted"] || 0) * soModel["price"];
         }
@@ -438,6 +447,16 @@
           }
 
           render();
+        }
+
+        function onDebtorCodeChange() {
+          var debtorCode = debtorCodeElement.value;
+
+          for (var i = 0; i < debtorNameElements.length; i++) {
+            toggleClass(debtorNameElements[i], "show", debtorCode === "1");
+          }
+
+          debtorNameFieldElement.disabled = debtorCode !== "1";
         }
 
         function onCurrencyCodeChange() {

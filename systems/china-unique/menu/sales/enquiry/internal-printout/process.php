@@ -1,5 +1,6 @@
 <?php
   $debtorCode = $_POST["debtor_code"];
+  $debtorName = $_POST["debtor_name"];
   $currencyCode = $_POST["currency_code"];
   $exchangeRate = $_POST["exchange_rate"];
   $discount = $_POST["discount"];
@@ -12,8 +13,9 @@
   $remarks = $_POST["remarks"];
 
   $debtor = query("SELECT english_name AS name FROM `debtor` WHERE code=\"$debtorCode\"")[0];
-  $client = $debtorCode . " - " . $debtor["name"];
-  $currency = $currencyCode . " @ " . $exchangeRate;
+  $debtorName = assigned($debtorName) ? $debtorName : $debtor["name"];
+  $client = "$debtorName ($debtorCode)";
+  $currency = "$currencyCode @ $exchangeRate";
 
   $items = array();
 
