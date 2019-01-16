@@ -50,6 +50,7 @@
   border-left: none;
   border-right: none;
   line-height: 25px;
+  overflow: hidden;
 }
 
 #stock-out-models td {
@@ -100,7 +101,7 @@
 }
 
 #stock-out-entry-not-found,
-#stock-out-entry-no-model {
+#stock-out-models td#stock-out-entry-no-model {
   text-align: center;
   font-size: 40px;
   font-weight: bold;
