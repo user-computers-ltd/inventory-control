@@ -334,7 +334,6 @@
           }
 
           function updateModel(index, model = {}) {
-            if ()
             var priceStandard = document.querySelector("input[name='price_standard']:checked").value;
 
             var soModel = soModels[index];
