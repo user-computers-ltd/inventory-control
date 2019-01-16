@@ -34,8 +34,8 @@
                 ?>
               </select>
             </td>
-            <td class="debtor-name <?php echo $debtorCode === "1" ? "show" : ""; ?>">Name:</td>
-            <td class="debtor-name <?php echo $debtorCode === "1" ? "show" : ""; ?>">
+            <td class="debtor-name <?php echo $debtorCode != "1" ? "" : "show"; ?>">Name:</td>
+            <td class="debtor-name <?php echo $debtorCode != "1" ? "" : "show"; ?>">
               <input
                 name="debtor_name"
                 type="text"
