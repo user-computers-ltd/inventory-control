@@ -25,6 +25,7 @@
     SELECT
       a.brand_code                                                                    AS `brand_code`,
       c.name                                                                          AS `brand_name`,
+      COUNT(DISTINCT b.so_no)                                                         AS `so_count`,
       SUM(a.qty)                                                                      AS `qty`,
       SUM(a.qty_outstanding)                                                          AS `qty_outstanding`,
       SUM(a.qty_outstanding * a.price * (100 - b.discount) / 100 * b.exchange_rate)   AS `amt_outstanding_base`,
@@ -119,6 +120,7 @@
         <table class="so-results">
           <colgroup>
             <col>
+            <col style="width: 60px">
             <col style="width: 100px">
             <col style="width: 100px">
             <col style="width: 100px">
@@ -128,6 +130,7 @@
             <tr></tr>
             <tr>
               <th>Brand</th>
+              <th class="number"># Orders</th>
               <th class="number">Total Qty</th>
               <th class="number">Outstanding Qty</th>
               <th class="number">Outstanding Amt <?php echo $InBaseCurrency; ?></th>
@@ -145,6 +148,7 @@
                 $soModel = $soModels[$i];
                 $brandCode = $soModel["brand_code"];
                 $brandName = $soModel["brand_name"];
+                $count = $soModel["so_count"];
                 $qty = $soModel["qty"];
                 $outstandingQty = $soModel["qty_outstanding"];
                 $outstandingAmtBase = $soModel["amt_outstanding_base"];
@@ -160,6 +164,7 @@
                     <td title=\"$brandCode\">
                       <a class=\"link\" href=\"" . SALES_REPORT_BRAND_DETAIL_URL . "?show_mode=$showMode&brand_code[]=$brandCode\">$brandCode - $brandName</a>
                     </td>
+                    <td title=\"$count\" class=\"number\">" . number_format($count) . "</td>
                     <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
                     <td title=\"$outstandingQty\" class=\"number\">" . number_format($outstandingQty) . "</td>
                     <td title=\"$outstandingAmtBase\" class=\"number\">" . number_format($outstandingAmtBase, 2) . "</td>
@@ -169,6 +174,7 @@
               }
             ?>
             <tr>
+              <th></th>
               <th class="number">Total:</th>
               <th class="number"><?php echo number_format($totalQty); ?></th>
               <th class="number"><?php echo number_format($totalOutstanding); ?></th>

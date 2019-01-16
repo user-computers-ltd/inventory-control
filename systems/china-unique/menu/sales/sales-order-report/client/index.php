@@ -125,9 +125,9 @@
           <colgroup>
             <col>
             <col style="width: 60px">
-            <col style="width: 80px">
-            <col style="width: 80px">
-            <col style="width: 80px">
+            <col style="width: 100px">
+            <col style="width: 100px">
+            <col style="width: 100px">
           </colgroup>
           <thead>
             <tr></tr>

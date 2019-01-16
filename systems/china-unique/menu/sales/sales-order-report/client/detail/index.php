@@ -54,7 +54,7 @@
       $whereClause
     ORDER BY
       a.debtor_code ASC,
-      a.so_date DESC
+      a.so_date ASC
   ");
 
   $soHeaders = array();

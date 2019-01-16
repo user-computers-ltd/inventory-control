@@ -23,19 +23,18 @@
 
   $results = query("
     SELECT
-      DATE_FORMAT(b.so_date, '%d-%m-%Y')                                          AS `date`,
-      a.brand_code                                                                AS `brand_code`,
-      c.name                                                                      AS `brand_name`,
-      a.model_no                                                                  AS `model_no`,
-      b.id                                                                        AS `so_id`,
-      b.so_no                                                                     AS `so_no`,
-      e.english_name                                                              AS `client`,
-      a.qty                                                                       AS `qty`,
-      a.qty_outstanding                                                           AS `qty_outstanding`,
-      b.discount                                                                  AS `discount`,
-      b.currency_code                                                             AS `currency`,
-      a.qty_outstanding * a.price * (100 - b.discount) / 100                      AS `amt_outstanding`,
-      a.qty_outstanding * a.price * (100 - b.discount) / 100 * b.exchange_rate    AS `amt_outstanding_base`
+      DATE_FORMAT(b.so_date, '%d-%m-%Y')                                                AS `date`,
+      a.brand_code                                                                      AS `brand_code`,
+      c.name                                                                            AS `brand_name`,
+      b.id                                                                              AS `so_id`,
+      b.so_no                                                                           AS `so_no`,
+      e.english_name                                                                    AS `client`,
+      SUM(a.qty)                                                                        AS `qty`,
+      SUM(a.qty_outstanding)                                                            AS `qty_outstanding`,
+      b.discount                                                                        AS `discount`,
+      b.currency_code                                                                   AS `currency`,
+      SUM(a.qty_outstanding * a.price * (100 - b.discount) / 100)                       AS `amt_outstanding`,
+      SUM(a.qty_outstanding * a.price * (100 - b.discount) / 100 * b.exchange_rate)     AS `amt_outstanding_base`
     FROM
       `so_model` AS a
     LEFT JOIN
@@ -53,11 +52,12 @@
     WHERE
       b.status=\"POSTED\"
       $whereClause
+    GROUP BY
+      b.so_no
     ORDER BY
       a.brand_code ASC,
-      b.so_date DESC,
-      b.so_no ASC,
-      a.model_no ASC
+      b.so_date ASC,
+      b.so_no ASC
   ");
 
   $soModels = array();
@@ -154,7 +154,6 @@
                 <col style="width: 80px">
                 <col>
                 <col>
-                <col>
                 <col style="width: 80px">
                 <col style="width: 80px">
                 <col style="width: 60px">
@@ -167,7 +166,6 @@
                   <th>Date</th>
                   <th>Order No.</th>
                   <th>Client</th>
-                  <th>Model No.</th>
                   <th class="number">Qty</th>
                   <th class="number">Outstanding Qty</th>
                   <th class="number">Currency</th>
@@ -187,7 +185,6 @@
                     $soId = $soModel["so_id"];
                     $soNo = $soModel["so_no"];
                     $client = $soModel["client"];
-                    $modelNo = $soModel["model_no"];
                     $qty = $soModel["qty"];
                     $outstandingQty = $soModel["qty_outstanding"];
                     $discount = $soModel["discount"];
@@ -204,7 +201,6 @@
                         <td title=\"$date\">$date</td>
                         <td title=\"$soNo\"><a class=\"link\" href=\"" . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?id[]=$soId\">$soNo</a></td>
                         <td title=\"$client\">$client</td>
-                        <td title=\"$modelNo\">$modelNo</td>
                         <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
                         <td title=\"$outstandingQty\" class=\"number\">" . number_format($outstandingQty) . "</td>
                         <td title=\"$currency\" class=\"number\">$currency</td>
@@ -215,7 +211,6 @@
                   }
                 ?>
                 <tr>
-                  <th></th>
                   <th></th>
                   <th></th>
                   <th class="number">Total:</th>
