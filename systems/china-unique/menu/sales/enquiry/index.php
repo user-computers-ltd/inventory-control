@@ -79,7 +79,7 @@
             </td>
           </tr>
           <tr>
-            <td colspan="2">
+            <td>
               <input
                 id="ignore-price"
                 name="ignore_price"
@@ -89,6 +89,7 @@
               />
               <label for="ignore-price">Ignore Price</label>
             </td>
+            <td></td>
             <td class="option-row">Discount:</td>
             <td class="option-row">
               <input
@@ -335,6 +336,7 @@
                   + "onchange=\"onQuantityAllottedChange(event, " + i + ")\" "
                   + "onfocus=\"onFieldFocused(" + i + ", 'qty[]')\" "
                   + "onblur=\"onFieldBlurred()\" "
+                  + "onkeydown=\"onQuantityAllottedKeyDown(event, " + i + ")\" "
                   + "required "
                 + "/>"
               + "</td>"
@@ -442,7 +444,7 @@
           soModel["price"] = Math.max(0, parseFloat(price));
 
           if (soModel["qty_available"]) {
-            soModel["total_amount"] = soModel["price"] * soModel["qty_available"];
+            soModel["total_amount"] = soModel["price"] * soModel["qty_allotted"];
           }
         }
 
@@ -571,6 +573,23 @@
         function onQuantityAllottedChange(event, index) {
           updateQuantityAllotted(index, event.target.value);
           render();
+        }
+
+        function onQuantityAllottedKeyDown(event, index) {
+          var soModel = soModels[index];
+          var ignorePrice = ignorePriceElement.checked;
+
+          if (
+            ignorePrice &&
+            index === soModels.length - 1 &&
+            (event.which || event.keyCode) === 9 &&
+            soModel["model_no"] &&
+            soModel["brand_code"] &&
+            soModel["qty"]
+          ) {
+            updateQuantityAllotted(index, event.target.value);
+            addItem();
+          }
         }
 
         function onPriceChange(event, index) {
