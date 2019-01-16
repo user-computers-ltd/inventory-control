@@ -87,7 +87,7 @@
               <td colspan="2">
                 <input
                   id="normal-price"
-                  name="price-standard"
+                  name="price_standard"
                   type="radio"
                   value="normal_price"
                   onchange="onPriceStandardChange()"
@@ -96,7 +96,7 @@
                 <label for="normal-price">Normal Price</label>
                 <input
                   id="special-price"
-                  name="price-standard"
+                  name="price_standard"
                   type="radio"
                   value="special_price"
                   onchange="onPriceStandardChange()"
@@ -334,7 +334,8 @@
           }
 
           function updateModel(index, model = {}) {
-            var priceStandard = document.querySelector("input[name='price-standard']:checked").value;
+            if ()
+            var priceStandard = document.querySelector("input[name='price_standard']:checked").value;
 
             var soModel = soModels[index];
 

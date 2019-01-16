@@ -27,13 +27,15 @@
           <tr>
             <td>致:</td>
             <td><?php echo $client; ?></td>
-            <td>貨幣:</td>
-            <td><?php echo $currency; ?></td>
+            <?php if (!$ignorePrice) : ?>
+              <td>貨幣:</td>
+              <td><?php echo $currency; ?></td>
+            <?php endif ?>
           </tr>
           <tr>
             <td>經手人:</td>
             <td><?php echo $inCharge; ?></td>
-            <?php if ($discount > 0) : ?>
+            <?php if ($discount > 0 && !$ignorePrice) : ?>
               <td>折扣:</td>
               <td><?php echo $discount; ?>%</td>
             <?php endif ?>
@@ -49,8 +51,10 @@
                 <th>型號</th>
                 <th class="number">數量</th>
                 <th class="number">可提供數量</th>
-                <th class="number">含稅單價</th>
-                <th class="number">含稅總金額</th>
+                <?php if (!$ignorePrice) : ?>
+                  <th class="number">含稅單價</th>
+                  <th class="number">含稅總金額</th>
+                <?php endif ?>
               </tr>
             </thead>
             <tbody>
@@ -78,10 +82,16 @@
                       <td>$modelNo</td>
                       <td class=\"number\">" . number_format($qty) . "</td>
                       <td class=\"number\">" . number_format($qtyAllotted) . "</td>
+                  ";
+
+                  if (!$ignorePrice) {
+                    echo "
                       <td class=\"number\">" . number_format($price, 2) . "</td>
                       <td class=\"number\">" . number_format($subtotal, 2) . "</td>
-                    </tr>
-                  ";
+                    ";
+                  }
+
+                  echo "</tr>";
                 }
               ?>
               <?php if ($discount > 0) : ?>
@@ -90,16 +100,20 @@
                   <th></th>
                   <th></th>
                   <th></th>
-                  <th></th>
-                  <th class="number"><?php echo number_format($totalAmount, 2); ?></th>
+                  <?php if (!$ignorePrice) : ?>
+                    <th></th>
+                    <th class="number"><?php echo number_format($totalAmount, 2); ?></th>
+                  <?php endif ?>
                 </tr>
                 <tr>
                   <th></th>
                   <th></th>
                   <th></th>
                   <th></th>
-                  <td class="number">折扣: <?php echo $discount; ?>%</td>
-                  <td class="number"><?php echo number_format($totalAmount * $discount / 100, 2); ?></td>
+                  <?php if (!$ignorePrice) : ?>
+                    <td class="number">折扣: <?php echo $discount; ?>%</td>
+                    <td class="number"><?php echo number_format($totalAmount * $discount / 100, 2); ?></td>
+                  <?php endif ?>
                 </tr>
               <?php endif ?>
               <tr>
@@ -107,8 +121,10 @@
                 <th class="number">總數量:</th>
                 <th class="number"><?php echo number_format($totalQty); ?></th>
                 <th class="number"><?php echo number_format($totalQtyAllotted); ?></th>
-                <th class="number">總金額:</th>
-                <th class="number"><?php echo number_format($totalAmount * (100 - $discount) / 100, 2); ?></th>
+                <?php if (!$ignorePrice) : ?>
+                  <th class="number">總金額:</th>
+                  <th class="number"><?php echo number_format($totalAmount * (100 - $discount) / 100, 2); ?></th>
+                <?php endif ?>
               </tr>
             </tbody>
           </table>
@@ -124,8 +140,9 @@
           <?php endif ?>
         </table>
       </div>
-      <div class="web-only">
+      <div class="web-only printout-button-wrapper">
         <?php echo generateRedirectButton(SALES_ENQUIRY_INTERNAL_PRINTOUT_URL, "Internal printout"); ?>
+        <?php echo generateRedirectButton(SALES_ENQUIRY_URL, "Edit"); ?>
       </div>
     </div>
   </body>

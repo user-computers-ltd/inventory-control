@@ -1,6 +1,8 @@
 <?php
   $debtorCode = $_POST["debtor_code"];
   $debtorName = $_POST["debtor_name"];
+  $inCharge = $_POST["in_charge"];
+  $ignorePrice = $_POST["ignore_price"] == "on" ? true : false;
   $currencyCode = $_POST["currency_code"];
   $exchangeRate = $_POST["exchange_rate"];
   $discount = $_POST["discount"];
@@ -9,7 +11,6 @@
   $qtys = $_POST["qty_requested"];
   $prices = $_POST["price"];
   $qtysAllotted = $_POST["qty"];
-  $inCharge = $_POST["in_charge"];
   $remarks = $_POST["remarks"];
 
   $debtor = query("SELECT english_name AS name FROM `debtor` WHERE code=\"$debtorCode\"")[0];
@@ -32,7 +33,7 @@
       "model_no"          => $modelNos[$i],
       "qty"               => $qtys[$i],
       "qty_allotted"      => $qtysAllotted[$i],
-      "price"      => $prices[$i]
+      "price"             => $prices[$i]
     ));
   }
 ?>

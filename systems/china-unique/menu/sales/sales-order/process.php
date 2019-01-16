@@ -184,11 +184,11 @@
     $status = "DRAFT";
     $soModels = array();
 
-    if (assigned($brandCodes) && assigned($modelNos) && assigned($prices) && assigned($qtys)) {
+    if (assigned($brandCodes) && assigned($modelNos) && assigned($qtys)) {
       for ($i = 0; $i < count($brandCodes); $i++) {
         $brandCode = $brandCodes[$i];
         $modelNo = $modelNos[$i];
-        $price = $prices[$i];
+        $price = assigned($prices) ? $prices[$i] : 0;
         $qty = $qtys[$i];
 
         array_push($soModels, array(

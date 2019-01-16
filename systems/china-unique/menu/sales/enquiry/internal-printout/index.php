@@ -27,13 +27,15 @@
           <tr>
             <td>Client:</td>
             <td><?php echo $client; ?></td>
-            <td>Currency:</td>
-            <td><?php echo $currency; ?></td>
+            <?php if (!$ignorePrice) : ?>
+              <td>Currency:</td>
+              <td><?php echo $currency; ?></td>
+            <?php endif ?>
           </tr>
           <tr>
             <td>Persion In-charge:</td>
             <td><?php echo $inCharge; ?></td>
-            <?php if ($discount > 0) : ?>
+            <?php if ($discount > 0 && $ignorePrice) : ?>
               <td>Discount:</td>
               <td><?php echo $discount; ?>%</td>
             <?php endif ?>
@@ -132,8 +134,9 @@
           <?php endif ?>
         </table>
       </div>
-      <div class="web-only">
+      <div class="web-only printout-button-wrapper">
         <?php echo generateRedirectButton(SALES_ENQUIRY_PRINTOUT_URL, "External printout"); ?>
+        <?php echo generateRedirectButton(SALES_ENQUIRY_URL, "Edit"); ?>
       </div>
     </div>
   </body>

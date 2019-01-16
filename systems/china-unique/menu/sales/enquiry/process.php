@@ -70,7 +70,36 @@
   foreach ($results as $currency) {
     $currencies[$currency["code"]] = $currency["rate"];
   }
-  $discount = 0;
-  $currencyCode = COMPANY_CURRENCY;
-  $exchangeRate = $currencies[COMPANY_CURRENCY];
+
+  $debtorCode = $_POST["debtor_code"];
+  $debtorName = $_POST["debtor_name"];
+  $inCharge = $_POST["in_charge"];
+  $currencyCode = assigned($_POST["currency_code"]) ? $_POST["currency_code"] : COMPANY_CURRENCY;
+  $exchangeRate = assigned($_POST["exchange_rate"]) ? $_POST["exchange_rate"] : $currencies[$currencyCode];
+  $discount = assigned($_POST["discount"]) ? $_POST["discount"] : 0;
+  $ignorePrice = $_POST["ignore_price"] == "on" ? true : false;
+  $brandCodes = $_POST["brand_code"];
+  $modelNos = $_POST["model_no"];
+  $qtys = $_POST["qty_requested"];
+  $prices = $_POST["price"];
+  $qtysAllotted = $_POST["qty"];
+  $remarks = $_POST["remarks"];
+  $soModels = array();
+
+  for ($i = 0; $i < count($brandCodes); $i++) {
+    $brandCode = $brandCodes[$i];
+    $modelNo = $modelNos[$i];
+    $price = assigned($prices) ? $prices[$i] : 0;
+    $qty = $qtys[$i];
+    $qtyAllotted = $qtysAllotted[$i];
+
+
+    array_push($soModels, array(
+      "brand_code"    => $brandCode,
+      "model_no"      => $modelNo,
+      "price"         => $price,
+      "qty"           => $qty,
+      "qty_allotted"  => $qtyAllotted
+    ));
+  }
 ?>

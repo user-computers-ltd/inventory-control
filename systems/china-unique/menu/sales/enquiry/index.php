@@ -28,20 +28,35 @@
                   foreach ($debtors as $debtor) {
                     $code = $debtor["code"];
                     $label = $debtor["code"] . " - " . $debtor["name"];
-                    echo "<option value=\"$code\">$label</option>";
+                    $selected = $debtorCode == $code ? "selected" : "";
+                    echo "<option value=\"$code\" $selected>$label</option>";
                   }
                 ?>
               </select>
             </td>
-            <td class="debtor-name show">Name:</td>
-            <td class="debtor-name show"><input name="debtor_name" type="text" required /></td>
+            <td class="debtor-name <?php echo $debtorCode === "1" ? "show" : ""; ?>">Name:</td>
+            <td class="debtor-name <?php echo $debtorCode === "1" ? "show" : ""; ?>">
+              <input
+                name="debtor_name"
+                type="text"
+                value="<?php echo $debtorName; ?>"
+                <?php echo $debtorCode !== "1" ? "disabled" : ""; ?>
+                required
+              />
+            </td>
           </tr>
           <tr>
             <td>Person In-charge:</td>
-            <td><input type="text" name="in_charge" required/></td>
-            <td>Currency:</td>
-            <td>
-              <select id="currency-code" name="currency_code" onchange="onCurrencyCodeChange()" required>
+            <td><input type="text" name="in_charge" value="<?php echo $inCharge; ?>" required/></td>
+            <td class="option-row">Currency:</td>
+            <td class="option-row">
+              <select
+                id="currency-code"
+                class="option-field"
+                name="currency_code"
+                onchange="onCurrencyCodeChange()"
+                required
+              >
                 <?php
                   foreach ($currencies as $code => $rate) {
                     $selected = $currencyCode == $code ? "selected" : "";
@@ -51,6 +66,7 @@
               </select>
               <input
                 id="exchange-rate"
+                class="option-field"
                 name="exchange_rate"
                 type="number"
                 step="0.00000001"
@@ -65,27 +81,19 @@
           <tr>
             <td colspan="2">
               <input
-                id="normal-price"
-                name="price-standard"
-                type="radio"
-                value="normal_price"
-                onchange="onPriceStandardChange()"
-                checked
+                id="ignore-price"
+                name="ignore_price"
+                type="checkbox"
+                onchange="onIgnorePriceChange()"
+                <?php echo $ignorePrice ? "checked" : ""; ?>
               />
-              <label for="normal-price">Normal Price</label>
-              <input
-                id="special-price"
-                name="price-standard"
-                type="radio"
-                value="special_price"
-                onchange="onPriceStandardChange()"
-              />
-              <label for="special-price">Special Price</label>
+              <label for="ignore-price">Ignore Price</label>
             </td>
-            <td>Discount:</td>
-            <td>
+            <td class="option-row">Discount:</td>
+            <td class="option-row">
               <input
                 id="discount"
+                class="option-field"
                 name="discount"
                 type="number"
                 step="0.01"
@@ -95,6 +103,27 @@
                 onchange="onDiscountChange()"
                 required
               /><span>%</span>
+            </td>
+          </tr>
+          <tr class="option-row">
+            <td colspan="2">
+              <input
+                id="normal-price"
+                name="price_standard"
+                type="radio"
+                value="normal_price"
+                onchange="onPriceStandardChange()"
+                checked
+              />
+              <label for="normal-price">Normal Price</label>
+              <input
+                id="special-price"
+                name="price_standard"
+                type="radio"
+                value="special_price"
+                onchange="onPriceStandardChange()"
+              />
+              <label for="special-price">Special Price</label>
             </td>
           </tr>
         </table>
@@ -110,8 +139,8 @@
             <col style="width: 60px">
             <col style="width: 60px">
             <col style="width: 60px">
-            <col style="width: 80px">
-            <col style="width: 80px">
+            <col class="option-column" style="width: 80px">
+            <col class="option-column" style="width: 80px">
             <col style="width: 30px">
           </colgroup>
           <thead>
@@ -119,8 +148,8 @@
               <th rowspan="2">Model no.</th>
               <th rowspan="2">Brand code</th>
               <th colspan="7" class="quantity">Quantity</th>
-              <th rowspan="2" class="number">Price</th>
-              <th rowspan="2" class="number">Subtotal</th>
+              <th rowspan="2" class="number option-column">Price</th>
+              <th rowspan="2" class="number option-column">Subtotal</th>
               <th rowspan="2"></th>
             <tr>
               <th class="number">Request</th>
@@ -186,7 +215,7 @@
         ?>
       </datalist>
       <script>
-        var soModels = [];
+        var soModels = <?php echo json_encode($soModels); ?>;
         var currencies = <?php echo json_encode($currencies); ?>;
         var brands = <?php echo json_encode($brands); ?>;
         var focusedRow = null;
@@ -196,6 +225,7 @@
         var debtorNameElements = document.querySelectorAll(".debtor-name");
         var debtorNameFieldElement = document.querySelector(".debtor-name input");
         var discountElement = document.querySelector("#discount");
+        var ignorePriceElement = document.querySelector("#ignore-price");
         var currencyCodeElement = document.querySelector("#currency-code");
         var exchangeRateElement = document.querySelector("#exchange-rate");
         var tableBodyElement = document.querySelector("#enquiry-models tbody");
@@ -226,6 +256,7 @@
           tableBodyElement.innerHTML = "";
 
           var discount = discountElement.value;
+          var ignorePrice = ignorePriceElement.checked;
           var totalQty = 0;
           var totalQtyAllotted = 0;
           var totalAmount = 0;
@@ -309,7 +340,7 @@
               + "</td>"
               + "<td>"
                 + "<input "
-                  + "class=\"price number\" "
+                  + "class=\"price number option-field\" "
                   + "type=\"number\" "
                   + "step=\"0.01\" "
                   + "min=\"0\" "
@@ -320,6 +351,7 @@
                   + "onblur=\"onFieldBlurred()\" "
                   + "onkeydown=\"onPriceKeyDown(event, " + i + ")\" "
                   + "required "
+                  + (ignorePrice ? "disabled" : "")
                 + "/>"
               + "</td>"
               + "<td class=\"total-amount number\">" + soModel["total_amount"].toFixed(2) + "</td>"
@@ -364,7 +396,7 @@
         }
 
         function updateModel (index, model = {}) {
-          var priceStandard = document.querySelector("input[name='price-standard']:checked").value;
+          var priceStandard = document.querySelector("input[name='price_standard']:checked").value;
 
           var soModel = soModels[index];
 
@@ -434,6 +466,26 @@
         function onFieldBlurred() {
           focusedRow = null;
           focusedFieldName = null;
+        }
+
+        function onIgnorePriceChange() {
+          var optionRows = document.querySelectorAll(".option-row");
+          var optionFields = document.querySelectorAll(".option-field");
+          var optionColumns = document.querySelectorAll(".option-column");
+
+          var ignorePrice = ignorePriceElement.checked;
+
+          for (var i = 0; i < optionRows.length; i++) {
+            toggleClass(optionRows[i], "hide", ignorePrice);
+          }
+
+          for (var i = 0; i < optionFields.length; i++) {
+            optionFields[i].disabled = ignorePrice;
+          }
+
+          for (var i = 0; i < optionColumns.length; i++) {
+            toggleClass(optionColumns[i], "hide", ignorePrice);
+          }
         }
 
         function onPriceStandardChange() {
@@ -554,6 +606,8 @@
           }
 
           render();
+
+          onIgnorePriceChange();
         }
       </script>
     </div>
