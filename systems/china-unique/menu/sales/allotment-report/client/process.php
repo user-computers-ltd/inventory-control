@@ -196,7 +196,8 @@
       h.do_no,
       a.brand_code ASC,
       a.model_no ASC,
-      a.so_no ASC
+      a.so_no ASC,
+      a.ia_no ASC
   ");
 
   $allotments = array();
