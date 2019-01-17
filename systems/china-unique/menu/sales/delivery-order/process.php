@@ -82,7 +82,8 @@
         b.name                        AS `brand`,
         a.model_no                    AS `model_no`,
         a.price                       AS `price`,
-        a.qty                         AS `qty`
+        a.qty                         AS `qty`,
+        e.occurrence                  AS `occurrence`
       FROM
         `sdo_model` AS a
       LEFT JOIN
@@ -94,6 +95,9 @@
       LEFT JOIN
         `sdo_header` AS d
       ON a.do_no=d.do_no
+      LEFT JOIN
+        `so_model` AS e
+      ON a.so_no=e.so_no AND a.brand_code=e.brand_code AND a.model_no=e.model_no
       WHERE
         d.id=\"$id\"
       ORDER BY

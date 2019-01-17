@@ -64,6 +64,8 @@
                     $discount = $doHeader["discount"];
                     $models = $doModels[$doHeader["do_no"]];
 
+                    $occurrenceMap = array();
+
                     for ($i = 0; $i < count($models); $i++) {
                       $model = $models[$i];
                       $soNo = $model["so_no"];
@@ -73,14 +75,30 @@
 
                       $totalQty += $qty;
 
-                      echo "
-                        <tr>
-                          <td>$soNo</td>
-                          <td>$brand</td>
-                          <td>$modelNo</td>
-                          <td class=\"number\">" . number_format($qty) . "</td>
-                        </tr>
-                      ";
+                      $tempQty = $qty;
+
+                      if (!isset($occurrenceMap["$soNo - $brand - $modelNo"])) {
+                        $occurrenceMap["$soNo - $brand - $modelNo"] = explode(",", $model["occurrence"]);
+                      }
+
+                      $occurrences = &$occurrenceMap["$soNo - $brand - $modelNo"];
+
+                      for ($j = 0; $j < count($occurrences); $j++) {
+                        if ($tempQty > 0 && $occurrences[$j] > 0) {
+                          $showQty = min($tempQty, $occurrences[$j]);
+                          echo "
+                            <tr>
+                              <td>$soNo</td>
+                              <td>$brand</td>
+                              <td>$modelNo</td>
+                              <td class=\"number\">" . number_format($showQty) . "</td>
+                            </tr>
+                          ";
+
+                          $tempQty -= $showQty;
+                          $occurrences[$j] -= $showQty;
+                        }
+                      }
                     }
                   ?>
                   <tr>

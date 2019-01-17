@@ -45,7 +45,8 @@
         a.model_no        AS `model_no`,
         a.so_no           AS `so_no`,
         a.price           AS `price`,
-        SUM(a.qty)        AS `qty`
+        SUM(a.qty)        AS `qty`,
+        d.occurrence      AS `occurrence`
       FROM
         `sdo_model` AS a
       LEFT JOIN
@@ -54,10 +55,13 @@
       LEFT JOIN
         `sdo_header` AS c
       ON a.do_no=c.do_no
+      LEFT JOIN
+        `so_model` AS d
+      ON a.so_no=d.so_no AND a.brand_code=d.brand_code AND a.model_no=d.model_no
       WHERE
         $modelWhereClause
       GROUP BY
-        a.do_no, a.brand_code, a.model_no, a.so_no, a.price
+        a.do_no, a.brand_code, a.model_no, a.so_no, a.price, d.occurrence
       ORDER BY
         a.do_no ASC,
         a.brand_code ASC,

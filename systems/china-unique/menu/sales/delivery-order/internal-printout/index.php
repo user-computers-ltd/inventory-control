@@ -67,6 +67,8 @@
                     $discount = $doHeader["discount"];
                     $models = $doModels[$doHeader["do_no"]];
 
+                    $occurrenceMap = array();
+
                     for ($i = 0; $i < count($models); $i++) {
                       $model = $models[$i];
                       $soNo = $model["so_no"];
@@ -74,21 +76,36 @@
                       $modelNo = $model["model_no"];
                       $qty = $model["qty"];
                       $price = $model["price"];
-                      $subtotal = $qty * $price;
 
                       $totalQty += $qty;
-                      $subtotalSum += $subtotal;
+                      $subtotalSum += $qty * $price;
 
-                      echo "
-                        <tr>
-                          <td>$soNo</td>
-                          <td>$brand</td>
-                          <td>$modelNo</td>
-                          <td class=\"number\">" . number_format($qty) . "</td>
-                          <td class=\"number\">" . number_format($price, 2) . "</td>
-                          <td class=\"number\">" . number_format($subtotal, 2) . "</td>
-                        </tr>
-                      ";
+                      $tempQty = $qty;
+
+                      if (!isset($occurrenceMap["$soNo - $brand - $modelNo"])) {
+                        $occurrenceMap["$soNo - $brand - $modelNo"] = explode(",", $model["occurrence"]);
+                      }
+
+                      $occurrences = &$occurrenceMap["$soNo - $brand - $modelNo"];
+
+                      for ($j = 0; $j < count($occurrences); $j++) {
+                        if ($tempQty > 0 && $occurrences[$j] > 0) {
+                          $showQty = min($tempQty, $occurrences[$j]);
+                          echo "
+                            <tr>
+                              <td>$soNo</td>
+                              <td>$brand</td>
+                              <td>$modelNo</td>
+                              <td class=\"number\">" . number_format($showQty) . "</td>
+                              <td class=\"number\">" . number_format($price, 2) . "</td>
+                              <td class=\"number\">" . number_format($showQty * $price, 2) . "</td>
+                            </tr>
+                          ";
+
+                          $tempQty -= $showQty;
+                          $occurrences[$j] -= $showQty;
+                        }
+                      }
                     }
                   ?>
                   <?php if ($discount > 0) : ?>

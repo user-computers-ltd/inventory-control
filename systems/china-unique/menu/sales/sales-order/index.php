@@ -105,7 +105,7 @@
               </td>
             </tr>
           </table>
-          <button type="button" onclick="addSalesModel()">Add</button>
+          <button type="button" onclick="addItem()">Add</button>
           <table id="so-models">
             <colgroup>
               <col>
@@ -219,11 +219,18 @@
             var totalQty = 0;
             var totalAmount = 0;
 
+            var existingModels = [];
+
             for (var i = 0; i < soModels.length; i++) {
               var soModel = soModels[i];
               var matchedModels = getModels(soModel["model_no"]);
               var newRowElement = document.createElement("tr");
               var ongoingDelivery = soModel["qty_delivered"] && soModel["qty_delivered"] > 0;
+              var modelExists = existingModels.indexOf(soModel["brand_code"] + " - " + soModel["model_no"]) !== -1;
+
+              if (!modelExists) {
+                existingModels.push(soModel["brand_code"] + " - " + soModel["model_no"]);
+              }
 
               var rowInnerHTML =
                   "<tr>"
@@ -276,11 +283,13 @@
                     + "onchange=\"onQuantityChange(event, " + i + ")\" "
                     + "onfocus=\"onFieldFocused(" + i + ", 'qty[]')\" "
                     + "onblur=\"onFieldBlurred()\" "
+                    + "onkeydown=\"onQuantityKeyDown(event, " + i + ")\" "
                     + "required "
+                    + (modelExists ? "data-duplicate=\"true\"" : "")
                   + "/>"
                 + "</td>"
                 + "<td>"
-                  + "<input "
+                  + (!modelExists ? "<input "
                     + "class=\"price number\" "
                     + "type=\"number\" "
                     + "step=\"0.01\" "
@@ -292,7 +301,7 @@
                     + "onblur=\"onFieldBlurred()\" "
                     + "onkeydown=\"onPriceKeyDown(event, " + i + ")\" "
                     + "required "
-                  + "/>"
+                  + "/>" : "")
                 + "</td>"
                 + "<td class=\"total-amount number\">" + soModel["total_amount"].toFixed(2) + "</td>"
                 + "<td><div class=\"remove\" onclick=\"removeSalesModel(" + i + ")\">×</div></td>"
@@ -370,7 +379,7 @@
             }
           }
 
-          function addSalesModel() {
+          function addItem() {
             soModels.push({});
 
             updateModel(soModels.length - 1);
@@ -429,14 +438,7 @@
             var soModel = soModels[index];
 
             if (soModel["model_no"] !== newModelNo) {
-              var existsAlready = soModels.filter(function (m) {
-                return newModelNo && m["model_no"] === newModelNo;
-              }).length > 0;
-
-              if (!existsAlready) {
-                updateModel(index, matchedModel);
-              }
-
+              updateModel(index, matchedModel);
               render();
             }
 
@@ -474,13 +476,29 @@
               soModel["price"]
             ) {
               updatePrice(index, event.target.value);
-              addSalesModel();
+              addItem();
             }
           }
 
           function onQuantityChange(event, index) {
             updateQuantity(index, event.target.value);
             render();
+          }
+
+          function onQuantityKeyDown(event, index) {
+            var soModel = soModels[index];
+
+            if (
+              event.target.dataset["duplicate"] === "true" &&
+              index === soModels.length - 1 &&
+              (event.which || event.keyCode) === 9 &&
+              soModel["model_no"] &&
+              soModel["brand_code"] &&
+              soModel["qty"]
+            ) {
+              updateQuantity(index, event.target.value);
+              addItem();
+            }
           }
 
           window.onload = function () {

@@ -72,6 +72,8 @@
                   $discount = $doHeader["discount"];
                   $hasIncoming = false;
 
+                  $occurrenceMap = array();
+
                   for ($i = 0; $i < count($doModels); $i++) {
                     $doModel = $doModels[$i];
                     $iaNo = $doModel["ia_no"];
@@ -92,17 +94,34 @@
                     $totalQty += $qty;
                     $subtotalSum += $subtotal;
 
-                    echo "
-                      <tr>
-                        <td title=\"$status\">$status</td>
-                        <td title=\"$soNo\"><a class=\"link\" href=\"" . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?id[]=$soId\">$soNo</a></td>
-                        <td title=\"$brand\">$brand</td>
-                        <td title=\"$modelNo\">$modelNo</td>
-                        <td title=\"$price\" class=\"number\">" . number_format($price, 2) . "</td>
-                        <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
-                        <td title=\"$subtotal\" class=\"number\">" . number_format($subtotal, 2) . "</td>
-                      </tr>
-                    ";
+                    $tempQty = $qty;
+
+                    if (!isset($occurrenceMap["$soNo - $brand - $modelNo"])) {
+                      $occurrenceMap["$soNo - $brand - $modelNo"] = explode(",", $doModel["occurrence"]);
+                    }
+
+                    $occurrences = &$occurrenceMap["$soNo - $brand - $modelNo"];
+
+
+                    for ($j = 0; $j < count($occurrences); $j++) {
+                      if ($tempQty > 0 && $occurrences[$j] > 0) {
+                        $showQty = min($tempQty, $occurrences[$j]);
+                        echo "
+                          <tr>
+                            <td title=\"$status\">$status</td>
+                            <td title=\"$soNo\"><a class=\"link\" href=\"" . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?id[]=$soId\">$soNo</a></td>
+                            <td title=\"$brand\">$brand</td>
+                            <td title=\"$modelNo\">$modelNo</td>
+                            <td title=\"$price\" class=\"number\">" . number_format($price, 2) . "</td>
+                            <td title=\"$showQty\" class=\"number\">" . number_format($showQty) . "</td>
+                            <td title=\"$subtotal\" class=\"number\">" . number_format($subtotal, 2) . "</td>
+                          </tr>
+                        ";
+
+                        $tempQty -= $showQty;
+                        $occurrences[$j] -= $showQty;
+                      }
+                    }
                   }
                 ?>
                 <?php if ($discount > 0) : ?>

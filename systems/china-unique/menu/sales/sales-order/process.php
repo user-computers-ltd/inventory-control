@@ -42,22 +42,45 @@
     /* If the status is not delete, insert a new sales order. */
     if ($status != "DELETED") {
 
-      $values = array();
+      $items = array();
 
       for ($i = 0; $i < count($brandCodes); $i++) {
-        $brandCode = $brandCodes[$i];
-        $modelNo = $modelNos[$i];
-        $price = $prices[$i];
-        $qty = $qtys[$i];
+        $model = $brandCodes[$i] . " - " . $modelNos[$i];
 
-        array_push($values, "(\"$soNo\", \"$i\", \"$brandCode\", \"$modelNo\", \"$price\", \"$qty\", \"$qty\")");
+        $arrayPointer = &$items;
+
+        if (!isset($arrayPointer[$model])) {
+          $arrayPointer[$model] = array(
+            "brand_code"  => $brandCodes[$i],
+            "model_no"    => $modelNos[$i],
+            "price"       => $prices[$i],
+            "qty"         => 0,
+            "occurrence"  => array()
+          );
+        }
+        $arrayPointer = &$arrayPointer[$model];
+
+        $arrayPointer["qty"] = $arrayPointer["qty"] + $qtys[$i];
+        array_push($arrayPointer["occurrence"], $qtys[$i]);
+      }
+
+      $values = array();
+
+      foreach ($items as $item) {
+        $brandCode = $item["brand_code"];
+        $modelNo = $item["model_no"];
+        $price = $item["price"];
+        $qty = $item["qty"];
+        $occurrence = join(",", $item["occurrence"]);
+
+        array_push($values, "(\"$soNo\", \"$i\", \"$brandCode\", \"$modelNo\", \"$price\", \"$qty\", \"$qty\", \"$occurrence\")");
       }
 
       if (count($values) > 0) {
         array_push($queries, "
           INSERT INTO
             `so_model`
-              (so_no, so_index, brand_code, model_no, price, qty, qty_outstanding)
+              (so_no, so_index, brand_code, model_no, price, qty, qty_outstanding, occurrence)
             VALUES
         " . join(", ", $values));
       }
@@ -154,13 +177,14 @@
       $priority = $soHeader["priority"];
       $remarks = $soHeader["remarks"];
       $status = $soHeader["status"];
-      $soModels = query("
+      $results = query("
         SELECT
           brand_code              AS `brand_code`,
           model_no                AS `model_no`,
           price                   AS `price`,
           qty                     AS `qty`,
-          qty - qty_outstanding   AS `qty_delivered`
+          qty - qty_outstanding   AS `qty_delivered`,
+          occurrence              AS `occurrence`
         FROM
           `so_model`
         WHERE
@@ -168,6 +192,21 @@
         ORDER BY
           so_index ASC
       ");
+
+      $soModels = array();
+
+      foreach ($results as $soModel) {
+        $occurrences = explode(",", $soModel["occurrence"]);
+
+        foreach ($occurrences as $occurrence) {
+          array_push($soModels, array(
+            "brand_code"  => $soModel["brand_code"],
+            "model_no"    => $soModel["model_no"],
+            "price"       => $soModel["price"],
+            "qty"         => $occurrence
+          ));
+        }
+      }
     }
   }
 
