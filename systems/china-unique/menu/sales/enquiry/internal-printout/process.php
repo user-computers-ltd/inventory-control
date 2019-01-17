@@ -22,11 +22,12 @@
 
   $models = query("
     SELECT
-      a.brand_code                AS `brand_code`,
-      a.model_no                  AS `model_no`,
-      IFNULL(b.qty_on_hand, 0)    AS `qty_on_hand`,
-      IFNULL(c.qty_on_order, 0)   AS `qty_on_order`,
-      IFNULL(d.qty_on_reserve, 0) AS `qty_on_reserve`
+      a.brand_code                      AS `brand_code`,
+      a.model_no                        AS `model_no`,
+      IFNULL(b.qty_on_hand, 0)          AS `qty_on_hand`,
+      IFNULL(c.qty_on_hand_reserve, 0)  AS `qty_on_hand_reserve`,
+      IFNULL(d.qty_incoming, 0)         AS `qty_incoming`,
+      IFNULL(e.qty_incoming_reserve, 0) AS `qty_incoming_reserve`
     FROM
       `model` AS a
     LEFT JOIN
@@ -39,30 +40,45 @@
     ON a.brand_code=b.brand_code AND a.model_no=b.model_no
     LEFT JOIN
       (SELECT
-        m.model_no, m.brand_code, SUM(GREATEST(qty_outstanding, 0)) AS `qty_on_order`
-      FROM
-        `po_model` AS m
-      LEFT JOIN
-        `po_header` AS h
-      ON m.po_no=h.po_no
-      WHERE
-        h.status='POSTED'
-      GROUP BY
-        m.brand_code, m.model_no) AS c
-    ON a.brand_code=c.brand_code AND a.model_no=c.model_no
-    LEFT JOIN
-      (SELECT
-        m.brand_code, m.model_no, SUM(m.qty) AS `qty_on_reserve`
+        m.brand_code, m.model_no, SUM(m.qty) AS `qty_on_hand_reserve`
       FROM
         `sdo_model` AS m
       LEFT JOIN
         `sdo_header` AS h
       ON m.do_no=h.do_no
       WHERE
+        m.ia_no=\"\" AND
         h.status=\"SAVED\"
+      GROUP BY
+        m.brand_code, m.model_no) AS c
+    ON a.brand_code=c.brand_code AND a.model_no=c.model_no
+    LEFT JOIN
+      (SELECT
+        model_no, brand_code, SUM(qty) AS `qty_incoming`
+      FROM
+        `ia_model` AS m
+      LEFT JOIN
+        `ia_header` AS h
+      ON m.ia_no=h.ia_no
+      WHERE
+        h.status=\"DO\"
       GROUP BY
         m.brand_code, m.model_no) AS d
     ON a.brand_code=d.brand_code AND a.model_no=d.model_no
+    LEFT JOIN
+      (SELECT
+        m.brand_code, m.model_no, SUM(m.qty) AS `qty_incoming_reserve`
+      FROM
+        `sdo_model` AS m
+      LEFT JOIN
+        `sdo_header` AS h
+      ON m.do_no=h.do_no
+      WHERE
+        m.ia_no<>\"\" AND
+        h.status=\"SAVED\"
+      GROUP BY
+        m.brand_code, m.model_no) AS e
+    ON a.brand_code=e.brand_code AND a.model_no=e.model_no
     ORDER BY
       a.brand_code, a.model_no
   ");
@@ -91,14 +107,15 @@
     $model = $models[$brandCodes[$i]][$modelNos[$i]];
 
     array_push($items, array(
-      "brand"             => $brands[$brandCodes[$i]],
-      "model_no"          => $modelNos[$i],
-      "qty"               => $qtys[$i],
-      "qty_on_hand"       => $model["qty_on_hand"],
-      "qty_on_reserve"    => $model["qty_on_reserve"],
-      "qty_available"     => max(0, $model["qty_on_hand"] - $model["qty_on_reserve"]),
-      "qty_on_order"      => $model["qty_on_order"],
-      "qty_allotted"      => $qtysAllotted[$i]
+      "brand"                 => $brands[$brandCodes[$i]],
+      "model_no"              => $modelNos[$i],
+      "qty"                   => $qtys[$i],
+      "qty_on_hand"           => $model["qty_on_hand"],
+      "qty_on_hand_reserve"   => $model["qty_on_hand_reserve"],
+      "qty_available"         => $model["qty_on_hand"] - $model["qty_on_hand_reserve"],
+      "qty_allotted"          => $qtysAllotted[$i],
+      "qty_incoming"          => $model["qty_incoming"],
+      "qty_incoming_reserve"  => $model["qty_incoming_reserve"]
     ));
   }
 ?>

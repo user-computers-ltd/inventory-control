@@ -44,38 +44,39 @@
         <?php if (count($items) > 0) : ?>
           <table class="enquiry-models">
             <colgroup>
+              <col style="width: 80px">
               <col>
-              <col>
-              <col style="width: 100px">
-              <col style="width: 100px">
-              <col style="width: 100px">
-              <col style="width: 100px">
-              <col style="width: 100px">
-              <col style="width: 100px">
+              <col style="width: 80px">
+              <col style="width: 80px">
+              <col style="width: 80px">
+              <col style="width: 80px">
+              <col style="width: 80px">
+              <col style="width: 80px">
+              <col style="width: 80px">
             </colgroup>
             <thead>
               <tr></tr>
               <tr>
                 <th rowspan="2">Brand</th>
                 <th rowspan="2">Model No.</th>
-                <th colspan="6" class="quantity">Quantity</th>
+                <th colspan="7" class="quantity">Quantity</th>
               </tr>
               <tr>
-                <th class="number">Request</th>
+                <th class="number">Requested</th>
                 <th class="number">On Hand</th>
                 <th class="number">Reserved</th>
                 <th class="number">Available</th>
-                <th class="number">On Order</th>
                 <th class="number">Allotted</th>
+                <th class="number">Incoming</th>
+                <th class="number">Reserved</th>
               </tr>
             </thead>
             <tbody>
               <?php
                 $totalQty = 0;
                 $totalQtyOnHand = 0;
-                $totalQtyOnReserve = 0;
+                $totalQtyOnHandReserve = 0;
                 $totalQtyAvailable = 0;
-                $totalQtyOnOrder = 0;
                 $totalQtyAllotted = 0;
 
                 for ($i = 0; $i < count($items); $i++) {
@@ -84,16 +85,16 @@
                   $modelNo = $item["model_no"];
                   $qty = $item["qty"];
                   $qtyOnHand = $item["qty_on_hand"];
-                  $qtyOnReserve = $item["qty_on_reserve"];
+                  $qtyOnHandReserve = $item["qty_on_hand_reserve"];
                   $qtyAvailable = $item["qty_available"];
-                  $qtyOnOrder = $item["qty_on_order"];
+                  $qtyIncoming = $item["qty_incoming"];
+                  $qtyIncomingReserve = $item["qty_incoming_reserve"];
                   $qtyAllotted = $item["qty_allotted"];
 
                   $totalQty += $qty;
                   $totalQtyOnHand += $qtyOnHand;
-                  $totalQtyOnReserve += $qtyOnReserve;
+                  $totalQtyOnHandReserve += $qtyOnHandReserve;
                   $totalQtyAvailable += $qtyAvailable;
-                  $totalQtyOnOrder += $qtyOnOrder;
                   $totalQtyAllotted += $qtyAllotted;
 
                   echo "
@@ -102,10 +103,11 @@
                       <td>$modelNo</td>
                       <td class=\"number\">" . number_format($qty) . "</td>
                       <td class=\"number\">" . number_format($qtyOnHand) . "</td>
-                      <td class=\"number\">" . number_format($qtyOnReserve) . "</td>
+                      <td class=\"number\">" . number_format($qtyOnHandReserve) . "</td>
                       <td class=\"number\">" . number_format($qtyAvailable) . "</td>
-                      <td class=\"number\">" . number_format($qtyOnOrder) . "</td>
                       <td class=\"number\">" . number_format($qtyAllotted) . "</td>
+                      <td class=\"number\">" . number_format($qtyIncoming) . "</td>
+                      <td class=\"number\">" . number_format($qtyIncomingReserve) . "</td>
                     </tr>
                   ";
                 }
@@ -115,10 +117,11 @@
                 <th class="number">Total:</th>
                 <th class="number"><?php echo number_format($totalQty); ?></th>
                 <th class="number"><?php echo number_format($totalQtyOnHand); ?></th>
-                <th class="number"><?php echo number_format($totalQtyOnReserve); ?></th>
+                <th class="number"><?php echo number_format($totalQtyOnHandReserve); ?></th>
                 <th class="number"><?php echo number_format($totalQtyAvailable); ?></th>
-                <th class="number"><?php echo number_format($totalQtyOnOrder); ?></th>
                 <th class="number"><?php echo number_format($totalQtyAllotted); ?></th>
+                <th></th>
+                <th></th>
               </tr>
             </tbody>
           </table>

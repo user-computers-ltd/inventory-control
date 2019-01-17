@@ -155,11 +155,11 @@
             <tr>
               <th class="number">Request</th>
               <th class="number">On Hand</th>
-              <th class="number">Assigned</th>
+              <th class="number">Reserved</th>
               <th class="number">Available</th>
+              <th class="number">Allot</th>
               <th class="number">Incoming</th>
               <th class="number">Reserved</th>
-              <th class="number">Allot</th>
             </tr>
           </thead>
           <tfoot>
@@ -180,9 +180,9 @@
               <th></th>
               <th class="number">Total:</th>
               <th id="total-qty" class="number"></th>
-              <th colspan="5"></th>
+              <th colspan="3"></th>
               <th id="total-qty-allotted" class="number"></th>
-              <th></th>
+              <th colspan="2"></th>
               <th id="total-amount" class="number"></th>
               <th></th>
             </tr>
@@ -323,8 +323,6 @@
               + "<td class=\"number\">" + soModel["qty_on_hand"] + "</td>"
               + "<td class=\"number\">" + soModel["qty_on_hand_reserve"] + "</td>"
               + "<td class=\"number " + insufficient + "\">" + soModel["qty_available"] + "</td>"
-              + "<td class=\"number\">" + soModel["qty_incoming"] + "</td>"
-              + "<td class=\"number\">" + soModel["qty_incoming_reserve"] + "</td>"
               + "<td>"
                 + "<input "
                   + "class=\"qty number\" "
@@ -340,6 +338,8 @@
                   + "required "
                 + "/>"
               + "</td>"
+              + "<td class=\"number\">" + soModel["qty_incoming"] + "</td>"
+              + "<td class=\"number\">" + soModel["qty_incoming_reserve"] + "</td>"
               + "<td>"
                 + "<input "
                   + "class=\"price number option-field\" "

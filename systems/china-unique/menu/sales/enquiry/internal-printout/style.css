@@ -7,8 +7,7 @@
   vertical-align: top;
   border: none;
   white-space: pre;
-  font-size: 18px;
-  line-height: 18px;
+  font-size: 13px;
 }
 
 .enquiry-header td:nth-child(2n + 1),
@@ -19,11 +18,11 @@
 
 .enquiry-models th,
 .enquiry-models td {
+  min-width: 0px;
+  max-width: 0px;
   background-color: transparent;
-  border-left: none;
-  border-right: none;
-  font-size: 18px;
-  line-height: 18px;
+  border: none;
+  font-size: 13px;
 }
 
 .enquiry-models th {
@@ -39,11 +38,11 @@
 }
 
 .enquiry-models thead th {
-  border-bottom: 2px solid;
+  border-bottom: 1px solid;
 }
 
 .enquiry-models tbody tr:last-child th {
-  border-top: 2px solid;
+  border-top: 1px solid;
 }
 
 .enquiry-models-no-results,

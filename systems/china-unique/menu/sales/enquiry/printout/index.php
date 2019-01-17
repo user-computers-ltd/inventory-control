@@ -42,7 +42,7 @@
           </tr>
         </table>
         <?php if (count($items) > 0) : ?>
-          <div class="enquiry-precaution">以下貨物的庫存數量可能會隨著時間變化，敬請盡快確認以便預訂貨物。謝謝。</div>
+          <div class="enquiry-precaution">以下貨物仍現庫存，貴司落實後再確認。謝謝。</div>
           <table class="enquiry-models">
             <thead>
               <tr></tr>

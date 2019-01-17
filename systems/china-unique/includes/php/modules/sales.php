@@ -76,7 +76,7 @@
 
   define("SALES_DELIVERY_ORDER_TITLE", "(F6) Delivery Order");
   define("SALES_DELIVERY_ORDER_PRINTOUT_TITLE", "送貨單");
-  define("SALES_DELIVERY_ORDER_INTERNAL_PRINTOUT_TITLE", "Delivery Order (Internal)");
+  define("SALES_DELIVERY_ORDER_INTERNAL_PRINTOUT_TITLE", "送貨單(內部)");
   define("SALES_DELIVERY_ORDER_SAVED_TITLE", "(F6a) Saved Delivery Orders");
   define("SALES_DELIVERY_ORDER_POSTED_TITLE", "(F6b) Posted Delivery Orders");
 
