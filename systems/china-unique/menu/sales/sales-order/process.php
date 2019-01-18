@@ -103,6 +103,8 @@
               \"$remarks\"
             )
       ");
+    } else {
+      $queries = concat($queries, onDeleteSalesOrder($soNo));
     }
 
     execute($queries);

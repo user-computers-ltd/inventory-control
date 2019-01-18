@@ -118,6 +118,84 @@
     return $queries;
   }
 
+  function transferIncomingAllotments($iaNo, $warehouseCode) {
+    $queries = array();
+
+    $soAllotments = query("
+      SELECT
+        ia_no             AS `ia_no`,
+        warehouse_code    AS `warehouse_code`,
+        so_no             AS `so_no`,
+        brand_code        AS `brand_code`,
+        model_no          AS `model_no`,
+        qty               AS `qty`
+      FROM
+        `so_allotment`
+      WHERE
+        ia_no=\"$iaNo\"
+    ");
+
+    /* Delete the sales incoming allotments. */
+    array_push($queries, "DELETE FROM `so_allotment` WHERE ia_no=\"$iaNo\"");
+
+    /* Update or insert those allotments into sales stock allotments. */
+    foreach ($soAllotments as $soAllotment) {
+      $soNo = $soAllotment["so_no"];
+      $brandCode = $soAllotment["brand_code"];
+      $modelNo = $soAllotment["model_no"];
+      $qty = $soAllotment["qty"];
+
+      array_push($queries, "
+        INSERT INTO
+          `so_allotment`
+          (ia_no, warehouse_code, so_no, brand_code, model_no, qty)
+        VALUES
+          (\"\", \"$warehouseCode\", \"$soNo\", \"$brandCode\", \"$modelNo\", \"$qty\")
+        ON DUPLICATE KEY UPDATE qty=qty + $qty;
+      ");
+    }
+
+    $sdoModels = query("
+      SELECT
+        do_no             AS `do_no`,
+        do_index          AS `do_index`,
+        so_no             AS `so_no`,
+        brand_code        AS `brand_code`,
+        model_no          AS `model_no`,
+        price             AS `price`,
+        qty               AS `qty`
+      FROM
+        `sdo_model`
+      WHERE
+        ia_no=\"$iaNo\"
+    ");
+
+    /* Delete the sales incoming delivery order models. */
+    array_push($queries, "DELETE FROM `sdo_model` WHERE ia_no=\"$iaNo\"");
+
+    /* Update or insert those models into sales stock delivery order models. */
+    foreach ($sdoModels as $sdoModel) {
+      $doNo = $sdoModel["do_no"];
+      $doIndex = $sdoModel["do_index"];
+      $soNo = $sdoModel["so_no"];
+      $brandCode = $sdoModel["brand_code"];
+      $modelNo = $sdoModel["model_no"];
+      $price = $sdoModel["price"];
+      $qty = $sdoModel["qty"];
+
+      array_push($queries, "
+        INSERT INTO
+          `sdo_model`
+          (do_no, do_index, ia_no, so_no, brand_code, model_no, price, qty)
+        VALUES
+          (\"$doNo\", \"$doIndex\", \"\", \"$soNo\", \"$brandCode\", \"$modelNo\", \"$price\", \"$qty\")
+        ON DUPLICATE KEY UPDATE qty=qty + $qty;
+      ");
+    }
+
+    return $queries;
+  }
+
   function onPostStockInVoucher($stockInNo) {
     $queries = array();
 
@@ -361,84 +439,6 @@
     return $queries;
   }
 
-  function transferIncomingAllotments($iaNo, $warehouseCode) {
-    $queries = array();
-
-    $soAllotments = query("
-      SELECT
-        ia_no             AS `ia_no`,
-        warehouse_code    AS `warehouse_code`,
-        so_no             AS `so_no`,
-        brand_code        AS `brand_code`,
-        model_no          AS `model_no`,
-        qty               AS `qty`
-      FROM
-        `so_allotment`
-      WHERE
-        ia_no=\"$iaNo\"
-    ");
-
-    /* Delete the sales incoming allotments. */
-    array_push($queries, "DELETE FROM `so_allotment` WHERE ia_no=\"$iaNo\"");
-
-    /* Update or insert those allotments into sales stock allotments. */
-    foreach ($soAllotments as $soAllotment) {
-      $soNo = $soAllotment["so_no"];
-      $brandCode = $soAllotment["brand_code"];
-      $modelNo = $soAllotment["model_no"];
-      $qty = $soAllotment["qty"];
-
-      array_push($queries, "
-        INSERT INTO
-          `so_allotment`
-          (ia_no, warehouse_code, so_no, brand_code, model_no, qty)
-        VALUES
-          (\"\", \"$warehouseCode\", \"$soNo\", \"$brandCode\", \"$modelNo\", \"$qty\")
-        ON DUPLICATE KEY UPDATE qty=qty + $qty;
-      ");
-    }
-
-    $sdoModels = query("
-      SELECT
-        do_no             AS `do_no`,
-        do_index          AS `do_index`,
-        so_no             AS `so_no`,
-        brand_code        AS `brand_code`,
-        model_no          AS `model_no`,
-        price             AS `price`,
-        qty               AS `qty`
-      FROM
-        `sdo_model`
-      WHERE
-        ia_no=\"$iaNo\"
-    ");
-
-    /* Delete the sales incoming delivery order models. */
-    array_push($queries, "DELETE FROM `sdo_model` WHERE ia_no=\"$iaNo\"");
-
-    /* Update or insert those models into sales stock delivery order models. */
-    foreach ($sdoModels as $sdoModel) {
-      $doNo = $sdoModel["do_no"];
-      $doIndex = $sdoModel["do_index"];
-      $soNo = $sdoModel["so_no"];
-      $brandCode = $sdoModel["brand_code"];
-      $modelNo = $sdoModel["model_no"];
-      $price = $sdoModel["price"];
-      $qty = $sdoModel["qty"];
-
-      array_push($queries, "
-        INSERT INTO
-          `sdo_model`
-          (do_no, do_index, ia_no, so_no, brand_code, model_no, price, qty)
-        VALUES
-          (\"$doNo\", \"$doIndex\", \"\", \"$soNo\", \"$brandCode\", \"$modelNo\", \"$price\", \"$qty\")
-        ON DUPLICATE KEY UPDATE qty=qty + $qty;
-      ");
-    }
-
-    return $queries;
-  }
-
   function onPostIncomingAdvice($iaNo) {
     $queries = array();
 
@@ -600,6 +600,15 @@
     array_push($queries, "DELETE FROM `ia_header` WHERE ia_no=\"$iaNo\"");
     array_push($queries, "DELETE FROM `ia_model` WHERE ia_no=\"$iaNo\"");
     array_push($queries, "DELETE FROM `po_allotment` WHERE ia_no=\"$iaNo\"");
+
+    return $queries;
+  }
+
+  function onDeleteSalesOrder($soNo) {
+    $queries = array();
+
+    array_push($queries, "DELETE FROM `so_allotment` WHERE so_no=\"$soNo\"");
+    array_push($queries, "DELETE FROM `sdo_model` WHERE so_no=\"$soNo\"");
 
     return $queries;
   }

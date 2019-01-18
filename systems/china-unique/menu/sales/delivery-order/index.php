@@ -102,7 +102,6 @@
 
                     $occurrences = &$occurrenceMap["$soNo - $brand - $modelNo"];
 
-
                     for ($j = 0; $j < count($occurrences); $j++) {
                       if ($tempQty > 0 && $occurrences[$j] > 0) {
                         $showQty = min($tempQty, $occurrences[$j]);
