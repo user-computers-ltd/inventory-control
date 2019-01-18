@@ -29,14 +29,16 @@
         h.warehouse_code  AS `warehouse_code`,
         m.brand_code      AS `brand_code`,
         m.model_no        AS `model_no`,
-        m.qty             AS `qty_on_reserve`
+        SUM(m.qty)        AS `qty_on_reserve`
       FROM
         `sdo_model` AS m
       LEFT JOIN
         `sdo_header` AS h
       ON m.do_no=h.do_no
       WHERE
-        h.status=\"SAVED\") AS e
+        h.status=\"SAVED\"
+      GROUP BY
+        h.warehouse_code, m.brand_code, m.model_no) AS e
     ON a.warehouse_code=e.warehouse_code AND a.brand_code=e.brand_code AND a.model_no=e.model_no
     WHERE
       a.qty > 0
@@ -110,7 +112,7 @@
                     $warehouseName = $brandStock["warehouse_name"];
                     $qty = $brandStock["qty"];
                     $qtyOnReserve = $brandStock["qty_on_reserve"];
-                    $qtyAvailable = max(0, $qty - $qtyOnReserve);
+                    $qtyAvailable = $qty - $qtyOnReserve;
                     $subtotal = $brandStock["subtotal"];
 
                     $totalQty += $qty;

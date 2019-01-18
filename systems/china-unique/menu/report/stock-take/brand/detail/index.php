@@ -51,14 +51,16 @@
         h.warehouse_code  AS `warehouse_code`,
         m.brand_code      AS `brand_code`,
         m.model_no        AS `model_no`,
-        m.qty             AS `qty_on_reserve`
+        SUM(m.qty)        AS `qty_on_reserve`
       FROM
         `sdo_model` AS m
       LEFT JOIN
         `sdo_header` AS h
       ON m.do_no=h.do_no
       WHERE
-        h.status=\"SAVED\") AS d
+        h.status=\"SAVED\"
+      GROUP BY
+        h.warehouse_code, m.brand_code, m.model_no) AS d
     ON a.warehouse_code=d.warehouse_code AND a.brand_code=d.brand_code AND a.model_no=d.model_no
     WHERE
       a.qty > 0
@@ -211,8 +213,8 @@
             <table class="brand-results">
               <colgroup>
                 <col>
-                <col style="width: 40px;">
                 <col style="width: 80px;">
+                <col style="width: 40px;">
                 <col style="width: 80px;">
                 <col style="width: 80px;">
                 <col style="width: 80px;">
@@ -222,11 +224,11 @@
                 <tr></tr>
                 <tr>
                   <th>Model No.</th>
-                  <th>W.C.</th>
+                  <th class="number">Avg. Cost</th>
+                  <th class="number">W.C.</th>
                   <th class="number">Qty</th>
                   <th class="number">Reserved</th>
                   <th class="number">Available</th>
-                  <th class="number">Avg. Cost</th>
                   <th class="number">Subtotal</th>
                 </tr>
               </thead>
@@ -242,12 +244,13 @@
                   foreach ($brandStocks as $modelNo => &$model) {
                     $modelId = $model["id"];
                     $modelStocks = $model["stocks"];
+                    $stockCount = count($modelStocks);
 
-                    for ($i = 0; $i < count($modelStocks); $i++) {
+                    for ($i = 0; $i < $stockCount; $i++) {
                       $modelStock = $modelStocks[$i];
                       $qty = $modelStock["qty"];
                       $qtyOnReserve = $modelStock["qty_on_reserve"];
-                      $qtyAvailable = max(0, $qty - $qtyOnReserve);
+                      $qtyAvailable = $qty - $qtyOnReserve;
                       $warehouseCode = $modelStock["warehouse_code"];
                       $costAverage = $modelStock["cost_average"];
                       $subtotal = $modelStock["subtotal"];
@@ -258,39 +261,34 @@
                       $totalAmt += $subtotal;
 
                       $modelColumns = $i == 0 ? "
-                        <td rowspan=\"" . count($modelStocks) . "\" title=\"$modelNo\">
+                        <td rowspan=\"" . $stockCount . "\" title=\"$modelNo\">
                           <a class=\"link\" href=\"" . DATA_MODEL_MODEL_DETAIL_URL . "?id=$modelId\">$modelNo</a>
                         </td>
-                      " : "";
-                      $amountColumns = $i == 0 ? "
-                        <td rowspan=\"" . count($modelStocks) . "\" title=\"$costAverage\" class=\"number\">
+                        <td rowspan=\"" . $stockCount . "\" title=\"$costAverage\" class=\"number\">
                         " . number_format($costAverage, 2) . "
-                        </td>
-                        <td rowspan=\"" . count($modelStocks) . "\" title=\"$subtotal\" class=\"number\">
-                        " . number_format($subtotal, 2) . "
                         </td>
                       " : "";
 
                       echo "
                         <tr>
                           $modelColumns
-                          <td title=\"$warehouseCode\">$warehouseCode</td>
+                          <td title=\"$warehouseCode\" class=\"number\">$warehouseCode</td>
                           <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
                           <td title=\"$qtyOnReserve\" class=\"number\">" . number_format($qtyOnReserve) . "</td>
                           <td title=\"$qtyAvailable\" class=\"number\">" . number_format($qtyAvailable) . "</td>
-                          $amountColumns
+                          <td title=\"$subtotal\" class=\"number\">" . number_format($subtotal, 2) . "</td>
                         </tr>
                       ";
                     }
                   }
                 ?>
                 <tr>
-                  <th class="number">Total:</th>
                   <th></th>
+                  <th></th>
+                  <th class="number">Total:</th>
                   <th class="number"><?php echo number_format($totalQty); ?></th>
                   <th class="number"><?php echo number_format($totalQtyOnReserve); ?></th>
                   <th class="number"><?php echo number_format($totalQtyAvailable); ?></th>
-                  <th></th>
                   <th class="number"><?php echo number_format($totalAmt, 2); ?></th>
                 </tr>
               </tbody>

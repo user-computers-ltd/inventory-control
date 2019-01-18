@@ -11,6 +11,7 @@
       c.code                          AS `brand_code`,
       c.name                          AS `brand_name`,
       SUM(a.qty)                      AS `qty`,
+      SUM(e.qty_on_reserve)           AS `qty_on_reserve`,
       SUM(a.qty * d.cost_average)     AS `subtotal`
     FROM
       `stock` AS a
@@ -23,6 +24,22 @@
     LEFT JOIN
       `model` AS d
     ON a.brand_code=d.brand_code AND a.model_no=d.model_no
+    LEFT JOIN
+      (SELECT
+        h.warehouse_code  AS `warehouse_code`,
+        m.brand_code      AS `brand_code`,
+        m.model_no        AS `model_no`,
+        SUM(m.qty)        AS `qty_on_reserve`
+      FROM
+        `sdo_model` AS m
+      LEFT JOIN
+        `sdo_header` AS h
+      ON m.do_no=h.do_no
+      WHERE
+        h.status=\"SAVED\"
+      GROUP BY
+        h.warehouse_code, m.brand_code, m.model_no) AS e
+    ON a.warehouse_code=e.warehouse_code AND a.brand_code=e.brand_code AND a.model_no=e.model_no
     WHERE
       a.qty > 0
     GROUP BY
@@ -68,18 +85,24 @@
                 <col>
                 <col style="width: 80px;">
                 <col style="width: 80px;">
+                <col style="width: 80px;">
+                <col style="width: 80px;">
               </colgroup>
               <thead>
                 <tr></tr>
                 <tr>
                   <th>Brand</th>
                   <th class="number">Qty</th>
+                  <th class="number">Reserved</th>
+                  <th class="number">Available</th>
                   <th class="number">Subtotal</th>
                 </tr>
               </thead>
               <tbody>
                 <?php
                   $totalQty = 0;
+                  $totalQtyOnReserve = 0;
+                  $totalQtyAvailable = 0;
                   $totalAmt = 0;
 
                   for ($i = 0; $i < count($warehouseStocks); $i++) {
@@ -88,9 +111,13 @@
                     $brandCode = $warehouseStock["brand_code"];
                     $brandName = $warehouseStock["brand_name"];
                     $qty = $warehouseStock["qty"];
+                    $qtyOnReserve = $warehouseStock["qty_on_reserve"];
+                    $qtyAvailable = $qty - $qtyOnReserve;
                     $subtotal = $warehouseStock["subtotal"];
 
                     $totalQty += $qty;
+                    $totalQtyOnReserve += $qtyOnReserve;
+                    $totalQtyAvailable += $qtyAvailable;
                     $totalAmt += $subtotal;
 
                     echo "
@@ -99,6 +126,8 @@
                           <a href=\"" . REPORT_STOCK_TAKE_WAREHOUSE_DETAIL_URL . "?id[]=$warehouseId&filter_brand_code[]=$brandCode\">$brandCode - $brandName</a>
                         </td>
                         <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
+                        <td title=\"$qtyOnReserve\" class=\"number\">" . number_format($qtyOnReserve) . "</td>
+                        <td title=\"$qtyAvailable\" class=\"number\">" . number_format($qtyAvailable) . "</td>
                         <td title=\"$subtotal\" class=\"number\">" . number_format($subtotal, 2) . "</td>
                       </tr>
                     ";
@@ -107,6 +136,8 @@
                 <tr>
                   <th class="number">Total:</th>
                   <th class="number"><?php echo number_format($totalQty); ?></th>
+                  <th class="number"><?php echo number_format($totalQtyOnReserve); ?></th>
+                  <th class="number"><?php echo number_format($totalQtyAvailable); ?></th>
                   <th class="number"><?php echo number_format($totalAmt, 2); ?></th>
                 </tr>
               </tbody>

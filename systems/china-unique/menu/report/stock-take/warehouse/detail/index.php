@@ -36,6 +36,7 @@
       b.id                          AS `model_id`,
       a.model_no                    AS `model_no`,
       a.qty                         AS `qty`,
+      e.qty_on_reserve              AS `qty_on_reserve`,
       b.cost_average                AS `cost_average`,
       a.qty * b.cost_average        AS `subtotal`
     FROM
@@ -49,6 +50,22 @@
     LEFT JOIN
       `warehouse` AS d
     ON a.warehouse_code=d.code
+    LEFT JOIN
+      (SELECT
+        h.warehouse_code  AS `warehouse_code`,
+        m.brand_code      AS `brand_code`,
+        m.model_no        AS `model_no`,
+        SUM(m.qty)        AS `qty_on_reserve`
+      FROM
+        `sdo_model` AS m
+      LEFT JOIN
+        `sdo_header` AS h
+      ON m.do_no=h.do_no
+      WHERE
+        h.status=\"SAVED\"
+      GROUP BY
+        h.warehouse_code, m.brand_code, m.model_no) AS e
+    ON a.warehouse_code=e.warehouse_code AND a.brand_code=e.brand_code AND a.model_no=e.model_no
     WHERE
       a.qty > 0
       $whereClause
@@ -210,6 +227,8 @@
                 <col style="width: 80px;">
                 <col style="width: 80px;">
                 <col style="width: 80px;">
+                <col style="width: 80px;">
+                <col style="width: 80px;">
               </colgroup>
               <thead>
                 <tr></tr>
@@ -217,6 +236,8 @@
                   <th>Brand</th>
                   <th>Model No.</th>
                   <th class="number">Qty</th>
+                  <th class="number">Reserved</th>
+                  <th class="number">Available</th>
                   <th class="number">Average Cost</th>
                   <th class="number">Subtotal</th>
                 </tr>
@@ -226,6 +247,8 @@
                   $warehouseStocks = $warehouse["stocks"];
 
                   $totalQty = 0;
+                  $totalQtyOnReserve = 0;
+                  $totalQtyAvailable = 0;
                   $totalAmt = 0;
 
                   foreach ($warehouseStocks as $brandCode => $brand) {
@@ -235,14 +258,19 @@
                     foreach ($brandStocks as $modelNo => $model) {
                       $modelId = $model["id"];
                       $modelStocks = $model["stocks"];
+                      $stockCount = count($modelStocks);
 
-                      for ($i = 0; $i < count($modelStocks); $i++) {
+                      for ($i = 0; $i < $stockCount; $i++) {
                         $modelStock = $modelStocks[$i];
                         $qty = $modelStock["qty"];
+                        $qtyOnReserve = $modelStock["qty_on_reserve"];
+                        $qtyAvailable = $qty - $qtyOnReserve;
                         $costAverage = $modelStock["cost_average"];
                         $subtotal = $modelStock["subtotal"];
 
                         $totalQty += $qty;
+                        $totalQtyOnReserve += $qtyOnReserve;
+                        $totalQtyAvailable += $qtyAvailable;
                         $totalAmt += $subtotal;
 
                         echo "
@@ -250,6 +278,8 @@
                             <td title=\"$brandName\">$brandCode - $brandName</td>
                             <td title=\"$modelNo\"><a class=\"link\" href=\"" . DATA_MODEL_MODEL_DETAIL_URL . "?id=$modelId\">$modelNo</a></td>
                             <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
+                            <td title=\"$qtyOnReserve\" class=\"number\">" . number_format($qtyOnReserve) . "</td>
+                            <td title=\"$qtyAvailable\" class=\"number\">" . number_format($qtyAvailable) . "</td>
                             <td title=\"$costAverage\" class=\"number\">" . number_format($costAverage, 2) . "</td>
                             <td title=\"$subtotal\" class=\"number\">" . number_format($subtotal, 2) . "</td>
                           </tr>
@@ -262,6 +292,8 @@
                   <th></th>
                   <th class="number">Total:</th>
                   <th class="number"><?php echo number_format($totalQty); ?></th>
+                  <th class="number"><?php echo number_format($totalQtyOnReserve); ?></th>
+                  <th class="number"><?php echo number_format($totalQtyAvailable); ?></th>
                   <th></th>
                   <th class="number"><?php echo number_format($totalAmt, 2); ?></th>
                 </tr>
