@@ -77,7 +77,6 @@
   $currencyCode = assigned($_POST["currency_code"]) ? $_POST["currency_code"] : COMPANY_CURRENCY;
   $exchangeRate = assigned($_POST["exchange_rate"]) ? $_POST["exchange_rate"] : $currencies[$currencyCode];
   $discount = assigned($_POST["discount"]) ? $_POST["discount"] : 0;
-  $ignorePrice = $_POST["ignore_price"] == "on" ? true : false;
   $brandCodes = $_POST["brand_code"];
   $modelNos = $_POST["model_no"];
   $qtys = $_POST["qty_requested"];
@@ -92,7 +91,6 @@
     $price = assigned($prices) ? $prices[$i] : 0;
     $qty = $qtys[$i];
     $qtyAllotted = $qtysAllotted[$i];
-
 
     array_push($soModels, array(
       "brand_code"    => $brandCode,

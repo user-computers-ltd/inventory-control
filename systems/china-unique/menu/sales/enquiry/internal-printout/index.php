@@ -27,7 +27,7 @@
           <tr>
             <td>Client:</td>
             <td><?php echo $client; ?></td>
-            <?php if (!$ignorePrice) : ?>
+            <?php if ($showPrice) : ?>
               <td>Currency:</td>
               <td><?php echo $currency; ?></td>
             <?php endif ?>
@@ -35,7 +35,7 @@
           <tr>
             <td>Persion In-charge:</td>
             <td><?php echo $inCharge; ?></td>
-            <?php if ($discount > 0 && $ignorePrice) : ?>
+            <?php if ($discount > 0 && $showPrice) : ?>
               <td>Discount:</td>
               <td><?php echo $discount; ?>%</td>
             <?php endif ?>
@@ -68,7 +68,7 @@
                 <th class="number">Available</th>
                 <th class="number">Allotted</th>
                 <th class="number">Incoming</th>
-                <th class="number">Reserved</th>
+                <th class="number">Allotment</th>
               </tr>
             </thead>
             <tbody>

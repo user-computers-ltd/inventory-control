@@ -48,8 +48,8 @@
           <tr>
             <td>Person In-charge:</td>
             <td><input type="text" name="in_charge" value="<?php echo $inCharge; ?>" required/></td>
-            <td class="option-row">Currency:</td>
-            <td class="option-row">
+            <td class="option-row hide">Currency:</td>
+            <td class="option-row hide">
               <select
                 id="currency-code"
                 class="option-field"
@@ -81,17 +81,17 @@
           <tr>
             <td>
               <input
-                id="ignore-price"
-                name="ignore_price"
+                id="show-price"
+                name="show_price"
                 type="checkbox"
-                onchange="onIgnorePriceChange()"
-                <?php echo $ignorePrice ? "checked" : ""; ?>
+                onchange="onShowPriceChange()"
+                <?php echo $showPrice ? "checked" : ""; ?>
               />
-              <label for="ignore-price">Ignore Price</label>
+              <label for="show-price">Show Prices</label>
             </td>
             <td></td>
-            <td class="option-row">Discount:</td>
-            <td class="option-row">
+            <td class="option-row hide">Discount:</td>
+            <td class="option-row hide">
               <input
                 id="discount"
                 class="option-field"
@@ -106,7 +106,7 @@
               /><span>%</span>
             </td>
           </tr>
-          <tr class="option-row">
+          <tr class="option-row hide">
             <td colspan="2">
               <input
                 id="normal-price"
@@ -140,8 +140,8 @@
             <col style="width: 60px">
             <col style="width: 60px">
             <col style="width: 60px">
-            <col class="option-column" style="width: 80px">
-            <col class="option-column" style="width: 80px">
+            <col class="option-column hide" style="width: 80px">
+            <col class="option-column hide" style="width: 80px">
             <col style="width: 30px">
           </colgroup>
           <thead>
@@ -149,8 +149,8 @@
               <th rowspan="2">Model no.</th>
               <th rowspan="2">Brand code</th>
               <th colspan="7" class="quantity">Quantity</th>
-              <th rowspan="2" class="number option-column">Price</th>
-              <th rowspan="2" class="number option-column">Subtotal</th>
+              <th rowspan="2" class="number option-column hide">Price</th>
+              <th rowspan="2" class="number option-column hide">Subtotal</th>
               <th rowspan="2"></th>
             <tr>
               <th class="number">Request</th>
@@ -159,7 +159,7 @@
               <th class="number">Available</th>
               <th class="number">Allot</th>
               <th class="number">Incoming</th>
-              <th class="number">Reserved</th>
+              <th class="number">Allotment</th>
             </tr>
           </thead>
           <tfoot>
@@ -184,6 +184,7 @@
               <th id="total-qty-allotted" class="number"></th>
               <th colspan="2"></th>
               <th id="total-amount" class="number"></th>
+              <th></th>
               <th></th>
             </tr>
           </tfoot>
@@ -226,7 +227,7 @@
         var debtorNameElements = document.querySelectorAll(".debtor-name");
         var debtorNameFieldElement = document.querySelector(".debtor-name input");
         var discountElement = document.querySelector("#discount");
-        var ignorePriceElement = document.querySelector("#ignore-price");
+        var showPriceElement = document.querySelector("#show-price");
         var currencyCodeElement = document.querySelector("#currency-code");
         var exchangeRateElement = document.querySelector("#exchange-rate");
         var tableBodyElement = document.querySelector("#enquiry-models tbody");
@@ -257,7 +258,7 @@
           tableBodyElement.innerHTML = "";
 
           var discount = discountElement.value;
-          var ignorePrice = ignorePriceElement.checked;
+          var showPrice = showPriceElement.checked;
           var totalQty = 0;
           var totalQtyAllotted = 0;
           var totalAmount = 0;
@@ -353,7 +354,7 @@
                   + "onblur=\"onFieldBlurred()\" "
                   + "onkeydown=\"onPriceKeyDown(event, " + i + ")\" "
                   + "required "
-                  + (ignorePrice ? "disabled" : "")
+                  + (showPrice ? "" : "disabled")
                 + "/>"
               + "</td>"
               + "<td class=\"total-amount number\">" + soModel["total_amount"].toFixed(2) + "</td>"
@@ -470,23 +471,23 @@
           focusedFieldName = null;
         }
 
-        function onIgnorePriceChange() {
+        function onShowPriceChange() {
           var optionRows = document.querySelectorAll(".option-row");
           var optionFields = document.querySelectorAll(".option-field");
           var optionColumns = document.querySelectorAll(".option-column");
 
-          var ignorePrice = ignorePriceElement.checked;
+          var showPrice = showPriceElement.checked;
 
           for (var i = 0; i < optionRows.length; i++) {
-            toggleClass(optionRows[i], "hide", ignorePrice);
+            toggleClass(optionRows[i], "hide", !showPrice);
           }
 
           for (var i = 0; i < optionFields.length; i++) {
-            optionFields[i].disabled = ignorePrice;
+            optionFields[i].disabled = !showPrice;
           }
 
           for (var i = 0; i < optionColumns.length; i++) {
-            toggleClass(optionColumns[i], "hide", ignorePrice);
+            toggleClass(optionColumns[i], "hide", !showPrice);
           }
         }
 
@@ -577,10 +578,10 @@
 
         function onQuantityAllottedKeyDown(event, index) {
           var soModel = soModels[index];
-          var ignorePrice = ignorePriceElement.checked;
+          var showPrice = showPriceElement.checked;
 
           if (
-            ignorePrice &&
+            !showPrice &&
             index === soModels.length - 1 &&
             (event.which || event.keyCode) === 9 &&
             soModel["model_no"] &&
@@ -626,7 +627,7 @@
 
           render();
 
-          onIgnorePriceChange();
+          onShowPriceChange();
         }
       </script>
     </div>

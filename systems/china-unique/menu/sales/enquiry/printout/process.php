@@ -2,7 +2,7 @@
   $debtorCode = $_POST["debtor_code"];
   $debtorName = $_POST["debtor_name"];
   $inCharge = $_POST["in_charge"];
-  $ignorePrice = $_POST["ignore_price"] == "on" ? true : false;
+  $showPrice = $_POST["show_price"] == "on" ? true : false;
   $currencyCode = $_POST["currency_code"];
   $exchangeRate = $_POST["exchange_rate"];
   $discount = $_POST["discount"];

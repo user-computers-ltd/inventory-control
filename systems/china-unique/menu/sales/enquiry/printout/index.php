@@ -27,7 +27,7 @@
           <tr>
             <td>致:</td>
             <td><?php echo $client; ?></td>
-            <?php if (!$ignorePrice) : ?>
+            <?php if ($showPrice) : ?>
               <td>貨幣:</td>
               <td><?php echo $currency; ?></td>
             <?php endif ?>
@@ -35,14 +35,14 @@
           <tr>
             <td>經手人:</td>
             <td><?php echo $inCharge; ?></td>
-            <?php if ($discount > 0 && !$ignorePrice) : ?>
+            <?php if ($discount > 0 && $showPrice) : ?>
               <td>折扣:</td>
               <td><?php echo $discount; ?>%</td>
             <?php endif ?>
           </tr>
         </table>
         <?php if (count($items) > 0) : ?>
-          <div class="enquiry-precaution">以下貨物仍現庫存，貴司落實後再確認。謝謝。</div>
+          <div class="enquiry-precaution">以下貨物乃現庫存，以最後確認為準。謝謝。</div>
           <table class="enquiry-models">
             <thead>
               <tr></tr>
@@ -51,7 +51,7 @@
                 <th>型號</th>
                 <th class="number">數量</th>
                 <th class="number">可提供數量</th>
-                <?php if (!$ignorePrice) : ?>
+                <?php if ($showPrice) : ?>
                   <th class="number">含稅單價</th>
                   <th class="number">含稅總金額</th>
                 <?php endif ?>
@@ -84,7 +84,7 @@
                       <td class=\"number\">" . number_format($qtyAllotted) . "</td>
                   ";
 
-                  if (!$ignorePrice) {
+                  if ($showPrice) {
                     echo "
                       <td class=\"number\">" . number_format($price, 2) . "</td>
                       <td class=\"number\">" . number_format($subtotal, 2) . "</td>
@@ -100,7 +100,7 @@
                   <th></th>
                   <th></th>
                   <th></th>
-                  <?php if (!$ignorePrice) : ?>
+                  <?php if ($showPrice) : ?>
                     <th></th>
                     <th class="number"><?php echo number_format($totalAmount, 2); ?></th>
                   <?php endif ?>
@@ -110,7 +110,7 @@
                   <th></th>
                   <th></th>
                   <th></th>
-                  <?php if (!$ignorePrice) : ?>
+                  <?php if ($showPrice) : ?>
                     <td class="number">折扣: <?php echo $discount; ?>%</td>
                     <td class="number"><?php echo number_format($totalAmount * $discount / 100, 2); ?></td>
                   <?php endif ?>
@@ -121,7 +121,7 @@
                 <th class="number">總數量:</th>
                 <th class="number"><?php echo number_format($totalQty); ?></th>
                 <th class="number"><?php echo number_format($totalQtyAllotted); ?></th>
-                <?php if (!$ignorePrice) : ?>
+                <?php if ($showPrice) : ?>
                   <th class="number">總金額:</th>
                   <th class="number"><?php echo number_format($totalAmount * (100 - $discount) / 100, 2); ?></th>
                 <?php endif ?>
