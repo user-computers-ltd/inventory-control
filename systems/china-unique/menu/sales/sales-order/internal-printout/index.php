@@ -90,7 +90,7 @@
                             <td class=\"number\">" . number_format($price, 2) . "</td>
                             <td class=\"number\">" . number_format($occurrences[$j]) . "</td>
                             <td class=\"number\">" . number_format($showOutstanding) . "</td>
-                            <td class=\"number\">" . number_format($occurrences[$j] * $showQty, 2) . "</td>
+                            <td class=\"number\">" . number_format($occurrences[$j] * $price, 2) . "</td>
                           </tr>
                         ";
                       }
