@@ -44,12 +44,12 @@
 
     $soModelList = query("
       SELECT
-        a.so_no                                 AS `so_no`,
-        b.name                                  AS `brand`,
-        a.model_no                              AS `model_no`,
-        a.price                                 AS `price`,
-        a.qty                                   AS `qty`,
-        a.qty * a.price                         AS `subtotal`
+        a.so_no                             AS `so_no`,
+        b.name                              AS `brand`,
+        a.model_no                          AS `model_no`,
+        a.price                             AS `price`,
+        a.qty                               AS `qty`,
+        a.occurrence                        AS `occurrence`
       FROM
         `so_model` AS a
       LEFT JOIN
@@ -106,7 +106,7 @@
         "model_no"          => $modelNos[$i],
         "price"             => $prices[$i],
         "qty"               => $qtys[$i],
-        "subtotal"          => $prices[$i] * $qtys[$i]
+        "occurrence"        => $qtys[$i]
       ));
     }
   }

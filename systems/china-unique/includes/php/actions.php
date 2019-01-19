@@ -596,9 +596,7 @@
       ));
     }
 
-    /* Delete the incoming advice and the purchase allotments. */
-    array_push($queries, "DELETE FROM `ia_header` WHERE ia_no=\"$iaNo\"");
-    array_push($queries, "DELETE FROM `ia_model` WHERE ia_no=\"$iaNo\"");
+    /* Delete the purchase allotments. */
     array_push($queries, "DELETE FROM `po_allotment` WHERE ia_no=\"$iaNo\"");
 
     return $queries;

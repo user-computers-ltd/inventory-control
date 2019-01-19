@@ -74,7 +74,6 @@
                       $qty = $model["qty"];
 
                       $totalQty += $qty;
-
                       $tempQty = $qty;
 
                       if (!isset($occurrenceMap["$soNo - $brand - $modelNo"])) {

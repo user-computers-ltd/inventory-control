@@ -66,20 +66,22 @@
                       $modelNo = $model["model_no"];
                       $price = $model["price"];
                       $qty = $model["qty"];
-                      $subtotal = $model["subtotal"];
+                      $occurrences = explode(",", $model["occurrence"]);
 
                       $totalQty += $qty;
-                      $subtotalSum += $subtotal;
+                      $subtotalSum += $qty * $price;
 
-                      echo "
-                        <tr>
-                          <td>$brand</td>
-                          <td>$modelNo</td>
-                          <td class=\"number\">" . number_format($price, 2) . "</td>
-                          <td class=\"number\">" . number_format($qty) . "</td>
-                          <td class=\"number\">" . number_format($subtotal, 2) . "</td>
-                        </tr>
-                      ";
+                      for ($j = 0; $j < count($occurrences); $j++) {
+                        echo "
+                          <tr>
+                            <td>$brand</td>
+                            <td>$modelNo</td>
+                            <td class=\"number\">" . number_format($price, 2) . "</td>
+                            <td class=\"number\">" . number_format($occurrences[$j]) . "</td>
+                            <td class=\"number\">" . number_format($occurrences[$j] * $price, 2) . "</td>
+                          </tr>
+                        ";
+                      }
                     }
                   ?>
                   <?php if ($discount > 0) : ?>

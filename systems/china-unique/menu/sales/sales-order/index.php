@@ -220,17 +220,17 @@
             var totalQty = 0;
             var totalAmount = 0;
 
-            var existingModels = [];
+            var existingPrices = {};
 
             for (var i = 0; i < soModels.length; i++) {
               var soModel = soModels[i];
               var matchedModels = getModels(soModel["model_no"]);
               var newRowElement = document.createElement("tr");
               var ongoingDelivery = soModel["qty_delivered"] && soModel["qty_delivered"] > 0;
-              var modelExists = existingModels.indexOf(soModel["brand_code"] + " - " + soModel["model_no"]) !== -1;
+              var modelPrice = existingPrices[soModel["brand_code"] + " - " + soModel["model_no"]];
 
-              if (!modelExists) {
-                existingModels.push(soModel["brand_code"] + " - " + soModel["model_no"]);
+              if (modelPrice === undefined) {
+                existingPrices[soModel["brand_code"] + " - " + soModel["model_no"]] = soModel["price"];
               }
 
               var rowInnerHTML =
@@ -286,23 +286,24 @@
                     + "onblur=\"onFieldBlurred()\" "
                     + "onkeydown=\"onQuantityKeyDown(event, " + i + ")\" "
                     + "required "
-                    + (modelExists ? "data-duplicate=\"true\"" : "")
+                    + (modelPrice !== undefined ? "data-duplicate=\"true\"" : "")
                   + "/>"
                 + "</td>"
-                + "<td>"
-                  + (!modelExists ? "<input "
+                + "<td class=\"number\">"
+                  + "<input "
                     + "class=\"price number\" "
                     + "type=\"number\" "
                     + "step=\"0.01\" "
                     + "min=\"0\" "
                     + "name=\"price[]\" "
-                    + "value=\"" + soModel["price"].toFixed(2) + "\" "
+                    + "value=\"" + (modelPrice !== undefined ? modelPrice : soModel["price"]).toFixed(2) + "\" "
                     + "onchange=\"onPriceChange(event, " + i + ")\" "
                     + "onfocus=\"onFieldFocused(" + i + ", 'price[]')\" "
                     + "onblur=\"onFieldBlurred()\" "
                     + "onkeydown=\"onPriceKeyDown(event, " + i + ")\" "
                     + "required "
-                  + "/>" : "")
+                    + (modelPrice !== undefined ? "readonly" : "")
+                  + "/>"
                 + "</td>"
                 + "<td class=\"total-amount number\">" + soModel["total_amount"].toFixed(2) + "</td>"
                 + "<td><div class=\"remove\" onclick=\"removeSalesModel(" + i + ")\">×</div></td>"

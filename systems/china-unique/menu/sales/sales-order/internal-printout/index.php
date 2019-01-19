@@ -54,7 +54,7 @@
                     <th>Model No.</th>
                     <th class="number">Selling Price</th>
                     <th class="number">Qty</th>
-                    <th class="number">OutStanding Qty</th>
+                    <th class="number">Outstanding Qty</th>
                     <th class="number">Subtotal</th>
                   </tr>
                 </thead>
@@ -73,22 +73,27 @@
                       $price = $model["price"];
                       $qty = $model["qty"];
                       $qtyOutstanding = $model["qty_outstanding"];
-                      $subtotal = $model["subtotal"];
+                      $qtyDelivered = $qty - $qtyOutstanding;
+                      $occurrences = explode(",", $model["occurrence"]);
 
                       $totalQty += $qty;
                       $totalQtyOutstanding += $qtyOutstanding;
-                      $subtotalSum += $subtotal;
+                      $subtotalSum += $qty * $price;
 
-                      echo "
-                        <tr>
-                          <td>$brand</td>
-                          <td>$modelNo</td>
-                          <td class=\"number\">" . number_format($price, 2) . "</td>
-                          <td class=\"number\">" . number_format($qty) . "</td>
-                          <td class=\"number\">" . number_format($qtyOutstanding) . "</td>
-                          <td class=\"number\">" . number_format($subtotal, 2) . "</td>
-                        </tr>
-                      ";
+                      for ($j = 0; $j < count($occurrences); $j++) {
+                        $showOutstanding = max(0, $occurrences[$j] - $qtyDelivered);
+                        $qtyDelivered = max(0, $qtyDelivered - $occurrences[$j]);
+                        echo "
+                          <tr>
+                            <td>$brand</td>
+                            <td>$modelNo</td>
+                            <td class=\"number\">" . number_format($price, 2) . "</td>
+                            <td class=\"number\">" . number_format($occurrences[$j]) . "</td>
+                            <td class=\"number\">" . number_format($showOutstanding) . "</td>
+                            <td class=\"number\">" . number_format($occurrences[$j] * $showQty, 2) . "</td>
+                          </tr>
+                        ";
+                      }
                     }
                   ?>
                   <?php if ($discount > 0) : ?>
