@@ -52,7 +52,7 @@
                   <tr>
                     <th>Brand</th>
                     <th>Model No.</th>
-                    <th class="number">Selling Price</th>
+                    <th class="number">Price</th>
                     <th class="number">Qty</th>
                     <th class="number">Outstanding Qty</th>
                     <th class="number">Subtotal</th>

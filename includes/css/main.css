@@ -60,6 +60,7 @@ table thead th {
 .page-wrapper {
   display: block;
   margin: auto;
+  padding: 0px 80px;
   width: 800px;
 }
 
@@ -134,5 +135,9 @@ table thead th {
 
   .print-only {
     display: inherit;
+  }
+
+  .page-wrapper {
+    padding: 0px;
   }
 }
