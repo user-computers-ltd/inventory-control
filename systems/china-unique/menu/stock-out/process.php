@@ -116,8 +116,8 @@
         a.retail_special                                                      AS `special_price`,
         a.cost_average                                                        AS `cost_average`,
         IFNULL(b.qty_on_hand, 0)                                              AS `qty_on_hand`,
-        IFNULL(d.qty_on_reserve, 0)                                           AS `qty_on_reserve`,
-        GREATEST(IFNULL(b.qty_on_hand, 0) - IFNULL(d.qty_on_reserve, 0), 0)   AS `qty_available`
+        IFNULL(c.qty_on_reserve, 0)                                           AS `qty_on_reserve`,
+        GREATEST(IFNULL(b.qty_on_hand, 0) - IFNULL(c.qty_on_reserve, 0), 0)   AS `qty_available`
       FROM
         `model` AS a
       LEFT JOIN
@@ -134,17 +134,14 @@
         (SELECT
           brand_code, model_no, SUM(qty) AS `qty_on_reserve`
         FROM
-          `sdo_model` AS m
-        LEFT JOIN
-          `sdo_header` AS h
-        ON m.do_no=h.do_no
+          `so_allotment`
         WHERE
-          h.status=\"SAVED\" AND m.ia_no=\"\" AND h.warehouse_code=\"$warehouseCode\"
+          ia_no=\"\" AND warehouse_code=\"$warehouseCode\"
         GROUP BY
-          brand_code, model_no) AS d
-      ON a.brand_code=d.brand_code AND a.model_no=d.model_no
+          brand_code, model_no) AS c
+      ON a.brand_code=c.brand_code AND a.model_no=c.model_no
       WHERE
-        GREATEST(IFNULL(b.qty_on_hand, 0) - IFNULL(d.qty_on_reserve, 0), 0) > 0
+        GREATEST(IFNULL(b.qty_on_hand, 0) - IFNULL(c.qty_on_reserve, 0), 0) > 0
       ORDER BY
         a.brand_code, a.model_no
     ");
