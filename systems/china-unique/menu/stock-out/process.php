@@ -107,59 +107,61 @@
     header("Location: " . STOCK_OUT_SAVED_URL);
   }
 
+  function getWarehouseModels($warehouseCode) {
+    return query("
+      SELECT
+        a.brand_code                                                          AS `brand_code`,
+        a.model_no                                                            AS `model_no`,
+        a.retail_normal                                                       AS `normal_price`,
+        a.retail_special                                                      AS `special_price`,
+        a.cost_average                                                        AS `cost_average`,
+        IFNULL(b.qty_on_hand, 0)                                              AS `qty_on_hand`,
+        IFNULL(d.qty_on_reserve, 0)                                           AS `qty_on_reserve`,
+        GREATEST(IFNULL(b.qty_on_hand, 0) - IFNULL(d.qty_on_reserve, 0), 0)   AS `qty_available`
+      FROM
+        `model` AS a
+      LEFT JOIN
+        (SELECT
+          brand_code, model_no, SUM(qty) AS `qty_on_hand`
+        FROM
+          `stock`
+        WHERE
+          warehouse_code=\"$warehouseCode\"
+        GROUP BY
+          brand_code, model_no) AS b
+      ON a.brand_code=b.brand_code AND a.model_no=b.model_no
+      LEFT JOIN
+        (SELECT
+          brand_code, model_no, SUM(qty) AS `qty_on_reserve`
+        FROM
+          `sdo_model` AS m
+        LEFT JOIN
+          `sdo_header` AS h
+        ON m.do_no=h.do_no
+        WHERE
+          h.status=\"SAVED\" AND m.ia_no=\"\" AND h.warehouse_code=\"$warehouseCode\"
+        GROUP BY
+          brand_code, model_no) AS d
+      ON a.brand_code=d.brand_code AND a.model_no=d.model_no
+      WHERE
+        GREATEST(IFNULL(b.qty_on_hand, 0) - IFNULL(d.qty_on_reserve, 0), 0) > 0
+      ORDER BY
+        a.brand_code, a.model_no
+    ");
+  }
+
   $debtors = query("SELECT code, english_name AS name FROM `debtor`");
   $brands = query("SELECT code, name FROM `brand`");
-  $models = query("
-    SELECT
-      a.brand_code                                                          AS `brand_code`,
-      a.model_no                                                            AS `model_no`,
-      a.retail_normal                                                       AS `normal_price`,
-      a.retail_special                                                      AS `special_price`,
-      a.cost_average                                                        AS `cost_average`,
-      IFNULL(b.qty_on_hand, 0)                                              AS `qty_on_hand`,
-      IFNULL(c.qty_on_order, 0)                                             AS `qty_on_order`,
-      IFNULL(d.qty_on_reserve, 0)                                           AS `qty_on_reserve`,
-      GREATEST(IFNULL(b.qty_on_hand, 0) - IFNULL(d.qty_on_reserve, 0), 0)   AS `qty_available`
-    FROM
-      `model` AS a
-    LEFT JOIN
-      (SELECT
-        model_no, brand_code, SUM(qty) AS `qty_on_hand`
-      FROM
-        `stock`
-      GROUP BY
-        brand_code, model_no) AS b
-    ON a.model_no=b.model_no AND a.brand_code=b.brand_code
-    LEFT JOIN
-      (SELECT
-        m.model_no, m.brand_code, SUM(GREATEST(qty_outstanding, 0)) AS `qty_on_order`
-      FROM
-        `po_model` AS m
-      LEFT JOIN
-        `po_header` AS h
-      ON m.po_no=h.po_no
-      WHERE
-        h.status='POSTED'
-      GROUP BY
-        m.brand_code, m.model_no) AS c
-    ON a.model_no=c.model_no AND a.brand_code=c.brand_code
-    LEFT JOIN
-      (SELECT
-        brand_code, model_no, SUM(qty) AS `qty_on_reserve`
-      FROM
-        `so_allotment`
-      GROUP BY
-        brand_code, model_no) AS d
-    ON a.model_no=d.model_no AND a.brand_code=d.brand_code
-    ORDER BY
-      a.model_no, a.brand_code
-  ");
+  $warehouses = query("SELECT code, name FROM `warehouse`");
+  $models = array();
+  foreach ($warehouses as $warehouse) {
+    $models[$warehouse["code"]] = getWarehouseModels($warehouse["code"]);
+  }
   $results = query("SELECT code, rate FROM `currency`");
   $currencies = array();
   foreach ($results as $currency) {
     $currencies[$currency["code"]] = $currency["rate"];
   }
-  $warehouses = query("SELECT code, name FROM `warehouse`");
   $transactionCodes = array_filter($TRANSACTION_CODES, function ($code) {
     return strpos($code, "S") === 0 && $code != "S2";
   }, ARRAY_FILTER_USE_KEY);

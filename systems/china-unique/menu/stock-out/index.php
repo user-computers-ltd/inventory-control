@@ -42,7 +42,7 @@
               </td>
               <td>Warehouse:</td>
               <td>
-                <select id="warehouse" name="warehouse_code" required>
+                <select id="warehouse-code" name="warehouse_code" onchange="onWarehouseCodeChange()" required>
                   <?php
                     foreach ($warehouses as $warehouse) {
                       $code = $warehouse["code"];
@@ -218,22 +218,25 @@
             <button name="status" type="submit" value="DELETED">Delete</button>
           <?php endif ?>
         </form>
-        <datalist id="model-list">
-          <?php
-            foreach ($models as $model) {
+        <?php
+          foreach ($models as $wc => $modelList) {
+            echo "<datalist id=\"model-list-$wc\">";
+
+            foreach ($modelList as $model) {
               echo "<option value=\"" . $model["model_no"]
                . "\" data-model_no=\"" . $model["model_no"]
                . "\" data-brand_code=\"" . $model["brand_code"]
                . "\" data-normal_price=\"" . $model["normal_price"]
                . "\" data-special_price=\"" . $model["special_price"]
                . "\" data-qty_on_hand=\"" . $model["qty_on_hand"]
-               . "\" data-qty_on_order=\"" . $model["qty_on_order"]
                . "\" data-qty_on_reserve=\"" . $model["qty_on_reserve"]
                . "\" data-qty_available=\"" . $model["qty_available"]
                . "\">" . $model["model_no"] . "</option>";
             }
-          ?>
-        </datalist>
+
+            echo "</datalist>";
+          }
+        ?>
         <script>
           var stockOutModels = <?php echo json_encode($stockOutModels); ?>;
           var currencies = <?php echo json_encode($currencies); ?>;
@@ -242,6 +245,7 @@
           var focusedFieldName = null;
 
           var transactionCodeElement = document.querySelector("#transaction-code");
+          var warehouseCodeElement = document.querySelector("#warehouse-code");
           var netAmountElement = document.querySelector("#net-amount");
           var discountElement = document.querySelector("#discount");
           var taxElement = document.querySelector("#tax");
@@ -255,9 +259,10 @@
           var totalQtyElement = document.querySelector("#total-qty");
           var totalAmountElement = document.querySelector("#total-amount");
           var varianceElement = document.querySelector("#variance");
-          var modelListElement = document.querySelector("#model-list");
 
           function getModels(modelNo, brandCode) {
+            var warehouseCode = warehouseCodeElement.value;
+            var modelListElement = document.querySelector("#model-list-" + warehouseCode);
             var brandCodeSearch = brandCode ? "[data-brand_code=\"" + brandCode + "\"]" : "";
             var matchedModelElements = modelListElement.querySelectorAll("option[value=\"" + modelNo + "\"]" + brandCodeSearch);
             var models = [];
@@ -276,6 +281,7 @@
 
             var transactionCode = transactionCodeElement.value;
             var miscellaneous = transactionCode !== "S1" && transactionCode !== "S3";
+            var warehouseCode = warehouseCodeElement.value;
             var netAmount = netAmountElement.value;
             var discount = discountElement.value;
             var totalQty = 0;
@@ -293,7 +299,7 @@
                     + "class=\"model-no\" "
                     + "type=\"text\" "
                     + "name=\"model_no[]\" "
-                    + "list=\"model-list\" "
+                    + "list=\"model-list-" + warehouseCode + "\" "
                     + "value=\"" + stockOutModel["model_no"] + "\" "
                     + "onfocus=\"onFieldFocused(" + i + ", 'model_no[]')\" "
                     + "onblur=\"onModelNoChange(event, " + i + ")\" "
@@ -410,7 +416,6 @@
             stockOutModel["qty"] = stockOutModel["qty"] || 0;
             stockOutModel["total_amount"] = (stockOutModel["qty"] || 0) * stockOutModel["price"];
             stockOutModel["qty_on_hand"] = parseFloat(model["qty_on_hand"]) || 0;
-            stockOutModel["qty_on_order"] = parseFloat(model["qty_on_order"]) || 0;
             stockOutModel["qty_on_reserve"] = parseFloat(model["qty_on_reserve"]) || 0;
             stockOutModel["qty_available"] = parseFloat(model["qty_available"]) || 0;
           }
@@ -476,6 +481,18 @@
             for (var i = 0; i < optionColumns.length; i++) {
               toggleClass(optionColumns[i], "hide", miscellaneous);
             }
+          }
+
+          function onWarehouseCodeChange() {
+            for (var i = 0; i < stockOutModels.length; i++) {
+              var stockOutModel = stockOutModels[i];
+              var matchedModel = getModels(stockOutModel["model_no"], stockOutModel["brand_code"])[0];
+
+              updateModel(i, matchedModel);
+              updateQuantity(i, stockOutModel["qty"]);
+            }
+
+            render();
           }
 
           function onNetAmountChange() {

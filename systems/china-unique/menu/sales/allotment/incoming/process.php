@@ -253,7 +253,20 @@
     FROM
       `so_allotment` AS a
     LEFT JOIN
-      `sdo_model` AS b
+      (SELECT
+        x.do_no           AS `do_no`,
+        x.ia_no           AS `ia_no`,
+        x.so_no           AS `so_no`,
+        x.brand_code      AS `brand_code`,
+        x.model_no        AS `model_no`,
+        x.qty             AS `qty`
+      FROM
+        `sdo_model` AS x
+      LEFT JOIN
+        `sdo_header` AS y
+      ON x.do_no=y.do_no
+      WHERE
+        y.status=\"SAVED\") AS b
     ON
       a.ia_no=b.ia_no AND
       a.so_no=b.so_no AND
