@@ -53,7 +53,8 @@
         $modelWhereClause
       ORDER BY
         a.ia_no ASC,
-        a.ia_index ASC
+        a.ia_index ASC,
+        a.model_no ASC
     ");
   }
 
