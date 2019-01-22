@@ -23,6 +23,14 @@
   border: none;
 }
 
+.stock-header td:first-child {
+  padding-left: 0px;
+}
+
+.stock-header td:last-child {
+  padding-right: 0px;
+}
+
 .stock-header td:nth-child(2n + 1) {
   width: 60px;
   font-weight: bold;
@@ -36,7 +44,7 @@
 
 .stock-header td .header-button {
   vertical-align: middle;
-  margin: 0px 5px;
+  margin: 0px;
 }
 
 .stock-results th,

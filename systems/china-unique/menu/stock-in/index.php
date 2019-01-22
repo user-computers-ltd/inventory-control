@@ -506,18 +506,6 @@
           function onModelNoChange(event, index) {
             var newModelNo = event.target.value;
             var matchedModel = getModels(newModelNo)[0];
-
-            if (matchedModel && stockInModels[index]["model_no"] !== newModelNo) {
-              updateModel(index, matchedModel);
-              render();
-            }
-
-            onFieldBlurred();
-          }
-
-          function onModelNoChange(event, index) {
-            var newModelNo = event.target.value;
-            var matchedModel = getModels(newModelNo)[0];
             var stockInModel = stockInModels[index];
 
             if (stockInModel["model_no"] !== newModelNo) {

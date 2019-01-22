@@ -34,7 +34,7 @@
   border-bottom: 1px solid;
 }
 
-.stock-out-models tfoot th {
+.stock-out-models tbody tr:last-child th {
   border-top: 1px solid;
 }
 

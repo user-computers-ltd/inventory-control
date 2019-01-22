@@ -23,6 +23,14 @@
   border: none;
 }
 
+.ia-header td:first-child {
+  padding-left: 0px;
+}
+
+.ia-header td:last-child {
+  padding-right: 0px;
+}
+
 .ia-header td:nth-child(2n + 1) {
   width: 60px;
   font-weight: bold;
@@ -36,7 +44,7 @@
 
 .ia-header td .header-button {
   vertical-align: middle;
-  margin: 0px 5px;
+  margin: 0px;
 }
 
 .ia-results th,

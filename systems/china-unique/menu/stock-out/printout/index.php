@@ -127,17 +127,19 @@
                       <th class="number"><?php echo number_format($subtotalSum * (100 - $discount) / 100, 2); ?></th>
                     <?php endif ?>
                   </tr>
-                  <?php if (!$miscellaneous) : ?>
-                    <tr>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td class="number">Total Cost:</th>
-                      <td class="number"><?php echo number_format($totalCost, 2); ?></th>
-                    </tr>
-                  <?php endif ?>
                 </tbody>
               </table>
+              <?php if (!$miscellaneous) : ?>
+                <table class="stock-out-models">
+                  <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="number">Total Cost: <?php echo number_format($totalCost, 2); ?></td>
+                  </tr>
+                </table>
+              <?php endif ?>
             <?php else: ?>
               <div class="stock-out-models-no-results">No models</div>
             <?php endif ?>
