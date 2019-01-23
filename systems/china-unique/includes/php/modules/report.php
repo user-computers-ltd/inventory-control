@@ -9,8 +9,8 @@
   define("REPORT_STOCK_TAKE_BRAND_DETAIL_URL", REPORT_STOCK_TAKE_BRAND_URL . "detail/");
   define("REPORT_STOCK_TAKE_MODEL_URL", REPORT_STOCK_TAKE_URL . "model/");
   define("REPORT_STOCK_TAKE_MODEL_DETAIL_URL", REPORT_STOCK_TAKE_MODEL_URL . "detail/");
-  define("REPORT_STOCK_IN_URL", REPORT_URL . "stock-in/");
-  define("REPORT_STOCK_IN_DATE_URL", REPORT_STOCK_IN_URL . "date/");
+  define("REPORT_STOCK_OUT_URL", REPORT_URL . "stock-out/");
+  define("REPORT_STOCK_OUT_DATE_URL", REPORT_STOCK_OUT_URL . "date/");
 
 
   /* Title configurations. */
@@ -23,8 +23,8 @@
   define("REPORT_STOCK_TAKE_BRAND_DETAIL_TITLE", "(H7d) Stock Take Detail By Brand");
   define("REPORT_STOCK_TAKE_MODEL_TITLE", "(H7e) Stock Take By Model");
   define("REPORT_STOCK_TAKE_MODEL_DETAIL_TITLE", "(H7f) Stock Take Detail By Model");
-  define("REPORT_STOCK_IN_TITLE", "(H8) Stock In");
-  define("REPORT_STOCK_IN_DATE_TITLE", "(H8a) Stock In Report By Date");
+  define("REPORT_STOCK_OUT_TITLE", "(H8) Stock Out");
+  define("REPORT_STOCK_OUT_DATE_TITLE", "(H8a) Stock Out Report By Date");
 
   $REPORT_MODULE = array(
     REPORT_HISTORY_LOG_TITLE => REPORT_HISTORY_LOG_URL,
@@ -36,8 +36,8 @@
       // REPORT_STOCK_TAKE_MODEL_TITLE => REPORT_STOCK_TAKE_MODEL_URL,
       // REPORT_STOCK_TAKE_MODEL_DETAIL_TITLE => REPORT_STOCK_TAKE_MODEL_DETAIL_URL
     ),
-    REPORT_STOCK_IN_TITLE => array(
-      REPORT_STOCK_IN_DATE_TITLE => REPORT_STOCK_IN_DATE_URL
+    REPORT_STOCK_OUT_TITLE => array(
+      REPORT_STOCK_OUT_DATE_TITLE => REPORT_STOCK_OUT_DATE_URL
     )
   );
 ?>

@@ -18,7 +18,7 @@
     <?php include_once ROOT_PATH . "includes/components/menu/index.php"; ?>
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
-      <div class="headline"><?php echo REPORT_STOCK_IN_DATE_TITLE; ?></div>
+      <div class="headline"><?php echo REPORT_STOCK_OUT_DATE_TITLE; ?></div>
       <form>
         <table id="invoice-input" class="web-only">
           <tr>
