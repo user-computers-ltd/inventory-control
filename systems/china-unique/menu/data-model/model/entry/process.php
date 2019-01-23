@@ -7,6 +7,7 @@
   $costPriCurrencyCode = $_POST["cost_pri_currency_code"];
   $costSec = $_POST["cost_sec"];
   $costSecCurrencyCode = $_POST["cost_sec_currency_code"];
+  $averageCost = $_POST["cost_average"];
   $retailNormal = $_POST["retail_normal"];
   $retailSpecial = $_POST["retail_special"];
   $wholesaleNormal = $_POST["wholesale_normal"];
@@ -20,6 +21,7 @@
     assigned($costPriCurrencyCode) &&
     assigned($costSec) &&
     assigned($costSecCurrencyCode) &&
+    assigned($averageCost) &&
     assigned($retailNormal) &&
     assigned($retailSpecial) &&
     assigned($wholesaleNormal) &&
@@ -40,6 +42,7 @@
           cost_pri_currency_code=\"$costPriCurrencyCode\",
           cost_sec=\"$costSec\",
           cost_sec_currency_code=\"$costSecCurrencyCode\",
+          cost_average=\"$averageCost\",
           retail_normal=\"$retailNormal\",
           retail_special=\"$retailSpecial\",
           wholesale_normal=\"$wholesaleNormal\",
@@ -74,7 +77,7 @@
             \"$costPriCurrencyCode\",
             \"$costSec\",
             \"$costSecCurrencyCode\",
-            \"0\",
+            \"$averageCost\",
             \"$retailNormal\",
             \"$retailSpecial\",
             \"$wholesaleNormal\",
@@ -109,6 +112,7 @@
         cost_pri_currency_code    AS `cost_pri_currency_code`,
         cost_sec                  AS `cost_sec`,
         cost_sec_currency_code    AS `cost_sec_currency_code`,
+        cost_average              AS `cost_average`,
         retail_normal             AS `retail_normal`,
         retail_special            AS `retail_special`,
         wholesale_normal          AS `wholesale_normal`,
@@ -126,6 +130,7 @@
       $costPriCurrencyCode = $model["cost_pri_currency_code"];
       $costSec = $model["cost_sec"];
       $costSecCurrencyCode = $model["cost_sec_currency_code"];
+      $averageCost = $model["cost_average"];
       $retailNormal = $model["retail_normal"];
       $retailSpecial = $model["retail_special"];
       $wholesaleNormal = $model["wholesale_normal"];
@@ -141,6 +146,7 @@
     $costPriCurrencyCode = COMPANY_CURRENCY;
     $costSec = 0;
     $costSecCurrencyCode = COMPANY_CURRENCY;
+    $averageCost = 0;
     $retailNormal = 0;
     $retailSpecial = 0;
     $wholesaleNormal = 0;

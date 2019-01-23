@@ -93,6 +93,10 @@
               <td>Wholesale Price (批發價):</td>
               <td><input type="number" name="wholesale_normal" step="0.00000001" min="0" value="<?php echo $wholesaleSpecial; ?>" required /></td>
             </tr>
+            <tr>
+              <td>Average Cost:</td>
+              <td><input type="number" name="cost_average" step="0.00000001" min="0" value="<?php echo $averageCost; ?>" <?php echo substr($modelNo, 0, 1) == "Z" ? "" : "readonly"; ?> required /></td>
+            </tr>
           </table>
           <button type="submit"><?php echo $editMode ? "Edit" : "Create"; ?></button>
         </form>
