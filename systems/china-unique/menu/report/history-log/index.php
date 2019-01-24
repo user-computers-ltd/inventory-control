@@ -76,7 +76,10 @@
         a.header_no IS NOT NULL
         $whereClause
       ORDER BY
-        a.transaction_date DESC
+        a.transaction_date DESC,
+        a.header_no ASC,
+        a.brand_code ASC,
+        a.model_no ASC
     ");
   }
 ?>
