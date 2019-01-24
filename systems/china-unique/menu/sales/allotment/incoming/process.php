@@ -4,6 +4,7 @@
   $brandCodes = $_POST["brand_code"];
   $modelNos = $_POST["model_no"];
   $qtys = $_POST["qty"];
+  $onHandQtys = $_POST["qty_on_hand"];
 
   /* If a complete form is given, submit and update all IA allotments. */
   if (assigned($iaNos) && assigned($soNos) && assigned($brandCodes) && assigned($modelNos) && assigned($qtys)) {
@@ -70,16 +71,17 @@
 
   $results = query("
     SELECT
-      b.creditor_code                     AS `creditor_code`,
-      c.english_name                      AS `creditor_name`,
-      a.ia_no                             AS `ia_no`,
-      DATE_FORMAT(b.ia_date, '%d-%m-%Y')  AS `date`,
-      a.ia_index                          AS `index`,
-      d.code                              AS `brand_code`,
-      d.name                              AS `brand_name`,
-      a.model_no                          AS `model_no`,
-      a.qty                               AS `qty`,
-      a.qty - IFNULL(e.qty_allotted, 0)   AS `qty_available`
+      b.creditor_code                                                       AS `creditor_code`,
+      c.english_name                                                        AS `creditor_name`,
+      a.ia_no                                                               AS `ia_no`,
+      DATE_FORMAT(b.ia_date, '%d-%m-%Y')                                    AS `date`,
+      a.ia_index                                                            AS `index`,
+      d.code                                                                AS `brand_code`,
+      d.name                                                                AS `brand_name`,
+      a.model_no                                                            AS `model_no`,
+      a.qty                                                                 AS `qty`,
+      a.qty - IFNULL(e.qty_allotted, 0)                                     AS `qty_available`,
+      GREATEST(IFNULL(f.qty_on_hand, 0) - IFNULL(g.qty_on_reserve, 0), 0)   AS `qty_on_hand_available`
     FROM
       `ia_model` AS a
     LEFT JOIN
@@ -103,11 +105,29 @@
         `so_header` AS y
       ON x.so_no=y.so_no
       WHERE
-        x.ia_no!=\"\"
+        x.ia_no<>\"\"
         $whereSoAllotmentClause
       GROUP BY
         ia_no, brand_code, model_no) AS e
     ON a.ia_no=e.ia_no AND a.brand_code=e.brand_code AND a.model_no=e.model_no
+    LEFT JOIN
+      (SELECT
+        warehouse_code, brand_code, model_no, SUM(qty) AS `qty_on_hand`
+      FROM
+        `stock`
+      GROUP BY
+        warehouse_code, brand_code, model_no) AS f
+    ON b.warehouse_code=f.warehouse_code AND a.brand_code=f.brand_code AND a.model_no=f.model_no
+    LEFT JOIN
+      (SELECT
+        warehouse_code, brand_code, model_no, SUM(qty) AS `qty_on_reserve`
+      FROM
+        `so_allotment`
+      WHERE
+        ia_no=\"\"
+      GROUP BY
+        warehouse_code, brand_code, model_no) AS g
+    ON b.warehouse_code=g.warehouse_code AND a.brand_code=g.brand_code AND a.model_no=g.model_no
     WHERE
       b.status=\"DO\"
       $whereClause
