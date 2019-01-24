@@ -1,5 +1,5 @@
 <?php
-  define("SYSTEM_PATH", "../../../../");
+  define("SYSTEM_PATH", "../../../../../");
 
   include_once SYSTEM_PATH . "includes/php/config.php";
   include_once ROOT_PATH . "includes/php/utils.php";
@@ -20,7 +20,7 @@
         <?php foreach($invoiceHeaders as &$invoiceHeader) : ?>
           <div class="page">
             <?php include SYSTEM_PATH . "includes/components/header/index.php"; ?>
-            <div class="headline"><?php echo OUT_INVOICE_PRINTOUT_TITLE ?></div>
+            <div class="headline"><?php echo SALES_INVOICE_PRINTOUT_TITLE ?></div>
             <table class="invoice-header">
               <tr>
                 <td>Invoice No.:</td>
@@ -76,7 +76,7 @@
                   </tr>
                 </tbody>
               </table>
-            <?php else: ?>
+            <?php else : ?>
               <div class="invoice-models-no-results">No vouchers</div>
             <?php endif ?>
             <table class="invoice-footer">
@@ -89,7 +89,7 @@
             </table>
           </div>
         <?php endforeach; ?>
-      <?php else: ?>
+      <?php else : ?>
         <div id="invoice-not-found">Invoice not found</div>
       <?php endif ?>
     </div>

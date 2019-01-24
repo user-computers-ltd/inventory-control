@@ -19,7 +19,7 @@
     } else if ($action == "settle") {
       array_push($queries, "UPDATE `out_inv_header` SET status=\"PAID\" WHERE $headerWhereClause");
     } else if ($action == "print") {
-      header("Location: " . OUT_INVOICE_PRINTOUT_URL . "?$printoutParams");
+      header("Location: " . SALES_INVOICE_PRINTOUT_URL . "?$printoutParams");
       exit(0);
     }
 

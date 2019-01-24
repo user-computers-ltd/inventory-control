@@ -220,7 +220,7 @@
         </table>
       <?php elseif ($hasFilter) : ?>
         <div class="trans-client-no-results">No results</div>
-      <?php else: ?>
+      <?php else : ?>
         <div class="trans-client-no-results">Please select a date range</div>
       <?php endif ?>
     </div>

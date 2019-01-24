@@ -106,7 +106,7 @@
                   </tr>
                 </tbody>
               </table>
-            <?php else: ?>
+            <?php else : ?>
               <div class="po-models-no-results">No models</div>
             <?php endif ?>
             <table class="po-footer">
@@ -122,7 +122,7 @@
         <div class="web-only">
           <?php echo generateRedirectButton(PURCHASE_ORDER_INTERNAL_PRINTOUT_URL, "Internal printout"); ?>
         </div>
-      <?php else: ?>
+      <?php else : ?>
         <div id="po-not-found">Purchase order not found</div>
       <?php endif ?>
     </div>

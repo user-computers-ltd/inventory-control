@@ -1,5 +1,5 @@
 <?php
-  define("SYSTEM_PATH", "../../../../");
+  define("SYSTEM_PATH", "../../../../../");
 
   include_once SYSTEM_PATH . "includes/php/config.php";
   include_once ROOT_PATH . "includes/php/utils.php";
@@ -18,7 +18,7 @@
     <?php include_once ROOT_PATH . "includes/components/menu/index.php"; ?>
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
-      <div class="headline"><?php echo OUT_INVOICE_SAVED_TITLE; ?></div>
+      <div class="headline"><?php echo SALES_INVOICE_PAID_TITLE; ?></div>
       <form>
         <table id="invoice-input" class="web-only">
           <tr>
@@ -34,7 +34,7 @@
       </form>
       <?php if (count($invoiceHeaders) > 0) : ?>
         <form method="post">
-          <button type="submit" name="action" value="settle">Settle</button>
+          <button type="submit" name="action" value="unsettle">Unsettle</button>
           <button type="submit" name="action" value="print">Print</button>
           <button type="submit" name="action" value="delete">Delete</button>
           <table id="invoice-results">
@@ -83,7 +83,7 @@
                       <td class=\"web-only\"><input type=\"checkbox\" name=\"invoice_id[]\" value=\"$id\" /></td>
                       <td title=\"$date\">$date</td>
                       <td title=\"$count\" class=\"number\">$count</td>
-                      <td title=\"$invoiceNo\"><a class=\"link\" href=\"" . OUT_INVOICE_URL . "?id=$id\">$invoiceNo</a></td>
+                      <td title=\"$invoiceNo\"><a class=\"link\" href=\"" . SALES_INVOICE_PRINTOUT_URL . "?id[]=$id\">$invoiceNo</a></td>
                       <td title=\"$debtorName\">$debtorName</td>
                       <td title=\"$currencyCode\">$currencyCode</td>
                       <td title=\"$amount\" class=\"number\">" . number_format($amount, 2) . "</td>
@@ -105,7 +105,7 @@
             </tbody>
           </table>
         </form>
-      <?php else: ?>
+      <?php else : ?>
         <div class="invoice-client-no-results">No results</div>
       <?php endif ?>
     </div>

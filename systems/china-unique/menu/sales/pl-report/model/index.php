@@ -206,7 +206,7 @@
           </tbody>
         </table>
       </div>
-    <?php else: ?>
+    <?php else : ?>
       <div class="so-p-l-no-results">No results</div>
     <?php endif ?>
   </body>

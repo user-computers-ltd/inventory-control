@@ -154,7 +154,7 @@
                 </tr>
               </tbody>
             </table>
-          <?php else: ?>
+          <?php else : ?>
             <div id="do-models-no-results">No models</div>
           <?php endif ?>
           <table id="do-footer">
@@ -178,7 +178,7 @@
             <button name="status" type="submit" value="DELETED">Delete</button>
           <?php endif ?>
         </form>
-      <?php else: ?>
+      <?php else : ?>
         <div id="do-not-found"><?php echo SALES_DELIVERY_ORDER_PRINTOUT_TITLE; ?> not found</div>
       <?php endif ?>
     </div>

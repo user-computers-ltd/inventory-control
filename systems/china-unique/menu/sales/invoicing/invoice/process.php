@@ -64,7 +64,7 @@
 
     execute($queries);
 
-    header("Location: " . OUT_INVOICE_SAVED_URL);
+    header("Location: " . SALES_INVOICE_SAVED_URL);
   }
 
   $debtors = query("SELECT code, english_name AS name FROM `debtor`");
@@ -147,7 +147,7 @@
 
   /* If an id is given, attempt to retrieve an existing outbound invoice. */
   if (assigned($id)) {
-    $headline = OUT_INVOICE_PRINTOUT_TITLE;
+    $headline = SALES_INVOICE_PRINTOUT_TITLE;
 
     $invoiceHeader = query("
       SELECT
@@ -183,7 +183,7 @@
 
   /* Else, initialize values for a new outbound invoice. */
   else {
-    $headline = OUT_INVOICE_CREATE_TITLE;
+    $headline = SALES_INVOICE_CREATE_TITLE;
     $invoiceNo = "INV" . date("YmdHis");
     $invoiceDate = date("Y-m-d");
     $debtorCode = "";

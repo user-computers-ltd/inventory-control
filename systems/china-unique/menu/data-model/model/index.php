@@ -278,7 +278,7 @@
             </tr>
           </tbody>
         </table>
-      <?php else: ?>
+      <?php else : ?>
         <div class="model-no-results">No results</div>
       <?php endif ?>
     </div>

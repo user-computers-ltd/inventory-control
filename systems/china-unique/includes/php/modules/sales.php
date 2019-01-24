@@ -39,6 +39,17 @@
   define("SALES_DELIVERY_ORDER_SAVED_URL", SALES_DELIVERY_ORDER_URL . "saved/");
   define("SALES_DELIVERY_ORDER_POSTED_URL", SALES_DELIVERY_ORDER_URL . "posted/");
 
+  define("SALES_INVOICING_URL", SALES_URL . "invoicing/");
+
+  define("SALES_INVOICE_URL", SALES_INVOICING_URL . "invoice/");
+  define("SALES_INVOICE_PRINTOUT_URL", SALES_INVOICE_URL . "printout/");
+  define("SALES_INVOICE_SAVED_URL", SALES_INVOICE_URL . "saved/");
+  define("SALES_INVOICE_PAID_URL", SALES_INVOICE_URL . "paid/");
+
+  define("SALES_INVOICE_REPORT_URL", SALES_INVOICING_URL . "invoice-report/");
+  define("SALES_INVOICE_REPORT_DATE_URL", SALES_INVOICE_REPORT_URL . "date/");
+  define("SALES_INVOICE_REPORT_CUSTOMER_URL", SALES_INVOICE_REPORT_URL . "client/");
+
 
   /* Title configurations. */
   define("SALES_TITLE", "(F) Sales");
@@ -74,11 +85,21 @@
   define("SALES_ALLOTMENT_REPORT_TITLE", "(F5) Allotment Report");
   define("SALES_ALLOTMENT_REPORT_CUSTOMER_TITLE", "(F5a) Allotment Report By Client");
 
-  define("SALES_DELIVERY_ORDER_TITLE", "(F6) Delivery Order");
+  define("SALES_DELIVERY_ORDER_TITLE", "(F6) Sales Delivery Order");
   define("SALES_DELIVERY_ORDER_PRINTOUT_TITLE", "送貨單");
   define("SALES_DELIVERY_ORDER_INTERNAL_PRINTOUT_TITLE", "送貨單(內部)");
-  define("SALES_DELIVERY_ORDER_SAVED_TITLE", "(F6a) Saved Delivery Orders");
-  define("SALES_DELIVERY_ORDER_POSTED_TITLE", "(F6b) Posted Delivery Orders");
+  define("SALES_DELIVERY_ORDER_SAVED_TITLE", "(F6a) Saved Sales Delivery Orders");
+  define("SALES_DELIVERY_ORDER_POSTED_TITLE", "(F6b) Posted Sales Delivery Orders");
+
+  define("SALES_INVOICE_TITLE", "(F7) Sales Invoice");
+  define("SALES_INVOICE_PRINTOUT_TITLE", "Sales Invoice");
+  define("SALES_INVOICE_CREATE_TITLE", "(F7a) Create Sales Invoice");
+  define("SALES_INVOICE_SAVED_TITLE", "(F7b) Saved Sales Invoices");
+  define("SALES_INVOICE_PAID_TITLE", "(F7c) Paid Sales Invoices");
+
+  define("SALES_INVOICE_REPORT_TITLE", "(F8) Sales Invoice Report");
+  define("SALES_INVOICE_REPORT_DATE_TITLE", "(F8a) Sales Invoice By Date");
+  define("SALES_INVOICE_REPORT_CUSTOMER_TITLE", "(F8b) Sales Invoice By Client");
 
   $SALES_MODULE = array(
     SALES_ENQUIRY_TITLE                     => SALES_ENQUIRY_URL,
@@ -110,6 +131,15 @@
     SALES_DELIVERY_ORDER_TITLE => array(
       SALES_DELIVERY_ORDER_SAVED_TITLE      => SALES_DELIVERY_ORDER_SAVED_URL,
       SALES_DELIVERY_ORDER_POSTED_TITLE     => SALES_DELIVERY_ORDER_POSTED_URL
+    ),
+    SALES_INVOICE_TITLE => array(
+      SALES_INVOICE_CREATE_TITLE            => SALES_INVOICE_URL,
+      SALES_INVOICE_SAVED_TITLE             => SALES_INVOICE_SAVED_URL,
+      SALES_INVOICE_PAID_TITLE              => SALES_INVOICE_PAID_URL
+    ),
+    SALES_INVOICE_REPORT_TITLE => array(
+      SALES_INVOICE_REPORT_DATE_TITLE       => SALES_INVOICE_REPORT_DATE_URL,
+      SALES_INVOICE_REPORT_CUSTOMER_TITLE   => SALES_INVOICE_REPORT_CUSTOMER_URL
     )
   );
 ?>

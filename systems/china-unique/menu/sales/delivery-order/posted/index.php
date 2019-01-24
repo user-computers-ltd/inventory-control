@@ -108,7 +108,7 @@
             </tr>
           </tbody>
         </table>
-      <?php else: ?>
+      <?php else : ?>
         <div class="do-client-no-results">No results</div>
       <?php endif ?>
     </div>

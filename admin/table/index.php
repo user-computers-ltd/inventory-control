@@ -111,7 +111,7 @@
             </table>
           <?php elseif (isset($error)) : ?>
             <div id="table-query-error"><?php echo $error; ?></div>
-          <?php else: ?>
+          <?php else : ?>
             <div id="table-query-no-results">No results</div>
           <?php endif ?>
         </div>

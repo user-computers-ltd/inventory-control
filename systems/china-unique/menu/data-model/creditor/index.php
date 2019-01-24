@@ -116,7 +116,7 @@
             ?>
           </tbody>
         </table>
-      <?php else: ?>
+      <?php else : ?>
         <div class="creditor-no-results">No results</div>
       <?php endif ?>
     </div>

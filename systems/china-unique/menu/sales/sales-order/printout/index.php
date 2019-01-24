@@ -109,7 +109,7 @@
                   </tr>
                 </tbody>
               </table>
-            <?php else: ?>
+            <?php else : ?>
               <div class="so-models-no-results">No models</div>
             <?php endif ?>
             <table class="so-footer">
@@ -125,7 +125,7 @@
         <div class="web-only">
           <?php echo generateRedirectButton(SALES_ORDER_INTERNAL_PRINTOUT_URL, "Internal printout"); ?>
         </div>
-      <?php else: ?>
+      <?php else : ?>
         <div id="so-not-found">Sales order not found</div>
       <?php endif ?>
     </div>

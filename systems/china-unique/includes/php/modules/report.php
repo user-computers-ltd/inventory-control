@@ -14,17 +14,17 @@
 
 
   /* Title configurations. */
-  define("REPORT_TITLE", "(H) Management Report");
-  define("REPORT_HISTORY_LOG_TITLE", "(H1) History Log");
-  define("REPORT_STOCK_TAKE_TITLE", "(H7) Stock Take");
-  define("REPORT_STOCK_TAKE_WAREHOUSE_TITLE", "(H7a) Stock Take By Location");
-  define("REPORT_STOCK_TAKE_WAREHOUSE_DETAIL_TITLE", "(H7b) Stock Take Detail By Location");
-  define("REPORT_STOCK_TAKE_BRAND_TITLE", "(H7c) Stock Take By Brand");
-  define("REPORT_STOCK_TAKE_BRAND_DETAIL_TITLE", "(H7d) Stock Take Detail By Brand");
-  define("REPORT_STOCK_TAKE_MODEL_TITLE", "(H7e) Stock Take By Model");
-  define("REPORT_STOCK_TAKE_MODEL_DETAIL_TITLE", "(H7f) Stock Take Detail By Model");
-  define("REPORT_STOCK_OUT_TITLE", "(H8) Stock Out");
-  define("REPORT_STOCK_OUT_DATE_TITLE", "(H8a) Stock Out Report By Date");
+  define("REPORT_TITLE", "(G) Management Report");
+  define("REPORT_HISTORY_LOG_TITLE", "(G1) History Log");
+  define("REPORT_STOCK_TAKE_TITLE", "(G7) Stock Take");
+  define("REPORT_STOCK_TAKE_WAREHOUSE_TITLE", "(G7a) Stock Take By Location");
+  define("REPORT_STOCK_TAKE_WAREHOUSE_DETAIL_TITLE", "(G7b) Stock Take Detail By Location");
+  define("REPORT_STOCK_TAKE_BRAND_TITLE", "(G7c) Stock Take By Brand");
+  define("REPORT_STOCK_TAKE_BRAND_DETAIL_TITLE", "(G7d) Stock Take Detail By Brand");
+  define("REPORT_STOCK_TAKE_MODEL_TITLE", "(G7e) Stock Take By Model");
+  define("REPORT_STOCK_TAKE_MODEL_DETAIL_TITLE", "(G7f) Stock Take Detail By Model");
+  define("REPORT_STOCK_OUT_TITLE", "(G8) Stock Out");
+  define("REPORT_STOCK_OUT_DATE_TITLE", "(G8a) Stock Out Report By Date");
 
   $REPORT_MODULE = array(
     REPORT_HISTORY_LOG_TITLE => REPORT_HISTORY_LOG_URL,

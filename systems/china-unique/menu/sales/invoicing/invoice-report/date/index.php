@@ -1,5 +1,5 @@
 <?php
-  define("SYSTEM_PATH", "../../../");
+  define("SYSTEM_PATH", "../../../../../");
 
   include_once SYSTEM_PATH . "includes/php/config.php";
   include_once ROOT_PATH . "includes/php/utils.php";
@@ -18,7 +18,7 @@
     <?php include_once ROOT_PATH . "includes/components/menu/index.php"; ?>
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
-      <div class="headline"><?php echo OUT_INVOICE_REPORT_TITLE; ?></div>
+      <div class="headline"><?php echo SALES_INVOICE_REPORT_DATE_TITLE; ?></div>
       <form>
         <table id="invoice-input" class="web-only">
           <tr>
@@ -26,8 +26,8 @@
             <th>To:</th>
           </tr>
           <tr>
-            <td><input type="date" name="from" value="<?php echo $from; ?>" /></td>
-            <td><input type="date" name="to" value="<?php echo $to; ?>" /></td>
+            <td><input type="date" name="from" value="<?php echo $from; ?>" max="<?php echo date("Y-m-d"); ?>" /></td>
+            <td><input type="date" name="to" value="<?php echo $to; ?>" max="<?php echo date("Y-m-d"); ?>" /></td>
             <td><button type="submit">Go</button></td>
           </tr>
         </table>
@@ -104,7 +104,7 @@
                           <td title=\"$currency\" rowspan=\"$invoiceCount\" class=\"number\">$currency</td>
                           <td title=\"$amount\" rowspan=\"$invoiceCount\" class=\"number\">" . number_format($amount, 2) . "</td>
                           <td title=\"$invoiceAmount\" class=\"number\">" . number_format($invoiceAmount, 2) . "</td>
-                          <td title=\"$invoiceNo\"><a class=\"link\" href=\"" . OUT_INVOICE_PRINTOUT_URL . "?id[]=$invoiceId\">$invoiceNo</a></td>
+                          <td title=\"$invoiceNo\"><a class=\"link\" href=\"" . SALES_INVOICE_PRINTOUT_URL . "?id[]=$invoiceId\">$invoiceNo</a></td>
                           <td title=\"$pendingAmount\" rowspan=\"$invoiceCount\" class=\"number\">" . number_format($pendingAmount, 2) . "</td>
                         </tr>
                       ";
@@ -112,7 +112,7 @@
                       echo "
                         <tr>
                           <td title=\"$invoiceAmount\" class=\"number\">" . number_format($invoiceAmount, 2) . "</td>
-                          <td title=\"$invoiceNo\"><a class=\"link\" href=\"" . OUT_INVOICE_PRINTOUT_URL . "?id[]=$invoiceId\">$invoiceNo</a></td>
+                          <td title=\"$invoiceNo\"><a class=\"link\" href=\"" . SALES_INVOICE_PRINTOUT_URL . "?id[]=$invoiceId\">$invoiceNo</a></td>
                         </tr>
                       ";
                     }
@@ -133,7 +133,7 @@
             </tbody>
           </table>
         </form>
-      <?php else: ?>
+      <?php else : ?>
         <div class="invoice-model-no-results">No results</div>
       <?php endif ?>
     </div>

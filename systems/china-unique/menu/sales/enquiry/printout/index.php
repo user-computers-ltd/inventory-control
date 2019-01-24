@@ -128,7 +128,7 @@
               </tr>
             </tbody>
           </table>
-        <?php else: ?>
+        <?php else : ?>
           <div class="enquiry-models-no-results">No models</div>
         <?php endif ?>
         <table class="enquiry-footer">

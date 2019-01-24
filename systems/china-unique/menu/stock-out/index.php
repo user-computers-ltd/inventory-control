@@ -623,7 +623,7 @@
             onTransactionCodeChange();
           }
         </script>
-      <?php else: ?>
+      <?php else : ?>
         <div id="stock-out-entry-not-found">Stock in voucher not found</div>
       <?php endif ?>
     </div>

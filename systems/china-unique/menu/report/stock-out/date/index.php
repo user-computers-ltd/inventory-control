@@ -26,8 +26,8 @@
             <th>To:</th>
           </tr>
           <tr>
-            <td><input type="date" name="from" value="<?php echo $from; ?>" /></td>
-            <td><input type="date" name="to" value="<?php echo $to; ?>" /></td>
+            <td><input type="date" name="from" value="<?php echo $from; ?>" max="<?php echo date("Y-m-d"); ?>" /></td>
+            <td><input type="date" name="to" value="<?php echo $to; ?>" max="<?php echo date("Y-m-d"); ?>" /></td>
             <td><button type="submit">Go</button></td>
           </tr>
         </table>
@@ -123,7 +123,7 @@
             </tr>
           </tbody>
         </table>
-      <?php else: ?>
+      <?php else : ?>
         <div class="invoice-model-no-results">No results</div>
       <?php endif ?>
     </div>

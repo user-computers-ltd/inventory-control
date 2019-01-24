@@ -136,7 +136,7 @@
                   </tr>
                 </tbody>
               </table>
-            <?php else: ?>
+            <?php else : ?>
               <div class="do-models-no-results">No models</div>
             <?php endif ?>
             <table class="do-footer">
@@ -161,7 +161,7 @@
         <div class="web-only">
           <?php echo generateRedirectButton(SALES_DELIVERY_ORDER_PRINTOUT_URL, "External printout"); ?>
         </div>
-      <?php else: ?>
+      <?php else : ?>
         <div id="do-not-found">Delivery order not found</div>
       <?php endif ?>
     </div>

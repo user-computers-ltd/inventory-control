@@ -34,7 +34,7 @@
                 <td>
                   <?php if ($editMode) : ?>
                     <input type="text" name="brand_code" value="<?php echo $brandCode; ?>" <?php echo $editMode ? "readonly" : ""; ?> required />
-                  <?php else: ?>
+                  <?php else : ?>
                     <select name="brand_code" required>
                       <?php
                         foreach ($brands as $brand) {
@@ -100,7 +100,7 @@
           </table>
           <button type="submit"><?php echo $editMode ? "Edit" : "Create"; ?></button>
         </form>
-      <?php else: ?>
+      <?php else : ?>
         <div class="model-no-result">Model not found</div>
       <?php endif ?>
     </div>

@@ -217,7 +217,7 @@
             }
           ?>
         </form>
-      <?php else: ?>
+      <?php else : ?>
         <div class="ia-no-results">No results</div>
       <?php endif ?>
     </div>

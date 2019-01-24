@@ -140,7 +140,7 @@
                   </tr>
                 </table>
               <?php endif ?>
-            <?php else: ?>
+            <?php else : ?>
               <div class="stock-out-models-no-results">No models</div>
             <?php endif ?>
             <table class="stock-out-footer">
@@ -159,7 +159,7 @@
             </table>
           </div>
         <?php endforeach; ?>
-      <?php else: ?>
+      <?php else : ?>
         <div id="stock-out-not-found">Stock out voucher not found</div>
       <?php endif ?>
     </div>

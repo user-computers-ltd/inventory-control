@@ -519,7 +519,7 @@
             render();
           }
         </script>
-      <?php else: ?>
+      <?php else : ?>
         <div id="so-entry-not-found">Sales order not found</div>
       <?php endif ?>
     </div>

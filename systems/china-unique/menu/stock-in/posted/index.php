@@ -121,7 +121,7 @@
             </tbody>
           </table>
         </form>
-      <?php else: ?>
+      <?php else : ?>
         <div class="stock-in-client-no-results">No results</div>
       <?php endif ?>
     </div>

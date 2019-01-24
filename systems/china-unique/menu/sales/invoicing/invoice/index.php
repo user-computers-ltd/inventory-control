@@ -1,5 +1,5 @@
 <?php
-  define("SYSTEM_PATH", "../../../");
+  define("SYSTEM_PATH", "../../../../");
 
   include_once SYSTEM_PATH . "includes/php/config.php";
   include_once ROOT_PATH . "includes/php/utils.php";
@@ -105,7 +105,7 @@
           <?php if ($status == "SAVED") : ?>
             <button name="status" type="submit" value="PAID">Settle</button>
           <?php endif ?>
-          <button name="status" type="submit" value="<?php echo $status; ?>" formaction="<?php echo OUT_INVOICE_PRINTOUT_URL; ?>">Print</button>
+          <button name="status" type="submit" value="<?php echo $status; ?>" formaction="<?php echo SALES_INVOICE_PRINTOUT_URL; ?>">Print</button>
           <?php if ($status == "SAVED" || $status == "PAID") : ?>
             <button name="status" type="submit" value="DELETED">Delete</button>
           <?php endif ?>
@@ -454,7 +454,7 @@
             render();
           }
         </script>
-      <?php else: ?>
+      <?php else : ?>
         <div id="invoice-entry-not-found">Invoice not found</div>
       <?php endif ?>
     </div>

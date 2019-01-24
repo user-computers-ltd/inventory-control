@@ -4,7 +4,6 @@
   include_once "modules/stock-out.php";
   include_once "modules/purchase.php";
   include_once "modules/sales.php";
-  include_once "modules/outbound-invoicing.php";
   include_once "modules/report.php";
 
   /* Sitemap configuration. */
@@ -14,7 +13,6 @@
     STOCK_OUT_TITLE       => $STOCK_OUT_MODULE,
     PURCHASE_TITLE        => $PURCHASE_MODULE,
     SALES_TITLE           => $SALES_MODULE,
-    OUT_INVOICING_TITLE   => $OUT_INVOICING_MODULE,
     REPORT_TITLE          => $REPORT_MODULE
   );
 ?>
