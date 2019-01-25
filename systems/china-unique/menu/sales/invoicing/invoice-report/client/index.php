@@ -23,11 +23,11 @@
       $qty = $header["qty"];
       $currency = $header["currency"];
       $amount = $header["amount"];
+      $pending = $header["pending"];
       $invoiceAmounts = explode(",", $header["invoice_amounts"]);
       $invoiceNos = explode(",", $header["invoice_nos"]);
       $invoiceIds = explode(",", $header["invoice_ids"]);
       $invoiceCount = count($invoiceAmounts);
-      $pendingAmount = $amount - array_sum($invoiceAmounts);
 
       $total["qty"] += $qty;
 
@@ -53,7 +53,7 @@
               <td title=\"$amount\" rowspan=\"$invoiceCount\" class=\"number\">" . number_format($amount, 2) . "</td>
               <td title=\"$invoiceAmount\" class=\"number\">" . number_format($invoiceAmount, 2) . "</td>
               <td title=\"$invoiceNo\"><a class=\"link\" href=\"" . SALES_INVOICE_PRINTOUT_URL . "?id[]=$invoiceId\">$invoiceNo</a></td>
-              <td title=\"$pendingAmount\" rowspan=\"$invoiceCount\" class=\"number\">" . number_format($pendingAmount, 2) . "</td>
+              <td title=\"$pending\" rowspan=\"$invoiceCount\" class=\"number\">" . number_format($pending, 2) . "</td>
             </tr>
           ";
         } else {

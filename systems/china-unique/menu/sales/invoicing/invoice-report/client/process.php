@@ -27,9 +27,9 @@
 
   if (assigned($period)) {
     $doWhereClause = $doWhereClause . "
-      AND a.do_date < \"$period-01\" AND d.invoice_nos IS NULL";
+      AND a.do_date < \"$period-01\" AND (IFNULL(b.amount, 0) * (100 - a.discount) / 100) - IFNULL(d.invoice_sum, 0) > 0";
     $stockOutWhereClause = $stockOutWhereClause . "
-      AND a.stock_out_date  < \"$period-01\" AND d.invoice_nos IS NULL";
+      AND a.stock_out_date  < \"$period-01\" AND (IFNULL(b.amount, 0) * (100 - a.discount) / 100) - IFNULL(d.invoice_sum, 0) > 0";
   }
 
   if (assigned($debtorCodes) && count($debtorCodes) > 0) {
@@ -55,8 +55,7 @@
       IFNULL(b.qty, 0)                                                              AS `qty`,
       a.currency_code                                                               AS `currency`,
       IFNULL(b.amount, 0) * (100 - a.discount) / 100                                AS `amount`,
-      IFNULL(b.amount, 0) * a.exchange_rate * (100 - a.discount) / (100 + a.tax)    AS `net`,
-      IFNULL(b.cost, 0)                                                             AS `cost`,
+      (IFNULL(b.amount, 0) * (100 - a.discount) / 100) - IFNULL(d.invoice_sum, 0)   AS `pending`,
       IFNULL(d.invoice_amounts, \"\")                                               AS `invoice_amounts`,
       IFNULL(d.invoice_nos, \"\")                                                   AS `invoice_nos`,
       IFNULL(d.invoice_ids, \"\")                                                   AS `invoice_ids`
@@ -85,6 +84,7 @@
         x.do_no                     AS `do_no`,
         GROUP_CONCAT(y.id)          AS `invoice_ids`,
         GROUP_CONCAT(x.invoice_no)  AS `invoice_nos`,
+        SUM(x.amount)               AS `invoice_sum`,
         GROUP_CONCAT(x.amount)      AS `invoice_amounts`
       FROM
         `out_inv_model` AS x
@@ -111,8 +111,7 @@
       IFNULL(b.qty, 0)                                                              AS `qty`,
       a.currency_code                                                               AS `currency`,
       IFNULL(b.amount, 0) * (100 - a.discount) / 100                                AS `amount`,
-      IFNULL(b.amount, 0) * a.exchange_rate * (100 - a.discount) / (100 + a.tax)    AS `net`,
-      IFNULL(b.cost, 0)                                                             AS `cost`,
+      (IFNULL(b.amount, 0) * (100 - a.discount) / 100) - IFNULL(d.invoice_sum, 0)   AS `pending`,
       IFNULL(d.invoice_amounts, \"\")                                               AS `invoice_amounts`,
       IFNULL(d.invoice_nos, \"\")                                                   AS `invoice_nos`,
       IFNULL(d.invoice_ids, \"\")                                                   AS `invoice_ids`
@@ -141,6 +140,7 @@
         x.stock_out_no              AS `stock_out_no`,
         GROUP_CONCAT(y.id)          AS `invoice_ids`,
         GROUP_CONCAT(x.invoice_no)  AS `invoice_nos`,
+        SUM(x.amount)               AS `invoice_sum`,
         GROUP_CONCAT(x.amount)      AS `invoice_amounts`
       FROM
         `out_inv_model` AS x
@@ -205,8 +205,7 @@
       IFNULL(b.qty, 0)                                                              AS `qty`,
       a.currency_code                                                               AS `currency`,
       IFNULL(b.amount, 0) * (100 - a.discount) / 100                                AS `amount`,
-      IFNULL(b.amount, 0) * a.exchange_rate * (100 - a.discount) / (100 + a.tax)    AS `net`,
-      IFNULL(b.cost, 0)                                                             AS `cost`,
+      (IFNULL(b.amount, 0) * (100 - a.discount) / 100) - IFNULL(d.invoice_sum, 0)   AS `pending`,
       IFNULL(d.invoice_amounts, \"\")                                               AS `invoice_amounts`,
       IFNULL(d.invoice_nos, \"\")                                                   AS `invoice_nos`,
       IFNULL(d.invoice_ids, \"\")                                                   AS `invoice_ids`
@@ -235,6 +234,7 @@
         x.do_no                     AS `do_no`,
         GROUP_CONCAT(y.id)          AS `invoice_ids`,
         GROUP_CONCAT(x.invoice_no)  AS `invoice_nos`,
+        SUM(x.amount)               AS `invoice_sum`,
         GROUP_CONCAT(x.amount)      AS `invoice_amounts`
       FROM
         `out_inv_model` AS x
@@ -261,8 +261,7 @@
       IFNULL(b.qty, 0)                                                              AS `qty`,
       a.currency_code                                                               AS `currency`,
       IFNULL(b.amount, 0) * (100 - a.discount) / 100                                AS `amount`,
-      IFNULL(b.amount, 0) * a.exchange_rate * (100 - a.discount) / (100 + a.tax)    AS `net`,
-      IFNULL(b.cost, 0)                                                             AS `cost`,
+      (IFNULL(b.amount, 0) * (100 - a.discount) / 100) - IFNULL(d.invoice_sum, 0)   AS `pending`,
       IFNULL(d.invoice_amounts, \"\")                                               AS `invoice_amounts`,
       IFNULL(d.invoice_nos, \"\")                                                   AS `invoice_nos`,
       IFNULL(d.invoice_ids, \"\")                                                   AS `invoice_ids`
@@ -291,6 +290,7 @@
         x.stock_out_no              AS `stock_out_no`,
         GROUP_CONCAT(y.id)          AS `invoice_ids`,
         GROUP_CONCAT(x.invoice_no)  AS `invoice_nos`,
+        SUM(x.amount)               AS `invoice_sum`,
         GROUP_CONCAT(x.amount)      AS `invoice_amounts`
       FROM
         `out_inv_model` AS x
