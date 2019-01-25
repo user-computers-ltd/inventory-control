@@ -354,7 +354,6 @@
                   + "onblur=\"onFieldBlurred()\" "
                   + "onkeydown=\"onPriceKeyDown(event, " + i + ")\" "
                   + "required "
-                  + (showPrice ? "" : "disabled")
                 + "/>"
               + "</td>"
               + "<td class=\"total-amount number\">" + soModel["total_amount"].toFixed(2) + "</td>"
@@ -480,10 +479,6 @@
 
           for (var i = 0; i < optionRows.length; i++) {
             toggleClass(optionRows[i], "hide", !showPrice);
-          }
-
-          for (var i = 0; i < optionFields.length; i++) {
-            optionFields[i].disabled = !showPrice;
           }
 
           for (var i = 0; i < optionColumns.length; i++) {
