@@ -96,7 +96,7 @@
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo REPORT_HISTORY_LOG_TITLE; ?></div>
       <form>
-        <table id="trans-input" class="web-only">
+        <table id="trans-input">
           <tr>
             <th>From:</th>
             <th>To:</th>
@@ -105,12 +105,24 @@
             <th>Transaction Code:</th>
           </tr>
           <tr>
-            <td><input type="date" name="from" value="<?php echo $from; ?>" max="<?php echo date("Y-m-d"); ?>" /></td>
-            <td><input type="date" name="to" value="<?php echo $to; ?>" max="<?php echo date("Y-m-d"); ?>" /></td>
-            <td><input type="text" name="brand_code" value="<?php echo $brandCode; ?>" /></td>
-            <td><input type="text" name="model_no" value="<?php echo $modelNo; ?>" /></td>
             <td>
-              <select name="transaction_code">
+              <input type="date" name="from" value="<?php echo $from; ?>" max="<?php echo date("Y-m-d"); ?>" class="web-only" />
+              <span class="print-only"><?php echo assigned($from) ? $from : "-"; ?></span>
+            </td>
+            <td>
+              <input type="date" name="to" value="<?php echo $to; ?>" max="<?php echo date("Y-m-d"); ?>" class="web-only" />
+              <span class="print-only"><?php echo assigned($to) ? $to : "-"; ?></span>
+            </td>
+            <td>
+              <input type="text" name="brand_code" value="<?php echo $brandCode; ?>" class="web-only" />
+              <span class="print-only"><?php echo assigned($brandCode) ? $brandCode : "-"; ?></span>
+            </td>
+            <td>
+              <input type="text" name="model_no" value="<?php echo $modelNo; ?>" class="web-only" />
+              <span class="print-only"><?php echo assigned($modelNo) ? $modelNo : "-"; ?></span>
+            </td>
+            <td>
+              <select name="transaction_code" class="web-only">
                 <option value=""></option>
                 <?php
                   foreach ($TRANSACTION_CODES as $code => $desc) {
@@ -119,6 +131,7 @@
                   }
                 ?>
               </select>
+              <span class="print-only"><?php echo assigned($transactionCode) ? $transactionCode : "-"; ?></span>
             </td>
             <td><button type="submit">Go</button></td>
           </tr>

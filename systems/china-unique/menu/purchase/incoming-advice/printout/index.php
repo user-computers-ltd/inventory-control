@@ -78,7 +78,7 @@
                   </tr>
                 </tbody>
               </table>
-            <?php else: ?>
+            <?php else : ?>
               <div class="ia-models-no-results">No models</div>
             <?php endif ?>
             <table class="ia-footer">
@@ -91,7 +91,7 @@
             </table>
           </div>
         <?php endforeach; ?>
-      <?php else: ?>
+      <?php else : ?>
         <div id="ia-not-found">Incoming advice not found</div>
       <?php endif ?>
     </div>

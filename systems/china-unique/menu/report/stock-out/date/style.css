@@ -1,15 +1,15 @@
-#invoice-input td {
+#stock-out-input td {
   border: none;
   font-size: 13px;
 }
 
-#invoice-input input,
-#invoice-input select {
+#stock-out-input input,
+#stock-out-input select {
   width: 100%;
   box-sizing: border-box;
 }
 
-#invoice-results td {
+#stock-out-results td {
   min-width: 0px;
   max-width: 0px;
   white-space: nowrap;
@@ -17,16 +17,16 @@
   text-overflow: ellipsis;
 }
 
-#invoice-results .number {
+#stock-out-results .number {
   text-align: right;
 }
 
-#invoice-results input[type="checkbox"] {
+#stock-out-results input[type="checkbox"] {
   margin: 0px;
   height: 10px;
 }
 
-.invoice-model-no-results {
+.stock-out-model-no-results {
   margin: 100px 0px;
   text-align: center;
   font-size: 40px;

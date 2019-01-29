@@ -20,20 +20,26 @@
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo REPORT_STOCK_OUT_DATE_TITLE; ?></div>
       <form>
-        <table id="invoice-input" class="web-only">
+        <table id="stock-out-input">
           <tr>
             <th>From:</th>
             <th>To:</th>
           </tr>
           <tr>
-            <td><input type="date" name="from" value="<?php echo $from; ?>" max="<?php echo date("Y-m-d"); ?>" /></td>
-            <td><input type="date" name="to" value="<?php echo $to; ?>" max="<?php echo date("Y-m-d"); ?>" /></td>
+            <td>
+              <input type="date" name="from" value="<?php echo $from; ?>" max="<?php echo date("Y-m-d"); ?>" class="web-only" />
+              <span class="print-only"><?php echo assigned($from) ? $from : "-"; ?></span>
+            </td>
+            <td>
+              <input type="date" name="to" value="<?php echo $to; ?>" max="<?php echo date("Y-m-d"); ?>" class="web-only" />
+              <span class="print-only"><?php echo assigned($to) ? $to : "-"; ?></span>
+            </td>
             <td><button type="submit">Go</button></td>
           </tr>
         </table>
       </form>
       <?php if (count($incomeHeaders) > 0) : ?>
-        <table id="invoice-results">
+        <table id="stock-out-results">
           <colgroup>
             <col style="width: 70px">
             <col style="width: 30px">
@@ -124,7 +130,7 @@
           </tbody>
         </table>
       <?php else : ?>
-        <div class="invoice-model-no-results">No results</div>
+        <div class="stock-out-model-no-results">No results</div>
       <?php endif ?>
     </div>
   </body>
