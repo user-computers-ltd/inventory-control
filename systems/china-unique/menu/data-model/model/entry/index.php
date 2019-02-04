@@ -87,11 +87,11 @@
             </tr>
             <tr>
               <td>End User Price (廠價):</td>
-              <td><input type="number" name="wholesale_special" step="0.00000001" min="0" value="<?php echo $wholesaleNormal; ?>" required /></td>
+              <td><input type="number" name="wholesale_special" step="0.00000001" min="0" value="<?php echo $wholesaleSpecial; ?>" required /></td>
             </tr>
             <tr>
               <td>Wholesale Price (批發價):</td>
-              <td><input type="number" name="wholesale_normal" step="0.00000001" min="0" value="<?php echo $wholesaleSpecial; ?>" required /></td>
+              <td><input type="number" name="wholesale_normal" step="0.00000001" min="0" value="<?php echo $wholesaleNormal; ?>" required /></td>
             </tr>
             <tr>
               <td>Average Cost:</td>
