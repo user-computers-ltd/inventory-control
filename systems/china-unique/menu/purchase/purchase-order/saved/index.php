@@ -118,7 +118,7 @@
             </tbody>
           </table>
         </form>
-      <?php else: ?>
+      <?php else : ?>
         <div class="po-supplier-no-results">No results</div>
       <?php endif ?>
     </div>
