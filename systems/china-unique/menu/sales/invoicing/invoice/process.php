@@ -95,8 +95,8 @@
 
       $stockOutResults = query("
         SELECT
-          a.stock_out_no  AS `stock_out_no`,
-          b.amount        AS `amount`
+          a.stock_out_no                      AS `stock_out_no`,
+          b.amount * (100 - a.discount) / 100 AS `amount`
         FROM
           `stock_out_header` AS a
         LEFT JOIN
@@ -116,8 +116,8 @@
 
       $doResults = query("
         SELECT
-          a.do_no         AS `do_no`,
-          b.amount        AS `amount`
+          a.do_no                             AS `do_no`,
+          b.amount * (100 - a.discount) / 100 AS `amount`
         FROM
           `sdo_header` AS a
         LEFT JOIN
