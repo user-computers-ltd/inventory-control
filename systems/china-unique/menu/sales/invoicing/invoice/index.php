@@ -121,13 +121,16 @@
                   . "\">" . $voucher["stock_out_no"] . "</option>";
               }
               echo "</datalist>";
-
+            }
+          }
+          foreach ($deliveryOrders as $dCode => $orderList) {
+            foreach ($orderList as $cCode => $orders) {
               echo "<datalist id=\"delivery-order-list-$dCode-$cCode\">";
-              foreach ($deliveryOrders[$dCode][$cCode] as $voucher) {
-                echo "<option value=\"" . $voucher["do_no"]
-                  . "\" data-do_no=\"" . $voucher["do_no"]
-                  . "\" data-amount=\"" . $voucher["amount"]
-                  . "\">" . $voucher["do_no"] . "</option>";
+              foreach ($orders as $order) {
+                echo "<option value=\"" . $order["do_no"]
+                  . "\" data-do_no=\"" . $order["do_no"]
+                  . "\" data-amount=\"" . $order["amount"]
+                  . "\">" . $order["do_no"] . "</option>";
               }
               echo "</datalist>";
             }
