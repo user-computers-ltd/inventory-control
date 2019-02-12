@@ -117,7 +117,7 @@
               foreach ($vouchers as $voucher) {
                 echo "<option value=\"" . $voucher["stock_out_no"]
                   . "\" data-stock_out_no=\"" . $voucher["stock_out_no"]
-                  . "\" data-amount=\"" . $voucher["amount"]
+                  . "\" data-amount=\"" . round($order["amount"], 2)
                   . "\">" . $voucher["stock_out_no"] . "</option>";
               }
               echo "</datalist>";
@@ -129,7 +129,7 @@
               foreach ($orders as $order) {
                 echo "<option value=\"" . $order["do_no"]
                   . "\" data-do_no=\"" . $order["do_no"]
-                  . "\" data-amount=\"" . $order["amount"]
+                  . "\" data-amount=\"" . round($order["amount"], 2)
                   . "\">" . $order["do_no"] . "</option>";
               }
               echo "</datalist>";
