@@ -117,7 +117,7 @@
               foreach ($vouchers as $voucher) {
                 echo "<option value=\"" . $voucher["stock_out_no"]
                   . "\" data-stock_out_no=\"" . $voucher["stock_out_no"]
-                  . "\" data-amount=\"" . round($order["amount"], 2)
+                  . "\" data-amount=\"" . round($voucher["amount"], 2)
                   . "\">" . $voucher["stock_out_no"] . "</option>";
               }
               echo "</datalist>";
