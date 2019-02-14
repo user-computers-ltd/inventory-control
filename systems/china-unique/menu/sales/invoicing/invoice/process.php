@@ -95,8 +95,8 @@
 
       $stockOutResults = query("
         SELECT
-          a.stock_out_no                      AS `stock_out_no`,
-          b.amount * (100 - a.discount) / 100 AS `amount`
+          a.stock_out_no                                          AS `stock_out_no`,
+          (b.amount * (100 - a.discount) / 100) - c.paid_amount   AS `amount`
         FROM
           `stock_out_header` AS a
         LEFT JOIN
@@ -108,6 +108,19 @@
           GROUP BY
             stock_out_no) AS b
         ON a.stock_out_no=b.stock_out_no
+        LEFT JOIN
+          (SELECT
+            stock_out_no      AS `stock_out_no`,
+            SUM(amount)       AS `paid_amount`
+          FROM
+            `out_inv_model` AS m
+          LEFT JOIN
+            `out_inv_header` AS h
+          ON
+            m.invoice_no=h.invoice_no WHERE h.id!=\"$id\"
+          GROUP BY
+            stock_out_no) AS c
+        ON a.stock_out_no=c.stock_out_no
         WHERE
           a.status=\"POSTED\" AND
           a.debtor_code=\"$dCode\" AND
@@ -116,8 +129,8 @@
 
       $doResults = query("
         SELECT
-          a.do_no                             AS `do_no`,
-          b.amount * (100 - a.discount) / 100 AS `amount`
+          a.do_no                                                 AS `do_no`,
+          (b.amount * (100 - a.discount) / 100) - c.paid_amount   AS `amount`
         FROM
           `sdo_header` AS a
         LEFT JOIN
@@ -129,6 +142,19 @@
           GROUP BY
             do_no) AS b
         ON a.do_no=b.do_no
+        LEFT JOIN
+          (SELECT
+            do_no             AS `do_no`,
+            SUM(amount)       AS `paid_amount`
+          FROM
+            `out_inv_model` AS m
+          LEFT JOIN
+            `out_inv_header` AS h
+          ON
+            m.invoice_no=h.invoice_no WHERE h.id!=\"$id\"
+          GROUP BY
+            do_no) AS c
+        ON a.do_no=c.do_no
         WHERE
           a.status=\"POSTED\" AND
           a.debtor_code=\"$dCode\" AND
