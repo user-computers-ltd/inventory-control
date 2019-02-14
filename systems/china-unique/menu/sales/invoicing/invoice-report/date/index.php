@@ -38,26 +38,28 @@
             <colgroup>
               <col style="width: 70px">
               <col>
-              <col style="width: 80px">
-              <col style="width: 80px">
-              <col style="width: 60px">
-              <col style="width: 80px">
-              <col style="width: 80px">
-              <col style="width: 120px">
-              <col style="width: 80px">
+              <col style="width: 70px">
+              <col style="width: 70px">
+              <col style="width: 70px">
+              <col style="width: 70px">
+              <col style="width: 70px">
+              <col style="width: 70px">
+              <col style="width: 70px">
             </colgroup>
             <thead>
               <tr></tr>
               <tr>
                 <th>Date</th>
+                <th>Code</th>
+                <th>Customer</th>
                 <th>DO No. / Stock Out No.</th>
-                <th>Client</th>
                 <th class="number">Qty</th>
-                <th class="number">Currency</th>
-                <th class="number">Amount</th>
+                <th class="number">Actual Cost (Exc. Tax)</th>
+                <th class="number">Net Sales Amount (Exc. Tax)</th>
+                <th class="number">PM %</th>
+                <th class="number">Total Sales Amt (Inc. Tax)</th>
                 <th class="number">Inv. Amount</th>
                 <th>Invoice No.</th>
-                <th class="number">Pending</th>
               </tr>
             </thead>
             <tbody>
@@ -71,9 +73,12 @@
                   $doNo = $incomeHeader["do_no"];
                   $stockOutId = $incomeHeader["stock_out_id"];
                   $stockOutNo = $incomeHeader["stock_out_no"];
+                  $debtorCode = $incomeHeader["debtor_code"];
                   $debtorName = $incomeHeader["debtor_name"];
                   $qty = $incomeHeader["qty"];
-                  $currency = $incomeHeader["currency"];
+                  $cost = $incomeHeader["cost"];
+                  $net = $incomeHeader["net"];
+                  $profit = ($net - $cost) / $cost * 100;
                   $amount = $incomeHeader["amount"];
                   $invoiceAmounts = explode(",", $incomeHeader["invoice_amounts"]);
                   $invoiceNos = explode(",", $incomeHeader["invoice_nos"]);
@@ -98,14 +103,16 @@
                       echo "
                         <tr>
                           <td title=\"$date\" rowspan=\"$invoiceCount\">$date</td>
-                          $voucherColumn
+                          <td title=\"$debtorCode\" rowspan=\"$invoiceCount\">$debtorCode</td>
                           <td title=\"$debtorName\" rowspan=\"$invoiceCount\">$debtorName</td>
+                          $voucherColumn
                           <td title=\"$qty\" rowspan=\"$invoiceCount\" class=\"number\">" . number_format($qty) . "</td>
-                          <td title=\"$currency\" rowspan=\"$invoiceCount\" class=\"number\">$currency</td>
+                          <td title=\"$cost\" rowspan=\"$invoiceCount\" class=\"number\">" . number_format($cost, 2) . "</td>
+                          <td title=\"$net\" rowspan=\"$invoiceCount\" class=\"number\">" . number_format($net, 2) . "</td>
+                          <td title=\"$profit\" rowspan=\"$invoiceCount\" class=\"number\">" . number_format($profit, 2) . "%</td>
                           <td title=\"$amount\" rowspan=\"$invoiceCount\" class=\"number\">" . number_format($amount, 2) . "</td>
                           <td title=\"$invoiceAmount\" class=\"number\">" . number_format($invoiceAmount, 2) . "</td>
                           <td title=\"$invoiceNo\"><a class=\"link\" href=\"" . SALES_INVOICE_PRINTOUT_URL . "?id[]=$invoiceId\">$invoiceNo</a></td>
-                          <td title=\"$pendingAmount\" rowspan=\"$invoiceCount\" class=\"number\">" . number_format($pendingAmount, 2) . "</td>
                         </tr>
                       ";
                     } else {
@@ -122,8 +129,9 @@
               <tr>
                 <th></th>
                 <th></th>
-                <th class="number">Total:</th>
-                <th class="number"><?php echo number_format($totalQty); ?></th>
+                <th></th>
+                <th></th>
+                <th></th>
                 <th></th>
                 <th></th>
                 <th></th>

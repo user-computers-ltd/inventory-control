@@ -30,11 +30,12 @@
       a.do_no                                                                       AS `do_no`,
       \"\"                                                                          AS `stock_out_id`,
       \"\"                                                                          AS `stock_out_no`,
+      a.debtor_code                                                                 AS `debtor_code`,
       IFNULL(c.english_name, 'Unknown')                                             AS `debtor_name`,
       IFNULL(b.qty, 0)                                                              AS `qty`,
       a.currency_code                                                               AS `currency`,
       IFNULL(b.amount, 0) * (100 - a.discount) / 100                                AS `amount`,
-      IFNULL(b.amount, 0) * a.exchange_rate * (100 - a.discount) / (100 + a.tax)    AS `net`,
+      IFNULL(b.amount, 0) * (100 - a.discount) / (100 + a.tax)                      AS `net`,
       IFNULL(b.cost, 0)                                                             AS `cost`,
       IFNULL(d.invoice_amounts, \"\")                                               AS `invoice_amounts`,
       IFNULL(d.invoice_nos, \"\")                                                   AS `invoice_nos`,
@@ -85,11 +86,12 @@
       \"\"                                                                          AS `do_no`,
       a.id                                                                          AS `stock_out_id`,
       a.stock_out_no                                                                AS `stock_out_no`,
+      a.debtor_code                                                                 AS `debtor_code`,
       IFNULL(c.english_name, 'Unknown')                                             AS `debtor_name`,
       IFNULL(b.qty, 0)                                                              AS `qty`,
       a.currency_code                                                               AS `currency`,
       IFNULL(b.amount, 0) * (100 - a.discount) / 100                                AS `amount`,
-      IFNULL(b.amount, 0) * a.exchange_rate * (100 - a.discount) / (100 + a.tax)    AS `net`,
+      IFNULL(b.amount, 0) * (100 - a.discount) / (100 + a.tax)                      AS `net`,
       IFNULL(b.cost, 0)                                                             AS `cost`,
       IFNULL(d.invoice_amounts, \"\")                                               AS `invoice_amounts`,
       IFNULL(d.invoice_nos, \"\")                                                   AS `invoice_nos`,
@@ -132,6 +134,7 @@
       a.status=\"POSTED\" AND (a.transaction_code=\"S1\" OR a.transaction_code=\"S2\")
       $stockOutWhereClause
     ORDER BY
+      debtor_code ASC,
       date_ ASC
   ");
 ?>
