@@ -22,19 +22,39 @@
       <form>
         <table id="invoice-input" class="web-only">
           <tr>
-            <th>From:</th>
-            <th>To:</th>
+            <th>Period:</th>
+            <th>Client:</th>
           </tr>
           <tr>
-            <td><input type="date" name="from" value="<?php echo $from; ?>" max="<?php echo date("Y-m-d"); ?>" /></td>
-            <td><input type="date" name="to" value="<?php echo $to; ?>" max="<?php echo date("Y-m-d"); ?>" /></td>
+            <td>
+              <select name="period">
+                <?php
+                  foreach ($periods as $p) {
+                    $selected = $period === $p ? "selected" : "";
+                    echo "<option value=\"$p\" $selected>$p</option>";
+                  }
+                ?>
+              </select>
+            <td>
+              <select name="debtor_code[]" multiple>
+                <?php
+                  foreach ($debtors as $debtor) {
+                    $code = $debtor["code"];
+                    $name = $debtor["name"];
+                    $selected = assigned($debtorCodes) && in_array($code, $debtorCodes) ? "selected" : "";
+                    echo "<option value=\"$code\" $selected>$code - $name</option>";
+                  }
+                ?>
+              </select>
+            </td>
             <td><button type="submit">Go</button></td>
           </tr>
         </table>
       </form>
       <?php if (count($incomeHeaders) > 0) : ?>
-        <form method="post">
-          <table id="invoice-results">
+        <?php foreach ($incomeHeaders as $currency => &$headers) : ?>
+          <h4><?php echo $currency; ?></h4>
+          <table class="invoice-results">
             <colgroup>
               <col style="width: 70px">
               <col>
@@ -65,9 +85,18 @@
             <tbody>
               <?php
                 $totalQty = 0;
+                $totalCost = 0;
+                $totalNet = 0;
+                $averagePM = 0;
+                $totalSales = 0;
+                $totalInvAmount = 0;
+                $previousPending = 0;
+                $currentPending = 0;
+                $previousIssued = 0;
+                $currentIssued = 0;
 
-                for ($i = 0; $i < count($incomeHeaders); $i++) {
-                  $incomeHeader = $incomeHeaders[$i];
+                for ($i = 0; $i < count($headers); $i++) {
+                  $incomeHeader = $headers[$i];
                   $date = $incomeHeader["date"];
                   $doId = $incomeHeader["do_id"];
                   $doNo = $incomeHeader["do_no"];
@@ -79,19 +108,30 @@
                   $cost = $incomeHeader["cost"];
                   $net = $incomeHeader["net"];
                   $profit = ($net - $cost) / $cost * 100;
-                  $amount = $incomeHeader["amount"];
+                  $amount = $incomeHeader["pending"];
                   $invoiceAmounts = explode(",", $incomeHeader["invoice_amounts"]);
+                  $invoiceDates = explode(",", $incomeHeader["invoice_dates"]);
                   $invoiceNos = explode(",", $incomeHeader["invoice_nos"]);
                   $invoiceIds = explode(",", $incomeHeader["invoice_ids"]);
                   $invoiceCount = count($invoiceAmounts);
-                  $pendingAmount = $amount - array_sum($invoiceAmounts);
+                  $invoiceSum = array_sum($invoiceAmounts);
+                  $pendingAmount = $amount - $invoiceSum;
 
                   $totalQty += $qty;
+                  $totalCost += $cost;
+                  $totalNet += $net;
+                  $averagePM += $profit;
+                  $totalSales += $amount;
+                  $previousPending += $period != $incomeHeader["period"] ? $pendingAmount : 0;
+                  $currentPending += $period == $incomeHeader["period"] ? $pendingAmount : 0;
+                  $previousIssued += $period != $incomeHeader["period"] ? $invoiceSum : 0;
+                  $currentIssued += $period == $incomeHeader["period"] ? $invoiceSum : 0;
 
                   for ($j = 0; $j < $invoiceCount; $j++) {
                     $invoiceAmount = $invoiceAmounts[$j];
                     $invoiceNo = $invoiceNos[$j];
                     $invoiceId = $invoiceIds[$j];
+                    $totalInvAmount += $invoiceAmount;
 
                     if ($j == 0) {
                       $voucherColumn = assigned($doId) ? "<td title=\"$doNo\" rowspan=\"$invoiceCount\">
@@ -125,22 +165,56 @@
                     }
                   }
                 }
+
+                $averagePM /= count($headers);
               ?>
               <tr>
                 <th></th>
                 <th></th>
                 <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
+                <th class="number">Total:</th>
+                <th class="number"><?php echo number_format($totalQty); ?></th>
+                <th class="number"><?php echo number_format($totalCost, 2); ?></th>
+                <th class="number"><?php echo number_format($totalNet, 2); ?></th>
+                <th class="number"><?php echo number_format($averagePM, 2); ?>%</th>
+                <th class="number"><?php echo number_format($totalSales, 2); ?></th>
+                <th class="number"><?php echo number_format($totalInvAmount, 2); ?></th>
+                <th class="number"></th>
                 <th></th>
               </tr>
             </tbody>
           </table>
-        </form>
+          <table class="invoice-results-total">
+            <?php if (assigned($previousPeriod)) : ?>
+              <tr>
+                <th colspan="2">Previous orders </th>
+              </tr>
+              <tr>
+                <td>Issued:</td>
+                <td class="number"><?php echo number_format($previousIssued, 2); ?></td>
+              </tr>
+              <tr>
+                <td>Pending:</td>
+                <td class="number"><?php echo number_format($previousPending, 2); ?></td>
+              </tr>
+            <?php endif ?>
+            <tr>
+              <th colspan="2">Current period orders (<?php echo $period; ?>)</th>
+            </tr>
+            <tr>
+              <td>Issued:</td>
+              <td class="number"><?php echo number_format($currentIssued, 2); ?></td>
+            </tr>
+            <tr>
+              <td>Pending:</td>
+              <td class="number"><?php echo number_format($currentPending, 2); ?></td>
+            </tr>
+            <tr>
+              <th>Total Invoice Issued:</th>
+              <th class="number"><?php echo number_format($previousIssued + $currentIssued, 2); ?></th>
+            </tr>
+          </table>
+        <?php endforeach ?>
       <?php else : ?>
         <div class="invoice-model-no-results">No results</div>
       <?php endif ?>

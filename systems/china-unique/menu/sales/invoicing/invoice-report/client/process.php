@@ -160,16 +160,22 @@
 
   foreach ($results as $incomeHeader) {
     $client = $incomeHeader["debtor_code"] . " - " . $incomeHeader["debtor_name"];
+    $currency = $incomeHeader["currency"];
 
     $arrayPointer = &$incomeHeaders;
 
     if (!isset($arrayPointer[$client])) {
       $arrayPointer[$client] = array();
-      $arrayPointer[$client]["previous"] = array();
-    } else if (!isset($arrayPointer[$client]["previous"])) {
-      $arrayPointer[$client]["previous"] = array();
     }
-    $arrayPointer = &$arrayPointer[$client]["previous"];
+    $arrayPointer = &$arrayPointer[$client];
+
+    if (!isset($arrayPointer[$currency])) {
+      $arrayPointer[$currency] = array();
+      $arrayPointer[$currency]["previous"] = array();
+    } else if (!isset($arrayPointer[$currency]["previous"])) {
+      $arrayPointer[$currency]["previous"] = array();
+    }
+    $arrayPointer = &$arrayPointer[$currency]["previous"];
 
     array_push($arrayPointer, $incomeHeader);
   }
@@ -310,16 +316,22 @@
 
   foreach ($results as $incomeHeader) {
     $client = $incomeHeader["debtor_code"] . " - " . $incomeHeader["debtor_name"];
+    $currency = $incomeHeader["currency"];
 
     $arrayPointer = &$incomeHeaders;
 
     if (!isset($arrayPointer[$client])) {
       $arrayPointer[$client] = array();
-      $arrayPointer[$client]["current"] = array();
-    } else if (!isset($arrayPointer[$client]["current"])) {
-      $arrayPointer[$client]["current"] = array();
     }
-    $arrayPointer = &$arrayPointer[$client]["current"];
+    $arrayPointer = &$arrayPointer[$client];
+
+    if (!isset($arrayPointer[$currency])) {
+      $arrayPointer[$currency] = array();
+      $arrayPointer[$currency]["current"] = array();
+    } else if (!isset($arrayPointer[$currency]["current"])) {
+      $arrayPointer[$currency]["current"] = array();
+    }
+    $arrayPointer = &$arrayPointer[$currency]["current"];
 
     array_push($arrayPointer, $incomeHeader);
   }
@@ -349,5 +361,4 @@
     ORDER BY
       code ASC
   ");
-
 ?>
