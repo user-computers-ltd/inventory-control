@@ -29,9 +29,11 @@
 
   if (assigned($period)) {
     $doWhereClause = $doWhereClause . "
-      AND (IFNULL(b.amount, 0) * (100 - a.discount) / 100) - IFNULL(e.invoice_sum, 0) > 0";
+      AND (IFNULL(b.amount, 0) * (100 - a.discount) / 100) - IFNULL(e.invoice_sum, 0) > 0
+      AND DATE_FORMAT(a.do_date, \"%Y-%m\") <= \"$period\"";
     $stockOutWhereClause = $stockOutWhereClause . "
-      AND (IFNULL(b.amount, 0) * (100 - a.discount) / 100) - IFNULL(e.invoice_sum, 0) > 0";
+      AND (IFNULL(b.amount, 0) * (100 - a.discount) / 100) - IFNULL(e.invoice_sum, 0) > 0
+      AND DATE_FORMAT(a.stock_out_date, \"%Y-%m\") <= \"$period\"";
     $invoiceWhereClause = $invoiceWhereClause . "
       y.invoice_date < \"$period-01\"";
     $currentInvoiceWhereClause = $currentInvoiceWhereClause . "
