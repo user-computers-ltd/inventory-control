@@ -20,14 +20,14 @@
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo SALES_INVOICE_REPORT_DATE_TITLE; ?></div>
       <form>
-        <table id="invoice-input" class="web-only">
+        <table id="invoice-input">
           <tr>
             <th>Period:</th>
             <th>Client:</th>
           </tr>
           <tr>
             <td>
-              <select name="period">
+              <select name="period" class="web-only">
                 <?php
                   foreach ($periods as $p) {
                     $selected = $period === $p ? "selected" : "";
@@ -35,8 +35,9 @@
                   }
                 ?>
               </select>
+              <span class="print-only"><?php echo $period; ?></span>
             <td>
-              <select name="debtor_code[]" multiple>
+              <select name="debtor_code[]" multiple class="web-only">
                 <?php
                   foreach ($debtors as $debtor) {
                     $code = $debtor["code"];
@@ -46,6 +47,7 @@
                   }
                 ?>
               </select>
+              <span class="print-only"><?php echo assigned($debtorCodes) ? join(", ", $debtorCodes) : "ALL"; ?></span>
             </td>
             <td><button type="submit">Go</button></td>
           </tr>
