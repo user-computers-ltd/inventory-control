@@ -25,19 +25,14 @@
   $doWhereClause = "";
   $stockOutWhereClause = "";
   $invoiceWhereClause = "";
-  $currentInvoiceWhereClause = "";
 
   if (assigned($period)) {
     $doWhereClause = $doWhereClause . "
-      AND (IFNULL(b.amount, 0) * (100 - a.discount) / 100) - IFNULL(e.invoice_sum, 0) > 0
-      AND DATE_FORMAT(a.do_date, \"%Y-%m\") <= \"$period\"";
+      AND DATE_FORMAT(a.do_date, \"%Y-%m\") = \"$period\"";
     $stockOutWhereClause = $stockOutWhereClause . "
-      AND (IFNULL(b.amount, 0) * (100 - a.discount) / 100) - IFNULL(e.invoice_sum, 0) > 0
-      AND DATE_FORMAT(a.stock_out_date, \"%Y-%m\") <= \"$period\"";
+      AND DATE_FORMAT(a.stock_out_date, \"%Y-%m\") = \"$period\"";
     $invoiceWhereClause = $invoiceWhereClause . "
       y.invoice_date < \"$period-01\"";
-    $currentInvoiceWhereClause = $currentInvoiceWhereClause . "
-      DATE_FORMAT(y.invoice_date, \"%Y-%m\")=\"$period\"";
   }
 
   if (assigned($debtorCodes) && count($debtorCodes) > 0) {
@@ -64,7 +59,6 @@
       IFNULL(b.qty, 0)                                                              AS `qty`,
       a.currency_code                                                               AS `currency`,
       IFNULL(b.amount, 0) * (100 - a.discount) / 100                                AS `amount`,
-      (IFNULL(b.amount, 0) * (100 - a.discount) / 100) - IFNULL(e.invoice_sum, 0)   AS `pending`,
       IFNULL(b.amount, 0) * (100 - a.discount) / (100 + a.tax)                      AS `net`,
       IFNULL(b.cost, 0)                                                             AS `cost`,
       IFNULL(d.invoice_amounts, \"\")                                               AS `invoice_amounts`,
@@ -103,25 +97,9 @@
       LEFT JOIN
         `out_inv_header` AS y
       ON x.invoice_no=y.invoice_no
-      WHERE
-        $currentInvoiceWhereClause
       GROUP BY
         x.do_no) AS d
     ON a.do_no=d.do_no
-    LEFT JOIN
-      (SELECT
-        x.do_no                       AS `do_no`,
-        SUM(x.amount)                 AS `invoice_sum`
-      FROM
-        `out_inv_model` AS x
-      LEFT JOIN
-        `out_inv_header` AS y
-      ON x.invoice_no=y.invoice_no
-      WHERE
-        $invoiceWhereClause
-      GROUP BY
-        x.do_no) AS e
-    ON a.do_no=e.do_no
     WHERE
       a.status=\"POSTED\"
       $doWhereClause
@@ -140,7 +118,6 @@
       IFNULL(b.qty, 0)                                                              AS `qty`,
       a.currency_code                                                               AS `currency`,
       IFNULL(b.amount, 0) * (100 - a.discount) / 100                                AS `amount`,
-      (IFNULL(b.amount, 0) * (100 - a.discount) / 100) - IFNULL(e.invoice_sum, 0)   AS `pending`,
       IFNULL(b.amount, 0) * (100 - a.discount) / (100 + a.tax)                      AS `net`,
       IFNULL(b.cost, 0)                                                             AS `cost`,
       IFNULL(d.invoice_amounts, \"\")                                               AS `invoice_amounts`,
@@ -179,30 +156,13 @@
       LEFT JOIN
         `out_inv_header` AS y
       ON x.invoice_no=y.invoice_no
-      WHERE
-        $currentInvoiceWhereClause
       GROUP BY
         x.stock_out_no) AS d
     ON a.stock_out_no=d.stock_out_no
-    LEFT JOIN
-      (SELECT
-        x.stock_out_no                AS `stock_out_no`,
-        SUM(x.amount)                 AS `invoice_sum`
-      FROM
-        `out_inv_model` AS x
-      LEFT JOIN
-        `out_inv_header` AS y
-      ON x.invoice_no=y.invoice_no
-      WHERE
-        $invoiceWhereClause
-      GROUP BY
-        x.stock_out_no) AS e
-    ON a.stock_out_no=e.stock_out_no
     WHERE
       a.status=\"POSTED\" AND (a.transaction_code=\"S1\" OR a.transaction_code=\"S2\")
       $stockOutWhereClause
     ORDER BY
-      debtor_code ASC,
       date_ ASC
   ");
 
@@ -244,7 +204,4 @@
     ORDER BY
       code ASC
   ");
-
-  $pIndex = array_search($period, $periods);
-  $previousPeriod = $pIndex === FALSE || ($pIndex + 1 > count($periods)) ? "" : $periods[$pIndex + 1];
 ?>

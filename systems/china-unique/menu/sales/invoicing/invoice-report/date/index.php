@@ -73,7 +73,7 @@
               <tr>
                 <th>Date</th>
                 <th>Code</th>
-                <th>Customer</th>
+                <th>Client</th>
                 <th>DO No. / Stock Out No.</th>
                 <th class="number">Qty</th>
                 <th class="number">Actual Cost (Exc. Tax)</th>
@@ -91,11 +91,7 @@
                 $totalNet = 0;
                 $averagePM = 0;
                 $totalSales = 0;
-                $totalInvAmount = 0;
-                $previousPending = 0;
-                $currentPending = 0;
-                $previousIssued = 0;
-                $currentIssued = 0;
+                $totalPending = 0;
 
                 for ($i = 0; $i < count($headers); $i++) {
                   $incomeHeader = $headers[$i];
@@ -110,7 +106,7 @@
                   $cost = $incomeHeader["cost"];
                   $net = $incomeHeader["net"];
                   $profit = ($net - $cost) / $cost * 100;
-                  $amount = $incomeHeader["pending"];
+                  $amount = $incomeHeader["amount"];
                   $invoiceAmounts = explode(",", $incomeHeader["invoice_amounts"]);
                   $invoiceDates = explode(",", $incomeHeader["invoice_dates"]);
                   $invoiceNos = explode(",", $incomeHeader["invoice_nos"]);
@@ -124,16 +120,12 @@
                   $totalNet += $net;
                   $averagePM += $profit;
                   $totalSales += $amount;
-                  $previousPending += $period != $incomeHeader["period"] ? $pendingAmount : 0;
-                  $currentPending += $period == $incomeHeader["period"] ? $pendingAmount : 0;
-                  $previousIssued += $period != $incomeHeader["period"] ? $invoiceSum : 0;
-                  $currentIssued += $period == $incomeHeader["period"] ? $invoiceSum : 0;
+                  $totalPending += $pendingAmount;
 
                   for ($j = 0; $j < $invoiceCount; $j++) {
                     $invoiceAmount = $invoiceAmounts[$j];
                     $invoiceNo = $invoiceNos[$j];
                     $invoiceId = $invoiceIds[$j];
-                    $totalInvAmount += $invoiceAmount;
 
                     if ($j == 0) {
                       $voucherColumn = assigned($doId) ? "<td title=\"$doNo\" rowspan=\"$invoiceCount\">
@@ -187,33 +179,13 @@
             </tbody>
           </table>
           <table class="invoice-results-total">
-            <?php if (assigned($previousPeriod)) : ?>
-              <tr>
-                <th colspan="2">Previous orders </th>
-              </tr>
-              <tr>
-                <td>Issued:</td>
-                <td class="number"><?php echo number_format($previousIssued, 2); ?></td>
-              </tr>
-              <tr>
-                <td>Pending:</td>
-                <td class="number"><?php echo number_format($previousPending, 2); ?></td>
-              </tr>
-            <?php endif ?>
             <tr>
-              <th colspan="2">Current period orders (<?php echo $period; ?>)</th>
+              <th>Total Profit:</th>
+              <td class="number"><?php echo number_format($totalNet - $totalCost, 2); ?></td>
             </tr>
             <tr>
-              <td>Issued:</td>
-              <td class="number"><?php echo number_format($currentIssued, 2); ?></td>
-            </tr>
-            <tr>
-              <td>Pending:</td>
-              <td class="number"><?php echo number_format($currentPending, 2); ?></td>
-            </tr>
-            <tr>
-              <th>Total Invoice Issued:</th>
-              <th class="number"><?php echo number_format($previousIssued + $currentIssued, 2); ?></th>
+              <th>Pending Amount:</th>
+              <td class="number"><?php echo number_format($totalPending, 2); ?></td>
             </tr>
           </table>
         <?php endforeach ?>
