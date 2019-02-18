@@ -119,7 +119,7 @@
         $invoiceWhereClause
       GROUP BY
         x.do_no) AS e
-    ON a.do_no=d.do_no
+    ON a.do_no=e.do_no
     WHERE
       a.status=\"POSTED\"
       $doWhereClause
@@ -195,7 +195,7 @@
         $invoiceWhereClause
       GROUP BY
         x.stock_out_no) AS e
-    ON a.stock_out_no=d.stock_out_no
+    ON a.stock_out_no=e.stock_out_no
     WHERE
       a.status=\"POSTED\" AND (a.transaction_code=\"S1\" OR a.transaction_code=\"S2\")
       $stockOutWhereClause
@@ -210,8 +210,6 @@
     $arrayPointer = &$incomeHeaders;
 
     if (!isset($arrayPointer[$currency])) {
-      $arrayPointer[$currency] = array();
-    } else if (!isset($arrayPointer[$currency])) {
       $arrayPointer[$currency] = array();
     }
     $arrayPointer = &$arrayPointer[$currency];
