@@ -8,8 +8,9 @@
   $model = query("
     SELECT
       a.model_no                                          AS `model_no`,
-      a.description                                       AS `description`,
       a.brand_code                                        AS `brand_code`,
+      a.product_type                                      AS `product_type`,
+      a.description                                       AS `description`,
       b.name                                              AS `brand_name`,
       CONCAT(a.cost_pri_currency_code, ' ', a.cost_pri)   AS `cost_pri`,
       a.cost_pri_currency_code                            AS `cost_pri_currency_code`,

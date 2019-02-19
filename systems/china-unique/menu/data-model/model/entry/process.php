@@ -1,8 +1,9 @@
 <?php
   $id = $_GET["id"];
   $modelNo = $_POST["model_no"];
-  $description = $_POST["description"];
   $brandCode = $_POST["brand_code"];
+  $productType = $_POST["product_type"];
+  $description = $_POST["description"];
   $costPri = $_POST["cost_pri"];
   $costPriCurrencyCode = $_POST["cost_pri_currency_code"];
   $costSec = $_POST["cost_sec"];
@@ -17,6 +18,7 @@
   if (
     assigned($modelNo) &&
     assigned($brandCode) &&
+    assigned($productType) &&
     assigned($costPri) &&
     assigned($costPriCurrencyCode) &&
     assigned($costSec) &&
@@ -36,8 +38,9 @@
           `model`
         SET
           model_no=\"$modelNo\",
-          description=\"$description\",
           brand_code=\"$brandCode\",
+          product_type=\"$productType\",
+          description=\"$description\",
           cost_pri=\"$costPri\",
           cost_pri_currency_code=\"$costPriCurrencyCode\",
           cost_sec=\"$costSec\",
@@ -56,8 +59,9 @@
           `model`
           (
             model_no,
-            description,
             brand_code,
+            product_type,
+            description,
             cost_pri,
             cost_pri_currency_code,
             cost_sec,
@@ -71,8 +75,9 @@
         VALUES
           (
             \"$modelNo\",
-            \"$description\",
             \"$brandCode\",
+            \"$productType\",
+            \"$description\",
             \"$costPri\",
             \"$costPriCurrencyCode\",
             \"$costSec\",
@@ -93,6 +98,7 @@
 
   $editMode = assigned($id);
   $brands = query("SELECT code, name FROM `brand`");
+  $productTypes = array("M", "S", "O");
   $results = query("SELECT code, rate FROM `currency`");
   $currencies = array();
   foreach ($results as $currency) {
@@ -106,8 +112,9 @@
     $model = query("
       SELECT
         model_no                  AS `model_no`,
-        description               AS `description`,
         brand_code                AS `brand_code`,
+        product_type              AS `product_type`,
+        description               AS `description`,
         cost_pri                  AS `cost_pri`,
         cost_pri_currency_code    AS `cost_pri_currency_code`,
         cost_sec                  AS `cost_sec`,
@@ -124,8 +131,9 @@
 
     if (isset($model)) {
       $modelNo = $model["model_no"];
-      $description = $model["description"];
       $brandCode = $model["brand_code"];
+      $productType = $model["product_type"];
+      $description = $model["description"];
       $costPri = $model["cost_pri"];
       $costPriCurrencyCode = $model["cost_pri_currency_code"];
       $costSec = $model["cost_sec"];

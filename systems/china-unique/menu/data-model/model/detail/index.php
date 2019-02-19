@@ -29,12 +29,16 @@
             <td class="number"><?php echo $model["model_no"]; ?></td>
           </tr>
           <tr>
-            <th>Description:</th>
-            <td class="number multi-line"><?php echo $model["description"]; ?></td>
-          </tr>
-          <tr>
             <th>Brand:</th>
             <td class="number"><?php echo $model["brand_code"] . " - " . $model["brand_name"]; ?></td>
+          </tr>
+          <tr>
+            <th>Product Type:</th>
+            <td class="number"><?php echo $model["product_type"]; ?></td>
+          </tr>
+          <tr>
+            <th>Description:</th>
+            <td class="number multi-line"><?php echo $model["description"]; ?></td>
           </tr>
           <tr>
             <th>Normal Cost (正價):</th>

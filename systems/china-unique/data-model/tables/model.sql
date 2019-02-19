@@ -2,6 +2,7 @@ CREATE TABLE `model` (
   `id`                      INT(12)         NOT NULL AUTO_INCREMENT,
   `brand_code`              VARCHAR(30)     NOT NULL,
   `model_no`                VARCHAR(30)     NOT NULL,
+  `product_type`            VARCHAR(30)     NOT NULL,
   `description`             TEXT,
   `cost_pri`                DECIMAL(16,6)   NOT NULL,
   `cost_pri_currency_code`  VARCHAR(30)     NOT NULL,

@@ -26,10 +26,6 @@
                 <td><input type="text" name="model_no" value="<?php echo $modelNo; ?>" <?php echo $editMode ? "readonly" : ""; ?> required /></td>
               </tr>
               <tr>
-                <td>Description:</td>
-                <td><textarea name="description"><?php echo $description; ?></textarea></td>
-              </tr>
-              <tr>
                 <td>Brand Code:</td>
                 <td>
                   <?php if ($editMode) : ?>
@@ -47,6 +43,23 @@
                     </select>
                   <?php endif ?>
                 </td>
+              </tr>
+              <tr>
+                <td>Product Type:</td>
+                <td>
+                  <select name="product_type">
+                    <?php
+                      foreach ($productTypes as $p) {
+                        $selected = $productType == $p ? "selected" : "";
+                        echo "<option value=\"$p\" $selected>$p</option>";
+                      }
+                    ?>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td>Description:</td>
+                <td><textarea name="description"><?php echo $description; ?></textarea></td>
               </tr>
               <tr>
                 <td>Normal Cost (正價):</td>
@@ -95,7 +108,7 @@
             </tr>
             <tr>
               <td>Average Cost:</td>
-              <td><input type="number" name="cost_average" step="0.00000001" min="0" value="<?php echo $averageCost; ?>" <?php echo substr($modelNo, 0, 1) == "Z" ? "" : "readonly"; ?> required /></td>
+              <td><input type="number" name="cost_average" step="0.00000001" min="0" value="<?php echo $averageCost; ?>" required /></td>
             </tr>
           </table>
           <button type="submit"><?php echo $editMode ? "Edit" : "Create"; ?></button>
