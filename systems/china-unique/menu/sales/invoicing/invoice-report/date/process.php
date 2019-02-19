@@ -79,7 +79,7 @@
     ";
   }
 
-  function joinModelTable($table, $as, $columnName, $productType) {
+  function joinModelTable($table, $as, $columnName, $type, $whereClause) {
     return "
       LEFT JOIN
         (SELECT
@@ -94,8 +94,8 @@
           `model` AS y
         ON x.brand_code=y.brand_code AND x.model_no=y.model_no
         WHERE
-          y.product_type" . (assigned($productType) ? "=\"$productType\"" : " IS NOT NULL") . "
-          $modelWhereClause
+          y.product_type" . (assigned($type) ? "=\"$type\"" : " IS NOT NULL") . "
+          $whereClause
         GROUP BY
           $columnName) AS $as
       ON a.$columnName=$as.$columnName
@@ -127,9 +127,9 @@
       " . getColumns("a.do_date", "a.id", "a.do_no", "\"\"", "\"\"") . "
     FROM
       `sdo_header` AS a
-    " . joinModelTable("sdo_model", "bM", "do_no", "M") . "
-    " . joinModelTable("sdo_model", "bS", "do_no", "S") . "
-    " . joinModelTable("sdo_model", "bO", "do_no", "O") . "
+    " . joinModelTable("sdo_model", "bM", "do_no", "M", $modelWhereClause) . "
+    " . joinModelTable("sdo_model", "bS", "do_no", "S", $modelWhereClause) . "
+    " . joinModelTable("sdo_model", "bO", "do_no", "O", $modelWhereClause) . "
     LEFT JOIN
       `debtor` AS c
     ON a.debtor_code=c.code
@@ -144,9 +144,9 @@
       " . getColumns("a.stock_out_date", "\"\"", "\"\"", "a.id", "a.stock_out_no") . "
     FROM
       `stock_out_header` AS a
-    " . joinModelTable("stock_out_model", "bM", "stock_out_no", "M") . "
-    " . joinModelTable("stock_out_model", "bS", "stock_out_no", "S") . "
-    " . joinModelTable("stock_out_model", "bO", "stock_out_no", "O") . "
+    " . joinModelTable("stock_out_model", "bM", "stock_out_no", "M", $modelWhereClause) . "
+    " . joinModelTable("stock_out_model", "bS", "stock_out_no", "S", $modelWhereClause) . "
+    " . joinModelTable("stock_out_model", "bO", "stock_out_no", "O", $modelWhereClause) . "
     LEFT JOIN
       `debtor` AS c
     ON a.debtor_code=c.code
