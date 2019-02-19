@@ -59,7 +59,7 @@
                   }
                 ?>
               </select>
-              <span class="print-only"><?php echo assigned($debtorCodes) ? join(", ", $debtorCodes) : "ALL"; ?></span>
+              <span class="print-only"><?php echo assigned($productTypes) ? join(", ", $productTypes) : "ALL"; ?></span>
             </td>
             <td><button type="submit">Go</button></td>
           </tr>
