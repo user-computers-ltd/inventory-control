@@ -24,6 +24,7 @@
           <tr>
             <th>Period:</th>
             <th>Client:</th>
+            <th>Product Types:</th>
           </tr>
           <tr>
             <td>
@@ -44,6 +45,17 @@
                     $name = $debtor["name"];
                     $selected = assigned($debtorCodes) && in_array($code, $debtorCodes) ? "selected" : "";
                     echo "<option value=\"$code\" $selected>$code - $name</option>";
+                  }
+                ?>
+              </select>
+              <span class="print-only"><?php echo assigned($debtorCodes) ? join(", ", $debtorCodes) : "ALL"; ?></span>
+            </td>
+            <td>
+              <select name="product_type[]" multiple class="web-only">
+                <?php
+                  foreach ($PRODUCT_TYPES as $type) {
+                    $selected = assigned($productTypes) && in_array($type, $productTypes) ? "selected" : "";
+                    echo "<option value=\"$type\" $selected>$type</option>";
                   }
                 ?>
               </select>
@@ -86,11 +98,21 @@
             </thead>
             <tbody>
               <?php
-                $totalQty = 0;
-                $totalCost = 0;
-                $totalNet = 0;
-                $averagePM = 0;
-                $totalSales = 0;
+                function accumulateType(&$total, $M, $S, $O) {
+                  $total["M"] += $M;
+                  $total["S"] += $S;
+                  $total["O"] += $O;
+                }
+
+                function sumType($total) {
+                  return $total["M"] + $total["S"] + $total["O"];
+                }
+
+                $totalQty = array("M" => 0, "S" => 0, "O" => 0);
+                $totalCost = array("M" => 0, "S" => 0, "O" => 0);
+                $totalNet = array("M" => 0, "S" => 0, "O" => 0);
+                $averagePM = array("M" => 0, "S" => 0, "O" => 0);
+                $totalSales = array("M" => 0, "S" => 0, "O" => 0);
                 $totalPending = 0;
                 $totalInvAmount = 0;
 
@@ -103,11 +125,11 @@
                   $stockOutNo = $incomeHeader["stock_out_no"];
                   $debtorCode = $incomeHeader["debtor_code"];
                   $debtorName = $incomeHeader["debtor_name"];
-                  $qty = $incomeHeader["qty"];
-                  $cost = $incomeHeader["cost"];
-                  $net = $incomeHeader["net"];
+                  $qty = $incomeHeader["qtyM"] + $incomeHeader["qtyS"] + $incomeHeader["qtyO"];
+                  $cost = $incomeHeader["costM"] + $incomeHeader["costS"] + $incomeHeader["costO"];
+                  $net = $incomeHeader["netM"] + $incomeHeader["netS"] + $incomeHeader["netO"];
+                  $amount = $incomeHeader["amountM"] + $incomeHeader["amountS"] + $incomeHeader["amountO"];
                   $profit = ($net - $cost) / $cost * 100;
-                  $amount = $incomeHeader["amount"];
                   $invoiceAmounts = explode(",", $incomeHeader["invoice_amounts"]);
                   $invoiceDates = explode(",", $incomeHeader["invoice_dates"]);
                   $invoiceNos = explode(",", $incomeHeader["invoice_nos"]);
@@ -116,11 +138,17 @@
                   $invoiceSum = array_sum($invoiceAmounts);
                   $pendingAmount = $amount - $invoiceSum;
 
-                  $totalQty += $qty;
-                  $totalCost += $cost;
-                  $totalNet += $net;
-                  $averagePM += $profit;
-                  $totalSales += $amount;
+                  accumulateType($totalQty, $incomeHeader["qtyM"], $incomeHeader["qtyS"], $incomeHeader["qtyO"]);
+                  accumulateType($totalCost, $incomeHeader["costM"], $incomeHeader["costS"], $incomeHeader["costO"]);
+                  accumulateType($totalNet, $incomeHeader["netM"], $incomeHeader["netS"], $incomeHeader["netO"]);
+                  accumulateType($totalSales, $incomeHeader["amountM"], $incomeHeader["amountS"], $incomeHeader["amountO"]);
+                  accumulateType(
+                    $averagePM,
+                    ($incomeHeader["netM"] - $incomeHeader["costM"]) / 100,
+                    ($incomeHeader["netS"] - $incomeHeader["costS"]) / 100,
+                    ($incomeHeader["netO"] - $incomeHeader["costO"]) / 100
+                  );
+
                   $totalPending += $pendingAmount;
                   $totalInvAmount += $invoiceSum;
 
@@ -162,33 +190,93 @@
                   }
                 }
 
-                $averagePM /= count($headers);
+                $averagePM["M"] /= count($headers);
+                $averagePM["S"] /= count($headers);
+                $averagePM["O"] /= count($headers);
               ?>
               <tr>
                 <th></th>
                 <th></th>
                 <th></th>
                 <th class="number">Total:</th>
-                <th class="number"><?php echo number_format($totalQty); ?></th>
-                <th class="number"><?php echo number_format($totalCost, 2); ?></th>
-                <th class="number"><?php echo number_format($totalNet, 2); ?></th>
-                <th class="number"><?php echo number_format($averagePM, 2); ?>%</th>
-                <th class="number"><?php echo number_format($totalSales, 2); ?></th>
+                <th class="number"><?php echo number_format(sumType($totalQty)); ?></th>
+                <th class="number"><?php echo number_format(sumType($totalCost), 2); ?></th>
+                <th class="number"><?php echo number_format(sumType($totalNet), 2); ?></th>
+                <th class="number"><?php echo number_format(sumType($averagePM), 2); ?>%</th>
+                <th class="number"><?php echo number_format(sumType($totalSales), 2); ?></th>
                 <th class="number"><?php echo number_format($totalInvAmount, 2); ?></th>
-                <th class="number"></th>
+                <th></th>
                 <th></th>
               </tr>
+              <?php if (!assigned($productTypes)) : ?>
+                <tr>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th class="number">M:</th>
+                  <th class="number"><?php echo number_format($totalQty["M"]); ?></th>
+                  <th class="number"><?php echo number_format($totalCost["M"], 2); ?></th>
+                  <th class="number"><?php echo number_format($totalNet["M"], 2); ?></th>
+                  <th class="number"><?php echo number_format($averagePM["M"], 2); ?>%</th>
+                  <th class="number"><?php echo number_format($totalSales["M"], 2); ?></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                </tr>
+                <tr>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th class="number">S:</th>
+                  <th class="number"><?php echo number_format($totalQty["S"]); ?></th>
+                  <th class="number"><?php echo number_format($totalCost["S"], 2); ?></th>
+                  <th class="number"><?php echo number_format($totalNet["S"], 2); ?></th>
+                  <th class="number"><?php echo number_format($averagePM["S"], 2); ?>%</th>
+                  <th class="number"><?php echo number_format($totalSales["S"], 2); ?></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                </tr>
+                <tr>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th class="number">O:</th>
+                  <th class="number"><?php echo number_format($totalQty["O"]); ?></th>
+                  <th class="number"><?php echo number_format($totalCost["O"], 2); ?></th>
+                  <th class="number"><?php echo number_format($totalNet["O"], 2); ?></th>
+                  <th class="number"><?php echo number_format($averagePM["O"], 2); ?>%</th>
+                  <th class="number"><?php echo number_format($totalSales["O"], 2); ?></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                </tr>
+              <?php endif ?>
             </tbody>
           </table>
           <table class="invoice-results-total">
             <tr>
               <th>Total Profit:</th>
-              <td class="number"><?php echo number_format($totalNet - $totalCost, 2); ?></td>
+              <th class="number"><?php echo number_format(sumType($totalNet) - sumType($totalCost), 2); ?></th>
             </tr>
-            <tr>
-              <th>Pending Amount:</th>
-              <td class="number"><?php echo number_format($totalPending, 2); ?></td>
-            </tr>
+            <?php if (!assigned($productTypes)) : ?>
+              <tr>
+                <td>M</td>
+                <td class="number"><?php echo number_format($totalNet["M"] - $totalCost["M"], 2); ?></td>
+              </tr>
+              <tr>
+                <td>S</td>
+                <td class="number"><?php echo number_format($totalNet["S"] - $totalCost["S"], 2); ?></td>
+              </tr>
+              <tr>
+                <td>O</td>
+                <td class="number"><?php echo number_format($totalNet["O"] - $totalCost["O"], 2); ?></td>
+              </tr>
+              <tr>
+                <th>Pending Amount:</th>
+                <th class="number"><?php echo number_format($totalPending, 2); ?></th>
+              </tr>
+            <?php endif ?>
           </table>
         <?php endforeach ?>
       <?php else : ?>
