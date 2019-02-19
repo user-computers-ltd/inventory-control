@@ -92,6 +92,7 @@
                 $averagePM = 0;
                 $totalSales = 0;
                 $totalPending = 0;
+                $totalInvAmount = 0;
 
                 for ($i = 0; $i < count($headers); $i++) {
                   $incomeHeader = $headers[$i];
@@ -121,6 +122,7 @@
                   $averagePM += $profit;
                   $totalSales += $amount;
                   $totalPending += $pendingAmount;
+                  $totalInvAmount += $invoiceSum;
 
                   for ($j = 0; $j < $invoiceCount; $j++) {
                     $invoiceAmount = $invoiceAmounts[$j];

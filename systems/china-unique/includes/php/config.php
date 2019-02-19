@@ -38,6 +38,12 @@
     "S9" => "Cycle check (Loss)"
   );
 
+  $PRODUCT_TYPES = array(
+    "M",
+    "S",
+    "O"
+  );
+
   /* URL configurations. */
   define("SYSTEM_URL", BASE_URL . "systems/china-unique/");
   define("MENU_URL", BASE_URL . "systems/china-unique/menu/");
