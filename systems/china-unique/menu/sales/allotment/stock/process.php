@@ -99,7 +99,7 @@
         `so_header` AS y
       ON x.so_no=y.so_no
       WHERE
-        y.status=\"POSTED\"
+        y.status=\"CONFIRMED\"
         $whereSoModelClause
       GROUP BY
         x.brand_code, x.model_no) AS d
@@ -209,7 +209,7 @@
       `debtor` AS c
     ON b.debtor_code=c.code
     WHERE
-      a.qty_outstanding > 0 AND b.status=\"POSTED\"
+      a.qty_outstanding > 0 AND b.status=\"CONFIRMED\"
       $whereClause
     ORDER BY
       a.brand_code ASC,
@@ -365,7 +365,7 @@
         z.so_no) AS c
     ON a.so_no=c.so_no
     WHERE
-      c.qty_outstanding > 0 AND a.status=\"POSTED\"
+      c.qty_outstanding > 0 AND a.status=\"CONFIRMED\"
     ORDER BY
       a.debtor_code ASC
   ");

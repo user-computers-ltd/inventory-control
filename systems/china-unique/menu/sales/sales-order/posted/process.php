@@ -20,7 +20,7 @@
       header("Location: " . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?$printoutParams");
       exit(0);
     }
-    
+
     execute($queries);
   }
 
@@ -65,7 +65,7 @@
       `debtor` AS c
     ON a.debtor_code=c.code
     WHERE
-      a.status=\"POSTED\"
+      a.status=\"CONFIRMED\"
       $whereClause
     ORDER BY
       a.so_date DESC

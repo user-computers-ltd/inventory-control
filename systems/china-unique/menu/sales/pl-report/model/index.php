@@ -41,7 +41,7 @@
       `model` AS d
     ON a.brand_code=d.brand_code AND a.model_no=d.model_no
     WHERE
-      b.status=\"POSTED\"
+      b.status=\"CONFIRMED\"
       $whereClause
     GROUP BY
       d.id, a.brand_code, c.name, a.model_no
@@ -63,7 +63,7 @@
       `brand` AS c
     ON a.brand_code=c.code
     WHERE
-      b.status=\"POSTED\"
+      b.status=\"CONFIRMED\"
     ORDER BY
       a.brand_code ASC
   ");

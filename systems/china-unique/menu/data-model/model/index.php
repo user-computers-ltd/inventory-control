@@ -90,7 +90,7 @@
         `so_header` AS h
       ON m.so_no=h.so_no
       WHERE
-        h.status=\"POSTED\"
+        h.status=\"CONFIRMED\"
       GROUP BY
         m.brand_code, m.model_no) AS f
     ON a.brand_code=f.brand_code AND a.model_no=f.model_no

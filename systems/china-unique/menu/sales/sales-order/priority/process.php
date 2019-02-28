@@ -55,7 +55,7 @@
       `debtor` AS c
     ON a.debtor_code=c.code
     WHERE
-      a.status=\"POSTED\"
+      a.status=\"CONFIRMED\"
       $whereClause
     ORDER BY
       a.priority DESC,
@@ -73,7 +73,7 @@
       `debtor` AS b
     ON a.debtor_code=b.code
     WHERE
-      a.status=\"POSTED\"
+      a.status=\"CONFIRMED\"
     ORDER BY
       a.debtor_code ASC
   ");

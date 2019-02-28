@@ -50,7 +50,7 @@
       `debtor` AS e
     ON b.debtor_code=e.code
     WHERE
-      b.status=\"POSTED\"
+      b.status=\"CONFIRMED\"
       $whereClause
     GROUP BY
       b.so_no
@@ -89,7 +89,7 @@
       `brand` AS c
     ON a.brand_code=c.code
     WHERE
-      b.status=\"POSTED\"
+      b.status=\"CONFIRMED\"
     ORDER BY
       a.brand_code ASC
   ");
