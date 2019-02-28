@@ -125,6 +125,14 @@
                 onchange="onPriceStandardChange()"
               />
               <label for="special-price">Special Price</label>
+              <input
+                id="end-user-price"
+                name="price_standard"
+                type="radio"
+                value="end_user_price"
+                onchange="onPriceStandardChange()"
+              />
+              <label for="end-user-price">End User Price</label>
             </td>
           </tr>
         </table>
@@ -211,6 +219,7 @@
              . "\" data-brand_code=\"" . $model["brand_code"]
              . "\" data-normal_price=\"" . $model["normal_price"]
              . "\" data-special_price=\"" . $model["special_price"]
+             . "\" data-end_user_price=\"" . $model["end_user_price"]
              . "\" data-qty_on_hand=\"" . $model["qty_on_hand"]
              . "\" data-qty_on_hand_reserve=\"" . $model["qty_on_hand_reserve"]
              . "\" data-qty_incoming=\"" . $model["qty_incoming"]

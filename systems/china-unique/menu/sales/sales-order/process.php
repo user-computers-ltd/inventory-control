@@ -51,6 +51,7 @@
 
         if (!isset($arrayPointer[$model])) {
           $arrayPointer[$model] = array(
+            "index"       => $i,
             "brand_code"  => $brandCodes[$i],
             "model_no"    => $modelNos[$i],
             "price"       => $prices[$i],
@@ -67,6 +68,7 @@
       $values = array();
 
       foreach ($items as $item) {
+        $i = $item["index"];
         $brandCode = $item["brand_code"];
         $modelNo = $item["model_no"];
         $price = $item["price"];
@@ -120,6 +122,7 @@
       a.model_no                  AS `model_no`,
       a.retail_normal             AS `normal_price`,
       a.retail_special            AS `special_price`,
+      a.wholesale_special         AS `end_user_price`,
       a.cost_average              AS `cost_average`,
       IFNULL(b.qty_on_hand, 0)    AS `qty_on_hand`,
       IFNULL(c.qty_on_order, 0)   AS `qty_on_order`

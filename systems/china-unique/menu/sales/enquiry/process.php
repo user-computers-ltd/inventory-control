@@ -7,6 +7,7 @@
       a.model_no                        AS `model_no`,
       a.retail_normal                   AS `normal_price`,
       a.retail_special                  AS `special_price`,
+      a.wholesale_special               AS `end_user_price`,
       IFNULL(b.qty_on_hand, 0)          AS `qty_on_hand`,
       IFNULL(c.qty_on_hand_reserve, 0)  AS `qty_on_hand_reserve`,
       IFNULL(d.qty_incoming, 0)         AS `qty_incoming`,
