@@ -57,6 +57,7 @@
       b.count                                                                       AS `count`,
       a.id                                                                          AS `do_id`,
       a.do_no                                                                       AS `do_no`,
+      b.so_no                                                                       AS `so_no`,
       \"\"                                                                          AS `stock_out_id`,
       \"\"                                                                          AS `stock_out_no`,
       a.debtor_code                                                                 AS `debtor_code`,
@@ -75,11 +76,12 @@
       `sdo_header` AS a
     LEFT JOIN
       (SELECT
-        x.do_no                       AS `do_no`,
-        COUNT(*)                      AS `count`,
-        SUM(x.qty)                    AS `qty`,
-        SUM(x.qty * x.price)          AS `amount`,
-        SUM(x.qty * y.cost_average)   AS `cost`
+        x.do_no                         AS `do_no`,
+        GROUP_CONCAT(DISTINCT x.so_no)  AS `so_no`,
+        COUNT(*)                        AS `count`,
+        SUM(x.qty)                      AS `qty`,
+        SUM(x.qty * x.price)            AS `amount`,
+        SUM(x.qty * y.cost_average)     AS `cost`
       FROM
         `sdo_model` AS x
       LEFT JOIN
@@ -133,6 +135,7 @@
       b.count                                                                       AS `count`,
       \"\"                                                                          AS `do_id`,
       \"\"                                                                          AS `do_no`,
+      \"\"                                                                          AS `so_no`,
       a.id                                                                          AS `stock_out_id`,
       a.stock_out_no                                                                AS `stock_out_no`,
       a.debtor_code                                                                 AS `debtor_code`,

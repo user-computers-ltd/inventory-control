@@ -79,11 +79,12 @@
     ";
   }
 
-  function joinModelTable($table, $as, $columnName, $type, $whereClause) {
+  function joinModelTable($table, $as, $link, $otherColumns, $type, $whereClause) {
     return "
       LEFT JOIN
         (SELECT
-          x.$columnName                 AS `$columnName`,
+          x.$link                       AS `$link`,
+          $otherColumns
           COUNT(*)                      AS `count`,
           SUM(x.qty)                    AS `qty`,
           SUM(x.qty * x.price)          AS `amount`,
@@ -97,8 +98,8 @@
           y.product_type" . (assigned($type) ? "=\"$type\"" : " IS NOT NULL") . "
           $whereClause
         GROUP BY
-          $columnName) AS $as
-      ON a.$columnName=$as.$columnName
+          $link) AS $as
+      ON a.$link=$as.$link
     ";
   }
 
@@ -124,12 +125,14 @@
 
   $results = query("
     SELECT
+      IFNULL(bSO.so_no, \"\") AS `so_no`,
       " . getColumns("a.do_date", "a.id", "a.do_no", "\"\"", "\"\"") . "
     FROM
       `sdo_header` AS a
-    " . joinModelTable("sdo_model", "bM", "do_no", "M", $modelWhereClause) . "
-    " . joinModelTable("sdo_model", "bS", "do_no", "S", $modelWhereClause) . "
-    " . joinModelTable("sdo_model", "bO", "do_no", "O", $modelWhereClause) . "
+    " . joinModelTable("sdo_model", "bM", "do_no", "", "M", $modelWhereClause) . "
+    " . joinModelTable("sdo_model", "bS", "do_no", "", "S", $modelWhereClause) . "
+    " . joinModelTable("sdo_model", "bO", "do_no", "", "O", $modelWhereClause) . "
+    " . joinModelTable("sdo_model", "bSO", "do_no", "GROUP_CONCAT(DISTINCT x.so_no) AS `so_no`,", "", $modelWhereClause) . "
     LEFT JOIN
       `debtor` AS c
     ON a.debtor_code=c.code
@@ -141,12 +144,13 @@
       $doWhereClause
     UNION
     SELECT
+      \"\" AS `so_no`,
       " . getColumns("a.stock_out_date", "\"\"", "\"\"", "a.id", "a.stock_out_no") . "
     FROM
       `stock_out_header` AS a
-    " . joinModelTable("stock_out_model", "bM", "stock_out_no", "M", $modelWhereClause) . "
-    " . joinModelTable("stock_out_model", "bS", "stock_out_no", "S", $modelWhereClause) . "
-    " . joinModelTable("stock_out_model", "bO", "stock_out_no", "O", $modelWhereClause) . "
+    " . joinModelTable("stock_out_model", "bM", "stock_out_no", "", "M", $modelWhereClause) . "
+    " . joinModelTable("stock_out_model", "bS", "stock_out_no", "", "S", $modelWhereClause) . "
+    " . joinModelTable("stock_out_model", "bO", "stock_out_no", "", "O", $modelWhereClause) . "
     LEFT JOIN
       `debtor` AS c
     ON a.debtor_code=c.code

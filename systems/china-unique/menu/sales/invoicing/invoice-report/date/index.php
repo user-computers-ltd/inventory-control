@@ -13,10 +13,13 @@
   <head>
     <?php include_once SYSTEM_PATH . "includes/php/head.php"; ?>
     <link rel="stylesheet" href="style.css">
+    <style type="text/css" media="print">
+      @page { size: landscape }
+    </style>
   </head>
   <body>
     <?php include_once ROOT_PATH . "includes/components/menu/index.php"; ?>
-    <div class="page-wrapper">
+    <div class="page-wrapper landscape">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo SALES_INVOICE_REPORT_DATE_TITLE; ?></div>
       <form>
@@ -73,7 +76,8 @@
               <col style="width: 70px">
               <col>
               <col style="width: 70px">
-              <col style="width: 70px">
+              <col style="width: 170px">
+              <col style="width: 120px">
               <col style="width: 70px">
               <col style="width: 70px">
               <col style="width: 70px">
@@ -87,6 +91,7 @@
                 <th>Code</th>
                 <th>Client</th>
                 <th>DO No. / Stock Out No.</th>
+                <th>SO No.</th>
                 <th class="number">Qty</th>
                 <th class="number">Actual Cost (Exc. Tax)</th>
                 <th class="number">Net Sales Amount (Exc. Tax)</th>
@@ -125,6 +130,7 @@
                   $date = $incomeHeader["date"];
                   $doId = $incomeHeader["do_id"];
                   $doNo = $incomeHeader["do_no"];
+                  $soNos = join("", array_map(function ($s) { return "<div>$s</div>"; }, explode(",", $incomeHeader["so_no"])));
                   $stockOutId = $incomeHeader["stock_out_id"];
                   $stockOutNo = $incomeHeader["stock_out_no"];
                   $debtorCode = $incomeHeader["debtor_code"];
@@ -174,6 +180,7 @@
                           <td title=\"$debtorCode\" rowspan=\"$invoiceCount\">$debtorCode</td>
                           <td title=\"$debtorName\" rowspan=\"$invoiceCount\">$debtorName</td>
                           $voucherColumn
+                          <td rowspan=\"$invoiceCount\">$soNos</td>
                           <td title=\"$qty\" rowspan=\"$invoiceCount\" class=\"number\">" . number_format($qty) . "</td>
                           <td title=\"$cost\" rowspan=\"$invoiceCount\" class=\"number\">" . number_format($cost, 2) . "</td>
                           <td title=\"$net\" rowspan=\"$invoiceCount\" class=\"number\">" . number_format($net, 2) . "</td>
@@ -202,6 +209,7 @@
                 <th></th>
                 <th></th>
                 <th></th>
+                <th></th>
                 <th class="number">Total:</th>
                 <th class="number"><?php echo number_format(sumType($totalQty)); ?></th>
                 <th class="number"><?php echo number_format(sumType($totalCost), 2); ?></th>
@@ -214,6 +222,7 @@
               </tr>
               <?php if (!assigned($productTypes)) : ?>
                 <tr>
+                  <th></th>
                   <th></th>
                   <th></th>
                   <th></th>
@@ -231,6 +240,7 @@
                   <th></th>
                   <th></th>
                   <th></th>
+                  <th></th>
                   <th class="number">S:</th>
                   <th class="number"><?php echo number_format($totalQty["S"]); ?></th>
                   <th class="number"><?php echo number_format($totalCost["S"], 2); ?></th>
@@ -242,6 +252,7 @@
                   <th></th>
                 </tr>
                 <tr>
+                  <th></th>
                   <th></th>
                   <th></th>
                   <th></th>
