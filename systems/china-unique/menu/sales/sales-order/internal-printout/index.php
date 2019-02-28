@@ -50,6 +50,7 @@
                 <thead>
                   <tr></tr>
                   <tr>
+                    <th>#</th>
                     <th>Brand</th>
                     <th>Model No.</th>
                     <th class="number">Price</th>
@@ -65,6 +66,7 @@
                     $subtotalSum = 0;
                     $discount = $soHeader["discount"];
                     $models = $soModels[$soHeader["so_no"]];
+                    $index = 1;
 
                     for ($i = 0; $i < count($models); $i++) {
                       $model = $models[$i];
@@ -85,6 +87,7 @@
                         $qtyDelivered = max(0, $qtyDelivered - $occurrences[$j]);
                         echo "
                           <tr>
+                            <td>$index</td>
                             <td>$brand</td>
                             <td>$modelNo</td>
                             <td class=\"number\">" . number_format($price, 2) . "</td>
@@ -93,11 +96,13 @@
                             <td class=\"number\">" . number_format($occurrences[$j] * $price, 2) . "</td>
                           </tr>
                         ";
+                        $index++;
                       }
                     }
                   ?>
                   <?php if ($discount > 0) : ?>
                     <tr>
+                      <td></td>
                       <td></td>
                       <td></td>
                       <td></td>
@@ -110,11 +115,13 @@
                       <td></td>
                       <td></td>
                       <td></td>
+                      <td></td>
                       <td class="number">Discount: <?php echo $discount; ?>%</td>
                       <td class="number"><?php echo number_format($subtotalSum * $discount / 100, 2); ?></td>
                     </tr>
                   <?php endif ?>
                   <tr>
+                    <th></th>
                     <th></th>
                     <th></th>
                     <th class="number">Total:</th>

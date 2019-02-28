@@ -98,7 +98,6 @@
 
   $editMode = assigned($id);
   $brands = query("SELECT code, name FROM `brand`");
-  $productTypes = array("M", "S", "O");
   $results = query("SELECT code, rate FROM `currency`");
   $currencies = array();
   foreach ($results as $currency) {

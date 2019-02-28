@@ -8,9 +8,9 @@
   $discount = $_POST["discount"];
   $brandCodes = $_POST["brand_code"];
   $modelNos = $_POST["model_no"];
-  $qtys = $_POST["qty_requested"];
+  $qtys = $_POST["qty"];
   $prices = $_POST["price"];
-  $qtysAllotted = $_POST["qty"];
+  $qtysAllotted = $_POST["qty_allotted"];
   $remarks = $_POST["remarks"];
 
   $debtor = query("SELECT english_name AS name FROM `debtor` WHERE code=\"$debtorCode\"")[0];

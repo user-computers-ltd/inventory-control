@@ -47,6 +47,7 @@
             <thead>
               <tr></tr>
               <tr>
+                <th>#</th>
                 <th>品牌</th>
                 <th>型號</th>
                 <th class="number">數量</th>
@@ -64,6 +65,7 @@
                 $totalAmount = 0;
 
                 for ($i = 0; $i < count($items); $i++) {
+                  $index = $i + 1;
                   $item = $items[$i];
                   $brand = $item["brand"];
                   $modelNo = $item["model_no"];
@@ -78,6 +80,7 @@
 
                   echo "
                     <tr>
+                      <td>$index</td>
                       <td>$brand</td>
                       <td>$modelNo</td>
                       <td class=\"number\">" . number_format($qty) . "</td>
@@ -100,12 +103,14 @@
                   <th></th>
                   <th></th>
                   <th></th>
+                  <th></th>
                   <?php if ($showPrice) : ?>
                     <th></th>
                     <th class="number"><?php echo number_format($totalAmount, 2); ?></th>
                   <?php endif ?>
                 </tr>
                 <tr>
+                  <th></th>
                   <th></th>
                   <th></th>
                   <th></th>
@@ -117,6 +122,7 @@
                 </tr>
               <?php endif ?>
               <tr>
+                <th></th>
                 <th></th>
                 <th class="number">總數量:</th>
                 <th class="number"><?php echo number_format($totalQty); ?></th>

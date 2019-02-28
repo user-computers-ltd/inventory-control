@@ -49,9 +49,9 @@
                 <td>
                   <select name="product_type">
                     <?php
-                      foreach ($productTypes as $p) {
-                        $selected = $productType == $p ? "selected" : "";
-                        echo "<option value=\"$p\" $selected>$p</option>";
+                      foreach ($PRODUCT_TYPES as $type) {
+                        $selected = $productType == $type ? "selected" : "";
+                        echo "<option value=\"$type\" $selected>$type</option>";
                       }
                     ?>
                   </select>

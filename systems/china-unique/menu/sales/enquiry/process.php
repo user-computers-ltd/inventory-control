@@ -76,12 +76,13 @@
   $inCharge = $_POST["in_charge"];
   $currencyCode = assigned($_POST["currency_code"]) ? $_POST["currency_code"] : COMPANY_CURRENCY;
   $exchangeRate = assigned($_POST["exchange_rate"]) ? $_POST["exchange_rate"] : $currencies[$currencyCode];
+  $showPrice = assigned($_POST["show_price"]) && $_POST["show_price"] === "on";
   $discount = assigned($_POST["discount"]) ? $_POST["discount"] : 0;
   $brandCodes = $_POST["brand_code"];
   $modelNos = $_POST["model_no"];
-  $qtys = $_POST["qty_requested"];
+  $qtys = $_POST["qty"];
   $prices = $_POST["price"];
-  $qtysAllotted = $_POST["qty"];
+  $qtysAllotted = $_POST["qty_allotted"];
   $remarks = $_POST["remarks"];
   $soModels = array();
 

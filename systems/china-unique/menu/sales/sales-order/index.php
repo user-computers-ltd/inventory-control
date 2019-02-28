@@ -109,6 +109,7 @@
           <button type="button" onclick="addItem()">Add</button>
           <table id="so-models">
             <colgroup>
+              <col style="width: 30px">
               <col>
               <col>
               <col>
@@ -118,6 +119,7 @@
             </colgroup>
             <thead>
               <tr>
+                <th>#</th>
                 <th>Model no.</th>
                 <th>Brand code</th>
                 <th class="number">Quantity</th>
@@ -128,19 +130,20 @@
             </thead>
             <tfoot>
               <tr class="discount-row">
-                <td colspan="3"></td>
+                <td colspan="4"></td>
                 <th></th>
                 <th id="sub-total-amount" class="number"></th>
                 <td></td>
               </tr>
               <tr class="discount-row">
-                <td colspan="2"></td>
+                <td colspan="3"></td>
                 <td class="number">Discount:</td>
                 <td id="discount-percentage" class="number"></td>
                 <td id="discount-amount" class="number"></td>
                 <td></td>
               </tr>
               <tr>
+                <th></th>
                 <th></th>
                 <th class="number">Total:</th>
                 <th id="total-qty" class="number"></th>
@@ -235,6 +238,7 @@
 
               var rowInnerHTML =
                   "<tr>"
+                + "<td>" + (i + 1) + "</td>"
                 + "<td>"
                   + "<input "
                     + "class=\"model-no\" "
@@ -513,7 +517,10 @@
               var price = soModel["price"];
 
               updateModel(i, getModels(modelNo, brandCode)[0]);
-              updatePrice(i, price);
+
+              if (price !== "") {
+                updatePrice(i, price);
+              }
             }
 
             render();

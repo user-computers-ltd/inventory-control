@@ -44,6 +44,7 @@
         <?php if (count($items) > 0) : ?>
           <table class="enquiry-models">
             <colgroup>
+              <col style="width: 30px">
               <col style="width: 80px">
               <col>
               <col style="width: 80px">
@@ -57,6 +58,7 @@
             <thead>
               <tr></tr>
               <tr>
+                <th rowspan="2">#</th>
                 <th rowspan="2">Brand</th>
                 <th rowspan="2">Model No.</th>
                 <th colspan="7" class="quantity">Quantity</th>
@@ -80,6 +82,7 @@
                 $totalQtyAllotted = 0;
 
                 for ($i = 0; $i < count($items); $i++) {
+                  $index = $i + 1;
                   $item = $items[$i];
                   $brand = $item["brand"];
                   $modelNo = $item["model_no"];
@@ -99,6 +102,7 @@
 
                   echo "
                     <tr>
+                      <td>$index</td>
                       <td>$brand</td>
                       <td>$modelNo</td>
                       <td class=\"number\">" . number_format($qty) . "</td>
@@ -113,6 +117,7 @@
                 }
               ?>
               <tr>
+                <th></th>
                 <th></th>
                 <th class="number">Total:</th>
                 <th class="number"><?php echo number_format($totalQty); ?></th>

@@ -131,6 +131,7 @@
         <button type="button" onclick="addItem()">Add</button>
         <table id="enquiry-models">
           <colgroup>
+            <col style="width: 30px">
             <col>
             <col style="width: 80px">
             <col style="width: 60px">
@@ -146,12 +147,14 @@
           </colgroup>
           <thead>
             <tr>
+              <th rowspan="2">#</th>
               <th rowspan="2">Model no.</th>
               <th rowspan="2">Brand code</th>
               <th colspan="7" class="quantity">Quantity</th>
               <th rowspan="2" class="number option-column hide">Price</th>
               <th rowspan="2" class="number option-column hide">Subtotal</th>
               <th rowspan="2"></th>
+            </tr>
             <tr>
               <th class="number">Request</th>
               <th class="number">On Hand</th>
@@ -164,13 +167,13 @@
           </thead>
           <tfoot>
             <tr class="discount-row">
-              <td colspan="9"></td>
+              <td colspan="10"></td>
               <th></th>
               <th id="sub-total-amount" class="number"></th>
               <td></td>
             </tr>
             <tr class="discount-row">
-              <td colspan="8"></td>
+              <td colspan="9"></td>
               <td class="number">Discount:</td>
               <td id="discount-percentage" class="number"></td>
               <td id="discount-amount" class="number"></td>
@@ -178,13 +181,13 @@
             </tr>
             <tr>
               <th></th>
+              <th></th>
               <th class="number">Total:</th>
               <th id="total-qty" class="number"></th>
               <th colspan="3"></th>
               <th id="total-qty-allotted" class="number"></th>
-              <th colspan="2"></th>
+              <th colspan="3"></th>
               <th id="total-amount" class="number"></th>
-              <th></th>
               <th></th>
             </tr>
           </tfoot>
@@ -271,6 +274,7 @@
 
             var rowInnerHTML =
                 "<tr>"
+              + "<td>" + (i + 1) + "</td>"
               + "<td>"
                 + "<input "
                   + "class=\"model-no\" "
@@ -313,10 +317,10 @@
                   + "class=\"qty number\" "
                   + "type=\"number\" "
                   + "min=\"0\" "
-                  + "name=\"qty_requested[]\" "
+                  + "name=\"qty[]\" "
                   + "value=\"" + soModel["qty"] + "\" "
                   + "onchange=\"onQuantityChange(event, " + i + ")\" "
-                  + "onfocus=\"onFieldFocused(" + i + ", 'qty_requested[]')\" "
+                  + "onfocus=\"onFieldFocused(" + i + ", 'qty[]')\" "
                   + "onblur=\"onFieldBlurred()\" "
                   + "required "
                 + "/>"
@@ -330,10 +334,10 @@
                   + "type=\"number\" "
                   + "min=\"0\" "
                   + "max=\"" + soModel["qty_available"] + "\" "
-                  + "name=\"qty[]\" "
+                  + "name=\"qty_allotted[]\" "
                   + "value=\"" + soModel["qty_allotted"] + "\" "
                   + "onchange=\"onQuantityAllottedChange(event, " + i + ")\" "
-                  + "onfocus=\"onFieldFocused(" + i + ", 'qty[]')\" "
+                  + "onfocus=\"onFieldFocused(" + i + ", 'qty_allotted[]')\" "
                   + "onblur=\"onFieldBlurred()\" "
                   + "onkeydown=\"onQuantityAllottedKeyDown(event, " + i + ")\" "
                   + "required "
@@ -354,6 +358,7 @@
                   + "onblur=\"onFieldBlurred()\" "
                   + "onkeydown=\"onPriceKeyDown(event, " + i + ")\" "
                   + "required "
+                  + (!showPrice ? "disabled hidden" : "")
                 + "/>"
               + "</td>"
               + "<td class=\"total-amount number\">" + soModel["total_amount"].toFixed(2) + "</td>"
@@ -479,6 +484,11 @@
 
           for (var i = 0; i < optionRows.length; i++) {
             toggleClass(optionRows[i], "hide", !showPrice);
+          }
+
+          for (var i = 0; i < optionFields.length; i++) {
+            optionFields[i].disabled = !showPrice;
+            optionFields[i].hidden = !showPrice;
           }
 
           for (var i = 0; i < optionColumns.length; i++) {
