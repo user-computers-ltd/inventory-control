@@ -34,8 +34,8 @@
                 ?>
               </select>
             </td>
-            <td class="debtor-name <?php echo $debtorCode != "1" ? "" : "show"; ?>">Name:</td>
-            <td class="debtor-name <?php echo $debtorCode != "1" ? "" : "show"; ?>">
+            <td class="debtor-name <?php echo $debtorCode !== "1" ? "" : "show"; ?>">Name:</td>
+            <td class="debtor-name <?php echo $debtorCode !== "1" ? "" : "show"; ?>">
               <input
                 name="debtor_name"
                 type="text"
@@ -114,7 +114,7 @@
                 type="radio"
                 value="normal_price"
                 onchange="onPriceStandardChange()"
-                checked
+                <?php echo $priceStandard === "normal_price" ? "checked" : ""; ?>
               />
               <label for="normal-price">Normal Price</label>
               <input
@@ -123,6 +123,7 @@
                 type="radio"
                 value="special_price"
                 onchange="onPriceStandardChange()"
+                <?php echo $priceStandard === "special_price" ? "checked" : ""; ?>
               />
               <label for="special-price">Special Price</label>
               <input
@@ -131,6 +132,7 @@
                 type="radio"
                 value="end_user_price"
                 onchange="onPriceStandardChange()"
+                <?php echo $priceStandard === "end_user_price" ? "checked" : ""; ?>
               />
               <label for="end-user-price">End User Price</label>
             </td>
@@ -635,8 +637,13 @@
             var soModel = soModels[i];
             var brandCode = soModel["brand_code"];
             var modelNo = soModel["model_no"];
+            var price = soModel["price"];
 
             updateModel(i, getModels(modelNo, brandCode)[0]);
+
+            if (typeof price !== "undefined") {
+              updatePrice(i, price);
+            }
           }
 
           render();

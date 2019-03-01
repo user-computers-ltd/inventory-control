@@ -10,7 +10,7 @@
   define("SALES_ORDER_PRINTOUT_URL", SALES_ORDER_URL . "printout/");
   define("SALES_ORDER_INTERNAL_PRINTOUT_URL", SALES_ORDER_URL . "internal-printout/");
   define("SALES_ORDER_SAVED_URL", SALES_ORDER_URL . "saved/");
-  define("SALES_ORDER_POSTED_URL", SALES_ORDER_URL . "posted/");
+  define("SALES_ORDER_CONFIRMED_URL", SALES_ORDER_URL . "confirmed/");
   define("SALES_ORDER_PRIORITY_URL", SALES_ORDER_URL . "priority/");
 
   define("SALES_SO_REPORT_URL", SALES_URL . "sales-order-report/");
@@ -63,7 +63,7 @@
   define("SALES_ORDER_TITLE", "(F1) Sales Order");
   define("SALES_ORDER_CREATE_TITLE", "(F1a) Create Sales Order");
   define("SALES_ORDER_SAVED_TITLE", "(F1b) Saved Sales Orders");
-  define("SALES_ORDER_POSTED_TITLE", "(F1c) Posted Sales Orders");
+  define("SALES_ORDER_CONFIRMED_TITLE", "(F1c) Confirmed Sales Orders");
   define("SALES_ORDER_PRIORITY_TITLE", "(F1d) Sales Order Priorities");
 
   define("SALES_SO_REPORT_TITLE", "(F2) Sales Order Report");
@@ -106,7 +106,7 @@
     SALES_ORDER_TITLE => array(
       SALES_ORDER_CREATE_TITLE              => SALES_ORDER_URL,
       SALES_ORDER_SAVED_TITLE               => SALES_ORDER_SAVED_URL,
-      SALES_ORDER_POSTED_TITLE              => SALES_ORDER_POSTED_URL,
+      SALES_ORDER_CONFIRMED_TITLE           => SALES_ORDER_CONFIRMED_URL,
       SALES_ORDER_PRIORITY_TITLE            => SALES_ORDER_PRIORITY_URL
     ),
     SALES_SO_REPORT_TITLE => array(

@@ -72,9 +72,10 @@
     $currencies[$currency["code"]] = $currency["rate"];
   }
 
-  $debtorCode = $_POST["debtor_code"];
+  $debtorCode = assigned($_POST["debtor_code"]) ? $_POST["debtor_code"] : "1";
   $debtorName = $_POST["debtor_name"];
   $inCharge = $_POST["in_charge"];
+  $priceStandard = assigned($_POST["price_standard"]) ? $_POST["price_standard"] : "normal_price";
   $currencyCode = assigned($_POST["currency_code"]) ? $_POST["currency_code"] : COMPANY_CURRENCY;
   $exchangeRate = assigned($_POST["exchange_rate"]) ? $_POST["exchange_rate"] : $currencies[$currencyCode];
   $showPrice = assigned($_POST["show_price"]) && $_POST["show_price"] === "on";

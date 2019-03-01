@@ -92,7 +92,7 @@
                   type="radio"
                   value="normal_price"
                   onchange="onPriceStandardChange()"
-                  checked
+                  <?php echo $priceStandard === "normal_price" ? "checked" : ""; ?>
                 />
                 <label for="normal-price">Normal Price</label>
                 <input
@@ -101,6 +101,7 @@
                   type="radio"
                   value="special_price"
                   onchange="onPriceStandardChange()"
+                  <?php echo $priceStandard === "special_price" ? "checked" : ""; ?>
                 />
                 <label for="special-price">Special Price</label>
                 <input
@@ -109,6 +110,7 @@
                   type="radio"
                   value="end_user_price"
                   onchange="onPriceStandardChange()"
+                  <?php echo $priceStandard === "end_user_price" ? "checked" : ""; ?>
                 />
                 <label for="end-user-price">End User Price</label>
               </td>
