@@ -5,7 +5,7 @@
   $debtorCode = $_POST["debtor_code"];
   $currencyCode = $_POST["currency_code"];
   $exchangeRate = $_POST["exchange_rate"];
-  $priceStandard = $_POST["price_standard"];
+  $priceStandard = assigned($_POST["price_standard"]) ? $_POST["price_standard"] : "normal_price";
   $discount = $_POST["discount"];
   $tax = $_POST["tax"];
   $priority = $_POST["priority"];
