@@ -16,7 +16,7 @@
     if ($action == "delete") {
       array_push($queries, "DELETE a FROM `so_model` AS a LEFT JOIN `so_header` AS b ON a.so_no=b.so_no WHERE $modelWhereClause");
       array_push($queries, "DELETE FROM `so_header` WHERE $headerWhereClause");
-    } else if ($action == "post") {
+    } else if ($action == "confirm") {
       array_push($queries, "UPDATE `so_header` SET status=\"CONFIRMED\" WHERE $headerWhereClause");
     } else if ($action == "print") {
       header("Location: " . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?$printoutParams");

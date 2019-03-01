@@ -174,7 +174,7 @@
           <?php endif ?>
           <button name="status" type="submit" value="<?php echo $status; ?>" formaction="<?php echo SALES_ORDER_PRINTOUT_URL; ?>">Print</button>
           <?php if ($status == "SAVED") : ?>
-            <button name="status" type="submit" value="POSTED">Post</button>
+            <button name="status" type="submit" value="CONFIRMED">Confirm</button>
             <button name="status" type="submit" value="DELETED">Delete</button>
           <?php endif ?>
         </form>

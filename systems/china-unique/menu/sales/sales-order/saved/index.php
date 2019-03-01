@@ -33,7 +33,7 @@
       </form>
       <?php if (count($soHeaders) > 0) : ?>
         <form method="post">
-          <button type="submit" name="action" value="post">Post</button>
+          <button type="submit" name="action" value="confirm">Confirm</button>
           <button type="submit" name="action" value="print">Print</button>
           <button type="submit" name="action" value="delete">Delete</button>
           <table id="so-results">
