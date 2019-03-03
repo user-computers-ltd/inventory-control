@@ -129,7 +129,7 @@
         warehouse_code, brand_code, model_no) AS g
     ON b.warehouse_code=g.warehouse_code AND a.brand_code=g.brand_code AND a.model_no=g.model_no
     WHERE
-      b.status=\"DO\"
+      (b.status=\"SAVED\" OR b.status=\"DO\")
       $whereClause
     ORDER BY
       b.creditor_code ASC,
