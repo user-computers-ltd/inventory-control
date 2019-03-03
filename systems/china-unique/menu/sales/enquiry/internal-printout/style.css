@@ -54,6 +54,12 @@
   opacity: 0.3;
 }
 
+.generation-date {
+  font-size: 13px;
+  margin: 10px 0px;
+  float: right;
+}
+
 .printout-button-wrapper form {
   display: inline-block;
 }

@@ -15,7 +15,6 @@
     A2210
   ");
   define("COMPANY_TEL", "0755 2360 4173");
-
   define("COMPANY_TAX", 16);
   define("COMPANY_CURRENCY", "RMB");
   define("MENU_DIRECTORY", ROOT_PATH . "systems/china-unique/menu");
@@ -38,11 +37,7 @@
     "S9" => "Cycle check (Loss)"
   );
 
-  $PRODUCT_TYPES = array(
-    "M",
-    "S",
-    "O"
-  );
+  $PRODUCT_TYPES = array("M", "S", "O");
 
   /* URL configurations. */
   define("SYSTEM_URL", BASE_URL . "systems/china-unique/");

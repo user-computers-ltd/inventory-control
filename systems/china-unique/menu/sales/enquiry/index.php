@@ -17,10 +17,16 @@
     <?php include_once ROOT_PATH . "includes/components/menu/index.php"; ?>
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
-      <div class="headline"><?php echo SALES_ENQUIRY_TITLE; ?></div>
+      <div class="headline"><?php echo $headline; ?></div>
       <form id="enquiry-form" method="post">
         <table id="enquiry-header">
           <tr>
+            <tr>
+              <td>Order No.:</td>
+              <td><input type="text" name="enquiry_no" value="<?php echo $enquiryNo; ?>" required /></td>
+              <td>Date:</td>
+              <td><input type="date" name="enquiry_date" value="<?php echo $enquiryDate; ?>" max="<?php echo date("Y-m-d"); ?>" required readonly /></td>
+            </tr>
             <td>Client:</td>
             <td>
               <select id="debtor-code" name="debtor_code" onchange="onDebtorCodeChange()" equired>
@@ -210,8 +216,14 @@
             <td><textarea id="remarks" name="remarks"><?php echo $remarks; ?></textarea></td>
           </tr>
         </table>
-        <button type="submit" formaction="<?php echo SALES_ENQUIRY_PRINTOUT_URL; ?>">Print</button>
+        <button name="status" type="submit" value="SAVED">Save</button>
+        <?php if (assigned($id)) : ?>
+          <button type="button" onclick="window.location.href = '<?php echo SALES_ENQUIRY_PRINTOUT_URL . "?id[]=" . $id; ?>'">Print</button>
+        <?php else : ?>
+          <button type="submit" formaction="<?php echo SALES_ENQUIRY_PRINTOUT_URL; ?>">Print</button>
+        <?php endif ?>
         <button type="submit" formaction="<?php echo SALES_ORDER_URL; ?>">Create Sales Order</button>
+        <button name="status" type="submit" value="DELETED">Delete</button>
       </form>
       <datalist id="model-list">
         <?php
@@ -231,7 +243,7 @@
         ?>
       </datalist>
       <script>
-        var soModels = <?php echo json_encode($soModels); ?>;
+        var enquiryModels = <?php echo json_encode($enquiryModels); ?>;
         var currencies = <?php echo json_encode($currencies); ?>;
         var brands = <?php echo json_encode($brands); ?>;
         var focusedRow = null;
@@ -256,7 +268,7 @@
 
         function getModels(modelNo, brandCode) {
           var brandCodeSearch = brandCode ? "[data-brand_code=\"" + brandCode + "\"]" : "";
-          var matchedModelElements = modelListElement.querySelectorAll("option[value=\"" + modelNo + "\"]" + brandCodeSearch);
+          var matchedModelElements = modelListElement.querySelectorAll("option[value=\"" + modelNo.toUpperCase() + "\"]" + brandCodeSearch);
           var models = [];
 
           for (var i = 0; i < matchedModelElements.length; i++) {
@@ -277,11 +289,11 @@
           var totalQtyAllotted = 0;
           var totalAmount = 0;
 
-          for (var i = 0; i < soModels.length; i++) {
-            var soModel = soModels[i];
-            var matchedModels = getModels(soModel["model_no"]);
+          for (var i = 0; i < enquiryModels.length; i++) {
+            var enquiryModel = enquiryModels[i];
+            var matchedModels = getModels(enquiryModel["model_no"]);
             var newRowElement = document.createElement("tr");
-            var insufficient = soModel["qty_available"] < soModel["qty"] ? "insufficient" : "";
+            var insufficient = enquiryModel["qty_available"] < enquiryModel["qty"] ? "insufficient" : "";
 
             var rowInnerHTML =
                 "<tr>"
@@ -292,7 +304,7 @@
                   + "type=\"text\" "
                   + "name=\"model_no[]\" "
                   + "list=\"model-list\" "
-                  + "value=\"" + soModel["model_no"] + "\" "
+                  + "value=\"" + enquiryModel["model_no"] + "\" "
                   + "onfocus=\"onFieldFocused(" + i + ", 'model_no[]')\" "
                   + "onblur=\"onModelNoChange(event, " + i + ")\" "
                   + "autocomplete=\"on\" "
@@ -303,7 +315,7 @@
                 + "<select "
                   + "class=\"brand-code\" "
                   + "name=\"brand_code[]\" "
-                  + "value=\"" + soModel["brand_code"] + "\" "
+                  + "value=\"" + enquiryModel["brand_code"] + "\" "
                   + "onchange=\"onBrandCodeChange(event, " + i + ")\" "
                   + "onfocus=\"onFieldFocused(" + i + ", 'brand_code[]')\" "
                   + "onblur=\"onFieldBlurred()\" "
@@ -312,7 +324,7 @@
 
             for (var j = 0; j < brands.length; j++) {
               var code = brands[j]["code"];
-              var selected = soModel["brand_code"] === code ? " selected" : "";
+              var selected = enquiryModel["brand_code"] === code ? " selected" : "";
               var disabled = matchedModels.map(function (model) {
                 return model["brand_code"];
               }).indexOf(code) === -1 ? " disabled hidden" : "";
@@ -329,24 +341,24 @@
                   + "type=\"number\" "
                   + "min=\"0\" "
                   + "name=\"qty[]\" "
-                  + "value=\"" + soModel["qty"] + "\" "
+                  + "value=\"" + enquiryModel["qty"] + "\" "
                   + "onchange=\"onQuantityChange(event, " + i + ")\" "
                   + "onfocus=\"onFieldFocused(" + i + ", 'qty[]')\" "
                   + "onblur=\"onFieldBlurred()\" "
                   + "required "
                 + "/>"
               + "</td>"
-              + "<td class=\"number\">" + soModel["qty_on_hand"] + "</td>"
-              + "<td class=\"number\">" + soModel["qty_on_hand_reserve"] + "</td>"
-              + "<td class=\"number " + insufficient + "\">" + soModel["qty_available"] + "</td>"
+              + "<td class=\"number\">" + enquiryModel["qty_on_hand"] + "</td>"
+              + "<td class=\"number\">" + enquiryModel["qty_on_hand_reserve"] + "</td>"
+              + "<td class=\"number " + insufficient + "\">" + enquiryModel["qty_available"] + "</td>"
               + "<td>"
                 + "<input "
                   + "class=\"qty number\" "
                   + "type=\"number\" "
                   + "min=\"0\" "
-                  + "max=\"" + soModel["qty_available"] + "\" "
+                  + "max=\"" + enquiryModel["qty_available"] + "\" "
                   + "name=\"qty_allotted[]\" "
-                  + "value=\"" + soModel["qty_allotted"] + "\" "
+                  + "value=\"" + enquiryModel["qty_allotted"] + "\" "
                   + "onchange=\"onQuantityAllottedChange(event, " + i + ")\" "
                   + "onfocus=\"onFieldFocused(" + i + ", 'qty_allotted[]')\" "
                   + "onblur=\"onFieldBlurred()\" "
@@ -354,8 +366,8 @@
                   + "required "
                 + "/>"
               + "</td>"
-              + "<td class=\"number\">" + soModel["qty_incoming"] + "</td>"
-              + "<td class=\"number\">" + soModel["qty_incoming_reserve"] + "</td>"
+              + "<td class=\"number\">" + enquiryModel["qty_incoming"] + "</td>"
+              + "<td class=\"number\">" + enquiryModel["qty_incoming_reserve"] + "</td>"
               + "<td>"
                 + "<input "
                   + "class=\"price number option-field\" "
@@ -363,7 +375,7 @@
                   + "step=\"0.01\" "
                   + "min=\"0\" "
                   + "name=\"price[]\" "
-                  + "value=\"" + soModel["price"].toFixed(2) + "\" "
+                  + "value=\"" + enquiryModel["price"].toFixed(2) + "\" "
                   + "onchange=\"onPriceChange(event, " + i + ")\" "
                   + "onfocus=\"onFieldFocused(" + i + ", 'price[]')\" "
                   + "onblur=\"onFieldBlurred()\" "
@@ -372,15 +384,15 @@
                   + (!showPrice ? "disabled hidden" : "")
                 + "/>"
               + "</td>"
-              + "<td class=\"total-amount number\">" + soModel["total_amount"].toFixed(2) + "</td>"
+              + "<td class=\"total-amount number\">" + enquiryModel["total_amount"].toFixed(2) + "</td>"
               + "<td><div class=\"remove\" onclick=\"removeSalesModel(" + i + ")\">×</div></td>"
               + "</tr>";
 
             newRowElement.innerHTML = rowInnerHTML;
 
-            totalQty += parseFloat(soModel["qty"]);
-            totalQtyAllotted += parseFloat(soModel["qty_allotted"]);
-            totalAmount += parseFloat(soModel["price"] * soModel["qty_allotted"]);
+            totalQty += parseFloat(enquiryModel["qty"]);
+            totalQtyAllotted += parseFloat(enquiryModel["qty_allotted"]);
+            totalAmount += parseFloat(enquiryModel["price"] * enquiryModel["qty_allotted"]);
 
             tableBodyElement.appendChild(newRowElement);
 
@@ -389,14 +401,14 @@
             }
           }
 
-          if (soModels.length === 0) {
+          if (enquiryModels.length === 0) {
             var rowElement = document.createElement("tr");
             rowElement.innerHTML = "<td colspan=\"12\" id=\"enquiry-entry-no-model\">No models</td>";
             tableBodyElement.appendChild(rowElement);
           }
 
           for (var k = 0; k < discountRowElements.length; k++) {
-            toggleClass(discountRowElements[k], "show", soModels.length > 0 && discount > 0);
+            toggleClass(discountRowElements[k], "show", enquiryModels.length > 0 && discount > 0);
           }
 
           subTotalAmountElement.innerHTML = totalAmount.toFixed(2);
@@ -416,63 +428,63 @@
         function updateModel (index, model = {}) {
           var priceStandard = document.querySelector("input[name='price_standard']:checked").value;
 
-          var soModel = soModels[index];
+          var enquiryModel = enquiryModels[index];
 
-          soModel["model_no"] = model["model_no"] || "";
-          soModel["brand_code"] = model["brand_code"] || "";
-          soModel["normal_price"] = parseFloat(model["normal_price"]) || 0;
-          soModel["special_price"] = parseFloat(model["special_price"]) || 0;
-          soModel["price"] = parseFloat(model[priceStandard]) || 0;
-          soModel["qty"] = soModel["qty"] || 0;
-          soModel["qty_on_hand"] = parseFloat(model["qty_on_hand"]) || 0;
-          soModel["qty_on_hand_reserve"] = parseFloat(model["qty_on_hand_reserve"]) || 0;
-          soModel["qty_incoming"] = parseFloat(model["qty_incoming"]) || 0;
-          soModel["qty_incoming_reserve"] = parseFloat(model["qty_incoming_reserve"]) || 0;
-          soModel["qty_available"] = Math.max(0, soModel["qty_on_hand"] - soModel["qty_on_hand_reserve"]);
-          soModel["qty_allotted"] = soModel["qty_allotted"] || 0;
-          soModel["total_amount"] = (soModel["qty_allotted"] || 0) * soModel["price"];
+          enquiryModel["model_no"] = model["model_no"] || "";
+          enquiryModel["brand_code"] = model["brand_code"] || "";
+          enquiryModel["normal_price"] = parseFloat(model["normal_price"]) || 0;
+          enquiryModel["special_price"] = parseFloat(model["special_price"]) || 0;
+          enquiryModel["price"] = parseFloat(model[priceStandard]) || 0;
+          enquiryModel["qty"] = enquiryModel["qty"] || 0;
+          enquiryModel["qty_on_hand"] = parseFloat(model["qty_on_hand"]) || 0;
+          enquiryModel["qty_on_hand_reserve"] = parseFloat(model["qty_on_hand_reserve"]) || 0;
+          enquiryModel["qty_incoming"] = parseFloat(model["qty_incoming"]) || 0;
+          enquiryModel["qty_incoming_reserve"] = parseFloat(model["qty_incoming_reserve"]) || 0;
+          enquiryModel["qty_available"] = Math.max(0, enquiryModel["qty_on_hand"] - enquiryModel["qty_on_hand_reserve"]);
+          enquiryModel["qty_allotted"] = enquiryModel["qty_allotted"] || 0;
+          enquiryModel["total_amount"] = (enquiryModel["qty_allotted"] || 0) * enquiryModel["price"];
         }
 
         function updateQuantity (index, qty = 0) {
-          var soModel = soModels[index];
+          var enquiryModel = enquiryModels[index];
 
-          soModel["qty"] = Math.max(0, parseFloat(qty));
-          soModel["qty_allotted"] = Math.min(soModel["qty"], soModel["qty_available"]);
+          enquiryModel["qty"] = Math.max(0, parseFloat(qty));
+          enquiryModel["qty_allotted"] = Math.min(enquiryModel["qty"], enquiryModel["qty_available"]);
 
-          if (soModel["price"]) {
-            soModel["total_amount"] = soModel["price"] * soModel["qty_allotted"];
+          if (enquiryModel["price"]) {
+            enquiryModel["total_amount"] = enquiryModel["price"] * enquiryModel["qty_allotted"];
           }
         }
 
         function updateQuantityAllotted (index, qty = 0) {
-          var soModel = soModels[index];
+          var enquiryModel = enquiryModels[index];
 
-          soModel["qty_allotted"] = Math.max(0, parseFloat(qty));
+          enquiryModel["qty_allotted"] = Math.max(0, parseFloat(qty));
 
-          if (soModel["price"]) {
-            soModel["total_amount"] = soModel["price"] * soModel["qty_allotted"];
+          if (enquiryModel["price"]) {
+            enquiryModel["total_amount"] = enquiryModel["price"] * enquiryModel["qty_allotted"];
           }
         }
 
         function updatePrice(index, price = 0) {
-          var soModel = soModels[index];
+          var enquiryModel = enquiryModels[index];
 
-          soModel["price"] = Math.max(0, parseFloat(price));
+          enquiryModel["price"] = Math.max(0, parseFloat(price));
 
-          if (soModel["qty_available"]) {
-            soModel["total_amount"] = soModel["price"] * soModel["qty_allotted"];
+          if (enquiryModel["qty_available"]) {
+            enquiryModel["total_amount"] = enquiryModel["price"] * enquiryModel["qty_allotted"];
           }
         }
 
         function addItem() {
-          soModels.push({});
+          enquiryModels.push({});
 
-          updateModel(soModels.length - 1);
+          updateModel(enquiryModels.length - 1);
           render();
         }
 
         function removeSalesModel(index) {
-          soModels.splice(index, 1);
+          enquiryModels.splice(index, 1);
           render();
         }
 
@@ -508,9 +520,9 @@
         }
 
         function onPriceStandardChange() {
-          for (var i = 0; i < soModels.length; i++) {
-            var soModel = soModels[i];
-            var matchedModel = getModels(soModel["model_no"], soModel["brand_code"])[0];
+          for (var i = 0; i < enquiryModels.length; i++) {
+            var enquiryModel = enquiryModels[i];
+            var matchedModel = getModels(enquiryModel["model_no"], enquiryModel["brand_code"])[0];
 
             if (matchedModel) {
               updateModel(i, matchedModel);
@@ -551,10 +563,10 @@
         function onModelNoChange(event, index) {
           var newModelNo = event.target.value;
           var matchedModel = getModels(newModelNo)[0];
-          var soModel = soModels[index];
+          var enquiryModel = enquiryModels[index];
 
-          if (soModel["model_no"] !== newModelNo) {
-            var existsAlready = soModels.filter(function (m) {
+          if (enquiryModel["model_no"] !== newModelNo) {
+            var existsAlready = enquiryModels.filter(function (m) {
               return newModelNo && m["model_no"] === newModelNo;
             }).length > 0;
 
@@ -569,7 +581,7 @@
         }
 
         function onBrandCodeChange(event, index) {
-          var modelNo = soModels[index]["model_no"];
+          var modelNo = enquiryModels[index]["model_no"];
           var brandCode = event.target.value;
           var matchedModel =
             modelNo &&
@@ -593,16 +605,16 @@
         }
 
         function onQuantityAllottedKeyDown(event, index) {
-          var soModel = soModels[index];
+          var enquiryModel = enquiryModels[index];
           var showPrice = showPriceElement.checked;
 
           if (
             !showPrice &&
-            index === soModels.length - 1 &&
+            index === enquiryModels.length - 1 &&
             (event.which || event.keyCode) === 9 &&
-            soModel["model_no"] &&
-            soModel["brand_code"] &&
-            soModel["qty"]
+            enquiryModel["model_no"] &&
+            enquiryModel["brand_code"] &&
+            enquiryModel["qty"]
           ) {
             updateQuantityAllotted(index, event.target.value);
             addItem();
@@ -615,15 +627,15 @@
         }
 
         function onPriceKeyDown(event, index) {
-          var soModel = soModels[index];
+          var enquiryModel = enquiryModels[index];
 
           if (
-            index === soModels.length - 1 &&
+            index === enquiryModels.length - 1 &&
             (event.which || event.keyCode) === 9 &&
-            soModel["model_no"] &&
-            soModel["brand_code"] &&
-            soModel["qty"] &&
-            soModel["price"]
+            enquiryModel["model_no"] &&
+            enquiryModel["brand_code"] &&
+            enquiryModel["qty"] &&
+            enquiryModel["price"]
           ) {
             updatePrice(index, event.target.value);
             addItem();
@@ -633,15 +645,15 @@
         window.onload = function () {
           document.querySelector("#enquiry-form").reset();
 
-          for (var i = 0; i < soModels.length; i++) {
-            var soModel = soModels[i];
-            var brandCode = soModel["brand_code"];
-            var modelNo = soModel["model_no"];
-            var price = soModel["price"];
+          for (var i = 0; i < enquiryModels.length; i++) {
+            var enquiryModel = enquiryModels[i];
+            var brandCode = enquiryModel["brand_code"];
+            var modelNo = enquiryModel["model_no"];
+            var price = enquiryModel["price"];
 
             updateModel(i, getModels(modelNo, brandCode)[0]);
 
-            if (typeof price !== "undefined") {
+            if (price !== -1) {
               updatePrice(i, price);
             }
           }
