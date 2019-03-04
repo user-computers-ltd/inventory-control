@@ -67,10 +67,13 @@
               <col style="width: 170px">
               <col style="width: 120px">
               <col style="width: 70px">
+              <col style="width: 80px">
+              <col style="width: 80px">
               <col style="width: 70px">
+              <col style="width: 80px">
               <col style="width: 70px">
-              <col style="width: 70px">
-              <col style="width: 70px">
+              <col>
+              <col>
             </colgroup>
             <thead>
               <tr></tr>
@@ -85,8 +88,9 @@
                 <th class="number">Net Sales Amount (Exc. Tax)</th>
                 <th class="number">PM %</th>
                 <th class="number">Total Sales Amt (Inc. Tax)</th>
+                <th>Inv. Date</th>
                 <th class="number">Inv. Amount</th>
-                <th>Invoice No.</th>
+                <th>Inv. No.</th>
               </tr>
             </thead>
             <tbody>
@@ -137,6 +141,7 @@
 
                   for ($j = 0; $j < $invoiceCount; $j++) {
                     $invoiceAmount = $invoiceAmounts[$j];
+                    $invoiceDate = $invoiceDates[$j];
                     $invoiceNo = $invoiceNos[$j];
                     $invoiceId = $invoiceIds[$j];
                     $totalInvAmount += $invoiceAmount;
@@ -160,6 +165,7 @@
                           <td title=\"$net\" rowspan=\"$invoiceCount\" class=\"number\">" . number_format($net, 2) . "</td>
                           <td title=\"$profit\" rowspan=\"$invoiceCount\" class=\"number\">" . number_format($profit, 2) . "%</td>
                           <td title=\"$amount\" rowspan=\"$invoiceCount\" class=\"number\">" . number_format($amount, 2) . "</td>
+                          <td title=\"$invoiceDate\">$invoiceDate</td>
                           <td title=\"$invoiceAmount\" class=\"number\">" . number_format($invoiceAmount, 2) . "</td>
                           <td title=\"$invoiceNo\"><a class=\"link\" href=\"" . SALES_INVOICE_PRINTOUT_URL . "?id[]=$invoiceId\">$invoiceNo</a></td>
                         </tr>
@@ -167,6 +173,7 @@
                     } else {
                       echo "
                         <tr>
+                          <td title=\"$invoiceDate\">$invoiceDate</td>
                           <td title=\"$invoiceAmount\" class=\"number\">" . number_format($invoiceAmount, 2) . "</td>
                           <td title=\"$invoiceNo\"><a class=\"link\" href=\"" . SALES_INVOICE_PRINTOUT_URL . "?id[]=$invoiceId\">$invoiceNo</a></td>
                         </tr>
@@ -188,8 +195,8 @@
                 <th class="number"><?php echo number_format($totalNet, 2); ?></th>
                 <th class="number"><?php echo number_format($averagePM, 2); ?>%</th>
                 <th class="number"><?php echo number_format($totalSales, 2); ?></th>
+                <th></th>
                 <th class="number"><?php echo number_format($totalInvAmount, 2); ?></th>
-                <th class="number"></th>
                 <th></th>
               </tr>
             </tbody>

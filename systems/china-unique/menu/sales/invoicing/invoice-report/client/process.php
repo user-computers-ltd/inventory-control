@@ -95,11 +95,11 @@
     ON a.debtor_code=c.code
     LEFT JOIN
       (SELECT
-        x.do_no                       AS `do_no`,
-        GROUP_CONCAT(y.invoice_date)  AS `invoice_dates`,
-        GROUP_CONCAT(y.id)            AS `invoice_ids`,
-        GROUP_CONCAT(x.invoice_no)    AS `invoice_nos`,
-        GROUP_CONCAT(x.amount)        AS `invoice_amounts`
+        x.do_no                                                   AS `do_no`,
+        GROUP_CONCAT(DATE_FORMAT(y.invoice_date, '%d-%m-%Y'))     AS `invoice_dates`,
+        GROUP_CONCAT(y.id)                                        AS `invoice_ids`,
+        GROUP_CONCAT(x.invoice_no)                                AS `invoice_nos`,
+        GROUP_CONCAT(x.amount)                                    AS `invoice_amounts`
       FROM
         `out_inv_model` AS x
       LEFT JOIN
@@ -172,11 +172,11 @@
     ON a.debtor_code=c.code
     LEFT JOIN
       (SELECT
-        x.stock_out_no                AS `stock_out_no`,
-        GROUP_CONCAT(y.invoice_date)  AS `invoice_dates`,
-        GROUP_CONCAT(y.id)            AS `invoice_ids`,
-        GROUP_CONCAT(x.invoice_no)    AS `invoice_nos`,
-        GROUP_CONCAT(x.amount)        AS `invoice_amounts`
+        x.stock_out_no                                            AS `stock_out_no`,
+        GROUP_CONCAT(DATE_FORMAT(y.invoice_date, '%d-%m-%Y'))     AS `invoice_dates`,
+        GROUP_CONCAT(y.id)                                        AS `invoice_ids`,
+        GROUP_CONCAT(x.invoice_no)                                AS `invoice_nos`,
+        GROUP_CONCAT(x.amount)                                    AS `invoice_amounts`
       FROM
         `out_inv_model` AS x
       LEFT JOIN

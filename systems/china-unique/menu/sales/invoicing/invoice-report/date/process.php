@@ -107,11 +107,11 @@
     return "
       LEFT JOIN
         (SELECT
-          x.$columnName                 AS `$columnName`,
-          GROUP_CONCAT(y.invoice_date)  AS `invoice_dates`,
-          GROUP_CONCAT(y.id)            AS `invoice_ids`,
-          GROUP_CONCAT(x.invoice_no)    AS `invoice_nos`,
-          GROUP_CONCAT(x.amount)        AS `invoice_amounts`
+          x.$columnName                                           AS `$columnName`,
+          GROUP_CONCAT(DATE_FORMAT(y.invoice_date, '%d-%m-%Y'))   AS `invoice_dates`,
+          GROUP_CONCAT(y.id)                                      AS `invoice_ids`,
+          GROUP_CONCAT(x.invoice_no)                              AS `invoice_nos`,
+          GROUP_CONCAT(x.amount)                                  AS `invoice_amounts`
         FROM
           `out_inv_model` AS x
         LEFT JOIN
