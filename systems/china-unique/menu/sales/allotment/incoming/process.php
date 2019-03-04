@@ -339,7 +339,7 @@
     FROM
       `ia_header`
     WHERE
-      status=\"DO\"
+      status=\"DO\" OR status=\"SAVED\"
     ORDER BY
       ia_no ASC
   ");
