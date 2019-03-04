@@ -52,6 +52,7 @@
 
   $filterIaNos = $_GET["filter_ia_no"];
   $filterDebtorCodes = $_GET["filter_debtor_code"];
+  $filterSONos = $_GET["filter_so_no"];
 
   $whereClause = "";
 
@@ -67,6 +68,13 @@
       AND (" . join(" AND ", array_map(function ($i) { return "y.debtor_code!=\"$i\""; }, $filterDebtorCodes)) . ")";
   } else {
     $whereSoAllotmentClause = $whereSoAllotmentClause . " AND y.debtor_code=\"\"";
+  }
+
+  if (assigned($filterSONos) && count($filterSONos) > 0) {
+    $whereSoAllotmentClause = $whereSoAllotmentClause . "
+      AND (" . join(" AND ", array_map(function ($i) { return "y.so_no!=\"$i\""; }, $filterSONos)) . ")";
+  } else {
+    $whereSoAllotmentClause = $whereSoAllotmentClause . " AND y.so_no=\"\"";
   }
 
   $results = query("
@@ -199,6 +207,11 @@
   if (assigned($filterDebtorCodes) && count($filterDebtorCodes) > 0) {
     $whereClause = $whereClause . "
       AND (" . join(" OR ", array_map(function ($i) { return "b.debtor_code=\"$i\""; }, $filterDebtorCodes)) . ")";
+  }
+
+  if (assigned($filterSONos) && count($filterSONos) > 0) {
+    $whereClause = $whereClause . "
+      AND (" . join(" OR ", array_map(function ($i) { return "a.so_no=\"$i\""; }, $filterSONos)) . ")";
   }
 
   $results = query("
@@ -344,48 +357,33 @@
       ia_no ASC
   ");
 
-  $filterWhereClause = "";
-
-  if (assigned($filterIaNos) && count($filterIaNos) > 0) {
-    $filterWhereClause = $filterWhereClause . "
-      AND (" . join(" OR ", array_map(function ($i) { return "y.ia_no=\"$i\""; }, $filterIaNos)) . ")";
-  } else if (count($ias) > 0) {
-    $filterWhereClause = $filterWhereClause . "
-      AND (" . join(" OR ", array_map(function ($ia) { return "y.ia_no=\"" . $ia["ia_no"] . "\""; }, $ias)) . ")";
-  }
-
   $debtors = query("
     SELECT DISTINCT
-      a.debtor_code                       AS `code`,
-      IFNULL(b.english_name, 'Unknown')   AS `name`
+      code            AS `code`,
+      english_name    AS `name`
+    FROM
+      `debtor`
+    ORDER BY
+      code ASC
+  ");
+
+  $soNos = query("
+    SELECT DISTINCT
+      a.so_no            AS `so_no`
     FROM
       `so_header` AS a
     LEFT JOIN
-      `debtor` AS b
-    ON a.debtor_code=b.code
-    LEFT JOIN
       (SELECT
-        z.so_no                 AS `so_no`,
-        SUM(z.qty_outstanding)  AS `qty_outstanding`
+        so_no                 AS `so_no`,
+        SUM(qty_outstanding)  AS `qty_outstanding`
       FROM
-        (SELECT
-          x.so_no,
-          x.qty_outstanding
-        FROM
-          `so_model` AS x
-        LEFT JOIN
-          `ia_model` AS y
-        ON
-          x.brand_code=y.brand_code AND x.model_no=y.model_no
-        WHERE
-          y.ia_no IS NOT NULL
-          $filterWhereClause) AS z
+        `so_model`
       GROUP BY
-        z.so_no) AS c
-    ON a.so_no=c.so_no
+        so_no) AS b
+    ON a.so_no=b.so_no
     WHERE
-      c.qty_outstanding > 0 AND a.status=\"CONFIRMED\"
+      b.qty_outstanding > 0
     ORDER BY
-      a.debtor_code ASC
+      a.so_no ASC
   ");
 ?>

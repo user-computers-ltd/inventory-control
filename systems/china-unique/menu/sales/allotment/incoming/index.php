@@ -22,6 +22,7 @@
           <tr>
             <th>DO No.:</th>
             <th>Client:</th>
+            <th>SO No.:</th>
           </tr>
           <tr>
             <td>
@@ -43,6 +44,17 @@
                     $name = $debtor["name"];
                     $selected = assigned($filterDebtorCodes) && in_array($code, $filterDebtorCodes) ? "selected" : "";
                     echo "<option value=\"$code\" $selected>$code - $name</option>";
+                  }
+                ?>
+              </select>
+            </td>
+            <td>
+              <select name="filter_so_no[]" multiple>
+                <?php
+                  foreach ($soNos as $soNo) {
+                    $no = $soNo["so_no"];
+                    $selected = assigned($filterSONos) && in_array($no, $filterSONos) ? "selected" : "";
+                    echo "<option value=\"$no\" $selected>$no</option>";
                   }
                 ?>
               </select>
