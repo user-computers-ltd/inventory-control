@@ -43,6 +43,7 @@
               <col style="width: 70px">
               <col>
               <col>
+              <col style="width: 60px">
               <col style="width: 80px">
               <col style="width: 80px">
               <col style="width: 80px">
@@ -56,6 +57,7 @@
                 <th>Date</th>
                 <th>Order No.</th>
                 <th>Client</th>
+                <th>Price Category</th>
                 <th class="number">Total Qty</th>
                 <th class="number">Discount</th>
                 <th class="number">Currency</th>
@@ -74,6 +76,7 @@
                   $date = $doHeader["date"];
                   $debtor = $doHeader["debtor"];
                   $doNo = $doHeader["do_no"];
+                  $priceCategory = $doHeader["price_category"];
                   $qty = $doHeader["qty"];
                   $discount = $doHeader["discount"];
                   $currency = $doHeader["currency"];
@@ -89,6 +92,7 @@
                       <td title=\"$date\">$date</td>
                       <td title=\"$doNo\"><a class=\"link\" href=\"" . SALES_DELIVERY_ORDER_URL . "?id=$doId\">$doNo</a></td>
                       <td title=\"$debtor\">$debtor</td>
+                      <td title=\"$priceCategory\">$priceCategory</td>
                       <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
                       <td title=\"$discount\" class=\"number\">" . number_format($discount, 2) . "%</td>
                       <td title=\"$currency\" class=\"number\">$currency</td>
@@ -100,6 +104,7 @@
               ?>
               <tr>
                 <th class="web-only"></th>
+                <th></th>
                 <th></th>
                 <th></th>
                 <th class="number">Total:</th>
