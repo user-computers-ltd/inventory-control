@@ -65,7 +65,7 @@
         </table>
       </form>
       <?php if (count($stockResults) > 0) : ?>
-        <form method="post">
+        <form method="post" class="stock-form">
           <button type="submit">Save</button>
           <?php
             foreach ($stockResults as $warehouseCode => $warehouse) {
@@ -76,6 +76,9 @@
                 <div class=\"warehouse\">
                   <h4>$warehouseCode - $warehouseName</h4>
                   <table class=\"stock-header\">
+                    <tr>
+                      <td>Reserve: <input data-warehouse_code=\"$warehouseCode\" type=\"number\" class=\"reserve-percentage\" min=\"0\" max=\"100\" value=\"0\"/><span>%</span></td>
+                    </tr>
                     <tr>
                       <td>
                         <button type=\"button\" class=\"header-button\" onclick=\"allocateByPriorities('$warehouseCode')\">Allocate by priorities</button>
@@ -193,13 +196,24 @@
                       <tr>
                         <th></th>
                         <th class=\"number\">Total:</th>
-                        <th class=\"number\">$totalQty</th>
+                        <th class=\"number total-qty\">$totalQty</th>
                         <th></th>
                         <th></th>
                         <th></th>
                         <th></th>
                         <th></th>
                         <th class=\"total-allot-qty number\"></th>
+                      </tr>
+                      <tr>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th class=\"total-allot-qty-p number\"></th>
                       </tr>
                     </tbody>
                   </table>
@@ -312,16 +326,16 @@
           allotments[warehouseCode][brandCode][modelNo] &&
           allotments[warehouseCode][brandCode][modelNo][soNo]
         ) {
+          var reservePercentage = document.querySelector("input.reserve-percentage[data-warehouse_code=\"" + warehouseCode + "\"]").value || 0;
           var warehouseSelector = ".stock-results[data-warehouse_code=\"" + warehouseCode + "\"]";
           var iaModelSelector = warehouseSelector + " .stock-model[data-brand_code=\"" + brandCode + "\"][data-model_no=\"" + modelNo + "\"]";
           var outstandingQtyElement = document.querySelector(iaModelSelector + " .outstanding-qty[data-so_no=\"" + soNo + "\"]");
           var allotQtyElement = document.querySelector(iaModelSelector + " .allot-qty[data-so_no=\"" + soNo + "\"]");
-
           var allotment = allotments[warehouseCode][brandCode][modelNo][soNo];
           var allotQty = parseFloat(allotment["qty"]);
           var plNo = allotment["do_no"] ? allotment["do_no"] : "";
           var outstandingQty = parseFloat(soModels[brandCode][modelNo][soNo]["qty_outstanding"]);
-          var availableQty = parseFloat(stockModels[warehouseCode][brandCode][modelNo]["qty"]);
+          var availableQty = Math.floor(parseFloat(stockModels[warehouseCode][brandCode][modelNo]["qty"]) * (1 - reservePercentage / 100));
           var otherAllotedIaQty = getOtherWarehouseAllottedQty(warehouseCode, brandCode, modelNo, soNo);
           var otherAllotedSoQty = getOtherSoAllottedQty(warehouseCode, brandCode, modelNo, soNo);
           var allottableIaQty = availableQty - otherAllotedSoQty;
@@ -357,9 +371,11 @@
 
       function renderWarehouseAllotmentSum(warehouseCode) {
         var warehouseSelector = ".stock-results[data-warehouse_code=\"" + warehouseCode + "\"]";
+        var totalQtyElement = document.querySelector(warehouseSelector + " .total-qty");
         var totalAllotQtyElement = document.querySelector(warehouseSelector + " .total-allot-qty");
+        var totalAllotQtyPElement = document.querySelector(warehouseSelector + " .total-allot-qty-p");
         var totalModelAllotQtyElements = document.querySelectorAll(warehouseSelector + " .total-model-allot-qty");
-
+        var totalQty = totalQtyElement.innerHTML;
         var totalAllotQty = 0;
 
         for (var i = 0; i < totalModelAllotQtyElements.length; i++) {
@@ -367,6 +383,7 @@
         }
 
         totalAllotQtyElement.innerHTML = totalAllotQty;
+        totalAllotQtyPElement.innerHTML = "(" + (totalAllotQty / totalQty * 100).toFixed(2) + "%)";
       }
 
       function onQtyChange(event, warehouseCode, brandCode, modelNo, soNo) {
@@ -448,12 +465,13 @@
         resetAllotments(warehouseCode);
 
         var warehouseModelElements = document.querySelectorAll(".stock-results[data-warehouse_code=\"" + warehouseCode + "\"] .stock-model");
+        var reservePercentage = document.querySelector("input.reserve-percentage[data-warehouse_code=\"" + warehouseCode + "\"]").value || 0;
 
         for (var i = 0; i < warehouseModelElements.length; i++) {
           var warehouseModelElement = warehouseModelElements[i];
           var brandCode = warehouseModelElement.dataset.brand_code;
           var modelNo = warehouseModelElement.dataset.model_no;
-          var availableQty = stockModels[warehouseCode][brandCode][modelNo]["qty"];
+          var availableQty = stockModels[warehouseCode][brandCode][modelNo]["qty"] * (1 - reservePercentage / 100);
           var allotQtyElement = warehouseModelElement.querySelector(".allot-qty");
 
           if (allotQtyElement) {
@@ -506,7 +524,15 @@
         render();
       }
 
-      window.onload = function () { render(); }
+      window.onload = function () {
+        var stockForms = document.querySelectorAll(".stock-form");
+
+        for (var i = 0; i < stockForms.length; i++) {
+          stockForms[i].reset();
+        }
+
+        render();
+      }
     </script>
   </body>
 </html>

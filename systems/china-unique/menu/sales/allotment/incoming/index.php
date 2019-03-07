@@ -64,7 +64,7 @@
         </table>
       </form>
       <?php if (count($iaResults) > 0) : ?>
-        <form method="post">
+        <form method="post" class="ia-form">
           <button type="submit">Save</button>
           <?php
             foreach ($iaResults as $creditorCode => $creditor) {
@@ -88,6 +88,10 @@
                         <td>$iaNo</td>
                         <td>Date:</td>
                         <td>$date</td>
+                      </tr>
+                      <tr>
+                        <td>Reserve:</td>
+                        <td><input data-ia_no=\"$iaNo\" type=\"number\" class=\"reserve-percentage\" min=\"0\" max=\"100\" value=\"0\"/><span>%</span></td>
                       </tr>
                       <tr>
                         <td colspan=\"4\">
@@ -207,13 +211,24 @@
                         <tr>
                           <th></th>
                           <th class=\"number\">Total:</th>
-                          <th class=\"number\">$totalQty</th>
+                          <th class=\"number total-qty\">$totalQty</th>
                           <th></th>
                           <th></th>
                           <th></th>
                           <th></th>
                           <th></th>
                           <th class=\"total-allot-qty number\"></th>
+                        </tr>
+                        <tr>
+                          <th></th>
+                          <th></th>
+                          <th></th>
+                          <th></th>
+                          <th></th>
+                          <th></th>
+                          <th></th>
+                          <th></th>
+                          <th class=\"total-allot-qty-p number\"></th>
                         </tr>
                       </tbody>
                     </table>
@@ -329,16 +344,16 @@
           allotments[iaNo][brandCode][modelNo] &&
           allotments[iaNo][brandCode][modelNo][soNo]
         ) {
+          var reservePercentage = document.querySelector("input.reserve-percentage[data-ia_no=\"" + iaNo + "\"]").value || 0;
           var iaSelector = ".ia-results[data-ia_no=\"" + iaNo + "\"]";
           var iaModelSelector = iaSelector + " .ia-model[data-brand_code=\"" + brandCode + "\"][data-model_no=\"" + modelNo + "\"]";
           var outstandingQtyElement = document.querySelector(iaModelSelector + " .outstanding-qty[data-so_no=\"" + soNo + "\"]");
           var allotQtyElement = document.querySelector(iaModelSelector + " .allot-qty[data-so_no=\"" + soNo + "\"]");
-
           var allotment = allotments[iaNo][brandCode][modelNo][soNo];
           var allotQty = parseFloat(allotment["qty"]);
           var plNo = allotment["do_no"] ? allotment["do_no"] : "";
           var outstandingQty = parseFloat(soModels[brandCode][modelNo][soNo]["qty_outstanding"]);
-          var availableQty = parseFloat(iaModels[iaNo][brandCode][modelNo]["qty"]);
+          var availableQty = Math.floor(parseFloat(iaModels[iaNo][brandCode][modelNo]["qty"]) * (1 - reservePercentage / 100));
           var otherAllotedIaQty = getOtherIaAllottedQty(iaNo, brandCode, modelNo, soNo);
           var otherAllotedSoQty = getOtherSoAllottedQty(iaNo, brandCode, modelNo, soNo);
           var allottableIaQty = availableQty - otherAllotedSoQty;
@@ -374,9 +389,11 @@
 
       function renderIaAllotmentSum(iaNo) {
         var iaSelector = ".ia-results[data-ia_no=\"" + iaNo + "\"]";
+        var totalQtyElement = document.querySelector(iaSelector + " .total-qty");
         var totalAllotQtyElement = document.querySelector(iaSelector + " .total-allot-qty");
+        var totalAllotQtyPElement = document.querySelector(iaSelector + " .total-allot-qty-p");
         var totalModelAllotQtyElements = document.querySelectorAll(iaSelector + " .total-model-allot-qty");
-
+        var totalQty = totalQtyElement.innerHTML;
         var totalAllotQty = 0;
 
         for (var i = 0; i < totalModelAllotQtyElements.length; i++) {
@@ -384,6 +401,7 @@
         }
 
         totalAllotQtyElement.innerHTML = totalAllotQty;
+        totalAllotQtyPElement.innerHTML = "(" + (totalAllotQty / totalQty * 100).toFixed(2) + "%)";
       }
 
       function onQtyChange(event, iaNo, brandCode, modelNo, soNo) {
@@ -465,12 +483,13 @@
         resetAllotments(iaNo);
 
         var iaModelElements = document.querySelectorAll(".ia-results[data-ia_no=\"" + iaNo + "\"] .ia-model");
+        var reservePercentage = document.querySelector("input.reserve-percentage[data-ia_no=\"" + iaNo + "\"]").value || 0;
 
         for (var i = 0; i < iaModelElements.length; i++) {
           var iaModelElement = iaModelElements[i];
           var brandCode = iaModelElement.dataset.brand_code;
           var modelNo = iaModelElement.dataset.model_no;
-          var availableQty = iaModels[iaNo][brandCode][modelNo]["qty"];
+          var availableQty = iaModels[iaNo][brandCode][modelNo]["qty"] * (1 - reservePercentage / 100);
           var allotQtyElement = iaModelElement.querySelector(".allot-qty");
 
           if (allotQtyElement) {
@@ -523,7 +542,15 @@
         render();
       }
 
-      window.onload = function () { render(); }
+      window.onload = function () {
+        var iaForms = document.querySelectorAll(".ia-form");
+
+        for (var i = 0; i < iaForms.length; i++) {
+          iaForms[i].reset();
+        }
+
+        render();
+      }
     </script>
   </body>
 </html>

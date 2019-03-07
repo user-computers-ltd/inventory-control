@@ -47,6 +47,10 @@
   margin: 0px;
 }
 
+.stock-header td .reserve-percentage + span {
+  margin-left: -30px;
+}
+
 .stock-results th,
 .stock-results td {
   min-width: 20px;
