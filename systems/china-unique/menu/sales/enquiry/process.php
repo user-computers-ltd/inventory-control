@@ -186,11 +186,14 @@
       $showPrice = $enquiryHeader["show_price"] === "TRUE";
       $discount = $enquiryHeader["discount"];
       $remarks = $enquiryHeader["remarks"];
+
+      $priceColumn = $showPrice ? "price" : "-1";
+
       $enquiryModels = query("
         SELECT
           brand_code              AS `brand_code`,
           model_no                AS `model_no`,
-          price                   AS `price`,
+          $priceColumn            AS `price`,
           qty                     AS `qty`,
           qty_allotted            AS `qty_allotted`
         FROM
@@ -220,7 +223,7 @@
       for ($i = 0; $i < count($brandCodes); $i++) {
         $brandCode = $brandCodes[$i];
         $modelNo = $modelNos[$i];
-        $price = assigned($prices) && assigned($prices[$i]) ? $prices[$i] : -1;
+        $price = assigned($prices) && assigned($prices[$i]) && $showPrice ? $prices[$i] : -1;
         $qty = $qtys[$i];
         $qtyAllotted = $qtysAllotted[$i];
 

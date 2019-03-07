@@ -217,11 +217,7 @@
           </tr>
         </table>
         <button name="status" type="submit" value="SAVED">Save</button>
-        <?php if (assigned($id)) : ?>
-          <button type="button" onclick="window.location.href = '<?php echo SALES_ENQUIRY_PRINTOUT_URL . "?id[]=" . $id; ?>'">Print</button>
-        <?php else : ?>
-          <button type="submit" formaction="<?php echo SALES_ENQUIRY_PRINTOUT_URL; ?>">Print</button>
-        <?php endif ?>
+        <button type="submit" formaction="<?php echo SALES_ENQUIRY_PRINTOUT_URL; ?>">Print</button>
         <button type="submit" formaction="<?php echo SALES_ORDER_URL; ?>">Create Sales Order</button>
         <button name="status" type="submit" value="DELETED">Delete</button>
       </form>
@@ -653,7 +649,7 @@
 
             updateModel(i, getModels(modelNo, brandCode)[0]);
 
-            if (price !== -1) {
+            if (price != -1) {
               updatePrice(i, price);
             }
           }
