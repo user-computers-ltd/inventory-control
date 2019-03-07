@@ -53,7 +53,7 @@
       b.status=\"CONFIRMED\"
       $whereClause
     GROUP BY
-      b.so_no
+      a.brand_code, b.so_date, b.so_no
     ORDER BY
       a.brand_code ASC,
       b.so_date ASC,

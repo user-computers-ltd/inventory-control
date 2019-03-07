@@ -70,12 +70,12 @@
   define("SALES_ORDER_PRIORITY_TITLE", "(F1d) Sales Order Priorities");
 
   define("SALES_SO_REPORT_TITLE", "(F2) Sales Order Report");
-  define("SALES_REPORT_CUSTOMER_SUMMARY_TITLE", "(F2a) Sales Order Summary By Client");
-  define("SALES_REPORT_CUSTOMER_DETAIL_TITLE", "(F2b) Sales Order Detail By Client");
-  define("SALES_REPORT_BRAND_SUMMARY_TITLE", "(F2c) Sales Order Summary By Brand");
-  define("SALES_REPORT_BRAND_DETAIL_TITLE", "(F2d) Sales Order Detail By Brand");
-  define("SALES_REPORT_MODEL_SUMMARY_TITLE", "(F2e) Sales Order Summary By Model");
-  define("SALES_REPORT_MODEL_DETAIL_TITLE", "(F2f) Sales Order Detail By Model");
+  define("SALES_REPORT_CUSTOMER_SUMMARY_TITLE", "(F2a) Confirmed Sales Order Summary By Client");
+  define("SALES_REPORT_CUSTOMER_DETAIL_TITLE", "(F2b) Confirmed Sales Order Detail By Client By Date");
+  define("SALES_REPORT_BRAND_SUMMARY_TITLE", "(F2c) Confirmed Sales Order Summary By Brand");
+  define("SALES_REPORT_BRAND_DETAIL_TITLE", "(F2d) Confirmed Sales Order Detail By Brand By Date");
+  define("SALES_REPORT_MODEL_SUMMARY_TITLE", "(F2e) Confirmed Sales Order Summary By Model");
+  define("SALES_REPORT_MODEL_DETAIL_TITLE", "(F2f) Confirmed Sales Order Detail By Model By Date");
 
   define("SALES_PL_REPORT_TITLE", "(F3) P/L Analysis Report");
   define("SALES_PL_REPORT_MODEL_SUMMARY_TITLE", "(F3c) Sales P/L Summary By Model");
@@ -91,7 +91,7 @@
   define("SALES_DELIVERY_ORDER_TITLE", "(F6) Sales Delivery Order");
   define("SALES_DELIVERY_ORDER_PRINTOUT_TITLE", "送貨單");
   define("SALES_DELIVERY_ORDER_INTERNAL_PRINTOUT_TITLE", "送貨單(內部)");
-  define("SALES_DELIVERY_ORDER_SAVED_TITLE", "(F6a) Saved Sales Delivery Orders");
+  define("SALES_DELIVERY_ORDER_SAVED_TITLE", "(F6a) Issued Sales Delivery Orders");
   define("SALES_DELIVERY_ORDER_POSTED_TITLE", "(F6b) Posted Sales Delivery Orders");
 
   define("SALES_INVOICE_TITLE", "(F7) Sales Invoice");

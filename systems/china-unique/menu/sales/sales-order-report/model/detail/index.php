@@ -60,7 +60,7 @@
       $whereClause
     ORDER BY
       a.model_no ASC,
-      b.so_date DESC
+      b.so_date ASC
   ");
 
   $soModels = array();
