@@ -1,5 +1,5 @@
 <?php
-  $id = $_GET["id"];
+  $id = assigned($_GET["id"]) ? $_GET["id"] : (assigned($_POST["id"]) ? $_POST["id"] : "");
   $enquiryNo = $_POST["enquiry_no"];
   $enquiryDate = $_POST["enquiry_date"];
   $debtorCode = $_POST["debtor_code"];
@@ -8,7 +8,6 @@
   $exchangeRate = assigned($_POST["exchange_rate"]) ? $_POST["exchange_rate"] : 1;
   $inCharge = $_POST["in_charge"];
   $priceStandard = assigned($_POST["price_standard"]) ? $_POST["price_standard"] : "normal_price";
-  $showPrice = assigned($_POST["show_price"]) && $_POST["show_price"] === "on" ? "TRUE" : "FALSE";
   $discount = assigned($_POST["discount"]) ? $_POST["discount"] : 0;
   $brandCodes = $_POST["brand_code"];
   $modelNos = $_POST["model_no"];
@@ -16,79 +15,8 @@
   $qtys = $_POST["qty"];
   $qtysAllotted = $_POST["qty_allotted"];
   $remarks = $_POST["remarks"];
+  $status = $_POST["status"];
 
-  /* If a form is submitted, update or insert the sales enquiry. */
-  if (
-    assigned($enquiryNo) &&
-    assigned($enquiryDate) &&
-    assigned($debtorCode) &&
-    assigned($inCharge) &&
-    assigned($priceStandard) &&
-    assigned($showPrice) &&
-    assigned($brandCodes) &&
-    assigned($modelNos) &&
-    assigned($qtys) &&
-    assigned($qtysAllotted)
-  ) {
-    $queries = array();
-
-    /* If an id is given, remove the previous sales enquiry first. */
-    if (assigned($id)) {
-      array_push($queries, "DELETE a FROM `enquiry_model` AS a LEFT JOIN `enquiry_header` AS b ON a.enquiry_no=b.enquiry_no WHERE b.id=\"$id\"");
-      array_push($queries, "DELETE FROM `enquiry_header` WHERE id=\"$id\"");
-    }
-
-    /* If the status is not delete, insert a new sales enquiry. */
-    if ($status != "DELETED") {
-
-      $values = array();
-
-      for ($i = 0; $i < count($brandCodes); $i++) {
-        $brandCode = $brandCodes[$i];
-        $modelNo = $modelNos[$i];
-        $price = $showPrice === "TRUE" ? $prices[$i] : -1;
-        $qty = $qtys[$i];
-        $qtyAllotted = $qtysAllotted[$i];
-
-        array_push($values, "(\"$enquiryNo\", \"$i\", \"$brandCode\", \"$modelNo\", \"$price\", \"$qty\", \"$qtyAllotted\")");
-      }
-
-      if (count($values) > 0) {
-        array_push($queries, "
-          INSERT INTO
-            `enquiry_model`
-              (enquiry_no, enquiry_index, brand_code, model_no, price, qty, qty_allotted)
-            VALUES
-        " . join(", ", $values));
-      }
-
-      array_push($queries, "
-        INSERT INTO
-          `enquiry_header`
-            (enquiry_no, enquiry_date, in_charge, debtor_code, debtor_name, currency_code, exchange_rate, show_price, price_standard, discount, remarks)
-          VALUES
-            (
-              \"$enquiryNo\",
-              \"$enquiryDate\",
-              \"$inCharge\",
-              \"$debtorCode\",
-              \"$debtorName\",
-              \"$currencyCode\",
-              \"$exchangeRate\",
-              \"$showPrice\",
-              \"$priceStandard\",
-              \"$discount\",
-              \"$remarks\"
-            )
-      ");
-    }
-
-    execute($queries);
-
-    header("Location: " . SALES_ENQUIRY_SAVED_URL);
-  }
-
-  $debtors = query("SELECT code, english_name AS name FROM `debtor`");
   $brands = query("SELECT code, name FROM `brand`");
   $models = query("
     SELECT
@@ -155,14 +83,116 @@
     ORDER BY
       a.brand_code, a.model_no
   ");
+  $results = query("SELECT code, english_name AS name FROM `debtor`");
+  $debtors = array();
+  foreach ($results as $debtor) {
+    $debtors[$debtor["code"]] = $debtor["name"];
+  }
   $results = query("SELECT code, rate FROM `currency`");
   $currencies = array();
   foreach ($results as $currency) {
     $currencies[$currency["code"]] = $currency["rate"];
   }
 
+  /* If a form is submitted, update or insert the sales enquiry. */
+  if (
+    assigned($enquiryNo) &&
+    assigned($enquiryDate) &&
+    assigned($debtorCode) &&
+    assigned($debtorName) &&
+    assigned($inCharge) &&
+    assigned($priceStandard) &&
+    assigned($brandCodes) &&
+    assigned($modelNos) &&
+    assigned($prices) &&
+    assigned($qtys) &&
+    assigned($qtysAllotted) &&
+    assigned($status)
+  ) {
+    $queries = array();
+
+    /* If an id is given, remove the previous sales enquiry first. */
+    if (assigned($id) && $status === "DELETED") {
+      array_push($queries, "DELETE a FROM `enquiry_model` AS a LEFT JOIN `enquiry_header` AS b ON a.enquiry_no=b.enquiry_no WHERE b.id=\"$id\"");
+      array_push($queries, "DELETE FROM `enquiry_header` WHERE id=\"$id\"");
+    }
+
+    /* If the status is saved, insert a new sales enquiry. */
+    if ($status === "SAVED") {
+      array_push($queries, "DELETE a FROM `enquiry_model` AS a LEFT JOIN `enquiry_header` AS b ON a.enquiry_no=b.enquiry_no WHERE b.id=\"$id\"");
+      array_push($queries, "DELETE FROM `enquiry_header` WHERE id=\"$id\"");
+
+      $values = array();
+
+      for ($i = 0; $i < count($brandCodes); $i++) {
+        $brandCode = $brandCodes[$i];
+        $modelNo = $modelNos[$i];
+        $price = $prices[$i];
+        $qty = $qtys[$i];
+        $qtyAllotted = $qtysAllotted[$i];
+
+        array_push($values, "(\"$enquiryNo\", \"$i\", \"$brandCode\", \"$modelNo\", \"$price\", \"$qty\", \"$qtyAllotted\")");
+      }
+
+      if (count($values) > 0) {
+        array_push($queries, "
+          INSERT INTO
+            `enquiry_model`
+              (enquiry_no, enquiry_index, brand_code, model_no, price, qty, qty_allotted)
+            VALUES
+        " . join(", ", $values));
+      }
+
+      array_push($queries, "
+        INSERT INTO
+          `enquiry_header`
+            (enquiry_no, enquiry_date, in_charge, debtor_code, debtor_name, currency_code, exchange_rate, price_standard, discount, remarks)
+          VALUES
+            (
+              \"$enquiryNo\",
+              \"$enquiryDate\",
+              \"$inCharge\",
+              \"$debtorCode\",
+              \"$debtorName\",
+              \"$currencyCode\",
+              \"$exchangeRate\",
+              \"$priceStandard\",
+              \"$discount\",
+              \"$remarks\"
+            )
+      ");
+    }
+
+    execute($queries);
+
+    if ($status === "EDIT") {
+      $headline = assigned($id) ? SALES_ENQUIRY_PRINTOUT_TITLE : SALES_ENQUIRY_CREATE_TITLE;
+
+      $enquiryModels = array();
+      if (assigned($brandCodes) && assigned($modelNos) && assigned($prices) && assigned($qtys) && assigned($qtysAllotted)) {
+        for ($i = 0; $i < count($brandCodes); $i++) {
+          $brandCode = $brandCodes[$i];
+          $modelNo = $modelNos[$i];
+          $price = $prices[$i];
+          $qty = $qtys[$i];
+          $qtyAllotted = $qtysAllotted[$i];
+
+          array_push($enquiryModels, array(
+            "brand_code"  => $brandCode,
+            "model_no"    => $modelNo,
+            "price"       => $price,
+            "qty"         => $qty,
+            "qty_allotted"=> $qtyAllotted
+          ));
+        }
+      }
+    } else {
+      header("Location: " . SALES_ENQUIRY_SAVED_URL);
+    }
+  }
+
   /* If an id is given, attempt to retrieve an existing sales order. */
-  if (assigned($id)) {
+  else if (assigned($id)) {
     $headline = SALES_ENQUIRY_PRINTOUT_TITLE;
 
     $enquiryHeader = query("
@@ -183,17 +213,14 @@
       $exchangeRate = $enquiryHeader["exchange_rate"];
       $inCharge = $enquiryHeader["in_charge"];
       $priceStandard = $enquiryHeader["price_standard"];
-      $showPrice = $enquiryHeader["show_price"] === "TRUE";
       $discount = $enquiryHeader["discount"];
       $remarks = $enquiryHeader["remarks"];
-
-      $priceColumn = $showPrice ? "price" : "-1";
 
       $enquiryModels = query("
         SELECT
           brand_code              AS `brand_code`,
           model_no                AS `model_no`,
-          $priceColumn            AS `price`,
+          price                   AS `price`,
           qty                     AS `qty`,
           qty_allotted            AS `qty_allotted`
         FROM
@@ -215,15 +242,14 @@
     $currencyCode = assigned($currencyCode) ? $currencyCode : COMPANY_CURRENCY;
     $exchangeRate = assigned($exchangeRate) ? $exchangeRate : $currencies[$currencyCode];
     $priceStandard = assigned($priceStandard) ? $priceStandard : "normal_price";
-    $showPrice = assigned($showPrice) && $_POST["show_price"] === "on";
     $discount = assigned($discount) ? $discount : 0;
     $enquiryModels = array();
 
-    if (assigned($brandCodes) && assigned($modelNos) && assigned($qtys) && assigned($qtysAllotted)) {
+    if (assigned($brandCodes) && assigned($modelNos) && assigned($prices) && assigned($qtys) && assigned($qtysAllotted)) {
       for ($i = 0; $i < count($brandCodes); $i++) {
         $brandCode = $brandCodes[$i];
         $modelNo = $modelNos[$i];
-        $price = assigned($prices) && assigned($prices[$i]) && $showPrice ? $prices[$i] : -1;
+        $price = $prices[$i];
         $qty = $qtys[$i];
         $qtyAllotted = $qtysAllotted[$i];
 

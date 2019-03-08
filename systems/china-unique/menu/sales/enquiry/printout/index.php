@@ -157,13 +157,25 @@
           </div>
           <div class="web-only printout-button-wrapper">
             <?php echo generateRedirectButton(SALES_ENQUIRY_INTERNAL_PRINTOUT_URL, "Internal printout"); ?>
+            <?php
+              if ($showPrice) {
+                $_POST["show_price"] = "off";
+                echo generateRedirectButton(CURRENT_URL, "Hide price");
+              } else {
+                $_POST["show_price"] = "on";
+                echo generateRedirectButton(CURRENT_URL, "Show price");
+              }
+            ?>
             <?php if (isset($enquiryHeader["id"])) : ?>
               <form action="<?php echo SALES_ENQUIRY_URL; ?>">
                 <input type="hidden" name="id" value="<?php echo $enquiryHeader["id"]; ?>" />
                 <button type="submit">Edit</button>
               </form>
             <?php else : ?>
-              <?php echo generateRedirectButton(SALES_ENQUIRY_URL, "Edit"); ?>
+              <?php
+                $_POST["status"] = "EDIT";
+                echo generateRedirectButton(SALES_ENQUIRY_URL, "Edit");
+              ?>
             <?php endif ?>
           </div>
         <?php endforeach; ?>

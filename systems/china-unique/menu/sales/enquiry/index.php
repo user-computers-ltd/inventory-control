@@ -4,6 +4,7 @@
   include_once SYSTEM_PATH . "includes/php/config.php";
   include_once ROOT_PATH . "includes/php/utils.php";
   include_once ROOT_PATH . "includes/php/database.php";
+  include_once SYSTEM_PATH . "includes/php/authentication.php";
   include "process.php";
 ?>
 
@@ -19,6 +20,9 @@
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo $headline; ?></div>
       <form id="enquiry-form" method="post">
+        <?php if (assigned($id)) : ?>
+          <input type="hidden" name="id" value="<?php echo $id; ?>" />
+        <?php endif ?>
         <table id="enquiry-header">
           <tr>
             <tr>
@@ -27,80 +31,65 @@
               <td>Date:</td>
               <td><input type="date" name="enquiry_date" value="<?php echo $enquiryDate; ?>" max="<?php echo date("Y-m-d"); ?>" required readonly /></td>
             </tr>
-            <td>Client:</td>
-            <td>
-              <select id="debtor-code" name="debtor_code" onchange="onDebtorCodeChange()" equired>
-                <?php
-                  foreach ($debtors as $debtor) {
-                    $code = $debtor["code"];
-                    $label = $debtor["code"] . " - " . $debtor["name"];
-                    $selected = $debtorCode == $code ? "selected" : "";
-                    echo "<option value=\"$code\" $selected>$label</option>";
-                  }
-                ?>
-              </select>
-            </td>
-            <td class="debtor-name <?php echo $debtorCode !== "1" ? "" : "show"; ?>">Name:</td>
-            <td class="debtor-name <?php echo $debtorCode !== "1" ? "" : "show"; ?>">
-              <input
-                name="debtor_name"
-                type="text"
-                value="<?php echo $debtorName; ?>"
-                <?php echo $debtorCode !== "1" ? "disabled" : ""; ?>
-                required
-              />
-            </td>
-          </tr>
+            <tr>
+              <td>Client Code:</td>
+              <td>
+                <select id="debtor-code" name="debtor_code" onchange="onDebtorCodeChange()" equired>
+                  <?php
+                    foreach ($debtors as $code => $name) {
+                      $selected = $debtorCode == $code ? "selected" : "";
+                      echo "<option value=\"$code\" $selected>$code</option>";
+                    }
+                  ?>
+                </select>
+              </td>
+              <td>Client Name:</td>
+              <td>
+                <input
+                  id="debtor-name"
+                  name="debtor_name"
+                  type="text"
+                  value="<?php echo $debtorName; ?>"
+                  required
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>Person In-charge:</td>
+              <td><input type="text" name="in_charge" value="<?php echo $inCharge; ?>" required/></td>
+              <td>Currency:</td>
+              <td>
+                <select
+                  id="currency-code"
+                  name="currency_code"
+                  onchange="onCurrencyCodeChange()"
+                  required
+                >
+                  <?php
+                    foreach ($currencies as $code => $rate) {
+                      $selected = $currencyCode == $code ? "selected" : "";
+                      echo "<option value=\"$code\" $selected>$code</option>";
+                    }
+                  ?>
+                </select>
+                <input
+                  id="exchange-rate"
+                  name="exchange_rate"
+                  type="number"
+                  step="0.00000001"
+                  min="0.00000001"
+                  value="<?php echo $exchangeRate; ?>"
+                  onchange="onExchangeRateChange()"
+                  required
+                  <?php echo $currencyCode === COMPANY_CURRENCY ? "readonly" : ""; ?>
+                />
+              </td>
+            </tr>
           <tr>
-            <td>Person In-charge:</td>
-            <td><input type="text" name="in_charge" value="<?php echo $inCharge; ?>" required/></td>
-            <td class="option-row hide">Currency:</td>
-            <td class="option-row hide">
-              <select
-                id="currency-code"
-                class="option-field"
-                name="currency_code"
-                onchange="onCurrencyCodeChange()"
-                required
-              >
-                <?php
-                  foreach ($currencies as $code => $rate) {
-                    $selected = $currencyCode == $code ? "selected" : "";
-                    echo "<option value=\"$code\" $selected>$code</option>";
-                  }
-                ?>
-              </select>
-              <input
-                id="exchange-rate"
-                class="option-field"
-                name="exchange_rate"
-                type="number"
-                step="0.00000001"
-                min="0.00000001"
-                value="<?php echo $exchangeRate; ?>"
-                onchange="onExchangeRateChange()"
-                required
-                <?php echo $currencyCode === COMPANY_CURRENCY ? "readonly" : ""; ?>
-              />
-            </td>
-          </tr>
-          <tr>
+            <td>Discount:</td>
             <td>
-              <input
-                id="show-price"
-                name="show_price"
-                type="checkbox"
-                onchange="onShowPriceChange()"
-                <?php echo $showPrice ? "checked" : ""; ?>
-              />
-              <label for="show-price">Show Prices</label>
-            </td>
-            <td></td>
-            <td class="option-row hide">Discount:</td>
-            <td class="option-row hide">
               <input
                 id="discount"
-                class="option-field"
                 name="discount"
                 type="number"
                 step="0.01"
@@ -112,7 +101,7 @@
               /><span>%</span>
             </td>
           </tr>
-          <tr class="option-row hide">
+          <tr>
             <td colspan="2">
               <input
                 id="normal-price"
@@ -157,8 +146,8 @@
             <col style="width: 60px">
             <col style="width: 60px">
             <col style="width: 60px">
-            <col class="option-column hide" style="width: 80px">
-            <col class="option-column hide" style="width: 80px">
+            <col style="width: 80px">
+            <col style="width: 80px">
             <col style="width: 30px">
           </colgroup>
           <thead>
@@ -167,8 +156,8 @@
               <th rowspan="2">Model no.</th>
               <th rowspan="2">Brand code</th>
               <th colspan="7" class="quantity">Quantity</th>
-              <th rowspan="2" class="number option-column hide">Price</th>
-              <th rowspan="2" class="number option-column hide">Subtotal</th>
+              <th rowspan="2" class="number">Price</th>
+              <th rowspan="2" class="number">Subtotal</th>
               <th rowspan="2"></th>
             </tr>
             <tr>
@@ -218,7 +207,9 @@
         </table>
         <button name="status" type="submit" value="SAVED">Save</button>
         <button type="submit" formaction="<?php echo SALES_ENQUIRY_PRINTOUT_URL; ?>">Print</button>
-        <button type="submit" formaction="<?php echo SALES_ORDER_URL; ?>">Create Sales Order</button>
+        <?php if (isSupervisor()) : ?>
+          <button type="submit" formaction="<?php echo SALES_ORDER_URL; ?>">Create Sales Order</button>
+        <?php endif ?>
         <button name="status" type="submit" value="DELETED">Delete</button>
       </form>
       <datalist id="model-list">
@@ -242,14 +233,14 @@
         var enquiryModels = <?php echo json_encode($enquiryModels); ?>;
         var currencies = <?php echo json_encode($currencies); ?>;
         var brands = <?php echo json_encode($brands); ?>;
+        var debtors = <?php echo json_encode($debtors); ?>;
         var focusedRow = null;
         var focusedFieldName = null;
 
         var debtorCodeElement = document.querySelector("#debtor-code");
-        var debtorNameElements = document.querySelectorAll(".debtor-name");
+        var debtorNameElement = document.querySelector("#debtor-name");
         var debtorNameFieldElement = document.querySelector(".debtor-name input");
         var discountElement = document.querySelector("#discount");
-        var showPriceElement = document.querySelector("#show-price");
         var currencyCodeElement = document.querySelector("#currency-code");
         var exchangeRateElement = document.querySelector("#exchange-rate");
         var tableBodyElement = document.querySelector("#enquiry-models tbody");
@@ -280,7 +271,6 @@
           tableBodyElement.innerHTML = "";
 
           var discount = discountElement.value;
-          var showPrice = showPriceElement.checked;
           var totalQty = 0;
           var totalQtyAllotted = 0;
           var totalAmount = 0;
@@ -358,7 +348,6 @@
                   + "onchange=\"onQuantityAllottedChange(event, " + i + ")\" "
                   + "onfocus=\"onFieldFocused(" + i + ", 'qty_allotted[]')\" "
                   + "onblur=\"onFieldBlurred()\" "
-                  + "onkeydown=\"onQuantityAllottedKeyDown(event, " + i + ")\" "
                   + "required "
                 + "/>"
               + "</td>"
@@ -366,7 +355,7 @@
               + "<td class=\"number\">" + enquiryModel["qty_incoming_reserve"] + "</td>"
               + "<td>"
                 + "<input "
-                  + "class=\"price number option-field\" "
+                  + "class=\"price number\" "
                   + "type=\"number\" "
                   + "step=\"0.01\" "
                   + "min=\"0\" "
@@ -377,7 +366,6 @@
                   + "onblur=\"onFieldBlurred()\" "
                   + "onkeydown=\"onPriceKeyDown(event, " + i + ")\" "
                   + "required "
-                  + (!showPrice ? "disabled hidden" : "")
                 + "/>"
               + "</td>"
               + "<td class=\"total-amount number\">" + enquiryModel["total_amount"].toFixed(2) + "</td>"
@@ -494,27 +482,6 @@
           focusedFieldName = null;
         }
 
-        function onShowPriceChange() {
-          var optionRows = document.querySelectorAll(".option-row");
-          var optionFields = document.querySelectorAll(".option-field");
-          var optionColumns = document.querySelectorAll(".option-column");
-
-          var showPrice = showPriceElement.checked;
-
-          for (var i = 0; i < optionRows.length; i++) {
-            toggleClass(optionRows[i], "hide", !showPrice);
-          }
-
-          for (var i = 0; i < optionFields.length; i++) {
-            optionFields[i].disabled = !showPrice;
-            optionFields[i].hidden = !showPrice;
-          }
-
-          for (var i = 0; i < optionColumns.length; i++) {
-            toggleClass(optionColumns[i], "hide", !showPrice);
-          }
-        }
-
         function onPriceStandardChange() {
           for (var i = 0; i < enquiryModels.length; i++) {
             var enquiryModel = enquiryModels[i];
@@ -530,12 +497,9 @@
 
         function onDebtorCodeChange() {
           var debtorCode = debtorCodeElement.value;
+          var debtorName = debtors[debtorCode];
 
-          for (var i = 0; i < debtorNameElements.length; i++) {
-            toggleClass(debtorNameElements[i], "show", debtorCode === "1");
-          }
-
-          debtorNameFieldElement.disabled = debtorCode !== "1";
+          debtorNameElement.value = debtorCode === "1" ? "" : debtorName;
         }
 
         function onCurrencyCodeChange() {
@@ -600,23 +564,6 @@
           render();
         }
 
-        function onQuantityAllottedKeyDown(event, index) {
-          var enquiryModel = enquiryModels[index];
-          var showPrice = showPriceElement.checked;
-
-          if (
-            !showPrice &&
-            index === enquiryModels.length - 1 &&
-            (event.which || event.keyCode) === 9 &&
-            enquiryModel["model_no"] &&
-            enquiryModel["brand_code"] &&
-            enquiryModel["qty"]
-          ) {
-            updateQuantityAllotted(index, event.target.value);
-            addItem();
-          }
-        }
-
         function onPriceChange(event, index) {
           updatePrice(index, event.target.value);
           render();
@@ -655,8 +602,6 @@
           }
 
           render();
-
-          onShowPriceChange();
         }
       </script>
     </div>

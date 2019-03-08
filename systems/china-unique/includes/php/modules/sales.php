@@ -56,9 +56,9 @@
   define("SALES_TITLE", "(F) Sales");
 
   define("SALES_ENQUIRY_PRINTOUT_TITLE", "貨物查詢");
-  define("SALES_ENQUIRY_INTERNAL_PRINTOUT_TITLE", "Sales Enquiry (Internal)");
+  define("SALES_ENQUIRY_INTERNAL_PRINTOUT_TITLE", "貨物查詢 (內部)");
   define("SALES_ENQUIRY_TITLE", "(F0) Sales Enquiry");
-  define("SALES_ENQUIRY_CREATE_TITLE", "(F0a) Create Sales Enquiry");
+  define("SALES_ENQUIRY_CREATE_TITLE", "(F0a) 新增貨物查詢");
   define("SALES_ENQUIRY_SAVED_TITLE", "(F0b) Saved Sales Enquiries");
 
   define("SALES_ORDER_PRINTOUT_TITLE", "Sales Order");

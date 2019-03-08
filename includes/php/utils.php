@@ -23,6 +23,10 @@
     return isset($data) && $data != "";
   }
 
+  function sanitize($string) {
+    return htmlspecialchars(strip_tags(trim($string)));
+  }
+
   function concat($array1, $array2) {
     $array3 = array();
 
@@ -109,7 +113,7 @@
   function generateRedirectButton($url, $buttonLabel) {
     if (count($_POST) > 0) {
       if (count($_GET) > 0) {
-        $url = $url . "?" . join("&", objectMap(function ($key, $value) {
+        $url = $url . (strpos($url, "?") !== false ? "&" : "?") . join("&", objectMap(function ($key, $value) {
           if (is_array($value)) {
             return join("&", array_map(function ($v) use ($key) { return $key . "[]=$v"; }, $value));
           } else {

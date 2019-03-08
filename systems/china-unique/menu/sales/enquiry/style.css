@@ -23,18 +23,6 @@
   line-height: 20px;
 }
 
-#enquiry-header .debtor-name {
-  display: none;
-}
-
-#enquiry-header .debtor-name.show {
-  display: table-cell;
-}
-
-#enquiry-header .option-row.hide {
-  display: none;
-}
-
 #enquiry-footer #remarks {
   padding: 5px;
   width: 100%;

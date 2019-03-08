@@ -7,7 +7,6 @@
   $currencyCode = $_POST["currency_code"];
   $exchangeRate = $_POST["exchange_rate"];
   $inCharge = $_POST["in_charge"];
-  $showPrice = $_POST["show_price"] == "on" ? "TRUE" : "FALSE";
   $discount = $_POST["discount"];
   $brandCodes = $_POST["brand_code"];
   $modelNos = $_POST["model_no"];
@@ -35,7 +34,6 @@
         a.currency_code                                           AS `currency_code`,
         a.exchange_rate                                           AS `exchange_rate`,
         a.in_charge                                               AS `in_charge`,
-        a.show_price                                              AS `show_price`,
         a.discount                                                AS `discount`,
         a.remarks                                                 AS `remarks`
       FROM
@@ -78,7 +76,6 @@
     assigned($enquiryDate) &&
     assigned($debtorCode) &&
     assigned($inCharge) &&
-    assigned($showPrice) &&
     assigned($brandCodes) &&
     assigned($modelNos) &&
     assigned($qtys) &&
@@ -100,7 +97,6 @@
       "currency_code" => $currencyCode,
       "exchange_rate" => $exchangeRate,
       "in_charge"     => $inCharge,
-      "show_price"    => $showPrice,
       "discount"      => $discount,
       "remarks"       => $remarks
     ));

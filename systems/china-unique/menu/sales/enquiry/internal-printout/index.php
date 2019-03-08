@@ -21,10 +21,6 @@
     <div class="page-wrapper">
       <?php if (count($enquiryHeaders) > 0) : ?>
         <?php foreach($enquiryHeaders as &$enquiryHeader) : ?>
-          <?php
-            $showPrice = $enquiryHeader["show_price"] === "TRUE";
-            $discount = $enquiryHeader["discount"];
-          ?>
           <div class="page">
             <?php include SYSTEM_PATH . "includes/components/header/index.php"; ?>
             <div class="headline"><?php echo SALES_ENQUIRY_INTERNAL_PRINTOUT_TITLE ?></div>
@@ -38,18 +34,10 @@
               <tr>
                 <td>Client:</td>
                 <td><?php echo $enquiryHeader["client"]; ?></td>
-                <?php if ($showPrice) : ?>
-                  <td>Currency:</td>
-                  <td><?php echo $enquiryHeader["currency"]; ?></td>
-                <?php endif ?>
               </tr>
               <tr>
                 <td>Persion In-charge:</td>
                 <td><?php echo $enquiryHeader["in_charge"]; ?></td>
-                <?php if ($discount > 0 && $showPrice) : ?>
-                  <td>Discount:</td>
-                  <td><?php echo $discount; ?>%</td>
-                <?php endif ?>
               </tr>
             </table>
             <div class="generation-date">Generation Date: <?php echo $date; ?></div>
