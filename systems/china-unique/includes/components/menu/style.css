@@ -67,6 +67,9 @@
   overflow: hidden;
 }
 
+#menu-sidebar .menu-item.logout {
+}
+
 #menu-sidebar.show .menu-item {
   max-height: 200px;
 }

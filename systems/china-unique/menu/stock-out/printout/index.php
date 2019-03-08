@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
-    <?php include_once ROOT_PATH . "includes/components/menu/index.php"; ?>
+    <?php include_once SYSTEM_PATH . "includes/components/menu/index.php"; ?>
     <div class="page-wrapper">
       <?php if (count($stockOutHeaders) > 0) : ?>
         <?php foreach($stockOutHeaders as &$stockOutHeader) : ?>

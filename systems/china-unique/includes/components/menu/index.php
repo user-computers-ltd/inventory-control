@@ -1,5 +1,7 @@
 <?php
   include_once ROOT_PATH . "includes/php/utils.php";
+  include_once SYSTEM_PATH . "includes/php/config.php";
+  include_once SYSTEM_PATH . "includes/php/authentication.php";
 
   function generateSitemap($sitemap, $prefix) {
     $currentURL = (strpos(CURRENT_URL, "?") === false) ? CURRENT_URL : substr(CURRENT_URL, 0, strpos(CURRENT_URL, "?"));
@@ -26,13 +28,18 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>includes/components/menu/style.css">
+    <link rel="stylesheet" href="<?php echo SYSTEM_URL; ?>includes/components/menu/style.css">
   </head>
   <body>
     <?php if (isset($SITEMAP)) : ?>
       <div id="menu-sidebar" class="web-only show">
         <button class="toggle-button" onclick="toggleNav()"></button>
-        <?php echo generateSitemap($SITEMAP, ""); ?>
+        <?php echo generateSitemap($SITEMAP[$userAccessLevel], ""); ?>
+        <?php if (isset($_SESSION["user"])) : ?>
+          <a class="menu-item link logout" href="<?php echo SYSTEM_URL; ?>logout.php">
+            <span class="initial">Z</span><span class="label">Logout</span>
+          </a>
+        <?php endif ?>
       </div>
       <script src="<?php echo BASE_URL; ?>includes/js/utils.js"></script>
       <script>

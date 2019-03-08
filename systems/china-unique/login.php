@@ -5,7 +5,7 @@
   include_once ROOT_PATH . "includes/php/database.php";
 
   session_start();
-  $previousURL = $_SESSION["previous_url"];
+  $previousURL = assigned($_SESSION["previous_url"]) ? $_SESSION["previous_url"] : SYSTEM_URL . "index.php";
 
   $username = $_POST["username"];
   $password = $_POST["password"];
@@ -40,6 +40,8 @@
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo "Login"; ?></div>
       <form method="post">
+        <a class="signup" href="<?php echo SYSTEM_PATH; ?>signup.php">Sign up</a>
+
         <input type="text" name="username" placeholder="username" value="<?php echo $username; ?>" required autofocus />
         <input type="password" name="password" placeholder="password" value="<?php echo $password; ?>" required />
         <div class="error"><?php echo $errorMessage; ?></div>

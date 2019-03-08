@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
-    <?php include_once ROOT_PATH . "includes/components/menu/index.php"; ?>
+    <?php include_once SYSTEM_PATH . "includes/components/menu/index.php"; ?>
     <div id="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
     </div>

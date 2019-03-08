@@ -1,9 +1,9 @@
 <?php
-  session_start();
-
   include_once "config.php";
   include_once ROOT_PATH . "includes/php/utils.php";
   include_once ROOT_PATH . "includes/php/database.php";
+
+  session_start();
 
   if (!isset($_SESSION["user"])) {
     $_SESSION["previous_url"] = CURRENT_URL;
@@ -11,21 +11,21 @@
     exit;
   }
 
-  function logout() {
-    unset($_SESSION["user"]);
-    header("Location: " . CURRENT_URL);
-    exit;
-  }
-
-  function isSupervisor() {
+  function getAccessLevel() {
     if (isset($_SESSION["user"])) {
       $result = query("SELECT access_level FROM `user` WHERE username=\"". $_SESSION["user"] . "\"");
 
       if (isset($result[0])) {
-        return $result[0]["access_level"] === "supervisor";
+        return $result[0]["access_level"];
       }
+    } else {
+      return null;
     }
-
-    return false;
   }
+
+  function isSupervisor() {
+    return getAccessLevel() === "supervisor";
+  }
+
+  $userAccessLevel = getAccessLevel();
 ?>

@@ -31,3 +31,8 @@
   margin-left: 0px;
   margin-right: 0px;
 }
+
+#page-wrapper form .signup {
+  position: absolute;
+  margin-top: -20px;
+}

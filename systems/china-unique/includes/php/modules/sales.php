@@ -58,7 +58,7 @@
   define("SALES_ENQUIRY_PRINTOUT_TITLE", "貨物查詢");
   define("SALES_ENQUIRY_INTERNAL_PRINTOUT_TITLE", "貨物查詢 (內部)");
   define("SALES_ENQUIRY_TITLE", "(F0) Sales Enquiry");
-  define("SALES_ENQUIRY_CREATE_TITLE", "(F0a) 新增貨物查詢");
+  define("SALES_ENQUIRY_CREATE_TITLE", "(F0a) Create Sales Enquiry");
   define("SALES_ENQUIRY_SAVED_TITLE", "(F0b) Saved Sales Enquiries");
 
   define("SALES_ORDER_PRINTOUT_TITLE", "Sales Order");
@@ -105,7 +105,7 @@
   define("SALES_INVOICE_REPORT_CUSTOMER_TITLE", "(F8b) Physical Stock Out By Client");
 
   $SALES_MODULE = array(
-    SALES_ENQUIRY_TITLE                     => array(
+    SALES_ENQUIRY_TITLE => array(
       SALES_ENQUIRY_CREATE_TITLE            => SALES_ENQUIRY_URL,
       SALES_ENQUIRY_SAVED_TITLE             => SALES_ENQUIRY_SAVED_URL
     ),
