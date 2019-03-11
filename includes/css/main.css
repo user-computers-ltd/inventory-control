@@ -69,6 +69,10 @@ table thead th {
   box-sizing: border-box;
 }
 
+.page-wrapper.wider {
+  width: 900px;
+}
+
 .page {
   page-break-after: always;
 }

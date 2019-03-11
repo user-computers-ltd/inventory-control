@@ -15,7 +15,7 @@
   </head>
   <body>
     <?php include_once SYSTEM_PATH . "includes/components/menu/index.php"; ?>
-    <div class="page-wrapper">
+    <div class="page-wrapper wider">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo $headline; ?></div>
       <form id="enquiry-form" method="post">
@@ -210,7 +210,9 @@
         <?php if (isSupervisor()) : ?>
           <button type="submit" formaction="<?php echo SALES_ORDER_URL; ?>">新增訂單</button>
         <?php endif ?>
-        <button name="status" type="submit" value="DELETED">刪除</button>
+        <?php if (assigned($id)) : ?>
+          <button name="status" type="submit" value="DELETED" onclick="confirmDelete(event)">刪除</button>
+        <?php endif ?>
       </form>
       <datalist id="model-list">
         <?php
@@ -588,6 +590,12 @@
           ) {
             updatePrice(index, event.target.value);
             addItem();
+          }
+        }
+
+        function confirmDelete (event) {
+          if(!confirm("你確定要刪除?")) {
+            event.preventDefault();
           }
         }
 

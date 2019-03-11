@@ -20,20 +20,24 @@
       var confirmCancel = confirmForm.querySelector("button[type=\"button\"]");
       var confirmMessage = confirmOverlay.querySelector("#confirm-message");
       var confirmCallback = function () {};
+      var cancelConfirmCallback = function () {};
 
       function closeConfirmHandler(event) {
         if (event.target === confirmOverlay || event.target === confirmClose || event.target === confirmCancel) {
           confirmOverlay.className = "";
           confirmOverlay.removeEventListener("click", this);
+          
+          cancelConfirmCallback();
         }
       }
 
-      function showConfirmDialog(message, callback) {
+      function showConfirmDialog(message, callback, cancelCallback) {
         confirmForm.reset();
         confirmOverlay.className = "show";
         confirmOverlay.addEventListener("click", closeConfirmHandler);
         confirmMessage.innerHTML = message;
         confirmCallback = callback;
+        cancelConfirmCallback = cancelCallback;
       }
 
       function confirmSubmitHandler(event) {

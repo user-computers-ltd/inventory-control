@@ -34,7 +34,7 @@
       <?php if (count($enquiryHeaders) > 0) : ?>
         <form method="post">
           <button type="submit" name="action" value="print">印本</button>
-          <button type="submit" name="action" value="delete">刪除</button>
+          <button type="submit" name="action" value="delete" onclick="confirmDelete(event)">刪除</button>
           <table id="enquiry-results">
             <colgroup>
               <col class="web-only" style="width: 30px">
@@ -98,6 +98,13 @@
       <?php else : ?>
         <div class="enquiry-client-no-results">找不到結果</div>
       <?php endif ?>
+      <script>
+        function confirmDelete (event) {
+          if(!confirm("你確定要刪除?")) {
+            event.preventDefault();
+          }
+        }
+      </script>
     </div>
   </body>
 </html>
