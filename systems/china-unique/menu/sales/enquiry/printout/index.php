@@ -155,7 +155,11 @@
             </table>
           </div>
           <div class="web-only printout-button-wrapper">
-            <?php echo generateRedirectButton(SALES_ENQUIRY_INTERNAL_PRINTOUT_URL, "內部印本"); ?>
+            <?php
+              if (isSupervisor()) {
+                echo generateRedirectButton(SALES_ENQUIRY_INTERNAL_PRINTOUT_URL, "內部印本");
+              }
+            ?>
             <?php
               if ($showPrice) {
                 $_GET["show_price"] = "off";
