@@ -50,6 +50,7 @@
                   type="text"
                   value="<?php echo $debtorName; ?>"
                   required
+                  <?php echo $debtorCode !== "1" ? "readonly" : ""; ?>
                 />
               </td>
             </tr>
@@ -499,6 +500,7 @@
           var debtorName = debtors[debtorCode];
 
           debtorNameElement.value = debtorCode === "1" ? "" : debtorName;
+          debtorNameElement.readonly = debtorCode !== "1";
         }
 
         function onCurrencyCodeChange() {

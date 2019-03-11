@@ -17,7 +17,7 @@
       array_push($queries, "DELETE a FROM `enquiry_model` AS a LEFT JOIN `enquiry_header` AS b ON a.enquiry_no=b.enquiry_no WHERE $modelWhereClause");
       array_push($queries, "DELETE FROM `enquiry_header` WHERE $headerWhereClause");
     } else if ($action == "print") {
-      header("Location: " . SALES_ENQUIRY_INTERNAL_PRINTOUT_URL . "?$printoutParams");
+      header("Location: " . SALES_ENQUIRY_PRINTOUT_URL . "?$printoutParams");
       exit(0);
     }
 
