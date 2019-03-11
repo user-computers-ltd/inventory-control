@@ -1,5 +1,6 @@
 <?php
   $ids = $_GET["id"];
+  $showPrice = $_GET["show_price"] === "on";
   $enquiryNo = $_POST["enquiry_no"];
   $enquiryDate = $_POST["enquiry_date"];
   $debtorCode = $_POST["debtor_code"];
@@ -7,7 +8,6 @@
   $currencyCode = $_POST["currency_code"];
   $exchangeRate = $_POST["exchange_rate"];
   $inCharge = $_POST["in_charge"];
-  $showPrice = $_POST["show_price"] == "on" ? "TRUE" : "FALSE";
   $discount = $_POST["discount"];
   $brandCodes = $_POST["brand_code"];
   $modelNos = $_POST["model_no"];
@@ -76,7 +76,6 @@
     assigned($enquiryDate) &&
     assigned($debtorCode) &&
     assigned($inCharge) &&
-    assigned($showPrice) &&
     assigned($brandCodes) &&
     assigned($modelNos) &&
     assigned($qtys) &&
@@ -98,7 +97,6 @@
       "currency_code" => $currencyCode,
       "exchange_rate" => $exchangeRate,
       "in_charge"     => $inCharge,
-      "show_price"    => $showPrice,
       "discount"      => $discount,
       "remarks"       => $remarks
     ));

@@ -11,7 +11,7 @@
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ch">
   <head>
     <?php include_once SYSTEM_PATH . "includes/php/head.php"; ?>
     <link rel="stylesheet" href="style.css">
@@ -26,21 +26,21 @@
             <div class="headline"><?php echo SALES_ENQUIRY_INTERNAL_PRINTOUT_TITLE ?></div>
             <table class="enquiry-header">
               <tr>
-                <td>Enquiry No.:</td>
+                <td>查詢編號:</td>
                 <td><?php echo $enquiryHeader["enquiry_no"]; ?></td>
-                <td>Enquiry Date:</td>
+                <td>查詢日期:</td>
                 <td><?php echo $enquiryHeader["date"]; ?></td>
               </tr>
               <tr>
-                <td>Client:</td>
+                <td>致:</td>
                 <td><?php echo $enquiryHeader["client"]; ?></td>
               </tr>
               <tr>
-                <td>Persion In-charge:</td>
+                <td>經手人:</td>
                 <td><?php echo $enquiryHeader["in_charge"]; ?></td>
               </tr>
             </table>
-            <div class="generation-date">Generation Date: <?php echo $date; ?></div>
+            <div class="generation-date">產生時間: <?php echo $date; ?></div>
             <?php if (count($enquiryModels[$enquiryHeader["enquiry_no"]]) > 0) : ?>
               <table class="enquiry-models">
                 <colgroup>
@@ -59,18 +59,18 @@
                   <tr></tr>
                   <tr>
                     <th rowspan="2">#</th>
-                    <th rowspan="2">Brand</th>
-                    <th rowspan="2">Model No.</th>
-                    <th colspan="7" class="quantity">Quantity</th>
+                    <th rowspan="2">品牌</th>
+                    <th rowspan="2">型號</th>
+                    <th colspan="7" class="quantity">數量</th>
                   </tr>
                   <tr>
-                    <th class="number">Requested</th>
-                    <th class="number">On Hand</th>
-                    <th class="number">Reserved</th>
-                    <th class="number">Available</th>
-                    <th class="number">Allotted</th>
-                    <th class="number">Incoming</th>
-                    <th class="number">Allotment</th>
+                    <th class="number">要求</th>
+                    <th class="number">手上</th>
+                    <th class="number">已預訂</th>
+                    <th class="number">現有</th>
+                    <th class="number">提供</th>
+                    <th class="number">來貨</th>
+                    <th class="number">已預訂</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -120,7 +120,7 @@
                   <tr>
                     <th></th>
                     <th></th>
-                    <th class="number">Total:</th>
+                    <th class="number">總計:</th>
                     <th class="number"><?php echo number_format($totalQty); ?></th>
                     <th class="number"><?php echo number_format($totalQtyOnHand); ?></th>
                     <th class="number"><?php echo number_format($totalQtyOnHandReserve); ?></th>
@@ -132,31 +132,31 @@
                 </tbody>
               </table>
             <?php else : ?>
-              <div class="enquiry-models-no-results">No models</div>
+              <div class="enquiry-models-no-results">沒有項目</div>
             <?php endif ?>
             <table class="enquiry-footer">
               <?php if (assigned($enquiryHeader["remarks"])) : ?>
                 <tr>
-                  <td>Remarks:</td>
+                  <td>備註:</td>
                   <td><?php echo $enquiryHeader["remarks"]; ?></td>
                 </tr>
               <?php endif ?>
             </table>
           </div>
           <div class="web-only printout-button-wrapper">
-            <?php echo generateRedirectButton(SALES_ENQUIRY_PRINTOUT_URL, "External printout"); ?>
+            <?php echo generateRedirectButton(SALES_ENQUIRY_PRINTOUT_URL, "外部印本"); ?>
             <?php if (isset($enquiryHeader["id"])) : ?>
               <form action="<?php echo SALES_ENQUIRY_URL; ?>">
                 <input type="hidden" name="id" value="<?php echo $enquiryHeader["id"]; ?>" />
-                <button type="submit">Edit</button>
+                <button type="submit">編輯</button>
               </form>
             <?php else : ?>
-              <?php echo generateRedirectButton(SALES_ENQUIRY_URL, "Edit"); ?>
+              <?php echo generateRedirectButton(SALES_ENQUIRY_URL, "編輯"); ?>
             <?php endif ?>
           </div>
         <?php endforeach; ?>
       <?php else : ?>
-        <div id="enquiry-not-found">Sales enquiry not found</div>
+        <div id="enquiry-not-found">找不到結果</div>
       <?php endif ?>
     </div>
   </body>

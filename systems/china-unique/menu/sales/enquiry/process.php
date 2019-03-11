@@ -119,6 +119,8 @@
 
     /* If the status is saved, insert a new sales enquiry. */
     if ($status === "SAVED") {
+      $enquiryDate = date("Y-m-d");
+      
       array_push($queries, "DELETE a FROM `enquiry_model` AS a LEFT JOIN `enquiry_header` AS b ON a.enquiry_no=b.enquiry_no WHERE b.id=\"$id\"");
       array_push($queries, "DELETE FROM `enquiry_header` WHERE id=\"$id\"");
 

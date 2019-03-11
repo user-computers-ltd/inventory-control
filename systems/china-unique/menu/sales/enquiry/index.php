@@ -8,7 +8,7 @@
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ch">
   <head>
     <?php include_once SYSTEM_PATH . "includes/php/head.php"; ?>
     <link rel="stylesheet" href="style.css">
@@ -25,13 +25,13 @@
         <table id="enquiry-header">
           <tr>
             <tr>
-              <td>Order No.:</td>
+              <td>查詢編號:</td>
               <td><input type="text" name="enquiry_no" value="<?php echo $enquiryNo; ?>" required /></td>
-              <td>Date:</td>
+              <td>查詢日期:</td>
               <td><input type="date" name="enquiry_date" value="<?php echo $enquiryDate; ?>" max="<?php echo date("Y-m-d"); ?>" required readonly /></td>
             </tr>
             <tr>
-              <td>Client Code:</td>
+              <td>客戶代碼:</td>
               <td>
                 <select id="debtor-code" name="debtor_code" onchange="onDebtorCodeChange()" equired>
                   <?php
@@ -42,7 +42,7 @@
                   ?>
                 </select>
               </td>
-              <td>Client Name:</td>
+              <td>客戶名稱:</td>
               <td>
                 <input
                   id="debtor-name"
@@ -54,9 +54,9 @@
               </td>
             </tr>
             <tr>
-              <td>Person In-charge:</td>
+              <td>經手人:</td>
               <td><input type="text" name="in_charge" value="<?php echo $inCharge; ?>" required/></td>
-              <td>Currency:</td>
+              <td>貨幣:</td>
               <td>
                 <select
                   id="currency-code"
@@ -85,7 +85,7 @@
               </td>
             </tr>
           <tr>
-            <td>Discount:</td>
+            <td>折扣:</td>
             <td>
               <input
                 id="discount"
@@ -110,7 +110,7 @@
                 onchange="onPriceStandardChange()"
                 <?php echo $priceStandard === "normal_price" ? "checked" : ""; ?>
               />
-              <label for="normal-price">Normal Price</label>
+              <label for="normal-price">正價</label>
               <input
                 id="special-price"
                 name="price_standard"
@@ -119,7 +119,7 @@
                 onchange="onPriceStandardChange()"
                 <?php echo $priceStandard === "special_price" ? "checked" : ""; ?>
               />
-              <label for="special-price">Special Price</label>
+              <label for="special-price">特價</label>
               <input
                 id="end-user-price"
                 name="price_standard"
@@ -128,11 +128,11 @@
                 onchange="onPriceStandardChange()"
                 <?php echo $priceStandard === "end_user_price" ? "checked" : ""; ?>
               />
-              <label for="end-user-price">End User Price</label>
+              <label for="end-user-price">廠價</label>
             </td>
           </tr>
         </table>
-        <button type="button" onclick="addItem()">Add</button>
+        <button type="button" onclick="addItem()">新增項目</button>
         <table id="enquiry-models">
           <colgroup>
             <col style="width: 30px">
@@ -152,21 +152,21 @@
           <thead>
             <tr>
               <th rowspan="2">#</th>
-              <th rowspan="2">Model no.</th>
-              <th rowspan="2">Brand code</th>
-              <th colspan="7" class="quantity">Quantity</th>
-              <th rowspan="2" class="number">Price</th>
-              <th rowspan="2" class="number">Subtotal</th>
+              <th rowspan="2">型號</th>
+              <th rowspan="2">品牌</th>
+              <th colspan="7" class="quantity">數量</th>
+              <th rowspan="2" class="number">含稅單價</th>
+              <th rowspan="2" class="number">含稅總金額</th>
               <th rowspan="2"></th>
             </tr>
             <tr>
-              <th class="number">Request</th>
-              <th class="number">On Hand</th>
-              <th class="number">Reserved</th>
-              <th class="number">Available</th>
-              <th class="number">Allot</th>
-              <th class="number">Incoming</th>
-              <th class="number">Allotment</th>
+              <th class="number">要求</th>
+              <th class="number">手上</th>
+              <th class="number">已預訂</th>
+              <th class="number">現有</th>
+              <th class="number">提供</th>
+              <th class="number">來貨</th>
+              <th class="number">已預訂</th>
             </tr>
           </thead>
           <tfoot>
@@ -178,7 +178,7 @@
             </tr>
             <tr class="discount-row">
               <td colspan="9"></td>
-              <td class="number">Discount:</td>
+              <td class="number">折扣:</td>
               <td id="discount-percentage" class="number"></td>
               <td id="discount-amount" class="number"></td>
               <td></td>
@@ -186,7 +186,7 @@
             <tr>
               <th></th>
               <th></th>
-              <th class="number">Total:</th>
+              <th class="number">總計:</th>
               <th id="total-qty" class="number"></th>
               <th colspan="3"></th>
               <th id="total-qty-allotted" class="number"></th>
@@ -200,16 +200,16 @@
         </table>
         <table id="enquiry-footer">
           <tr>
-            <td>Remarks:</td>
+            <td>備註:</td>
             <td><textarea id="remarks" name="remarks"><?php echo $remarks; ?></textarea></td>
           </tr>
         </table>
-        <button name="status" type="submit" value="SAVED">Save</button>
-        <button type="submit" formaction="<?php echo SALES_ENQUIRY_PRINTOUT_URL; ?>">Print</button>
+        <button name="status" type="submit" value="SAVED">保存</button>
+        <button type="submit" formaction="<?php echo SALES_ENQUIRY_PRINTOUT_URL; ?>">印本</button>
         <?php if (isSupervisor()) : ?>
-          <button type="submit" formaction="<?php echo SALES_ORDER_URL; ?>">Create Sales Order</button>
+          <button type="submit" formaction="<?php echo SALES_ORDER_URL; ?>">新增訂單</button>
         <?php endif ?>
-        <button name="status" type="submit" value="DELETED">Delete</button>
+        <button name="status" type="submit" value="DELETED">刪除</button>
       </form>
       <datalist id="model-list">
         <?php
@@ -386,7 +386,7 @@
 
           if (enquiryModels.length === 0) {
             var rowElement = document.createElement("tr");
-            rowElement.innerHTML = "<td colspan=\"12\" id=\"enquiry-entry-no-model\">No models</td>";
+            rowElement.innerHTML = "<td colspan=\"12\" id=\"enquiry-entry-no-model\">沒有項目</td>";
             tableBodyElement.appendChild(rowElement);
           }
 

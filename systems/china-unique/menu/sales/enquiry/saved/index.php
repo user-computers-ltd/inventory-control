@@ -8,7 +8,7 @@
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ch">
   <head>
     <?php include_once SYSTEM_PATH . "includes/php/head.php"; ?>
     <link rel="stylesheet" href="style.css">
@@ -21,20 +21,20 @@
       <form>
         <table id="enquiry-input" class="web-only">
           <tr>
-            <th>From:</th>
-            <th>To:</th>
+            <th>從:</th>
+            <th>至:</th>
           </tr>
           <tr>
             <td><input type="date" name="from" value="<?php echo $from; ?>" max="<?php echo date("Y-m-d"); ?>" /></td>
             <td><input type="date" name="to" value="<?php echo $to; ?>" max="<?php echo date("Y-m-d"); ?>" /></td>
-            <td><button type="submit">Go</button></td>
+            <td><button type="submit">搜索</button></td>
           </tr>
         </table>
       </form>
       <?php if (count($enquiryHeaders) > 0) : ?>
         <form method="post">
-          <button type="submit" name="action" value="print">Print</button>
-          <button type="submit" name="action" value="delete">Delete</button>
+          <button type="submit" name="action" value="print">印本</button>
+          <button type="submit" name="action" value="delete">刪除</button>
           <table id="enquiry-results">
             <colgroup>
               <col class="web-only" style="width: 30px">
@@ -48,11 +48,11 @@
               <tr></tr>
               <tr>
                 <th class="web-only"></th>
-                <th>Date</th>
-                <th>Order No.</th>
-                <th>Client</th>
-                <th class="number">Total Qty</th>
-                <th class="number">Total Qty Allotted</th>
+                <th>查詢日期</th>
+                <th>查詢編號</th>
+                <th>客戶</th>
+                <th class="number">總數量</th>
+                <th class="number">可提供總數量</th>
               </tr>
             </thead>
             <tbody>
@@ -88,7 +88,7 @@
                 <th class="web-only"></th>
                 <th></th>
                 <th></th>
-                <th class="number">Total:</th>
+                <th class="number">總計:</th>
                 <th class="number"><?php echo number_format($totalQty); ?></th>
                 <th class="number"><?php echo number_format($totalQtyAllotted); ?></th>
               </tr>
@@ -96,7 +96,7 @@
           </table>
         </form>
       <?php else : ?>
-        <div class="enquiry-client-no-results">No results</div>
+        <div class="enquiry-client-no-results">找不到結果</div>
       <?php endif ?>
     </div>
   </body>

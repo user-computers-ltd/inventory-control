@@ -8,7 +8,7 @@
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ch">
   <head>
     <?php include_once SYSTEM_PATH . "includes/php/head.php"; ?>
     <link rel="stylesheet" href="style.css">
@@ -19,7 +19,6 @@
       <?php if (count($enquiryHeaders) > 0) : ?>
         <?php foreach($enquiryHeaders as &$enquiryHeader) : ?>
           <?php
-            $showPrice = $enquiryHeader["show_price"] === "TRUE";
             $discount = $enquiryHeader["discount"];
           ?>
           <div class="page">
@@ -144,7 +143,7 @@
                 </tbody>
               </table>
             <?php else : ?>
-              <div class="enquiry-models-no-results">No models</div>
+              <div class="enquiry-models-no-results">沒有項目</div>
             <?php endif ?>
             <table class="enquiry-footer">
               <?php if (assigned($enquiryHeader["remarks"])) : ?>
@@ -156,31 +155,31 @@
             </table>
           </div>
           <div class="web-only printout-button-wrapper">
-            <?php echo generateRedirectButton(SALES_ENQUIRY_INTERNAL_PRINTOUT_URL, "Internal printout"); ?>
+            <?php echo generateRedirectButton(SALES_ENQUIRY_INTERNAL_PRINTOUT_URL, "內部印本"); ?>
             <?php
               if ($showPrice) {
-                $_POST["show_price"] = "off";
-                echo generateRedirectButton(CURRENT_URL, "Hide price");
+                $_GET["show_price"] = "off";
+                echo generateRedirectButton(CURRENT_URL, "隱藏價格");
               } else {
-                $_POST["show_price"] = "on";
-                echo generateRedirectButton(CURRENT_URL, "Show price");
+                $_GET["show_price"] = "on";
+                echo generateRedirectButton(CURRENT_URL, "顯示價格");
               }
             ?>
             <?php if (isset($enquiryHeader["id"])) : ?>
               <form action="<?php echo SALES_ENQUIRY_URL; ?>">
                 <input type="hidden" name="id" value="<?php echo $enquiryHeader["id"]; ?>" />
-                <button type="submit">Edit</button>
+                <button type="submit">編輯</button>
               </form>
             <?php else : ?>
               <?php
                 $_POST["status"] = "EDIT";
-                echo generateRedirectButton(SALES_ENQUIRY_URL, "Edit");
+                echo generateRedirectButton(SALES_ENQUIRY_URL, "編輯");
               ?>
             <?php endif ?>
           </div>
         <?php endforeach; ?>
       <?php else : ?>
-        <div id="enquiry-not-found">Sales enquiry not found</div>
+        <div id="enquiry-not-found">找不到結果</div>
       <?php endif ?>
     </div>
   </body>
