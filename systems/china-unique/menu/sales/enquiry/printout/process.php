@@ -35,7 +35,6 @@
         a.currency_code                                           AS `currency_code`,
         a.exchange_rate                                           AS `exchange_rate`,
         a.in_charge                                               AS `in_charge`,
-        a.show_price                                              AS `show_price`,
         a.discount                                                AS `discount`,
         a.remarks                                                 AS `remarks`
       FROM
