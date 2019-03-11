@@ -26,6 +26,4 @@
   function isSupervisor() {
     return getAccessLevel() === "supervisor";
   }
-
-  $userAccessLevel = getAccessLevel();
 ?>

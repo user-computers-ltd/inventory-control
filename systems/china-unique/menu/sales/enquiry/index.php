@@ -56,7 +56,7 @@
             </tr>
             <tr>
               <td>經手人:</td>
-              <td><input type="text" name="in_charge" value="<?php echo $inCharge; ?>" required/></td>
+              <td><input type="text" name="in_charge" value="<?php echo $inCharge; ?>" required readonly /></td>
               <td>貨幣:</td>
               <td>
                 <select
@@ -500,7 +500,12 @@
           var debtorName = debtors[debtorCode];
 
           debtorNameElement.value = debtorCode === "1" ? "" : debtorName;
-          debtorNameElement.readonly = debtorCode !== "1";
+
+          if (debtorCode !== "1") {
+            debtorNameElement.setAttribute("readonly", "");
+          } else {
+            debtorNameElement.removeAttribute("readonly");
+          }
         }
 
         function onCurrencyCodeChange() {
@@ -508,7 +513,7 @@
 
           exchangeRateElement.value = currencies[currencyCode];
           if (currencyCode === "<?php echo COMPANY_CURRENCY; ?>") {
-            exchangeRateElement.setAttribute("readonly", true);
+            exchangeRateElement.setAttribute("readonly", "");
           } else {
             exchangeRateElement.removeAttribute("readonly");
           }
@@ -528,7 +533,7 @@
 
           if (enquiryModel["model_no"] !== newModelNo) {
             var existsAlready = enquiryModels.filter(function (m) {
-              return newModelNo && m["model_no"] === newModelNo;
+              return newModelNo && m["model_no"] === newModelNo.toUpperCase();
             }).length > 0;
 
             if (!existsAlready) {

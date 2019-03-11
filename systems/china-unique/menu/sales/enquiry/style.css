@@ -11,6 +11,10 @@
   width: 100%;
 }
 
+#enquiry-header input[readonly=""] {
+  border-color: transparent;
+}
+
 #enquiry-header td,
 #enquiry-footer td {
   border: none;

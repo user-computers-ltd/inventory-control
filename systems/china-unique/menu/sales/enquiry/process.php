@@ -1,4 +1,6 @@
 <?php
+  include_once SYSTEM_PATH . "includes/php/authentication.php";
+
   $id = assigned($_GET["id"]) ? $_GET["id"] : (assigned($_POST["id"]) ? $_POST["id"] : "");
   $enquiryNo = $_POST["enquiry_no"];
   $enquiryDate = $_POST["enquiry_date"];
@@ -120,7 +122,7 @@
     /* If the status is saved, insert a new sales enquiry. */
     if ($status === "SAVED") {
       $enquiryDate = date("Y-m-d");
-      
+
       array_push($queries, "DELETE a FROM `enquiry_model` AS a LEFT JOIN `enquiry_header` AS b ON a.enquiry_no=b.enquiry_no WHERE b.id=\"$id\"");
       array_push($queries, "DELETE FROM `enquiry_header` WHERE id=\"$id\"");
 
@@ -240,6 +242,7 @@
     $headline = SALES_ENQUIRY_CREATE_TITLE;
     $enquiryNo = "ENQ" . date("YmdHis");
     $enquiryDate = date("Y-m-d");
+    $inCharge = $_SESSION["user"];
     $debtorCode = assigned($debtorCode) ? $debtorCode : "1";
     $currencyCode = assigned($currencyCode) ? $currencyCode : COMPANY_CURRENCY;
     $exchangeRate = assigned($exchangeRate) ? $exchangeRate : $currencies[$currencyCode];

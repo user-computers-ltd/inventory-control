@@ -34,7 +34,7 @@
     <?php if (isset($SITEMAP)) : ?>
       <div id="menu-sidebar" class="web-only show">
         <button class="toggle-button" onclick="toggleNav()"></button>
-        <?php echo generateSitemap($SITEMAP[$userAccessLevel], ""); ?>
+        <?php echo generateSitemap($SITEMAP[getAccessLevel()], ""); ?>
         <?php if (isset($_SESSION["user"])) : ?>
           <a class="menu-item link logout" href="<?php echo SYSTEM_URL; ?>logout.php">
             <span class="initial">Z</span><span class="label">Logout</span>
