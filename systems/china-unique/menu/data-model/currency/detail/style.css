@@ -1,0 +1,52 @@
+#currency-stock {
+  width: 50%;
+}
+
+#currency-header th,
+#currency-header td {
+  font-size: 13px;
+}
+
+#currency-header td {
+  border: none;
+}
+
+#currency-header th {
+  vertical-align: top;
+}
+
+#currency-header input,
+#currency-header select {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#currency-header .number,
+#currency-performance .number {
+  text-align: right;
+}
+
+#currency-header .multi-line {
+  white-space: pre;
+}
+
+#currency-performance th,
+#currency-performance td {
+  min-width: 0px;
+  max-width: 0px;
+}
+
+#currency-performance td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.currency-no-result {
+  margin: 100px 0px;
+  text-align: center;
+  font-size: 40px;
+  font-weight: bold;
+  line-height: 48px;
+  opacity: 0.3;
+}

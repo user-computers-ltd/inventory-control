@@ -1,0 +1,52 @@
+#warehouse-stock {
+  width: 50%;
+}
+
+#warehouse-header th,
+#warehouse-header td {
+  font-size: 13px;
+}
+
+#warehouse-header td {
+  border: none;
+}
+
+#warehouse-header th {
+  vertical-align: top;
+}
+
+#warehouse-header input,
+#warehouse-header select {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#warehouse-header .number,
+#warehouse-performance .number {
+  text-align: right;
+}
+
+#warehouse-header .multi-line {
+  white-space: pre;
+}
+
+#warehouse-performance th,
+#warehouse-performance td {
+  min-width: 0px;
+  max-width: 0px;
+}
+
+#warehouse-performance td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.warehouse-no-result {
+  margin: 100px 0px;
+  text-align: center;
+  font-size: 40px;
+  font-weight: bold;
+  line-height: 48px;
+  opacity: 0.3;
+}
