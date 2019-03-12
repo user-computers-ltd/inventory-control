@@ -1,5 +1,14 @@
 <?php
-  define("ROOT_PATH", "../../" . SYSTEM_PATH);
+
+  function getParentPath($path) {
+    if ($path === "" || substr($path, -3) === "../") {
+      return "../" . $path;
+    } else {
+      return substr($path, 0, -3);
+    }
+  }
+
+  define("ROOT_PATH", getParentPath(getParentPath(SYSTEM_PATH)));
 
   include_once ROOT_PATH . "includes/php/config.php";
 
