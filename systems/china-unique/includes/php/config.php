@@ -4,7 +4,7 @@
     if ($path === "" || substr($path, -3) === "../") {
       return "../" . $path;
     } else {
-      return substr($path, 0, -3);
+      return substr($path, 0, -strrpos($path, "/", -1));
     }
   }
 
