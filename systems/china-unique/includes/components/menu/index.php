@@ -32,7 +32,7 @@
   </head>
   <body>
     <?php if (isset($SITEMAP)) : ?>
-      <div id="menu-sidebar" class="web-only show">
+      <div id="menu-sidebar" class="web-only">
         <button class="toggle-button" onclick="toggleNav()"></button>
         <?php echo generateSitemap($SITEMAP[getAccessLevel()], ""); ?>
         <?php if (isset($_SESSION["user"])) : ?>
