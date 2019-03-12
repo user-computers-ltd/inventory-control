@@ -116,9 +116,7 @@
 
   if (count($enquiryHeaders) > 0) {
     foreach ($enquiryHeaders as &$enquiryHeader) {
-      $debtor = query("SELECT english_name AS name FROM `debtor` WHERE code=\"" . $enquiryHeader["debtor_code"] . "\"")[0];
-      $enquiryHeader["client"] = $enquiryHeader["debtor_code"] . " (" .
-        (assigned($enquiryHeader["debtor_name"]) ? $enquiryHeader["debtor_name"] : isset($debtor) ? $debtor["name"] : "Unknown") . ")";
+      $enquiryHeader["client"] = $enquiryHeader["debtor_name"] . " (" . $enquiryHeader["debtor_code"] . ")";
       $enquiryHeader["currency"] = $enquiryHeader["currency_code"] . " @ " . $enquiryHeader["exchange_rate"];
     }
   }

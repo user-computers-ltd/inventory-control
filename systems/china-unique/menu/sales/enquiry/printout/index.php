@@ -33,7 +33,7 @@
               </tr>
               <tr>
                 <td>致:</td>
-                <td><?php echo $enquiryHeader["client"]; ?></td>
+                <td><?php echo $enquiryHeader["debtor_name"]; ?></td>
                 <?php if ($showPrice) : ?>
                   <td>貨幣:</td>
                   <td><?php echo $enquiryHeader["currency"]; ?></td>
