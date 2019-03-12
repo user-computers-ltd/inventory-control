@@ -1,10 +1,9 @@
 <?php
-
   function getParentPath($path) {
     if ($path === "" || substr($path, -3) === "../") {
       return "../" . $path;
     } else {
-      return substr($path, 0, -strrpos($path, "/", -1));
+      return substr($path, 0, strrpos($path, "/", -2) + 1);
     }
   }
 
