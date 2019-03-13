@@ -70,7 +70,7 @@
         h.status=\"SAVED\"
       GROUP BY
         m.brand_code, m.model_no) AS d
-    ON a.brand_code=c.brand_code AND a.model_no=c.model_no
+    ON a.brand_code=d.brand_code AND a.model_no=d.model_no
     LEFT JOIN
       (SELECT
         m.brand_code, m.model_no, SUM(GREATEST(qty_outstanding, 0)) AS `qty_on_order`
@@ -142,21 +142,11 @@
       code ASC
   ");
 
-  $modelWhereClause = "";
-
-  if (assigned($filterBrandCodes) && count($filterBrandCodes) > 0) {
-    $modelWhereClause = $modelWhereClause . "
-      AND (" . join(" OR ", array_map(function ($i) { return "brand_code=\"$i\""; }, $filterBrandCodes)) . ")";
-  }
-
   $models = query("
     SELECT DISTINCT
       model_no
     FROM
       `model`
-    WHERE
-      model_no IS NOT NULL
-      $modelWhereClause
     ORDER BY
       model_no ASC
   ");

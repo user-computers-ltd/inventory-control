@@ -11,7 +11,7 @@
 
   if (assigned($filterCurrencyCodes) && count($filterCurrencyCodes) > 0) {
     $whereClause = "
-      (" . join(" OR ", array_map(function ($i) { return "code=\"$i\""; }, $filterCurrencyCodes)) . ")";
+      AND (" . join(" OR ", array_map(function ($i) { return "code=\"$i\""; }, $filterCurrencyCodes)) . ")";
   }
 
   $results = query("
@@ -22,6 +22,9 @@
       rate AS `rate`
     FROM
       `currency`
+    WHERE
+      code IS NOT NULL
+      $whereClause
     ORDER BY
       code ASC
   ");

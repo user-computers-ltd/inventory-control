@@ -11,7 +11,7 @@
 
   if (assigned($filterWarehouses) && count($filterWarehouses) > 0) {
     $whereClause = "
-      (" . join(" OR ", array_map(function ($i) { return "code=\"$i\""; }, $filterWarehouses)) . ")";
+      AND (" . join(" OR ", array_map(function ($i) { return "code=\"$i\""; }, $filterWarehouses)) . ")";
   }
 
   $results = query("
@@ -21,6 +21,9 @@
       name AS `name`
     FROM
       `warehouse`
+    WHERE
+      code IS NOT NULL
+      $whereClause
     ORDER BY
       code ASC
   ");

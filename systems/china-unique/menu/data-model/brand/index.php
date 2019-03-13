@@ -11,7 +11,7 @@
 
   if (assigned($filterBrandCodes) && count($filterBrandCodes) > 0) {
     $whereClause = "
-      (" . join(" OR ", array_map(function ($i) { return "code=\"$i\""; }, $filterBrandCodes)) . ")";
+      AND (" . join(" OR ", array_map(function ($i) { return "code=\"$i\""; }, $filterBrandCodes)) . ")";
   }
 
   $results = query("
@@ -22,6 +22,7 @@
     FROM
       `brand`
     WHERE
+      code IS NOT NULL
       $whereClause
     ORDER BY
       code ASC
