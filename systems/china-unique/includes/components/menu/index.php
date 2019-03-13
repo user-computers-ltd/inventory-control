@@ -1,6 +1,10 @@
 <?php
-  include_once ROOT_PATH . "includes/php/utils.php";
+  if (!defined("SYSTEM_PATH")) {
+    define("SYSTEM_PATH", "../../../");
+  }
+
   include_once SYSTEM_PATH . "includes/php/config.php";
+  include_once ROOT_PATH . "includes/php/utils.php";
   include_once SYSTEM_PATH . "includes/php/authentication.php";
 
   function generateSitemap($sitemap, $prefix) {

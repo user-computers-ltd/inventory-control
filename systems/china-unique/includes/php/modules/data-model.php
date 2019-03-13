@@ -59,12 +59,21 @@
   define("DATA_MODEL_CREDITOR_EDIT_TITLE", "(B6b) Edit Creditor");
   define("DATA_MODEL_CREDITOR_DETAIL_TITLE", "(B6c) Creditor Detail");
 
+  define("DATA_MODEL_PRICE_CATEGORY_TITLE", "(B7) Price Category Revision");
+  define("DATA_MODEL_PRICE_CATEGORY_CHANGE_TITLE", "(B7a) Price Change");
+  define("DATA_MODEL_PRICE_CATEGORY_REPORT_TITLE", "(B7b) Price Revision Report");
+
+
   $DATA_MODEL_MODULE = array(
     DATA_MODEL_MODEL_TITLE                      => DATA_MODEL_MODEL_URL,
     DATA_MODEL_BRAND_TITLE                      => DATA_MODEL_BRAND_URL,
     DATA_MODEL_WAREHOUSE_TITLE                  => DATA_MODEL_WAREHOUSE_URL,
     DATA_MODEL_CURRENCY_TITLE                   => DATA_MODEL_CURRENCY_URL,
     DATA_MODEL_DEBTOR_TITLE                     => DATA_MODEL_DEBTOR_URL,
-    DATA_MODEL_CREDITOR_TITLE                   => DATA_MODEL_CREDITOR_URL
+    DATA_MODEL_CREDITOR_TITLE                   => DATA_MODEL_CREDITOR_URL,
+    DATA_MODEL_PRICE_CATEGORY_TITLE => array(
+      DATA_MODEL_PRICE_CATEGORY_CHANGE_TITLE => "http://www.lsmbv.com.hk:8000/idb/cu_inventory/enquiry/j_model_revision_d.php",
+      DATA_MODEL_PRICE_CATEGORY_REPORT_TITLE => "http://www.lsmbv.com.hk:8000/idb/cu_inventory/enquiry/j_model_cost_report.php",
+    )
   );
 ?>

@@ -17,7 +17,7 @@
       array_push($queries, "DELETE a FROM `out_inv_model` AS a LEFT JOIN `out_inv_header` AS b ON a.invoice_no=b.invoice_no WHERE $modelWhereClause");
       array_push($queries, "DELETE FROM `out_inv_header` WHERE $headerWhereClause");
     } else if ($action == "settle") {
-      array_push($queries, "UPDATE `out_inv_header` SET status=\"PAID\" WHERE $headerWhereClause");
+      array_push($queries, "UPDATE `out_inv_header` SET status=\"SETTLED\" WHERE $headerWhereClause");
     } else if ($action == "print") {
       header("Location: " . SALES_INVOICE_PRINTOUT_URL . "?$printoutParams");
       exit(0);

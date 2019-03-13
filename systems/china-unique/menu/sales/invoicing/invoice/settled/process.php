@@ -64,7 +64,7 @@
       `debtor` AS c
     ON a.debtor_code=c.code
     WHERE
-      a.status=\"PAID\"
+      a.status=\"SETTLED\"
       $whereClause
     ORDER BY
       a.invoice_date DESC
