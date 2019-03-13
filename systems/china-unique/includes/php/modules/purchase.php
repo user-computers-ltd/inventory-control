@@ -83,7 +83,7 @@
       PURCHASE_REPORT_BRAND_TITLE => "http://www.lsmbv.com.hk:8000/idb/cu_inventory/si/po/report_brand.php",
       PURCHASE_REPORT_BRAND_SUMMARY_TITLE => "http://www.lsmbv.com.hk:8000/idb/cu_inventory/si/po/report_brandmodelsummary.php",
       PURCHASE_REPORT_BRAND_DETAIL_TITLE => "http://www.lsmbv.com.hk:8000/idb/cu_inventory/si/po/report_brandmodeldetails.php",
-      PURCHASE_REPORT_BRAND_SELECTIVE_TITLE => "http://www.lsmbv.com.hk:8000/idb/cu_inventory/si/po/report_brandmodeldetails.php",
+      PURCHASE_REPORT_BRAND_SELECTIVE_TITLE => "http://www.lsmbv.com.hk:8000/idb/cu_inventory/si/po/report_brandmodelselective.php",
       PURCHASE_REPORT_BRAND_SUBCLASS_TITLE => "http://www.lsmbv.com.hk:8000/idb/cu_inventory/si/po/report_brandmodelsubclass.php",
       PURCHASE_SHORTAGE_RPORT_TITLE => "http://www.lsmbv.com.hk:8000/idb/cu_inventory/enquiry/j_shortage.php"
     ),
