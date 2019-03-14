@@ -18,7 +18,7 @@
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo SALES_ALLOTMENT_STOCK_TITLE; ?></div>
       <form>
-        <table id="stock-input" class="web-only">
+        <table id="stock-input">
           <tr>
             <th>Warehouse:</th>
             <th>Client:</th>
@@ -26,7 +26,7 @@
           </tr>
           <tr>
             <td>
-              <select name="filter_warehouse_code[]" multiple>
+              <select name="filter_warehouse_code[]" multiple class="web-only">
                 <?php
                   foreach ($warehouses as $warehouse) {
                     $code = $warehouse["code"];
@@ -36,9 +36,10 @@
                   }
                 ?>
               </select>
+              <span class="print-only"><?php echo assigned($filterWarehouseCodes) ? join(", ", $filterWarehouseCodes) : "ALL"; ?></span>
             </td>
             <td>
-              <select name="filter_debtor_code[]" multiple>
+              <select name="filter_debtor_code[]" multiple class="web-only">
                 <?php
                   foreach ($debtors as $debtor) {
                     $code = $debtor["code"];
@@ -48,9 +49,10 @@
                   }
                 ?>
               </select>
+              <span class="print-only"><?php echo assigned($filterDebtorCodes) ? join(", ", $filterDebtorCodes) : "ALL"; ?></span>
             </td>
             <td>
-              <select name="filter_so_no[]" multiple>
+              <select name="filter_so_no[]" multiple class="web-only">
                 <?php
                   foreach ($soNos as $soNo) {
                     $no = $soNo["so_no"];
@@ -59,14 +61,15 @@
                   }
                 ?>
               </select>
+              <span class="print-only"><?php echo assigned($filterSONos) ? join(", ", $filterSONos) : "ALL"; ?></span>
             </td>
-            <td><button type="submit">Go</button></td>
+            <td><button type="submit" class="web-only">Go</button></td>
           </tr>
         </table>
       </form>
       <?php if (count($stockResults) > 0) : ?>
         <form method="post" class="stock-form">
-          <button type="submit">Save</button>
+          <button type="submit" class="web-only">Save</button>
           <?php
             foreach ($stockResults as $warehouseCode => $warehouse) {
               $warehouseName = $warehouse["name"];
@@ -76,10 +79,10 @@
                 <div class=\"warehouse\">
                   <h4>$warehouseCode - $warehouseName</h4>
                   <table class=\"stock-header\">
-                    <tr>
+                    <tr class=\"web-only\">
                       <td>Reserve: <input data-warehouse_code=\"$warehouseCode\" type=\"number\" class=\"reserve-percentage\" min=\"0\" max=\"100\" value=\"0\"/><span>%</span></td>
                     </tr>
-                    <tr>
+                    <tr class=\"web-only\">
                       <td>
                         <button type=\"button\" class=\"header-button\" onclick=\"allocateByPriorities('$warehouseCode')\">Allocate by priorities</button>
                         <button type=\"button\" class=\"header-button\" onclick=\"allocateBySoDate('$warehouseCode')\">Allocate by date</button>

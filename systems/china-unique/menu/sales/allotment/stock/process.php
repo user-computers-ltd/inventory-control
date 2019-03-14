@@ -61,25 +61,25 @@
   }
 
   $whereSoModelClause = "";
-  $whereSoAllotmentClause = "";
+  $whereSoAllotmentClause = "
+    AND (x.warehouse_code IS NULL
+  ";
 
   if (assigned($filterDebtorCodes) && count($filterDebtorCodes) > 0) {
     $whereSoModelClause = $whereSoModelClause . "
       AND (" . join(" OR ", array_map(function ($i) { return "y.debtor_code=\"$i\""; }, $filterDebtorCodes)) . ")";
     $whereSoAllotmentClause = $whereSoAllotmentClause . "
-      AND (" . join(" AND ", array_map(function ($i) { return "y.debtor_code!=\"$i\""; }, $filterDebtorCodes)) . ")";
-  } else {
-    $whereSoAllotmentClause = $whereSoAllotmentClause . " AND y.debtor_code=\"\"";
+      OR (" . join(" AND ", array_map(function ($i) { return "y.debtor_code!=\"$i\""; }, $filterDebtorCodes)) . ")";
   }
 
   if (assigned($filterSONos) && count($filterSONos) > 0) {
     $whereSoModelClause = $whereSoModelClause . "
       AND (" . join(" OR ", array_map(function ($i) { return "y.so_no=\"$i\""; }, $filterSONos)) . ")";
     $whereSoAllotmentClause = $whereSoAllotmentClause . "
-      AND (" . join(" AND ", array_map(function ($i) { return "y.so_no!=\"$i\""; }, $filterSONos)) . ")";
-  } else {
-    $whereSoAllotmentClause = $whereSoAllotmentClause . " AND y.so_no=\"\"";
+      OR (" . join(" AND ", array_map(function ($i) { return "y.so_no!=\"$i\""; }, $filterSONos)) . ")";
   }
+
+  $whereSoAllotmentClause = $whereSoAllotmentClause . ")";
 
   $results = query("
     SELECT

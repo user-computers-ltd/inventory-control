@@ -61,21 +61,21 @@
       AND (" . join(" OR ", array_map(function ($i) { return "a.ia_no=\"$i\""; }, $filterIaNos)) . ")";
   }
 
-  $whereSoAllotmentClause = "";
+  $whereSoAllotmentClause = "
+    AND (x.ia_no IS NULL
+  ";
 
   if (assigned($filterDebtorCodes) && count($filterDebtorCodes) > 0) {
     $whereSoAllotmentClause = $whereSoAllotmentClause . "
-      AND (" . join(" AND ", array_map(function ($i) { return "y.debtor_code!=\"$i\""; }, $filterDebtorCodes)) . ")";
-  } else {
-    $whereSoAllotmentClause = $whereSoAllotmentClause . " AND y.debtor_code=\"\"";
+      OR (" . join(" AND ", array_map(function ($i) { return "y.debtor_code!=\"$i\""; }, $filterDebtorCodes)) . ")";
   }
 
   if (assigned($filterSONos) && count($filterSONos) > 0) {
     $whereSoAllotmentClause = $whereSoAllotmentClause . "
-      AND (" . join(" AND ", array_map(function ($i) { return "y.so_no!=\"$i\""; }, $filterSONos)) . ")";
-  } else {
-    $whereSoAllotmentClause = $whereSoAllotmentClause . " AND y.so_no=\"\"";
+      OR (" . join(" AND ", array_map(function ($i) { return "y.so_no!=\"$i\""; }, $filterSONos)) . ")";
   }
+
+  $whereSoAllotmentClause = $whereSoAllotmentClause . ")";
 
   $results = query("
     SELECT
@@ -113,7 +113,7 @@
         `so_header` AS y
       ON x.so_no=y.so_no
       WHERE
-        x.ia_no<>\"\"
+        x.ia_no!=\"\"
         $whereSoAllotmentClause
       GROUP BY
         ia_no, brand_code, model_no) AS e
