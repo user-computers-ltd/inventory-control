@@ -36,7 +36,15 @@
                   }
                 ?>
               </select>
-              <span class="print-only"><?php echo assigned($filterWarehouseCodes) ? join(", ", $filterWarehouseCodes) : "ALL"; ?></span>
+              <span class="print-only">
+                <?php
+                  echo assigned($filterWarehouseCodes) ? join(", ", array_map(function ($d) {
+                    return $d["code"] . " - " . $d["name"];
+                  }, array_filter($warehouses, function ($i) use ($filterWarehouseCodes) {
+                    return in_array($i["code"], $filterWarehouseCodes);
+                  }))) : "ALL";
+                ?>
+              </span>
             </td>
             <td>
               <select name="filter_debtor_code[]" multiple class="web-only">
@@ -49,7 +57,15 @@
                   }
                 ?>
               </select>
-              <span class="print-only"><?php echo assigned($filterDebtorCodes) ? join(", ", $filterDebtorCodes) : "ALL"; ?></span>
+              <span class="print-only">
+                <?php
+                  echo assigned($filterDebtorCodes) ? join(", ", array_map(function ($d) {
+                    return $d["code"] . " - " . $d["name"];
+                  }, array_filter($debtors, function ($i) use ($filterDebtorCodes) {
+                    return in_array($i["code"], $filterDebtorCodes);
+                  }))) : "ALL";
+                ?>
+              </span>
             </td>
             <td>
               <select name="filter_so_no[]" multiple class="web-only">
