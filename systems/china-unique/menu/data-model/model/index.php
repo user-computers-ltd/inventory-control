@@ -24,9 +24,12 @@
   if ($showMode == "live_only") {
     $whereClause = $whereClause . "
       AND (
-        IFNULL(c.qty_on_hand, 0) <> 0 OR
-        IFNULL(d.qty_on_hand_reserve, 0) <> 0 OR
-        IFNULL(e.qty_on_order, 0) <> 0
+        IFNULL(c.qty_on_hand, 0)>0 OR
+        IFNULL(d.qty_on_hand_reserve, 0)>0 OR
+        IFNULL(e.qty_on_order, 0)>0 OR
+        IFNULL(f.qty_incoming, 0)>0 OR
+        IFNULL(g.qty_incoming_reserve, 0)>0 OR
+        IFNULL(h.qty_on_demand, 0)>0
       )
     ";
   }
@@ -106,7 +109,7 @@
         `sdo_header` AS h
       ON m.do_no=h.do_no
       WHERE
-        m.ia_no<>\"\" AND
+        m.ia_no!=\"\" AND
         h.status=\"SAVED\"
       GROUP BY
         m.brand_code, m.model_no) AS g

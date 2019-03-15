@@ -96,6 +96,7 @@
 #menu-sidebar .menu-item .initial {
   width: 50px;
   padding-left: 5px;
+  box-sizing: initial;
   transition: 0.3s;
 }
 
