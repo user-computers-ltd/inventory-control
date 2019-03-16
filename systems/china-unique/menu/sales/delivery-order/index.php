@@ -20,7 +20,7 @@
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo SALES_DELIVERY_ORDER_PRINTOUT_TITLE; ?></div>
       <?php if (isset($doHeader)) : ?>
-        <form method="post">
+        <form id="delivery-form" method="post">
           <table id="do-header">
             <tr>
               <td>Order No.:</td>
@@ -172,12 +172,37 @@
           <?php endif ?>
           <button name="status" type="submit" value="<?php echo $doHeader["status"]; ?>" formaction="<?php echo SALES_DELIVERY_ORDER_PRINTOUT_URL . "?id[]=$id"; ?>">Print</button>
           <?php if ($doHeader["status"] == "SAVED" && !$hasIncoming) : ?>
-            <button name="status" type="submit" value="POSTED">Post</button>
+            <button name="status" type="submit" value="POSTED" style="display: none;"></button>
+            <button type="button" onclick="confirmPost(event)">Post</button>
           <?php endif ?>
           <?php if ($doHeader["status"] == "SAVED") : ?>
-            <button name="status" type="submit" value="DELETED">Delete</button>
+            <button name="status" type="submit" value="DELETED" style="display: none;"></button>
+            <button type="button" onclick="confirmDelete(event)">Delete</button>
           <?php endif ?>
         </form>
+        <?php include_once ROOT_PATH . "includes/components/confirm-dialog/index.php"; ?>
+        <?php include_once ROOT_PATH . "includes/components/loading-screen/index.php"; ?>
+        <script>
+          var enquiryFormElement = document.querySelector("#delivery-form");
+          var postButtonElement = enquiryFormElement.querySelector("button[value=\"POSTED\"]");
+          var deleteButtonElement = enquiryFormElement.querySelector("button[value=\"DELETED\"]");
+
+          function confirmPost(event) {
+            showConfirmDialog("<b>Are you sure you want to post?", function () {
+              postButtonElement.click();
+              setLoadingMessage("Posting...")
+              toggleLoadingScreen(true);
+            });
+          }
+
+          function confirmDelete(event) {
+            showConfirmDialog("<b>Are you sure you want to delete?", function () {
+              deleteButtonElement.click();
+              setLoadingMessage("Deleting...")
+              toggleLoadingScreen(true);
+            });
+          }
+        </script>
       <?php else : ?>
         <div id="do-not-found"><?php echo SALES_DELIVERY_ORDER_PRINTOUT_TITLE; ?> not found</div>
       <?php endif ?>

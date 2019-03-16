@@ -26,12 +26,12 @@
         if (event.target === confirmOverlay || event.target === confirmClose || event.target === confirmCancel) {
           confirmOverlay.className = "";
           confirmOverlay.removeEventListener("click", this);
-          
+
           cancelConfirmCallback();
         }
       }
 
-      function showConfirmDialog(message, callback, cancelCallback) {
+      function showConfirmDialog(message, callback = function () {}, cancelCallback = function () {}) {
         confirmForm.reset();
         confirmOverlay.className = "show";
         confirmOverlay.addEventListener("click", closeConfirmHandler);
@@ -44,6 +44,9 @@
         event.preventDefault();
 
         confirmCallback();
+        
+        confirmOverlay.className = "";
+        confirmOverlay.removeEventListener("click", this);
 
         return false;
       }

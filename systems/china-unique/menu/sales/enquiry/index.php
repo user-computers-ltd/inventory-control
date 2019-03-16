@@ -211,7 +211,8 @@
           <button type="submit" formaction="<?php echo SALES_ORDER_URL; ?>">新增訂單</button>
         <?php endif ?>
         <?php if (assigned($id)) : ?>
-          <button name="status" type="submit" value="DELETED" onclick="confirmDelete(event)">刪除</button>
+          <button name="status" type="submit" value="DELETED" style="display: none;"></button>
+          <button type="button" onclick="confirmDelete(event)">刪除</button>
         <?php endif ?>
       </form>
       <datalist id="model-list">
@@ -231,6 +232,8 @@
           }
         ?>
       </datalist>
+      <?php include_once ROOT_PATH . "includes/components/confirm-dialog/index.php"; ?>
+      <?php include_once ROOT_PATH . "includes/components/loading-screen/index.php"; ?>
       <script>
         var enquiryModels = <?php echo json_encode($enquiryModels); ?>;
         var currencies = <?php echo json_encode($currencies); ?>;
@@ -254,6 +257,8 @@
         var totalQtyAllottedElement = document.querySelector("#total-qty-allotted");
         var totalAmountElement = document.querySelector("#total-amount");
         var modelListElement = document.querySelector("#model-list");
+        var enquiryFormElement = document.querySelector("#enquiry-form");
+        var deleteButtonElement = enquiryFormElement.querySelector("button[value=\"DELETED\"]");
 
         function getModels(modelNo, brandCode) {
           var brandCodeSearch = brandCode ? "[data-brand_code=\"" + brandCode + "\"]" : "";
@@ -593,10 +598,12 @@
           }
         }
 
-        function confirmDelete (event) {
-          if(!confirm("你確定要刪除?")) {
-            event.preventDefault();
-          }
+        function confirmDelete(event) {
+          showConfirmDialog("<b>你確定要刪除嗎?</b><br/><br/>刪除後是不能夠還原的。", function () {
+            deleteButtonElement.click();
+            setLoadingMessage("刪除中...")
+            toggleLoadingScreen(true);
+          });
         }
 
         window.onload = function () {

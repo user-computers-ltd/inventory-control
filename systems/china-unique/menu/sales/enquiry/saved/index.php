@@ -32,9 +32,10 @@
         </table>
       </form>
       <?php if (count($enquiryHeaders) > 0) : ?>
-        <form method="post">
+        <form id="enquiry-form" method="post">
           <button type="submit" name="action" value="print">印本</button>
-          <button type="submit" name="action" value="delete" onclick="confirmDelete(event)">刪除</button>
+          <button type="submit" name="action" value="delete" style="display: none;"></button>
+          <button type="button" onclick="confirmDelete(event)">刪除</button>
           <table id="enquiry-results">
             <colgroup>
               <col class="web-only" style="width: 30px">
@@ -74,7 +75,7 @@
 
                   echo "
                     <tr>
-                      <td class=\"web-only\"><input type=\"checkbox\" name=\"enquiry_id[]\" value=\"$id\" /></td>
+                      <td class=\"web-only\"><input type=\"checkbox\" name=\"enquiry_id[]\" data-enquiry_no=\"$enquiryNo\" value=\"$id\" /></td>
                       <td title=\"$date\">$date</td>
                       <td title=\"$enquiryNo\"><a class=\"link\" href=\"" . SALES_ENQUIRY_URL . "?id=$id\">$enquiryNo</a></td>
                       <td title=\"$debtorName\">$debtorName</td>
@@ -95,16 +96,36 @@
             </tbody>
           </table>
         </form>
+        <?php include_once ROOT_PATH . "includes/components/confirm-dialog/index.php"; ?>
+        <?php include_once ROOT_PATH . "includes/components/loading-screen/index.php"; ?>
+        <script>
+          var enquiryFormElement = document.querySelector("#enquiry-form");
+          var deleteButtonElement = enquiryFormElement.querySelector("button[value=\"delete\"]");
+
+          function confirmDelete(event) {
+            var checkedItems = enquiryFormElement.querySelectorAll("input[name=\"enquiry_id[]\"]:checked");
+
+            if (checkedItems.length > 0) {
+
+              var listElement = "<ul>";
+
+              for (var i = 0; i < checkedItems.length; i++) {
+                listElement += "<li>" + checkedItems[i].dataset["enquiry_no"] + "</li>";
+              }
+
+              listElement += "</ul>";
+
+              showConfirmDialog("<b>你確定要刪除以下列表嗎?</b><br/><br/>" + listElement, function () {
+                deleteButtonElement.click();
+                setLoadingMessage("刪除中...")
+                toggleLoadingScreen(true);
+              });
+            }
+          }
+        </script>
       <?php else : ?>
         <div class="enquiry-client-no-results">找不到結果</div>
       <?php endif ?>
-      <script>
-        function confirmDelete (event) {
-          if(!confirm("你確定要刪除?")) {
-            event.preventDefault();
-          }
-        }
-      </script>
     </div>
   </body>
 </html>

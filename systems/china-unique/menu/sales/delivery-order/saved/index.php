@@ -33,10 +33,12 @@
         </table>
       </form>
       <?php if (count($doHeaders) > 0) : ?>
-        <form method="post">
-          <button type="submit" name="action" value="post">Post</button>
+        <form id="delivery-form" method="post">
+          <button type="submit" name="action" value="post" style="display: none;"></button>
+          <button type="button" onclick="confirmPost(event)">Post</button>
           <button type="submit" name="action" value="print">Print</button>
-          <button type="submit" name="action" value="delete">Delete</button>
+          <button type="submit" name="action" value="delete" style="display: none;"></button>
+          <button type="button" onclick="confirmDelete(event)">Delete</button>
           <table id="do-results">
             <colgroup>
               <col class="web-only" style="width: 30px">
@@ -88,7 +90,7 @@
 
                   echo "
                     <tr>
-                      <td class=\"web-only\"><input type=\"checkbox\" name=\"do_id[]\" value=\"$doId\" /></td>
+                      <td class=\"web-only\"><input type=\"checkbox\" name=\"do_id[]\" data-do_no=\"$doNo\" value=\"$doId\" /></td>
                       <td title=\"$date\">$date</td>
                       <td title=\"$doNo\"><a class=\"link\" href=\"" . SALES_DELIVERY_ORDER_URL . "?id=$doId\">$doNo</a></td>
                       <td title=\"$debtor\">$debtor</td>
@@ -117,6 +119,53 @@
             </tbody>
           </table>
         </form>
+        <?php include_once ROOT_PATH . "includes/components/confirm-dialog/index.php"; ?>
+        <?php include_once ROOT_PATH . "includes/components/loading-screen/index.php"; ?>
+        <script>
+          var deliveryFormElement = document.querySelector("#delivery-form");
+          var postButtonElement = deliveryFormElement.querySelector("button[value=\"post\"]");
+          var deleteButtonElement = deliveryFormElement.querySelector("button[value=\"delete\"]");
+
+          function confirmPost(event) {
+            var checkedItems = deliveryFormElement.querySelectorAll("input[name=\"do_id[]\"]:checked");
+
+            if (checkedItems.length > 0) {
+              var listElement = "<ul>";
+
+              for (var i = 0; i < checkedItems.length; i++) {
+                listElement += "<li>" + checkedItems[i].dataset["do_no"] + "</li>";
+              }
+
+              listElement += "</ul>";
+
+              showConfirmDialog("<b>Are you sure you want to post the following?</b><br/><br/>" + listElement, function () {
+                postButtonElement.click();
+                setLoadingMessage("Posting...")
+                toggleLoadingScreen(true);
+              });
+            }
+          }
+
+          function confirmDelete(event) {
+            var checkedItems = deliveryFormElement.querySelectorAll("input[name=\"do_id[]\"]:checked");
+
+            if (checkedItems.length > 0) {
+              var listElement = "<ul>";
+
+              for (var i = 0; i < checkedItems.length; i++) {
+                listElement += "<li>" + checkedItems[i].dataset["do_no"] + "</li>";
+              }
+
+              listElement += "</ul>";
+
+              showConfirmDialog("<b>Are you sure you want to delete the following?</b><br/><br/>" + listElement, function () {
+                deleteButtonElement.click();
+                setLoadingMessage("Deleting...")
+                toggleLoadingScreen(true);
+              });
+            }
+          }
+        </script>
       <?php else : ?>
         <div class="do-client-no-results">No results</div>
       <?php endif ?>
