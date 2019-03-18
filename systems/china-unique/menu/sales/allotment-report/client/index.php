@@ -111,11 +111,11 @@
                               <tr></tr>
                               <tr>
                                 <th class=\"web-only\">
-                                  <input
+                                  " . ($doId == "" ? "<input
                                     type=\"checkbox\"
                                     onchange=\"disableAllAllotments(event)\"
                                     checked
-                                  />
+                                  />" : "") . "
                                 </th>
                                 <th>DO No. / On Hand</th>
                                 <th>Brand</th>
@@ -295,7 +295,7 @@
             var brand = dataset["brand_code"];
             var model = dataset["model_no"];
             var soNo = dataset["so_no"];
-            var price = dataset["price"];
+            var price = dataset["price"] || 0;
             var qty = dataset["qty"];
             var subtotal = price * qty;
 
