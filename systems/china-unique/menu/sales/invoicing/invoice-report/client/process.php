@@ -20,7 +20,7 @@
   $InBaseCurrency = "(" . COMPANY_CURRENCY . ")";
 
   $period = assigned($_GET["period"]) ? $_GET["period"] : (count($periods) > 0 ? $periods[0] : "");
-  $debtorCodes = $_GET["debtor_code"];
+  $filterDebtorCodes = $_GET["filter_debtor_code"];
 
   $doWhereClause = "";
   $stockOutWhereClause = "";
@@ -40,11 +40,11 @@
       DATE_FORMAT(y.invoice_date, \"%Y-%m\")=\"$period\"";
   }
 
-  if (assigned($debtorCodes) && count($debtorCodes) > 0) {
+  if (assigned($filterDebtorCodes) && count($filterDebtorCodes) > 0) {
     $doWhereClause = $doWhereClause . "
-      AND (" . join(" OR ", array_map(function ($d) { return "a.debtor_code=\"$d\""; }, $debtorCodes)) . ")";
+      AND (" . join(" OR ", array_map(function ($d) { return "a.debtor_code=\"$d\""; }, $filterDebtorCodes)) . ")";
     $stockOutWhereClause = $stockOutWhereClause . "
-      AND (" . join(" OR ", array_map(function ($d) { return "a.debtor_code=\"$d\""; }, $debtorCodes)) . ")";
+      AND (" . join(" OR ", array_map(function ($d) { return "a.debtor_code=\"$d\""; }, $filterDebtorCodes)) . ")";
   }
 
   $incomeHeaders = array();

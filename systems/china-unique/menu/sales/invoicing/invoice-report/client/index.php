@@ -40,17 +40,25 @@
               </select>
               <span class="print-only"><?php echo $period; ?></span>
             <td>
-              <select name="debtor_code[]" multiple class="web-only">
+              <select name="filter_debtor_code[]" multiple class="web-only">
                 <?php
                   foreach ($debtors as $debtor) {
                     $code = $debtor["code"];
                     $name = $debtor["name"];
-                    $selected = assigned($debtorCodes) && in_array($code, $debtorCodes) ? "selected" : "";
+                    $selected = assigned($filterDebtorCodes) && in_array($code, $filterDebtorCodes) ? "selected" : "";
                     echo "<option value=\"$code\" $selected>$code - $name</option>";
                   }
                 ?>
               </select>
-              <span class="print-only"><?php echo assigned($debtorCodes) ? join(", ", $debtorCodes) : "ALL"; ?></span>
+              <span class="print-only">
+                <?php
+                  echo assigned($filterDebtorCodes) ? join(", ", array_map(function ($d) {
+                    return $d["code"] . " - " . $d["name"];
+                  }, array_filter($debtors, function ($i) use ($filterDebtorCodes) {
+                    return in_array($i["code"], $filterDebtorCodes);
+                  }))) : "ALL";
+                ?>
+              </span>
             </td>
             <td><button type="submit">Go</button></td>
           </tr>
@@ -62,9 +70,9 @@
           <table class="invoice-results">
             <colgroup>
               <col style="width: 70px">
-              <col>
-              <col style="width: 70px">
-              <col style="width: 170px">
+              <col style="width: 50px">
+              <col style="width: 100px">
+              <col style="width: 120px">
               <col style="width: 120px">
               <col style="width: 70px">
               <col style="width: 80px">
@@ -72,8 +80,8 @@
               <col style="width: 70px">
               <col style="width: 80px">
               <col style="width: 70px">
-              <col>
-              <col>
+              <col style="width: 80px">
+              <col style="width: 100px">
             </colgroup>
             <thead>
               <tr></tr>
