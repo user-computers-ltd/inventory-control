@@ -1,5 +1,6 @@
 <?php
   define("SYSTEM_PATH", "../../../../");
+
   include_once SYSTEM_PATH . "includes/php/config.php";
   include_once ROOT_PATH . "includes/php/utils.php";
   include_once ROOT_PATH . "includes/php/database.php";
@@ -63,11 +64,16 @@
                       $option = "";
 
                       if ($doId == "") {
-                        $option = "<button type=\"submit\">Create " . SALES_DELIVERY_ORDER_PRINTOUT_TITLE . "</button>";
+                        $option = "
+                          <button name=\"action\" type=\"submit\" value=\"create\" style=\"display: none\"></button>
+                          <button type=\"button\" onclick=\"confirmCreate(event)\">Create Delivery Order</button>
+                          <button name=\"action\" type=\"submit\" value=\"delete\" style=\"display: none\"></button>
+                          <button type=\"button\" onclick=\"confirmDelete(event)\">Delete Allotments</button>
+                        ";
                       } else {
                         $option = "
                           <span class=\"delivery-order\">
-                          " . SALES_DELIVERY_ORDER_PRINTOUT_TITLE . ": <a href=\"" . SALES_DELIVERY_ORDER_URL . "?id=$doId\">$doNo</a>
+                            Delivery Order: <a href=\"" . SALES_DELIVERY_ORDER_URL . "?id=$doId\">$doNo</a>
                           </span>
                         ";
                       }
@@ -100,12 +106,17 @@
                               <col style=\"width: 80px\">
                               <col style=\"width: 80px\">
                               <col style=\"width: 80px\">
-                              <col class=\"web-only\" style=\"width: 30px\">
                             </colgroup>
                             <thead>
                               <tr></tr>
                               <tr>
-                                <th class=\"web-only\"></th>
+                                <th class=\"web-only\">
+                                  <input
+                                    type=\"checkbox\"
+                                    onchange=\"disableAllAllotments(event)\"
+                                    checked
+                                  />
+                                </th>
                                 <th>DO No. / On Hand</th>
                                 <th>Brand</th>
                                 <th>Model No.</th>
@@ -114,7 +125,6 @@
                                 <th class=\"number\">Allotted Qty</th>
                                 <th class=\"number\">Price</th>
                                 <th class=\"number\">Allotted Subtotal</th>
-                                <th class=\"web-only\"></th>
                               </tr>
                             </thead>
                             <tbody>
@@ -150,7 +160,17 @@
 
                             $checkboxColumn = $doId == "" ? "
                               <td class=\"web-only\">
-                                <input type=\"checkbox\" onchange=\"disableAllotment(event)\" checked />
+                                <input
+                                  type=\"checkbox\"
+                                  onchange=\"disableAllotment(event)\"
+                                  data-ia_no=\"$iaNo\"
+                                  data-so_no=\"$soNo\"
+                                  data-brand_code=\"$brandCode\"
+                                  data-model_no=\"$modelNo\"
+                                  data-price=\"$price\"
+                                  data-qty=\"$qty\"
+                                  checked
+                                />
                               </td>
                             " : "<td class=\"web-only\"></td>";
 
@@ -173,12 +193,6 @@
                               </td>
                             " : "";
 
-                            $removeColumn = $doId == "" ? "
-                              <td class=\"web-only\">
-                                <button type=\"submit\" name=\"remove_index\" value=\"$removeIndex\" class=\"remove\">×</button>
-                              </td>
-                            " : "<td class=\"web-only\"></td>";
-
                             echo "
                               <tr>
                                 $checkboxColumn
@@ -195,7 +209,6 @@
                                 </td>
                                 <td class=\"number\">" . number_format($price, 2) . "</td>
                                 <td class=\"number\">" . number_format($subTotal, 2) . "</td>
-                                $removeColumn
                               </tr>
                             ";
                           }
@@ -215,7 +228,6 @@
                               <th></th>
                               <th></th>
                               <th class=\"number\">" . number_format($totalAmt, 2) . "</th>
-                              <th class=\"web-only\"></th>
                             </tr>
                             <tr>
                               <th class=\"web-only\"></th>
@@ -227,7 +239,6 @@
                               <td></td>
                               <td class=\"number\">Disc. $discount%</td>
                               <td class=\"number\">" . number_format($totalAmt * $discount / 100, 2) . "</td>
-                              <th class=\"web-only\"></th>
                             </tr>
                           ";
                         }
@@ -243,7 +254,6 @@
                                 <th class=\"number\">" . number_format($totalAllottedQty) . "</th>
                                 <th></th>
                                 <th class=\"number\">" . number_format($totalAmt * $discountFactor, 2) . "</th>
-                                <th class=\"web-only\"></th>
                               </tr>
                             </tbody>
                           </table>
@@ -266,7 +276,90 @@
         }
       ?>
     </div>
+    <?php include_once ROOT_PATH . "includes/components/confirm-dialog/index.php"; ?>
+    <?php include_once ROOT_PATH . "includes/components/loading-screen/index.php"; ?>
     <script>
+      function generateItems(formElement, deliveryOrder = true) {
+        var discount = formElement.querySelector("input[name=\"discount\"]").value;
+        var checkedItems = formElement.querySelectorAll("td input[type=\"checkbox\"]:checked");
+        var listElement = "";
+
+        if (checkedItems.length > 0) {
+          listElement += "<table class=\"so-client-results\" style=\"width: 800px\"><thead><tr><th>DO No. / On Hand</th><th>Brand</th><th>Model No.</th><th>SO No.</th><th class=\"number\">Price</th><th class=\"number\">Quantity</th><th class=\"number\">Subtotal</th></thead>";
+          var totalQty = 0;
+          var total = 0;
+
+          for (var i = 0; i < checkedItems.length; i++) {
+            var dataset = checkedItems[i].dataset;
+            var status = dataset["ia_no"] ?  dataset["ia_no"] : "On Hand";
+            var brand = dataset["brand_code"];
+            var model = dataset["model_no"];
+            var soNo = dataset["so_no"];
+            var price = dataset["price"];
+            var qty = dataset["qty"];
+            var subtotal = price * qty;
+
+            listElement += "<tr><td>" + status + "</td><td>" + brand + "</td><td>" + model + "</td><td>" + soNo + "</td><td class=\"number\">" + price + "</td><td class=\"number\">" + qty + "</td><td class=\"number\">" + subtotal.toFixed(2) + "</td></tr>";
+
+            totalQty += parseInt(qty, 10);
+            total += subtotal;
+          }
+
+          if (deliveryOrder) {
+            var discountAmount = total * discount / 100;
+            var grandtotal = total - discountAmount;
+
+            if (discountAmount > 0) {
+              listElement += "<tr><th></th><th></th><th></th><th></th><th></th><th></th><th class=\"number\">" + total.toFixed(2) + "</th></tr>";
+              listElement += "<tr><th></th><th></th><th></th><th></th><th></th><td class=\"number\">Discount: " + discount + "%</td><td class=\"number\">" + discountAmount.toFixed(2) + "</td></tr>";
+            }
+
+            listElement += "<tr><th></th><th></th><th></th><th></th><th class=\"number\">Total:</th><th class=\"number\">" + totalQty + "</th><th class=\"number\">" + grandtotal.toFixed(2) + "</th></tr>";
+          }
+
+          listElement += "</table>";
+        }
+
+        return listElement;
+      }
+
+      function confirmCreate(event) {
+        var formElement = event.target.closest("form");
+        var listElement = generateItems(formElement);
+        var createButtonElement = formElement.querySelector("button[value=\"create\"]");
+
+        if (listElement) {
+          showConfirmDialog("<b>Are you sure you want to create delivery order for the following allotments?</b><br/><br/>" + listElement, function () {
+            createButtonElement.click();
+            setLoadingMessage("Creating...")
+            toggleLoadingScreen(true);
+          });
+        }
+      }
+
+      function confirmDelete(event) {
+        var formElement = event.target.closest("form");
+        var listElement = generateItems(formElement, false);
+        var deleteButtonElement = formElement.querySelector("button[value=\"delete\"]");
+
+        if (listElement) {
+          showConfirmDialog("<b>Are you sure you want to delete the following allotments?</b><br/><br/>" + listElement, function () {
+            deleteButtonElement.click();
+            setLoadingMessage("Deleting...")
+            toggleLoadingScreen(true);
+          });
+        }
+      }
+
+      function disableAllAllotments(event) {
+        var formElement = event.target.closest("form");
+        var checkboxes = formElement.querySelectorAll("input[type=\"checkbox\"]");
+
+        for (var i = 0; i < checkboxes.length; i++) {
+          checkboxes[i].checked = event.target.checked;
+        }
+      }
+
       function disableAllotment(event) {
         var inputs = event.target.parentNode.parentNode.querySelectorAll("input[type=\"hidden\"]");
 

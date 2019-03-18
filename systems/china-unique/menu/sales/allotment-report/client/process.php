@@ -6,13 +6,13 @@
   $discount = $_POST["discount"];
   $tax = $_POST["tax"];
   $warehouseCode = $_POST["warehouse_code"];
+  $action = $_POST["action"];
   $iaNos = $_POST["ia_no"];
   $soNos = $_POST["so_no"];
   $brandCodes = $_POST["brand_code"];
   $modelNos = $_POST["model_no"];
   $prices = $_POST["price"];
   $qtys = $_POST["qty"];
-  $removeIndex = $_POST["remove_index"];
 
   $InBaseCurrency = "(" . COMPANY_CURRENCY . ")";
 
@@ -24,6 +24,7 @@
     assigned($discount) &&
     assigned($tax) &&
     assigned($warehouseCode) &&
+    assigned($action) &&
     assigned($iaNos) &&
     assigned($soNos) &&
     assigned($brandCodes) &&
@@ -31,18 +32,22 @@
     assigned($prices) &&
     assigned($qtys)
   ) {
-    if (assigned($removeIndex)) {
+    if ($action === "delete") {
       query("
         DELETE FROM
           `so_allotment`
         WHERE
-          ia_no=\"$iaNos[$removeIndex]\" AND
-          warehouse_code=\"$warehouseCode\" AND
-          so_no=\"$soNos[$removeIndex]\" AND
-          brand_code=\"$brandCodes[$removeIndex]\" AND
-          model_no=\"$modelNos[$removeIndex]\"
+          " . join(" OR ", array_map(function ($i, $s, $b, $m) use ($warehouseCode) {
+            return "(
+              ia_no=\"$i\" AND
+              warehouse_code=\"$warehouseCode\" AND
+              so_no=\"$s\" AND
+              brand_code=\"$b\" AND
+              model_no=\"$m\"
+            )";
+          }, $iaNos, $soNos, $brandCodes, $modelNos)) . "
       ");
-    } else {
+    } else if ($action === "create") {
       $queries = array();
 
       $doNo = "DO" . date("YmdHis");

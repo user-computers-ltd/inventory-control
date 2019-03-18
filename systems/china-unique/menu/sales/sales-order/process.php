@@ -115,7 +115,7 @@
     header("Location: " . SALES_ORDER_SAVED_URL);
   }
 
-  $debtors = query("SELECT code, english_name AS name FROM `debtor`");
+  $debtors = query("SELECT code, english_name AS name FROM `debtor` ORDER BY code ASC");
   $brands = query("SELECT code, name FROM `brand`");
   $models = query("
     SELECT
