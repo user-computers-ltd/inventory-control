@@ -139,11 +139,11 @@
             <col style="width: 30px">
             <col>
             <col style="width: 80px">
+            <col style="width: 80px">
             <col style="width: 60px">
             <col style="width: 60px">
             <col style="width: 60px">
-            <col style="width: 60px">
-            <col style="width: 60px">
+            <col style="width: 80px">
             <col style="width: 60px">
             <col style="width: 60px">
             <col style="width: 80px">
