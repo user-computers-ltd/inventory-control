@@ -41,28 +41,36 @@
               </select>
               <span class="print-only"><?php echo $period; ?></span>
             <td>
-              <select name="debtor_code[]" multiple class="web-only">
+              <select name="filter_debtor_code[]" multiple class="web-only">
                 <?php
                   foreach ($debtors as $debtor) {
                     $code = $debtor["code"];
                     $name = $debtor["name"];
-                    $selected = assigned($debtorCodes) && in_array($code, $debtorCodes) ? "selected" : "";
+                    $selected = assigned($filterDebtorCodes) && in_array($code, $filterDebtorCodes) ? "selected" : "";
                     echo "<option value=\"$code\" $selected>$code - $name</option>";
                   }
                 ?>
               </select>
-              <span class="print-only"><?php echo assigned($debtorCodes) ? join(", ", $debtorCodes) : "ALL"; ?></span>
+              <span class="print-only">
+                <?php
+                  echo assigned($filterDebtorCodes) ? join(", ", array_map(function ($d) {
+                    return $d["code"] . " - " . $d["name"];
+                  }, array_filter($debtors, function ($i) use ($filterDebtorCodes) {
+                    return in_array($i["code"], $filterDebtorCodes);
+                  }))) : "ALL";
+                ?>
+              </span>
             </td>
             <td>
-              <select name="product_type[]" multiple class="web-only">
+              <select name="filter_product_type[]" multiple class="web-only">
                 <?php
                   foreach ($PRODUCT_TYPES as $type) {
-                    $selected = assigned($productTypes) && in_array($type, $productTypes) ? "selected" : "";
+                    $selected = assigned($filterProductTypes) && in_array($type, $filterProductTypes) ? "selected" : "";
                     echo "<option value=\"$type\" $selected>$type</option>";
                   }
                 ?>
               </select>
-              <span class="print-only"><?php echo assigned($productTypes) ? join(", ", $productTypes) : "ALL"; ?></span>
+              <span class="print-only"><?php echo assigned($filterProductTypes) ? join(", ", $filterProductTypes) : "ALL"; ?></span>
             </td>
             <td><button type="submit">Go</button></td>
           </tr>
@@ -228,7 +236,7 @@
                 <th></th>
                 <th></th>
               </tr>
-              <?php if (!assigned($productTypes)) : ?>
+              <?php if (!assigned($filterProductTypes)) : ?>
                 <tr>
                   <th></th>
                   <th></th>
@@ -285,7 +293,7 @@
               <th>Total Profit:</th>
               <th class="number"><?php echo number_format(sumType($totalNet) - sumType($totalCost), 2); ?></th>
             </tr>
-            <?php if (!assigned($productTypes)) : ?>
+            <?php if (!assigned($filterProductTypes)) : ?>
               <tr>
                 <td>M</td>
                 <td class="number"><?php echo number_format($totalNet["M"] - $totalCost["M"], 2); ?></td>
