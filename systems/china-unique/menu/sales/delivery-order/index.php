@@ -183,9 +183,9 @@
         <?php include_once ROOT_PATH . "includes/components/confirm-dialog/index.php"; ?>
         <?php include_once ROOT_PATH . "includes/components/loading-screen/index.php"; ?>
         <script>
-          var enquiryFormElement = document.querySelector("#delivery-form");
-          var postButtonElement = enquiryFormElement.querySelector("button[value=\"POSTED\"]");
-          var deleteButtonElement = enquiryFormElement.querySelector("button[value=\"DELETED\"]");
+          var deliveryFormElement = document.querySelector("#delivery-form");
+          var postButtonElement = deliveryFormElement.querySelector("button[value=\"POSTED\"]");
+          var deleteButtonElement = deliveryFormElement.querySelector("button[value=\"DELETED\"]");
 
           function confirmPost(event) {
             showConfirmDialog("<b>Are you sure you want to post?", function () {
