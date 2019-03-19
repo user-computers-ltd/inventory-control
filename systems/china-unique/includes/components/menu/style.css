@@ -130,3 +130,9 @@
 #menu-sidebar .menu-item.toggle.expanded + .sub-menu {
   max-height: 100vh;
 }
+
+#menu-back {
+  position: absolute;
+  top: 20px;
+  left: 80px;
+}

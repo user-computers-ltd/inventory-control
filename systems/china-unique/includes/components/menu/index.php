@@ -7,6 +7,11 @@
   include_once ROOT_PATH . "includes/php/utils.php";
   include_once SYSTEM_PATH . "includes/php/authentication.php";
 
+  $backURL = $_SESSION["back_url"];
+  $username = $_SESSION["user"];
+
+  unset($_SESSION["back_url"]);
+
   function generateSitemap($sitemap, $prefix) {
     $currentURL = (strpos(CURRENT_URL, "?") === false) ? CURRENT_URL : substr(CURRENT_URL, 0, strpos(CURRENT_URL, "?"));
     $menu = "";
@@ -39,12 +44,17 @@
       <div id="menu-sidebar" class="web-only">
         <button class="toggle-button" onclick="toggleNav()"></button>
         <?php echo generateSitemap($SITEMAP[getAccessLevel()], ""); ?>
-        <?php if (isset($_SESSION["user"])) : ?>
+        <?php if (isset($username)) : ?>
           <a class="menu-item link logout" href="<?php echo SYSTEM_URL; ?>logout.php">
             <span class="initial">Z</span><span class="label">Logout</span>
           </a>
         <?php endif ?>
       </div>
+      <?php if (isset($backURL)) : ?>
+        <form id="menu-back" class="web-only" action="<?php echo $backURL; ?>">
+          <button type="submit">Back</button>
+        </form>
+      <?php endif ?>
       <script src="<?php echo BASE_URL; ?>includes/js/utils.js"></script>
       <script>
         var sidebar = document.getElementById("menu-sidebar");

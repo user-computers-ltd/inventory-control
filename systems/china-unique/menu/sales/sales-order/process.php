@@ -112,6 +112,8 @@
 
     execute($queries);
 
+    $id = query("SELECT id FROM `so_header` WHERE so_no=\"$soNo\"")[0]["id"];
+    $_SESSION["back_url"] = SALES_ORDER_URL . "?id=$id";
     header("Location: " . SALES_ORDER_SAVED_URL);
   }
 

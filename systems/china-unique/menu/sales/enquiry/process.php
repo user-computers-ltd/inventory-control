@@ -85,7 +85,7 @@
     ORDER BY
       a.brand_code, a.model_no
   ");
-  $results = query("SELECT code, english_name AS name FROM `debtor`");
+  $results = query("SELECT code, english_name AS name FROM `debtor` ORDER BY code ASC");
   $debtors = array();
   foreach ($results as $debtor) {
     $debtors[$debtor["code"]] = $debtor["name"];
@@ -191,6 +191,8 @@
         }
       }
     } else {
+      $id = query("SELECT id FROM `enquiry_header` WHERE enquiry_no=\"$enquiryNo\"")[0]["id"];
+      $_SESSION["back_url"] = SALES_ENQUIRY_URL . "?id=$id";
       header("Location: " . SALES_ENQUIRY_SAVED_URL);
     }
   }

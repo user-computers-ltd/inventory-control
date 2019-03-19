@@ -45,6 +45,8 @@
 
       execute($queries);
 
+      $id = query("SELECT id FROM `sdo_header` WHERE do_no=\"$doNo\"")[0]["id"];
+      $_SESSION["back_url"] = SALES_DELIVERY_ORDER . "?id=$id";
       header("Location: " . SALES_DELIVERY_ORDER_SAVED_URL);
     }
 
