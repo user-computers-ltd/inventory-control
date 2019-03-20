@@ -3,6 +3,7 @@
 
   $from = $_GET["from"];
   $to = $_GET["to"];
+  $filterDebtorCodes = $_GET["filter_debtor_code"];
   $action = $_POST["action"];
   $doIds = $_POST["do_id"];
 
@@ -25,6 +26,11 @@
   if (assigned($to)) {
     $whereClause = $whereClause . "
       AND a.do_date <= \"$to\"";
+  }
+
+  if (assigned($filterDebtorCodes) && count($filterDebtorCodes) > 0) {
+    $whereClause = "
+      AND (" . join(" OR ", array_map(function ($d) { return "c.code=\"$d\""; }, $filterDebtorCodes)) . ")";
   }
 
   $doHeaders = query("
@@ -70,6 +76,22 @@
       a.status=\"POSTED\"
       $whereClause
     ORDER BY
-      a.do_date DESC
+      a.do_date DESC,
+      a.do_no DESC
+  ");
+
+  $debtors = query("
+    SELECT DISTINCT
+      a.debtor_code                       AS `code`,
+      IFNULL(c.english_name, 'Unknown')   AS `name`
+    FROM
+      `sdo_header` AS a
+    LEFT JOIN
+      `debtor` AS c
+    ON a.debtor_code=c.code
+    WHERE
+      a.status=\"POSTED\"
+    ORDER BY
+      a.debtor_code ASC
   ");
 ?>

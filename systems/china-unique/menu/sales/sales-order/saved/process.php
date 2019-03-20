@@ -3,6 +3,7 @@
 
   $from = $_GET["from"];
   $to = $_GET["to"];
+  $filterDebtorCodes = $_GET["filter_debtor_code"];
   $action = $_POST["action"];
   $soIds = $_POST["so_id"];
 
@@ -38,6 +39,11 @@
       AND a.so_date <= \"$to\"";
   }
 
+  if (assigned($filterDebtorCodes) && count($filterDebtorCodes) > 0) {
+    $whereClause = "
+      AND (" . join(" OR ", array_map(function ($d) { return "c.code=\"$d\""; }, $filterDebtorCodes)) . ")";
+  }
+
   $soHeaders = query("
     SELECT
       a.id                                                                                AS `id`,
@@ -70,6 +76,22 @@
       a.status=\"SAVED\"
       $whereClause
     ORDER BY
-      a.so_date DESC
+      a.so_date DESC,
+      a.so_no DESC
+  ");
+
+  $debtors = query("
+    SELECT DISTINCT
+      a.debtor_code                       AS `code`,
+      IFNULL(c.english_name, 'Unknown')   AS `name`
+    FROM
+      `so_header` AS a
+    LEFT JOIN
+      `debtor` AS c
+    ON a.debtor_code=c.code
+    WHERE
+      a.status=\"SAVED\"
+    ORDER BY
+      a.debtor_code ASC
   ");
 ?>

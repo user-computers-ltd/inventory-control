@@ -265,7 +265,7 @@
     array_push($arrayPointer, $allotment);
   }
 
-  $results = query("
+  $debtors = query("
     SELECT DISTINCT
       a.debtor_code                       AS `code`,
       IFNULL(c.english_name, 'Unknown')   AS `name`
@@ -282,8 +282,4 @@
     ORDER BY
       a.debtor_code ASC
   ");
-  $debtors = array();
-  foreach ($results as $debtor) {
-    $debtors[$debtor["code"]] = $debtor["name"];
-  }
 ?>

@@ -20,25 +20,53 @@
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo SALES_DELIVERY_ORDER_SAVED_TITLE; ?></div>
       <form>
-        <table id="do-input" class="web-only">
+        <table id="do-input">
           <tr>
             <th>From:</th>
             <th>To:</th>
+            <th>Client:</th>
           </tr>
           <tr>
-            <td><input type="date" name="from" value="<?php echo $from; ?>" max="<?php echo date("Y-m-d"); ?>" /></td>
-            <td><input type="date" name="to" value="<?php echo $to; ?>" max="<?php echo date("Y-m-d"); ?>" /></td>
-            <td><button type="submit">Go</button></td>
+            <td>
+              <input type="date" name="from" value="<?php echo $from; ?>" max="<?php echo date("Y-m-d"); ?>" class="web-only" />
+              <span class="print-only"><?php echo assigned($from) ? $from : "ANY"; ?></span>
+            </td>
+            <td>
+              <input type="date" name="to" value="<?php echo $to; ?>" max="<?php echo date("Y-m-d"); ?>" class="web-only" />
+              <span class="print-only"><?php echo assigned($to) ? $to : "ANY"; ?></span>
+            </td>
+            <td>
+              <select name="filter_debtor_code[]" class="web-only" multiple>
+                <?php
+                  foreach ($debtors as $debtor) {
+                    $code = $debtor["code"];
+                    $name = $debtor["name"];
+                    $selected = assigned($filterDebtorCodes) && in_array($code, $filterDebtorCodes) ? "selected" : "";
+                    echo "<option value=\"$code\" $selected>$code - $name</option>";
+                  }
+                ?>
+              </select>
+              <span class="print-only">
+                <?php
+                  echo assigned($filterDebtorCodes) ? join(", ", array_map(function ($d) {
+                    return $d["code"] . " - " . $d["name"];
+                  }, array_filter($debtors, function ($i) use ($filterDebtorCodes) {
+                    return in_array($i["code"], $filterDebtorCodes);
+                  }))) : "ALL";
+                ?>
+              </span>
+            </td>
+            <td><button type="submit" class="web-only">Go</button></td>
           </tr>
         </table>
       </form>
       <?php if (count($doHeaders) > 0) : ?>
         <form id="delivery-form" method="post">
           <button type="submit" name="action" value="post" style="display: none;"></button>
-          <button type="button" onclick="confirmPost(event)">Post</button>
-          <button type="submit" name="action" value="print">Print</button>
+          <button type="button" onclick="confirmPost(event)" class="web-only">Post</button>
+          <button type="submit" name="action" value="print" class="web-only">Print</button>
           <button type="submit" name="action" value="delete" style="display: none;"></button>
-          <button type="button" onclick="confirmDelete(event)">Delete</button>
+          <button type="button" onclick="confirmDelete(event)" class="web-only">Delete</button>
           <table id="do-results">
             <colgroup>
               <col class="web-only" style="width: 30px">
@@ -171,5 +199,4 @@
       <?php endif ?>
     </div>
   </body>
-  <
 </html>

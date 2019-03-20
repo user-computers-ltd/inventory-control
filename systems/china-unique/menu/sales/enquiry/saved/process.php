@@ -3,6 +3,7 @@
 
   $from = $_GET["from"];
   $to = $_GET["to"];
+  $filterDebtorCodes = $_GET["filter_debtor_code"];
   $action = $_POST["action"];
   $enquiryIds = $_POST["enquiry_id"];
 
@@ -36,6 +37,11 @@
       AND a.enquiry_date <= \"$to\"";
   }
 
+  if (assigned($filterDebtorCodes) && count($filterDebtorCodes) > 0) {
+    $whereClause = "
+      AND (" . join(" OR ", array_map(function ($d) { return "c.code=\"$d\""; }, $filterDebtorCodes)) . ")";
+  }
+
   $enquiryHeaders = query("
     SELECT
       a.id                                                                                AS `id`,
@@ -63,6 +69,20 @@
       a.enquiry_no IS NOT NULL
       $whereClause
     ORDER BY
-      a.enquiry_date DESC
+      a.enquiry_date DESC,
+      a.enquiry_no DESC
+  ");
+
+  $debtors = query("
+    SELECT DISTINCT
+      a.debtor_code                       AS `code`,
+      IFNULL(c.english_name, 'Unknown')   AS `name`
+    FROM
+      `enquiry_header` AS a
+    LEFT JOIN
+      `debtor` AS c
+    ON a.debtor_code=c.code
+    ORDER BY
+      a.debtor_code ASC
   ");
 ?>

@@ -19,22 +19,33 @@
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo SALES_ALLOTMENT_REPORT_CUSTOMER_TITLE ?></div>
       <form>
-        <table id="so-input" class="web-only">
+        <table id="so-input">
           <tr>
             <th>Client:</th>
           </tr>
           <tr>
             <td>
-              <select name="filter_debtor_code[]" multiple>
+              <select name="filter_debtor_code[]" multiple class="web-only">
                 <?php
-                  foreach ($debtors as $code => $name) {
+                  foreach ($debtors as $debtor) {
+                    $code = $debtor["code"];
+                    $name = $debtor["name"];
                     $selected = assigned($filterDebtorCodes) && in_array($code, $filterDebtorCodes) ? "selected" : "";
                     echo "<option value=\"$code\" $selected>$code - $name</option>";
                   }
                 ?>
               </select>
+              <span class="print-only">
+                <?php
+                  echo assigned($filterDebtorCodes) ? join(", ", array_map(function ($d) {
+                    return $d["code"] . " - " . $d["name"];
+                  }, array_filter($debtors, function ($i) use ($filterDebtorCodes) {
+                    return in_array($i["code"], $filterDebtorCodes);
+                  }))) : "ALL";
+                ?>
+              </span>
             </td>
-            <td><button type="submit">Go</button></td>
+            <td><button type="submit" class="web-only">Go</button></td>
           </tr>
         </table>
       </form>
@@ -66,9 +77,9 @@
                       if ($doId == "") {
                         $option = "
                           <button name=\"action\" type=\"submit\" value=\"create\" style=\"display: none\"></button>
-                          <button type=\"button\" onclick=\"confirmCreate(event)\">Create Delivery Order</button>
+                          <button type=\"button\" onclick=\"confirmCreate(event)\" class=\"web-only\">Create Delivery Order</button>
                           <button name=\"action\" type=\"submit\" value=\"delete\" style=\"display: none\"></button>
-                          <button type=\"button\" onclick=\"confirmDelete(event)\">Delete Allotments</button>
+                          <button type=\"button\" onclick=\"confirmDelete(event)\" class=\"web-only\">Delete Allotments</button>
                         ";
                       } else {
                         $option = "
