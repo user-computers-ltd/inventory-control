@@ -45,8 +45,12 @@
                 <td>日期:</td>
                 <td><?php echo $doHeader["date"]; ?></td>
               </tr>
+              <tr>
+                <td>貨幣:</td>
+                <td><?php echo $doHeader["currency"]; ?></td>
+              </tr>
             </table>
-            <div class="headline"><?php echo SALES_DELIVERY_ORDER_PRINTOUT_TITLE . " (" . $doHeader["warehouse"] . "發貨)" ?></div>
+            <div class="headline"><?php echo SALES_DELIVERY_ORDER_INTERNAL_PRINTOUT_TITLE . " (" . $doHeader["warehouse"] . "發貨)" ?></div>
             <?php if (count($doModels[$doHeader["do_no"]]) > 0) : ?>
               <table class="do-models">
                 <thead>
@@ -63,8 +67,10 @@
                 <tbody>
                   <?php
                     $totalQty = 0;
+                    $totalCost = 0;
                     $subtotalSum = 0;
                     $discount = $doHeader["discount"];
+                    $tax = $doHeader["tax"];
                     $models = $doModels[$doHeader["do_no"]];
 
                     $occurrenceMap = array();
@@ -76,8 +82,10 @@
                       $modelNo = $model["model_no"];
                       $qty = $model["qty"];
                       $price = $model["price"];
+                      $cost = $model["cost_average"];
 
                       $totalQty += $qty;
+                      $totalCost += $qty * $cost;
                       $subtotalSum += $qty * $price;
 
                       $tempQty = $qty;
@@ -132,12 +140,25 @@
                     <th class="number">總數量:</th>
                     <th class="number"><?php echo number_format($totalQty); ?></th>
                     <th class="number">總金額:</th>
-                    <th class="number"><?php echo number_format($subtotalSum * (100 - $discount) / 100, 2); ?></th>
+                    <th class="number">
+                      <?php echo number_format($subtotalSum * (100 - $discount) / 100, 2); ?>
+                    </th>
                   </tr>
+
                 </tbody>
+                <tfoot>
+                  <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="number">總成本:</td>
+                    <td class="number"><?php echo number_format($totalCost, 2); ?></td>
+                  </tr>
+                </tfoot>
               </table>
             <?php else : ?>
-              <div class="do-models-no-results">No models</div>
+              <div class="do-models-no-results">沒有項目</div>
             <?php endif ?>
             <table class="do-footer">
               <?php if (assigned($doHeader["invoice_no"])) : ?>
@@ -152,17 +173,14 @@
                   <td><?php echo $doHeader["remarks"]; ?></td>
                 </tr>
               <?php endif ?>
-              <tr><td colspan="2">敬請簽收:</td></tr>
-              <tr><td colspan="2"><br/><br/><br/><br/>____________________________________</td></tr>
-              <tr><td colspan="2"><?php echo $doHeader["client_name"]; ?></td></tr>
             </table>
           </div>
         <?php endforeach; ?>
         <div class="web-only">
-          <?php echo generateRedirectButton(SALES_DELIVERY_ORDER_PRINTOUT_URL, "External printout"); ?>
+          <?php echo generateRedirectButton(SALES_DELIVERY_ORDER_PRINTOUT_URL, "外部印本"); ?>
         </div>
       <?php else : ?>
-        <div id="do-not-found">Delivery order not found</div>
+        <div id="do-not-found">找不到結果</div>
       <?php endif ?>
     </div>
   </body>

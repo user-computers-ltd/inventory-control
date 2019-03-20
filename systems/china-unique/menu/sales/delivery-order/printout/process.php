@@ -1,5 +1,6 @@
 <?php
   $ids = $_GET["id"];
+  $showPrice = $_GET["show_price"] === "on";
 
   $doHeaders = array();
   $doModelList = array();

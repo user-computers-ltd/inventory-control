@@ -56,11 +56,16 @@
                     <th>品牌</th>
                     <th>型號</th>
                     <th class="number">數量</th>
+                    <?php if ($showPrice) : ?>
+                      <th class="number">含稅單價</th>
+                      <th class="number">含稅總金額</th>
+                    <?php endif ?>
                   </tr>
                 </thead>
                 <tbody>
                   <?php
                     $totalQty = 0;
+                    $totalAmount = 0;
                     $discount = $doHeader["discount"];
                     $models = $doModels[$doHeader["do_no"]];
 
@@ -72,6 +77,7 @@
                       $brand = $model["brand"];
                       $modelNo = $model["model_no"];
                       $qty = $model["qty"];
+                      $price = $model["price"];
 
                       $totalQty += $qty;
                       $tempQty = $qty;
@@ -85,31 +91,68 @@
                       for ($j = 0; $j < count($occurrences); $j++) {
                         if ($tempQty > 0 && $occurrences[$j] > 0) {
                           $showQty = min($tempQty, $occurrences[$j]);
+                          $subtotal = $price * $showQty;
+
+                          $tempQty -= $showQty;
+                          $occurrences[$j] -= $showQty;
+                          $totalAmount += $subtotal;
+
                           echo "
                             <tr>
                               <td>$soNo</td>
                               <td>$brand</td>
                               <td>$modelNo</td>
                               <td class=\"number\">" . number_format($showQty) . "</td>
-                            </tr>
                           ";
 
-                          $tempQty -= $showQty;
-                          $occurrences[$j] -= $showQty;
+                          if ($showPrice) {
+                            echo "
+                              <td class=\"number\">" . number_format($price, 2) . "</td>
+                              <td class=\"number\">" . number_format($subtotal, 2) . "</td>
+                            ";
+                          }
+
+                          echo "</tr>";
                         }
                       }
                     }
                   ?>
+                  <?php if ($discount > 0) : ?>
+                    <tr>
+                      <th></th>
+                      <th></th>
+                      <th></th>
+                      <th></th>
+                      <?php if ($showPrice) : ?>
+                        <th></th>
+                        <th class="number"><?php echo number_format($totalAmount, 2); ?></th>
+                      <?php endif ?>
+                    </tr>
+                    <tr>
+                      <th></th>
+                      <th></th>
+                      <th></th>
+                      <th></th>
+                      <?php if ($showPrice) : ?>
+                        <td class="number">折扣: <?php echo $discount; ?>%</td>
+                        <td class="number"><?php echo number_format($totalAmount * $discount / 100, 2); ?></td>
+                      <?php endif ?>
+                    </tr>
+                  <?php endif ?>
                   <tr>
                     <th></th>
                     <th></th>
                     <th class="number">總數量:</th>
                     <th class="number"><?php echo number_format($totalQty); ?></th>
+                    <?php if ($showPrice) : ?>
+                      <th class="number">總金額:</th>
+                      <th class="number"><?php echo number_format($totalAmount * (100 - $discount) / 100, 2); ?></th>
+                    <?php endif ?>
                   </tr>
                 </tbody>
               </table>
             <?php else : ?>
-              <div class="do-models-no-results">No models</div>
+              <div class="do-models-no-results">沒有項目</div>
             <?php endif ?>
             <table class="do-footer">
               <?php if (assigned($doHeader["invoice_no"])) : ?>
@@ -130,11 +173,22 @@
             </table>
           </div>
         <?php endforeach; ?>
-        <div class="web-only">
-          <?php echo generateRedirectButton(SALES_DELIVERY_ORDER_INTERNAL_PRINTOUT_URL, "Internal printout"); ?>
-        </div>
+        <div class="web-only printout-button-wrapper">
+        <?php
+          if (isSupervisor()) {
+            echo generateRedirectButton(SALES_DELIVERY_ORDER_INTERNAL_PRINTOUT_URL, "內部印本");
+          }
+
+          if ($showPrice) {
+            $_GET["show_price"] = "off";
+            echo generateRedirectButton(CURRENT_URL, "隱藏價格");
+          } else {
+            $_GET["show_price"] = "on";
+            echo generateRedirectButton(CURRENT_URL, "顯示價格");
+          }
+        ?>
       <?php else : ?>
-        <div id="do-not-found">Delivery order not found</div>
+        <div id="do-not-found">找不到結果</div>
       <?php endif ?>
     </div>
   </body>

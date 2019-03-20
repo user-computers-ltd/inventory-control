@@ -45,6 +45,7 @@
         a.model_no        AS `model_no`,
         a.so_no           AS `so_no`,
         a.price           AS `price`,
+        e.cost_average    AS `cost_average`,
         SUM(a.qty)        AS `qty`,
         d.occurrence      AS `occurrence`
       FROM
@@ -58,6 +59,9 @@
       LEFT JOIN
         `so_model` AS d
       ON a.so_no=d.so_no AND a.brand_code=d.brand_code AND a.model_no=d.model_no
+      LEFT JOIN
+        `model` AS e
+      ON a.brand_code=e.brand_code AND a.model_no=e.model_no
       WHERE
         $modelWhereClause
       GROUP BY

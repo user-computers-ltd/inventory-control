@@ -50,3 +50,7 @@
   line-height: 200px;
   opacity: 0.3;
 }
+
+.printout-button-wrapper form {
+  display: inline-block;
+}
