@@ -146,16 +146,6 @@
                   </tr>
 
                 </tbody>
-                <tfoot>
-                  <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td class="number">總成本:</td>
-                    <td class="number"><?php echo number_format($totalCost, 2); ?></td>
-                  </tr>
-                </tfoot>
               </table>
             <?php else : ?>
               <div class="do-models-no-results">沒有項目</div>
