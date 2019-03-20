@@ -115,6 +115,7 @@
 
   if (count($enquiryHeaders) > 0) {
     foreach ($enquiryHeaders as &$enquiryHeader) {
+      $enquiryHeader["client"] = $enquiryHeader["debtor_name"] . ($enquiryHeader["debtor_code"] !== "1" ? " (" . $enquiryHeader["debtor_code"] . ")" : "");
       $enquiryHeader["currency"] = $enquiryHeader["currency_code"] . " @ " . $enquiryHeader["exchange_rate"];
     }
   }

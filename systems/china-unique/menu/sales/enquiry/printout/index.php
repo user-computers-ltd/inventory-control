@@ -33,7 +33,7 @@
               </tr>
               <tr>
                 <td>致:</td>
-                <td><?php echo $enquiryHeader["debtor_name"]; ?></td>
+                <td><?php echo $enquiryHeader["client"]; ?></td>
                 <?php if ($showPrice) : ?>
                   <td>貨幣:</td>
                   <td><?php echo $enquiryHeader["currency"]; ?></td>
@@ -159,7 +159,7 @@
               if (isSupervisor()) {
                 echo generateRedirectButton(SALES_ENQUIRY_INTERNAL_PRINTOUT_URL, "內部印本");
               }
-              
+
               if ($showPrice) {
                 $_GET["show_price"] = "off";
                 echo generateRedirectButton(CURRENT_URL, "隱藏價格");
