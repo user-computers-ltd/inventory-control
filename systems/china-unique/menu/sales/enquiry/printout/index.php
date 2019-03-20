@@ -159,8 +159,7 @@
               if (isSupervisor()) {
                 echo generateRedirectButton(SALES_ENQUIRY_INTERNAL_PRINTOUT_URL, "內部印本");
               }
-            ?>
-            <?php
+              
               if ($showPrice) {
                 $_GET["show_price"] = "off";
                 echo generateRedirectButton(CURRENT_URL, "隱藏價格");

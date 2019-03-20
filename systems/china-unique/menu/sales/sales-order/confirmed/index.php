@@ -32,9 +32,12 @@
         </table>
       </form>
       <?php if (count($soHeaders) > 0) : ?>
-        <form method="post">
+        <form id="sales-order-form" method="post">
+          <button type="submit" name="action" value="cancel" style="display: none;"></button>
+          <button type="button" class="cancel-button" onclick="confirmCancel(event)">Cancel</button>
           <button type="submit" name="action" value="print">Print</button>
-          <button type="submit" name="action" value="delete">Delete</button>
+          <button type="submit" name="action" value="delete" style="display: none;"></button>
+          <button type="button" class="delete-button" onclick="confirmDelete(event)">Delete</button>
           <table id="so-results">
             <colgroup>
               <col class="web-only" style="width: 30px">
@@ -82,6 +85,7 @@
                   $outstandingAmt = $soHeader["outstanding_amt"];
                   $outstandingAmtBase = $soHeader["outstanding_amt_base"];
                   $ongoingDelivery = $outstandingQty < $qty ? "true" : "false";
+                  $completedDelivery = $outstandingQty === 0 ? "true" : "false";
 
                   $totalQty += $qty;
                   $totalOutstanding += $outstandingQty;
@@ -90,7 +94,7 @@
                   echo "
                     <tr>
                       <td class=\"web-only\">
-                        <input type=\"checkbox\" name=\"so_id[]\" value=\"$id\" data-ongoing=\"$ongoingDelivery\" onchange=\"onUpdateSelection()\"/>
+                        <input type=\"checkbox\" name=\"so_id[]\" value=\"$id\" data-so_no=\"$soNo\" data-ongoing=\"$ongoingDelivery\" data-completed=\"$completedDelivery\" onchange=\"onUpdateSelection()\"/>
                       </td>
                       <td title=\"$date\">$date</td>
                       <td title=\"$soNo\"><a class=\"link\" href=\"" . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?id[]=$id\">$soNo</a></td>
@@ -120,18 +124,67 @@
             </tbody>
           </table>
         </form>
+        <?php include_once ROOT_PATH . "includes/components/confirm-dialog/index.php"; ?>
+        <?php include_once ROOT_PATH . "includes/components/loading-screen/index.php"; ?>
+        <script>
+          var salesOrderFormElement = document.querySelector("#sales-order-form");
+          var cancelButtonElement = salesOrderFormElement.querySelector("button[value=\"cancel\"]");
+          var cancelLabelButtonElement = salesOrderFormElement.querySelector("button.cancel-button");
+          var deleteButtonElement = salesOrderFormElement.querySelector("button[value=\"delete\"]");
+          var deleteLabelButtonElement = salesOrderFormElement.querySelector("button.delete-button");
+
+          function confirmCancel(event) {
+            var checkedItems = salesOrderFormElement.querySelectorAll("input[name=\"so_id[]\"]:checked");
+
+            if (checkedItems.length > 0) {
+
+              var listElement = "<ul>";
+
+              for (var i = 0; i < checkedItems.length; i++) {
+                listElement += "<li>" + checkedItems[i].dataset["so_no"] + "</li>";
+              }
+
+              listElement += "</ul>";
+
+              showConfirmDialog("<b>Are you sure you want to cancel to following?</b><br/><br/>" + listElement, function () {
+                cancelButtonElement.click();
+                setLoadingMessage("Canceling...")
+                toggleLoadingScreen(true);
+              });
+            }
+          }
+
+          function confirmDelete(event) {
+            var checkedItems = salesOrderFormElement.querySelectorAll("input[name=\"so_id[]\"]:checked");
+
+            if (checkedItems.length > 0) {
+
+              var listElement = "<ul>";
+
+              for (var i = 0; i < checkedItems.length; i++) {
+                listElement += "<li>" + checkedItems[i].dataset["so_no"] + "</li>";
+              }
+
+              listElement += "</ul>";
+
+              showConfirmDialog("<b>Are you sure you want to delete to following?</b><br/><br/>" + listElement, function () {
+                deleteButtonElement.click();
+                setLoadingMessage("Deleting...")
+                toggleLoadingScreen(true);
+              });
+            }
+          }
+
+          function onUpdateSelection() {
+            var disableCancel = salesOrderFormElement.querySelectorAll("input[name=\"so_id[]\"][data-completed=\"true\"]:checked").length > 0;
+            var disableDelete = salesOrderFormElement.querySelectorAll("input[name=\"so_id[]\"][data-ongoing=\"true\"]:checked").length > 0;
+            toggleClass(cancelLabelButtonElement, "hide", disableCancel);
+            toggleClass(deleteLabelButtonElement, "hide", disableDelete);
+          }
+        </script>
       <?php else : ?>
         <div class="so-client-no-results">No results</div>
       <?php endif ?>
     </div>
-    <script>
-      var deleteButton = document.querySelector("form button[value=\"delete\"]");
-
-      function onUpdateSelection() {
-        var disableDelete = document.querySelectorAll("form input[name=\"so_id[]\"][data-ongoing=\"true\"]:checked").length > 0;
-
-        toggleClass(deleteButton, "hide", disableDelete);
-      }
-    </script>
   </body>
 </html>

@@ -16,8 +16,8 @@
   <body>
     <?php include_once SYSTEM_PATH . "includes/components/menu/index.php"; ?>
     <div class="page-wrapper">
-      <?php include SYSTEM_PATH . "includes/components/header/index.php"; ?>
-      <div class="headline"><?php echo SALES_ORDER_SAVED_TITLE; ?></div>
+      <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
+      <div class="headline"><?php echo SALES_ORDER_CANCELLED_TITLE; ?></div>
       <form>
         <table id="so-input" class="web-only">
           <tr>
@@ -33,11 +33,9 @@
       </form>
       <?php if (count($soHeaders) > 0) : ?>
         <form id="sales-order-form" method="post">
-          <button type="submit" name="action" value="confirm" style="display: none;"></button>
-          <button type="button" onclick="confirmConfirm(event)">Confirm</button>
+          <button type="submit" name="action" value="resume" style="display: none;"></button>
+          <button type="button" class="resume-button" onclick="confirmResume(event)">Resume</button>
           <button type="submit" name="action" value="print">Print</button>
-          <button type="submit" name="action" value="delete" style="display: none;"></button>
-          <button type="button" onclick="confirmDelete(event)">Delete</button>
           <table id="so-results">
             <colgroup>
               <col class="web-only" style="width: 30px">
@@ -84,6 +82,8 @@
                   $currency = $soHeader["currency"];
                   $outstandingAmt = $soHeader["outstanding_amt"];
                   $outstandingAmtBase = $soHeader["outstanding_amt_base"];
+                  $ongoingDelivery = $outstandingQty < $qty ? "true" : "false";
+                  $completedDelivery = $outstandingQty === 0 ? "true" : "false";
 
                   $totalQty += $qty;
                   $totalOutstanding += $outstandingQty;
@@ -91,9 +91,11 @@
 
                   echo "
                     <tr>
-                      <td class=\"web-only\"><input type=\"checkbox\" name=\"so_id[]\" data-so_no=\"$soNo\" value=\"$id\" /></td>
+                      <td class=\"web-only\">
+                        <input type=\"checkbox\" name=\"so_id[]\" value=\"$id\" data-so_no=\"$soNo\" data-ongoing=\"$ongoingDelivery\" data-completed=\"$completedDelivery\"/>
+                      </td>
                       <td title=\"$date\">$date</td>
-                      <td title=\"$soNo\"><a class=\"link\" href=\"" . SALES_ORDER_URL . "?id=$id\">$soNo</a></td>
+                      <td title=\"$soNo\"><a class=\"link\" href=\"" . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?id[]=$id\">$soNo</a></td>
                       <td title=\"$debtorName\">$debtorName</td>
                       <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
                       <td title=\"$outstandingQty\" class=\"number\">" . number_format($outstandingQty) . "</td>
@@ -124,10 +126,10 @@
         <?php include_once ROOT_PATH . "includes/components/loading-screen/index.php"; ?>
         <script>
           var salesOrderFormElement = document.querySelector("#sales-order-form");
-          var confirmButtonElement = salesOrderFormElement.querySelector("button[value=\"confirm\"]");
-          var deleteButtonElement = salesOrderFormElement.querySelector("button[value=\"delete\"]");
+          var resumeButtonElement = salesOrderFormElement.querySelector("button[value=\"resume\"]");
+          var resumeLabelButtonElement = salesOrderFormElement.querySelector("button.resume-button");
 
-          function confirmConfirm(event) {
+          function confirmResume(event) {
             var checkedItems = salesOrderFormElement.querySelectorAll("input[name=\"so_id[]\"]:checked");
 
             if (checkedItems.length > 0) {
@@ -140,30 +142,9 @@
 
               listElement += "</ul>";
 
-              showConfirmDialog("<b>Are you sure you want to confirm to following?</b><br/><br/>" + listElement, function () {
-                confirmButtonElement.click();
-                setLoadingMessage("Confirming...")
-                toggleLoadingScreen(true);
-              });
-            }
-          }
-
-          function confirmDelete(event) {
-            var checkedItems = salesOrderFormElement.querySelectorAll("input[name=\"so_id[]\"]:checked");
-
-            if (checkedItems.length > 0) {
-
-              var listElement = "<ul>";
-
-              for (var i = 0; i < checkedItems.length; i++) {
-                listElement += "<li>" + checkedItems[i].dataset["so_no"] + "</li>";
-              }
-
-              listElement += "</ul>";
-
-              showConfirmDialog("<b>Are you sure you want to delete to following?</b><br/><br/>" + listElement, function () {
-                deleteButtonElement.click();
-                setLoadingMessage("Deleting...")
+              showConfirmDialog("<b>Are you sure you want to resume to following?</b><br/><br/>" + listElement, function () {
+                resumeButtonElement.click();
+                setLoadingMessage("Resumeing...")
                 toggleLoadingScreen(true);
               });
             }

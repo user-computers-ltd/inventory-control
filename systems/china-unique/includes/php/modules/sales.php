@@ -12,6 +12,7 @@
   define("SALES_ORDER_INTERNAL_PRINTOUT_URL", SALES_ORDER_URL . "internal-printout/");
   define("SALES_ORDER_SAVED_URL", SALES_ORDER_URL . "saved/");
   define("SALES_ORDER_CONFIRMED_URL", SALES_ORDER_URL . "confirmed/");
+  define("SALES_ORDER_CANCELLED_URL", SALES_ORDER_URL . "cancelled/");
   define("SALES_ORDER_PRIORITY_URL", SALES_ORDER_URL . "priority/");
 
   define("SALES_SO_REPORT_URL", SALES_URL . "sales-order-report/");
@@ -67,7 +68,8 @@
   define("SALES_ORDER_CREATE_TITLE", "(F1a) Create Sales Order");
   define("SALES_ORDER_SAVED_TITLE", "(F1b) Saved Sales Orders");
   define("SALES_ORDER_CONFIRMED_TITLE", "(F1c) Confirmed Sales Orders");
-  define("SALES_ORDER_PRIORITY_TITLE", "(F1d) Sales Order Priorities");
+  define("SALES_ORDER_CANCELLED_TITLE", "(F1d) Cancelled Sales Orders");
+  define("SALES_ORDER_PRIORITY_TITLE", "(F1e) Sales Order Priorities");
 
   define("SALES_SO_REPORT_TITLE", "(F2) Sales Order Report");
   define("SALES_REPORT_CUSTOMER_SUMMARY_TITLE", "(F2a) Confirmed Sales Order Summary By Client");
@@ -118,6 +120,7 @@
       SALES_ORDER_CREATE_TITLE                     => SALES_ORDER_URL,
       SALES_ORDER_SAVED_TITLE                      => SALES_ORDER_SAVED_URL,
       SALES_ORDER_CONFIRMED_TITLE                  => SALES_ORDER_CONFIRMED_URL,
+      SALES_ORDER_CANCELLED_TITLE                  => SALES_ORDER_CANCELLED_URL,
       SALES_ORDER_PRIORITY_TITLE                   => SALES_ORDER_PRIORITY_URL
     ),
     SALES_SO_REPORT_TITLE => array(
