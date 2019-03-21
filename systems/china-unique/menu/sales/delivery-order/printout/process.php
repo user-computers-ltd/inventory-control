@@ -1,6 +1,6 @@
 <?php
   $ids = $_GET["id"];
-  $showPrice = $_GET["show_price"] === "on";
+  $hidePrice = $_GET["show_price"] === "off";
 
   $doHeaders = array();
   $doModelList = array();

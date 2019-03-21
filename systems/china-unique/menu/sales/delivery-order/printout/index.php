@@ -56,7 +56,7 @@
                     <th>品牌</th>
                     <th>型號</th>
                     <th class="number">數量</th>
-                    <?php if ($showPrice) : ?>
+                    <?php if (!$hidePrice) : ?>
                       <th class="number">含稅單價</th>
                       <th class="number">含稅總金額</th>
                     <?php endif ?>
@@ -105,7 +105,7 @@
                               <td class=\"number\">" . number_format($showQty) . "</td>
                           ";
 
-                          if ($showPrice) {
+                          if (!$hidePrice) {
                             echo "
                               <td class=\"number\">" . number_format($price, 2) . "</td>
                               <td class=\"number\">" . number_format($subtotal, 2) . "</td>
@@ -123,7 +123,7 @@
                       <th></th>
                       <th></th>
                       <th></th>
-                      <?php if ($showPrice) : ?>
+                      <?php if (!$hidePrice) : ?>
                         <th></th>
                         <th class="number"><?php echo number_format($totalAmount, 2); ?></th>
                       <?php endif ?>
@@ -133,7 +133,7 @@
                       <th></th>
                       <th></th>
                       <th></th>
-                      <?php if ($showPrice) : ?>
+                      <?php if (!$hidePrice) : ?>
                         <td class="number">折扣: <?php echo $discount; ?>%</td>
                         <td class="number"><?php echo number_format($totalAmount * $discount / 100, 2); ?></td>
                       <?php endif ?>
@@ -144,7 +144,7 @@
                     <th></th>
                     <th class="number">總數量:</th>
                     <th class="number"><?php echo number_format($totalQty); ?></th>
-                    <?php if ($showPrice) : ?>
+                    <?php if (!$hidePrice) : ?>
                       <th class="number">總金額:</th>
                       <th class="number"><?php echo number_format($totalAmount * (100 - $discount) / 100, 2); ?></th>
                     <?php endif ?>
@@ -179,7 +179,7 @@
             echo generateRedirectButton(SALES_DELIVERY_ORDER_INTERNAL_PRINTOUT_URL, "內部印本");
           }
 
-          if ($showPrice) {
+          if (!$hidePrice) {
             $_GET["show_price"] = "off";
             echo generateRedirectButton(CURRENT_URL, "隱藏價格");
           } else {
