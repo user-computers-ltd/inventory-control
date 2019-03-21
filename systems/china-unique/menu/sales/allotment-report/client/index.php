@@ -368,14 +368,19 @@
 
         for (var i = 0; i < checkboxes.length; i++) {
           checkboxes[i].checked = event.target.checked;
+          disableInputsFromCheckbox(checkboxes[i]);
         }
       }
 
       function disableAllotment(event) {
-        var inputs = event.target.parentNode.parentNode.querySelectorAll("input[type=\"hidden\"]");
+        disableInputsFromCheckbox(event.target);
+      }
+
+      function disableInputsFromCheckbox(checkboxElement) {
+        var inputs = checkboxElement.parentNode.parentNode.querySelectorAll("input[type=\"hidden\"]");
 
         for (var i = 0; i < inputs.length; i++) {
-          inputs[i].disabled = !event.target.checked;
+          inputs[i].disabled = !checkboxElement.checked;
         }
       }
     </script>
