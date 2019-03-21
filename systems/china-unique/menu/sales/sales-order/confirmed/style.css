@@ -9,6 +9,11 @@
   box-sizing: border-box;
 }
 
+#so-input #input-outstanding-only {
+  margin: 0px;
+  width: auto;
+}
+
 button.hide {
   display: none;
 }

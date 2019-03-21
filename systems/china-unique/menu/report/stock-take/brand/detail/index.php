@@ -13,7 +13,7 @@
   $whereClause = "";
 
   if (assigned($ids) && count($ids) > 0) {
-    $whereClause = "
+    $whereClause = $whereClause . "
       AND (" . join(" OR ", array_map(function ($i) { return "c.id=\"$i\""; }, $ids)) . ")";
   }
 

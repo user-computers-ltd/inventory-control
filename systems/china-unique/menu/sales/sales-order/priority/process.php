@@ -19,7 +19,7 @@
   $whereClause = "";
 
   if (assigned($filterDebtorCodes) && count($filterDebtorCodes) > 0) {
-    $whereClause = "
+    $whereClause = $whereClause . "
       AND (" . join(" OR ", array_map(function ($code) { return "c.code=\"$code\""; }, $filterDebtorCodes)) . ")";
   }
 

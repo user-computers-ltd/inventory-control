@@ -4,23 +4,63 @@
   $from = $_GET["from"];
   $to = $_GET["to"];
   $filterDebtorCodes = $_GET["filter_debtor_code"];
+  $showMode = assigned($_GET["show_mode"]) ? $_GET["show_mode"] : "outstanding_only";
   $action = $_POST["action"];
   $soIds = $_POST["so_id"];
 
   if (assigned($action) && assigned($soIds) && count($soIds) > 0) {
     $queries = array();
 
-    $headerWhereClause = join(" OR ", array_map(function ($i) { return "id=\"$i\""; }, $soIds));
-    $modelWhereClause = join(" OR ", array_map(function ($i) { return "b.id=\"$i\""; }, $soIds));
-    $printoutParams = join("&", array_map(function ($i) { return "id[]=$i"; }, $soIds));
+    if ($action == "cancel" || $action == "reverse") {
+      array_push($queries, "
+        DELETE a
+        FROM
+          `sdo_model` AS a
+        LEFT JOIN
+          `so_header` AS b
+        ON a.so_no=b.so_no
+        WHERE
+          " . join(" OR ", array_map(function ($i) { return "b.id=\"$i\""; }, $soIds)) . "
+      ");
+      array_push($queries, "
+        DELETE a
+        FROM
+          `sdo_header`AS a
+        LEFT JOIN
+          (SELECT
+            do_no     AS `do_no`,
+            COUNT(*)  AS `count`
+          FROM
+            `sdo_model`
+          GROUP BY
+            do_no) AS b
+        ON a.do_no=b.do_no
+        WHERE
+          b.count=0
+        ");
+      array_push($queries, "
+        DELETE a
+        FROM
+          `so_allotment` AS a
+        LEFT JOIN
+          `so_header` AS b
+        ON a.so_no=b.so_no
+        WHERE
+          " . join(" OR ", array_map(function ($i) { return "b.id=\"$i\""; }, $soIds)) . "
+      ");
 
-    if ($action == "cancel") {
-      array_push($queries, "UPDATE `so_header` SET status=\"CANCELLED\" WHERE $headerWhereClause");
-    } else if ($action == "delete") {
-      array_push($queries, "DELETE a FROM `so_model` AS a LEFT JOIN `so_header` AS b ON a.so_no=b.so_no WHERE $modelWhereClause");
-      array_push($queries, "DELETE FROM `so_header` WHERE $headerWhereClause");
+      $status = $action == "cancel" ? "CANCELLED" : "SAVED";
+
+      array_push($queries, "
+        UPDATE
+          `so_header`
+        SET status=\"$status\"
+        WHERE
+          " . join(" OR ", array_map(function ($i) { return "id=\"$i\""; }, $soIds)) . "
+      ");
     } else if ($action == "print") {
-      header("Location: " . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?$printoutParams");
+      $idParams = join("&", array_map(function ($i) { return "id[]=$i"; }, $soIds));
+      header("Location: " . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?$idParams");
       exit(0);
     }
 
@@ -40,8 +80,13 @@
   }
 
   if (assigned($filterDebtorCodes) && count($filterDebtorCodes) > 0) {
-    $whereClause = "
+    $whereClause = $whereClause . "
       AND (" . join(" OR ", array_map(function ($d) { return "c.code=\"$d\""; }, $filterDebtorCodes)) . ")";
+  }
+
+  if ($showMode == "outstanding_only") {
+    $whereClause = $whereClause . "
+      AND IFNULL(b.total_qty_outstanding, 0) > 0";
   }
 
   $soHeaders = query("

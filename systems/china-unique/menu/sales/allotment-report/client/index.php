@@ -186,7 +186,7 @@
                             " : "<td class=\"web-only\"></td>";
 
                             $sourceColumn = assigned($iaNo) ? "
-                              <td><a class=\"link\">$iaNo</a></td>
+                              <td><a class=\"link\" title=\"$iaNo\">$iaNo</a></td>
                             " : "<td>On Hand</td>";
 
                             $modelColumns = $i == 0 ? "

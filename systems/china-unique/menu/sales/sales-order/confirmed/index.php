@@ -57,6 +57,23 @@
             </td>
             <td><button type="submit" class="web-only">Go</button></td>
           </tr>
+          <tr>
+            <th>
+              <input
+                id="input-outstanding-only"
+                type="checkbox"
+                onchange="onOutstandingOnlyChanged(event)"
+                <?php echo $showMode == "outstanding_only" ? "checked" : "" ?>
+              />
+              <label for="input-outstanding-only">Outstanding only</label>
+              <input
+                id="input-show-mode"
+                type="hidden"
+                name="show_mode"
+                value="<?php echo $showMode; ?>"
+              />
+            </th>
+          </tr>
         </table>
       </form>
       <?php if (count($soHeaders) > 0) : ?>
@@ -64,8 +81,8 @@
           <button type="submit" name="action" value="cancel" style="display: none;"></button>
           <button type="button" class="cancel-button web-only" onclick="confirmCancel(event)">Cancel</button>
           <button type="submit" name="action" value="print" class="web-only">Print</button>
-          <button type="submit" name="action" value="delete" style="display: none;"></button>
-          <button type="button" class="delete-button web-only" onclick="confirmDelete(event)">Delete</button>
+          <button type="submit" name="action" value="reverse" style="display: none;"></button>
+          <button type="button" class="reverse-button web-only" onclick="confirmReverse(event)">Reverse</button>
           <table id="so-results">
             <colgroup>
               <col class="web-only" style="width: 30px">
@@ -158,8 +175,8 @@
           var salesOrderFormElement = document.querySelector("#sales-order-form");
           var cancelButtonElement = salesOrderFormElement.querySelector("button[value=\"cancel\"]");
           var cancelLabelButtonElement = salesOrderFormElement.querySelector("button.cancel-button");
-          var deleteButtonElement = salesOrderFormElement.querySelector("button[value=\"delete\"]");
-          var deleteLabelButtonElement = salesOrderFormElement.querySelector("button.delete-button");
+          var reverseButtonElement = salesOrderFormElement.querySelector("button[value=\"reverse\"]");
+          var reverseLabelButtonElement = salesOrderFormElement.querySelector("button.reverse-button");
 
           function confirmCancel(event) {
             var checkedItems = salesOrderFormElement.querySelectorAll("input[name=\"so_id[]\"]:checked");
@@ -182,7 +199,7 @@
             }
           }
 
-          function confirmDelete(event) {
+          function confirmReverse(event) {
             var checkedItems = salesOrderFormElement.querySelectorAll("input[name=\"so_id[]\"]:checked");
 
             if (checkedItems.length > 0) {
@@ -195,9 +212,9 @@
 
               listElement += "</ul>";
 
-              showConfirmDialog("<b>Are you sure you want to delete to following?</b><br/><br/>" + listElement, function () {
-                deleteButtonElement.click();
-                setLoadingMessage("Deleting...")
+              showConfirmDialog("<b>Are you sure you want to reverse to following to save status?</b><br/><br/>" + listElement, function () {
+                reverseButtonElement.click();
+                setLoadingMessage("Reversing...")
                 toggleLoadingScreen(true);
               });
             }
@@ -205,9 +222,15 @@
 
           function onUpdateSelection() {
             var disableCancel = salesOrderFormElement.querySelectorAll("input[name=\"so_id[]\"][data-completed=\"true\"]:checked").length > 0;
-            var disableDelete = salesOrderFormElement.querySelectorAll("input[name=\"so_id[]\"][data-ongoing=\"true\"]:checked").length > 0;
+            var disableReverse = salesOrderFormElement.querySelectorAll("input[name=\"so_id[]\"][data-ongoing=\"true\"]:checked").length > 0;
             toggleClass(cancelLabelButtonElement, "hide", disableCancel);
-            toggleClass(deleteLabelButtonElement, "hide", disableDelete);
+            toggleClass(reverseLabelButtonElement, "hide", disableReverse);
+          }
+
+          function onOutstandingOnlyChanged(event) {
+            var showMode = event.target.checked ? "outstanding_only" : "show_all";
+            document.querySelector("#input-show-mode").value = showMode;
+            event.target.form.submit();
           }
         </script>
       <?php else : ?>
