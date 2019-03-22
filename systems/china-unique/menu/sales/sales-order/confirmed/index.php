@@ -79,7 +79,7 @@
       <?php if (count($soHeaders) > 0) : ?>
         <form id="sales-order-form" method="post">
           <button type="submit" name="action" value="cancel" style="display: none;"></button>
-          <button type="button" class="cancel-button web-only" onclick="confirmCancel(event)">Cancel</button>
+          <button type="button" class="cancel-button web-only" style="display: none;" onclick="confirmCancel(event)">Cancel</button>
           <button type="submit" name="action" value="print" class="web-only">Print</button>
           <button type="submit" name="action" value="reverse" style="display: none;"></button>
           <button type="button" class="reverse-button web-only" onclick="confirmReverse(event)">Reverse</button>

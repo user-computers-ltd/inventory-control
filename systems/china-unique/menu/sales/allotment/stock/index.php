@@ -181,7 +181,7 @@
                         <div class=\"cell outstanding-qty number\" data-so_no=\"$soNo\">0</div>
                       ";
                       $allotColumn = $allotColumn . "
-                      <div class=\"cell number\">
+                      <div class=\"cell number\" data-so_no=\"$soNo\">
                         <input type=\"hidden\" name=\"warehouse_code[]\" value=\"$warehouseCode\" />
                         <input type=\"hidden\" name=\"so_no[]\" value=\"$soNo\" />
                         <input type=\"hidden\" name=\"brand_code[]\" value=\"$brandCode\" />
