@@ -20,6 +20,10 @@
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo SALES_DELIVERY_ORDER_PRINTOUT_TITLE; ?></div>
       <?php if (isset($doHeader)) : ?>
+        <?php
+          $discount = $doHeader["discount"];
+          $status = $doHeader["status"];
+        ?>
         <form id="delivery-form" method="post">
           <table id="do-header">
             <tr>
@@ -69,7 +73,6 @@
                 <?php
                   $totalQty = 0;
                   $subtotalSum = 0;
-                  $discount = $doHeader["discount"];
                   $hasIncoming = false;
 
                   $occurrenceMap = array();
@@ -84,10 +87,10 @@
                     $price = $doModel["price"];
                     $qty = $doModel["qty"];
                     $subtotal = $qty * $price;
-                    $status = "On Hand";
+                    $doOnHand = "On Hand";
 
                     if (assigned($iaNo)) {
-                      $status = $iaNo;
+                      $doOnHand = $iaNo;
                       $hasIncoming = true;
                     }
 
@@ -107,7 +110,7 @@
                         $showQty = min($tempQty, $occurrences[$j]);
                         echo "
                           <tr>
-                            <td title=\"$status\">$status</td>
+                            <td title=\"$doOnHand\">$doOnHand</td>
                             <td title=\"$soNo\"><a class=\"link\" href=\"" . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?id[]=$soId\">$soNo</a></td>
                             <td title=\"$brand\">$brand</td>
                             <td title=\"$modelNo\">$modelNo</td>
@@ -167,15 +170,17 @@
               <td><textarea id="remarks" name="remarks"><?php echo $doHeader["remarks"]; ?></textarea></td>
             </tr>
           </table>
-          <?php if ($doHeader["status"] == "SAVED") : ?>
+          <?php if ($status == "SAVED") : ?>
             <button name="status" type="submit" value="SAVED">Save</button>
+          <?php elseif ($status == "PROVISIONAL") : ?>
+            <button name="status" type="submit" value="PROVISIONAL">Save</button>
           <?php endif ?>
-          <button name="status" type="submit" value="<?php echo $doHeader["status"]; ?>" formaction="<?php echo SALES_DELIVERY_ORDER_PRINTOUT_URL . "?id[]=$id"; ?>">Print</button>
-          <?php if ($doHeader["status"] == "SAVED" && !$hasIncoming) : ?>
+          <button name="status" type="submit" value="<?php echo $status; ?>" formaction="<?php echo SALES_DELIVERY_ORDER_PRINTOUT_URL . "?id[]=$id"; ?>">Print</button>
+          <?php if ($status == "SAVED" && !$hasIncoming) : ?>
             <button name="status" type="submit" value="POSTED" style="display: none;"></button>
             <button type="button" onclick="confirmPost(event)">Post</button>
           <?php endif ?>
-          <?php if ($doHeader["status"] == "SAVED") : ?>
+          <?php if ($status == "SAVED" || $status == "PROVISIONAL") : ?>
             <button name="status" type="submit" value="DELETED" style="display: none;"></button>
             <button type="button" onclick="confirmDelete(event)">Delete</button>
           <?php endif ?>

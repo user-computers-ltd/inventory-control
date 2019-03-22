@@ -1,5 +1,6 @@
 <?php
   define("SYSTEM_PATH", "../../../../");
+
   include_once SYSTEM_PATH . "includes/php/config.php";
   include_once ROOT_PATH . "includes/php/utils.php";
   include_once ROOT_PATH . "includes/php/database.php";
@@ -150,29 +151,37 @@
                   $qty = $model["qty_available"];
                   $totalQty += $qty;
 
-                  $matchedModels = isset($soModels[$brandCode][$modelNo]) ? $soModels[$brandCode][$modelNo] : array(array());
-                  $firstModel = true;
+                  $soNoColumn = "";
+                  $debtorNameColumn = "";
+                  $dateColumn = "";
+                  $outstandingColumn = "";
+                  $allotColumn = "";
 
-                  foreach ($matchedModels as $matchedModel) {
-                    $soId = $matchedModel["so_id"];
-                    $soNo = $matchedModel["so_no"];
-                    $priority = $matchedModel["priority"];
-                    $debtorCode = $matchedModel["debtor_code"];
-                    $debtorName = $matchedModel["debtor_name"];
-                    $date = $matchedModel["date"];
-                    $rowspan = count($matchedModels);
+                  $matchedModels = $soModels[$brandCode][$modelNo];
 
-                    $modelColumns = $firstModel ? "
-                      <td rowspan=\"$rowspan\" title=\"$brandName\">$brandName</td>
-                      <td rowspan=\"$rowspan\" title=\"$modelNo\">$modelNo</td>
-                      <td rowspan=\"$rowspan\" class=\"number\">$qty</td>
-                    " : "";
-                    $soColumns = isset($soNo) ? "
-                      <td title=\"$soNo\"><a href=\"" . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?id[]=$soId\">$soNo</a></td>
-                      <td title=\"$debtorName\">$debtorName</td>
-                      <td title=\"$date\">$date</td>
-                      <td class=\"outstanding-qty number\" data-so_no=\"$soNo\">0</td>
-                      <td class=\"number\">
+                  if (isset($matchedModels)) {
+                    foreach ($matchedModels as $matchedModel) {
+                      $soId = $matchedModel["so_id"];
+                      $soNo = $matchedModel["so_no"];
+                      $priority = $matchedModel["priority"];
+                      $debtorCode = $matchedModel["debtor_code"];
+                      $debtorName = $matchedModel["debtor_name"];
+                      $date = $matchedModel["date"];
+
+                      $soNoColumn = $soNoColumn . "
+                        <div class=\"cell\" title=\"$soNo\" data-so_no=\"$soNo\"><a href=\"" . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?id[]=$soId\">$soNo</a></div>
+                      ";
+                      $debtorNameColumn = $debtorNameColumn . "
+                        <div class=\"cell\" title=\"$debtorName\" data-so_no=\"$soNo\">$debtorName</div>
+                      ";
+                      $dateColumn = $dateColumn . "
+                        <div class=\"cell\" title=\"$date\" data-so_no=\"$soNo\">$date</div>
+                      ";
+                      $outstandingColumn = $outstandingColumn . "
+                        <div class=\"cell outstanding-qty number\" data-so_no=\"$soNo\">0</div>
+                      ";
+                      $allotColumn = $allotColumn . "
+                      <div class=\"cell number\">
                         <input type=\"hidden\" name=\"warehouse_code[]\" value=\"$warehouseCode\" />
                         <input type=\"hidden\" name=\"so_no[]\" value=\"$soNo\" />
                         <input type=\"hidden\" name=\"brand_code[]\" value=\"$brandCode\" />
@@ -184,31 +193,36 @@
                           min=\"0\"
                           max=\"0\"
                           data-so_no=\"$soNo\"
+                          data-priority=\"$priority\"
+                          data-date=\"$date\"
                           class=\"allot-qty number\"
                           onchange=\"onQtyChange(event, '$warehouseCode', '$brandCode', '$modelNo', '$soNo')\"
                           required
                         />
-                      </td>
-                    " : "<td colspan=\"5\"></td>";
-                    $totalColumn = $firstModel ? "
-                      <td rowspan=\"$rowspan\" class=\"total-model-allot-qty number\">0</td>
-                    " : "";
-
-                    echo "
-                      <tr class=\"stock-model\"
-                        data-brand_code=\"$brandCode\"
-                        data-model_no=\"$modelNo\"
-                        data-priority=\"$priority\"
-                        data-date=\"$date\"
-                      >
-                        $modelColumns
-                        $soColumns
-                        $totalColumn
-                      </tr>
-                    ";
-
-                    $firstModel = false;
+                      </div>
+                      ";
+                    }
                   }
+
+                  echo "
+                    <tr
+                      class=\"stock-model\"
+                      data-brand_code=\"$brandCode\"
+                      data-model_no=\"$modelNo\"
+                      data-priority=\"$priority\"
+                      data-date=\"$date\"
+                    >
+                      <td title=\"$brandName\">$brandName</td>
+                      <td title=\"$modelNo\">$modelNo</td>
+                      <td class=\"number\">$qty</td>
+                      <td>$soNoColumn</td>
+                      <td>$debtorNameColumn</td>
+                      <td>$dateColumn</td>
+                      <td>$outstandingColumn</td>
+                      <td>$allotColumn</td>
+                      <td class=\"total-model-allot-qty number\">0</td>
+                    </tr>
+                  ";
                 }
 
                 echo "
@@ -300,26 +314,27 @@
       }
 
       function render() {
-        var iaElements = document.querySelectorAll(".stock-results");
+        var stockElements = document.querySelectorAll(".stock-results");
 
-        for (var i = 0; i < iaElements.length; i++) {
-          var iaElement = iaElements[i];
-          var warehouseCode = iaElement.dataset.warehouse_code;
+        for (var i = 0; i < stockElements.length; i++) {
+          var stockElement = stockElements[i];
+          var warehouseCode = stockElement.dataset.warehouse_code;
 
           renderIaTable(warehouseCode);
         }
       }
 
       function renderIaTable(warehouseCode) {
-        var iaModelElements = document.querySelectorAll(".stock-results[data-warehouse_code=\"" + warehouseCode + "\"] .stock-model");
+        var stockModelElements = document.querySelectorAll(".stock-results[data-warehouse_code=\"" + warehouseCode + "\"] .stock-model");
 
-        for (var j = 0; j < iaModelElements.length; j++) {
-          var iaModelElement = iaModelElements[j];
-          var brandCode = iaModelElement.dataset.brand_code;
-          var modelNo = iaModelElement.dataset.model_no;
-          var allotQtyElement = iaModelElement.querySelector(".allot-qty");
+        for (var j = 0; j < stockModelElements.length; j++) {
+          var stockModelElement = stockModelElements[j];
+          var brandCode = stockModelElement.dataset.brand_code;
+          var modelNo = stockModelElement.dataset.model_no;
+          var allotQtyElements = stockModelElement.querySelectorAll(".allot-qty");
 
-          if (allotQtyElement) {
+          for (var i = 0; i < allotQtyElements.length; i++) {
+            var allotQtyElement = allotQtyElements[i];
             var soNo = allotQtyElement.dataset.so_no;
 
             allotments[warehouseCode] = allotments[warehouseCode] || {};
@@ -347,12 +362,13 @@
         ) {
           var reservePercentage = document.querySelector("input.reserve-percentage[data-warehouse_code=\"" + warehouseCode + "\"]").value || 0;
           var warehouseSelector = ".stock-results[data-warehouse_code=\"" + warehouseCode + "\"]";
-          var iaModelSelector = warehouseSelector + " .stock-model[data-brand_code=\"" + brandCode + "\"][data-model_no=\"" + modelNo + "\"]";
-          var outstandingQtyElement = document.querySelector(iaModelSelector + " .outstanding-qty[data-so_no=\"" + soNo + "\"]");
-          var allotQtyElement = document.querySelector(iaModelSelector + " .allot-qty[data-so_no=\"" + soNo + "\"]");
+          var stockModelSelector = warehouseSelector + " .stock-model[data-brand_code=\"" + brandCode + "\"][data-model_no=\"" + modelNo + "\"]";
+          var allotmentElements = document.querySelectorAll(stockModelSelector + " .cell[data-so_no=\"" + soNo + "\"]");
+          var outstandingQtyElement = document.querySelector(stockModelSelector + " .outstanding-qty[data-so_no=\"" + soNo + "\"]");
+          var allotQtyElement = document.querySelector(stockModelSelector + " .allot-qty[data-so_no=\"" + soNo + "\"]");
           var allotment = allotments[warehouseCode][brandCode][modelNo][soNo];
           var allotQty = parseFloat(allotment["qty"]);
-          var plNo = allotment["do_no"] ? allotment["do_no"] : "";
+          var doNo = allotment["do_no"] ? allotment["do_no"] : "";
           var outstandingQty = parseFloat(soModels[brandCode][modelNo][soNo]["qty_outstanding"]);
           var availableQty = Math.floor(parseFloat(stockModels[warehouseCode][brandCode][modelNo]["qty"]) * (1 - reservePercentage / 100));
           var otherAllotedIaQty = getOtherWarehouseAllottedQty(warehouseCode, brandCode, modelNo, soNo);
@@ -363,21 +379,27 @@
           allotQty = Math.min(maxQty, allotQty);
 
           outstandingQtyElement.innerHTML = allottableSoQty;
-          outstandingQtyElement.title = plNo;
+
+          for (var i = 0; i < allotmentElements.length; i++) {
+            toggleClass(allotmentElements[i], "hide", allottableSoQty === 0);
+          }
 
           allotQtyElement.max = maxQty;
           allotQtyElement.value = allotQty;
-          if (plNo !== "") {
+
+          if (doNo !== "") {
             allotQtyElement.setAttribute("readonly", true);
+            allotQtyElement.title = doNo;
           } else {
             allotQtyElement.removeAttribute("readonly");
           }
-          toggleClass(allotQtyElement, "packed", plNo !== "");
+
+          toggleClass(allotQtyElement, "packed", doNo !== "");
 
           allotments[warehouseCode][brandCode][modelNo][soNo]["qty"] = allotQty;
 
-          var totalModelAllotQtyElement = document.querySelector(iaModelSelector + " .total-model-allot-qty");
-          var allotQtyElements = document.querySelectorAll(iaModelSelector + " .allot-qty");
+          var totalModelAllotQtyElement = document.querySelector(stockModelSelector + " .total-model-allot-qty");
+          var allotQtyElements = document.querySelectorAll(stockModelSelector + " .allot-qty");
           var totalModelAllotQty = 0;
 
           for (var i = 0; i < allotQtyElements.length; i++) {
@@ -425,13 +447,24 @@
         }
       }
 
-      function allocateModels(warehouseCode, elements) {
-        elements.forEach(function (element) {
+      function allocateModels(warehouseCode, elements, sorting) {
+        for (var i = 0; i < elements.length; i++) {
+          var element = elements[i];
           var brandCode = element.dataset.brand_code;
           var modelNo = element.dataset.model_no;
-          var allotQtyElement = element.querySelector(".allot-qty");
+          var allotQtyElements = element.querySelectorAll(".allot-qty");
 
-          if (allotQtyElement) {
+          var allotQtyElementList = [];
+
+          for (var j = 0; j < allotQtyElements.length; j++) {
+            allotQtyElementList.push(allotQtyElements[j]);
+          }
+
+          allotQtyElementList.sort(sorting);
+
+          for (var k = 0; k < allotQtyElementList.length; k++) {
+            var allotQtyElement = allotQtyElementList[k];
+
             var soNo = allotQtyElement.dataset.so_no;
             var outstandingQty = parseFloat(soModels[brandCode][modelNo][soNo]["qty_outstanding"]);
             var otherAllotedIaQty = getOtherWarehouseAllottedQty(warehouseCode, brandCode, modelNo, soNo);
@@ -441,24 +474,18 @@
 
             renderAllotment(warehouseCode, brandCode, modelNo, soNo);
           }
-        });
+        }
       }
 
       function allocateByPriorities(warehouseCode) {
         resetAllotments(warehouseCode);
 
         var warehouseModelElements = document.querySelectorAll(".stock-results[data-warehouse_code=\"" + warehouseCode + "\"] .stock-model");
-        var elements = [];
 
-        for (var i = 0; i < warehouseModelElements.length; i++) {
-          elements.push(warehouseModelElements[i]);
-        }
-
-        elements.sort(function (a, b) {
+        allocateModels(warehouseCode, warehouseModelElements, function (a, b) {
           return b.dataset.priority - a.dataset.priority;
         });
 
-        allocateModels(warehouseCode, elements);
         render();
       }
 
@@ -466,17 +493,11 @@
         resetAllotments(warehouseCode);
 
         var warehouseModelElements = document.querySelectorAll(".stock-results[data-warehouse_code=\"" + warehouseCode + "\"] .stock-model");
-        var elements = [];
 
-        for (var i = 0; i < warehouseModelElements.length; i++) {
-          elements.push(warehouseModelElements[i]);
-        }
-
-        elements.sort(function (a, b) {
+        allocateModels(warehouseCode, warehouseModelElements, function (a, b) {
           return getTime(a.dataset.date) - getTime(b.dataset.date);
         });
 
-        allocateModels(warehouseCode, elements);
         render();
       }
 
@@ -491,19 +512,22 @@
           var brandCode = warehouseModelElement.dataset.brand_code;
           var modelNo = warehouseModelElement.dataset.model_no;
           var availableQty = stockModels[warehouseCode][brandCode][modelNo]["qty"] * (1 - reservePercentage / 100);
-          var allotQtyElement = warehouseModelElement.querySelector(".allot-qty");
+          var allotQtyElements = warehouseModelElement.querySelectorAll(".allot-qty");
 
-          if (allotQtyElement) {
+          for (var j = 0; j < allotQtyElements.length; j++) {
+            var allotQtyElement = allotQtyElements[j];
+
             var soNo = allotQtyElement.dataset.so_no;
+
             var outstandingQty = parseFloat(soModels[brandCode][modelNo][soNo]["qty_outstanding"]);
             var otherAllotedIaQty = getOtherWarehouseAllottedQty(warehouseCode, brandCode, modelNo, soNo);
             var allottableSoQty = outstandingQty - otherAllotedIaQty;
             var totalModelAllottableQty = 0;
             var soNos = Object.keys(soModels[brandCode][modelNo]);
 
-            for (var j = 0; j < soNos.length; j++) {
-              var outstandingQty2 = parseFloat(soModels[brandCode][modelNo][soNos[j]]["qty_outstanding"]);
-              var otherAllotedIaQty2 = getOtherWarehouseAllottedQty(warehouseCode, brandCode, modelNo, soNos[j]);
+            for (var k = 0; k < soNos.length; k++) {
+              var outstandingQty2 = parseFloat(soModels[brandCode][modelNo][soNos[k]]["qty_outstanding"]);
+              var otherAllotedIaQty2 = getOtherWarehouseAllottedQty(warehouseCode, brandCode, modelNo, soNos[k]);
               var allottableSoQty2 = outstandingQty2 - otherAllotedIaQty2;
 
               totalModelAllottableQty += allottableSoQty2;
@@ -511,7 +535,7 @@
 
             var proportion = allottableSoQty / totalModelAllottableQty;
 
-            var round = soNo !== soNos[soNos.length - 1] ? Math.round : Math.ceil;
+            var round = j % 2 === 1 ? Math.floor : Math.ceil;
             allotments[warehouseCode][brandCode][modelNo][soNo]["qty"] = round(proportion * availableQty);
 
             renderAllotment(warehouseCode, brandCode, modelNo, soNo);
@@ -522,15 +546,17 @@
       }
 
       function resetAllotments(warehouseCode) {
-        var warehouseModelElements = document.querySelectorAll(".stock-results[data-warehouse_code=\"" + warehouseCode + "\"] .stock-model");
+        var stockModelElements = document.querySelectorAll(".stock-results[data-warehouse_code=\"" + warehouseCode + "\"] .stock-model");
 
-        for (var i = 0; i < warehouseModelElements.length; i++) {
-          var warehouseModelElement = warehouseModelElements[i];
-          var brandCode = warehouseModelElement.dataset.brand_code;
-          var modelNo = warehouseModelElement.dataset.model_no;
-          var allotQtyElement = warehouseModelElement.querySelector(".allot-qty");
+        for (var i = 0; i < stockModelElements.length; i++) {
+          var stockModelElement = stockModelElements[i];
+          var brandCode = stockModelElement.dataset.brand_code;
+          var modelNo = stockModelElement.dataset.model_no;
+          var allotQtyElements = stockModelElement.querySelectorAll(".allot-qty");
 
-          if (allotQtyElement) {
+          for (var j = 0; j < allotQtyElements.length; j++) {
+            var allotQtyElement = allotQtyElements[j];
+
             var soNo = allotQtyElement.dataset.so_no;
             var allotment = allotments[warehouseCode][brandCode][modelNo][soNo];
 

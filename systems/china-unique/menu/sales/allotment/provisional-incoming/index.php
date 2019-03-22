@@ -17,7 +17,7 @@
     <?php include_once SYSTEM_PATH . "includes/components/menu/index.php"; ?>
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
-      <div class="headline"><?php echo SALES_ALLOTMENT_INCOMING_TITLE ?></div>
+      <div class="headline"><?php echo SALES_ALLOTMENT_PROVISIONAL_INCOMING_TITLE ?></div>
       <form>
         <table id="ia-input">
           <tr>
@@ -526,7 +526,6 @@
             var allotQtyElement = allotQtyElements[j];
 
             var soNo = allotQtyElement.dataset.so_no;
-
             var outstandingQty = parseFloat(soModels[brandCode][modelNo][soNo]["qty_outstanding"]);
             var otherAllotedIaQty = getOtherIaAllottedQty(iaNo, brandCode, modelNo, soNo);
             var allottableSoQty = outstandingQty - otherAllotedIaQty;

@@ -38,7 +38,7 @@
   }
 
   if (assigned($filterDebtorCodes) && count($filterDebtorCodes) > 0) {
-    $whereClause = "
+    $whereClause = $whereClause . "
       AND (" . join(" OR ", array_map(function ($d) { return "c.code=\"$d\""; }, $filterDebtorCodes)) . ")";
   }
 

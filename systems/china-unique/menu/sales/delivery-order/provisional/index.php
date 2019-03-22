@@ -18,7 +18,7 @@
     <?php include_once SYSTEM_PATH . "includes/components/menu/index.php"; ?>
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
-      <div class="headline"><?php echo SALES_DELIVERY_ORDER_SAVED_TITLE; ?></div>
+      <div class="headline"><?php echo SALES_DELIVERY_ORDER_PROVISIONAL_TITLE; ?></div>
       <form>
         <table id="do-input">
           <tr>
@@ -62,8 +62,8 @@
       </form>
       <?php if (count($doHeaders) > 0) : ?>
         <form id="delivery-form" method="post">
-          <button type="submit" name="action" value="post" style="display: none;"></button>
-          <button type="button" onclick="confirmPost(event)" class="web-only">Post</button>
+          <button type="submit" name="action" value="transfer" style="display: none;"></button>
+          <button type="button" onclick="confirmTransfer(event)" class="web-only transfer-button">Transfer</button>
           <button type="submit" name="action" value="print" class="web-only">Print</button>
           <button type="submit" name="action" value="delete" style="display: none;"></button>
           <button type="button" onclick="confirmDelete(event)" class="web-only">Delete</button>
@@ -107,6 +107,7 @@
                   $debtor = $doHeader["debtor"];
                   $doNo = $doHeader["do_no"];
                   $priceCategory = $doHeader["price_category"];
+                  $transferable = $doHeader["transferable"];
                   $qty = $doHeader["qty"];
                   $discount = $doHeader["discount"];
                   $currency = $doHeader["currency"];
@@ -118,7 +119,9 @@
 
                   echo "
                     <tr>
-                      <td class=\"web-only\"><input type=\"checkbox\" name=\"do_id[]\" data-do_no=\"$doNo\" value=\"$doId\" /></td>
+                      <td class=\"web-only\">
+                        <input type=\"checkbox\" name=\"do_id[]\" data-do_no=\"$doNo\" value=\"$doId\" data-transferable=\"$transferable\" onchange=\"onUpdateSelection()\" />
+                      </td>
                       <td title=\"$date\">$date</td>
                       <td title=\"$doNo\"><a class=\"link\" href=\"" . SALES_DELIVERY_ORDER_URL . "?id=$doId\">$doNo</a></td>
                       <td title=\"$debtor\">$debtor</td>
@@ -151,10 +154,11 @@
         <?php include_once ROOT_PATH . "includes/components/loading-screen/index.php"; ?>
         <script>
           var deliveryFormElement = document.querySelector("#delivery-form");
-          var postButtonElement = deliveryFormElement.querySelector("button[value=\"post\"]");
+          var transferButtonElement = deliveryFormElement.querySelector("button[value=\"transfer\"]");
+          var transferLabelButtonElement = deliveryFormElement.querySelector("button.transfer-button");
           var deleteButtonElement = deliveryFormElement.querySelector("button[value=\"delete\"]");
 
-          function confirmPost(event) {
+          function confirmTransfer(event) {
             var checkedItems = deliveryFormElement.querySelectorAll("input[name=\"do_id[]\"]:checked");
 
             if (checkedItems.length > 0) {
@@ -166,9 +170,9 @@
 
               listElement += "</ul>";
 
-              showConfirmDialog("<b>Are you sure you want to post the following?</b><br/><br/>" + listElement, function () {
-                postButtonElement.click();
-                setLoadingMessage("Posting...")
+              showConfirmDialog("<b>Are you sure you want to transfer the following?</b><br/><br/>" + listElement, function () {
+                transferButtonElement.click();
+                setLoadingMessage("Transfering...")
                 toggleLoadingScreen(true);
               });
             }
@@ -192,6 +196,11 @@
                 toggleLoadingScreen(true);
               });
             }
+          }
+
+          function onUpdateSelection() {
+            var disableTransfer = deliveryFormElement.querySelectorAll("input[name=\"do_id[]\"][data-transferable=\"false\"]:checked").length > 0;
+            toggleClass(transferLabelButtonElement, "hide", disableTransfer);
           }
         </script>
       <?php else : ?>

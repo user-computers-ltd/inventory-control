@@ -65,13 +65,13 @@
         <table id="do-results">
           <colgroup>
             <col class="web-only" style="width: 30px">
-            <col style="width: 70px">
+            <col style="width: 80px">
             <col>
             <col>
             <col style="width: 60px">
             <col style="width: 80px">
-            <col style="width: 80px">
-            <col style="width: 80px">
+            <col style="width: 60px">
+            <col style="width: 60px">
             <col style="width: 80px">
             <col style="width: 80px">
           </colgroup>

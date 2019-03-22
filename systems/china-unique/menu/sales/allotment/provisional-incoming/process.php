@@ -46,7 +46,7 @@
 
     execute($queries);
 
-    header("Location: " . SALES_ALLOTMENT_REPORT_CUSTOMER_URL);
+    header("Location: " . SALES_ALLOTMENT_REPORT_PROVISIONAL_CUSTOMER_URL);
   }
 
   $filterIaNos = $_GET["filter_ia_no"];
@@ -136,7 +136,7 @@
         warehouse_code, brand_code, model_no) AS g
     ON b.warehouse_code=g.warehouse_code AND a.brand_code=g.brand_code AND a.model_no=g.model_no
     WHERE
-      b.status=\"DO\"
+      b.status=\"SAVED\"
       $whereClause
     ORDER BY
       b.creditor_code ASC,
@@ -298,7 +298,7 @@
         `sdo_header` AS y
       ON x.do_no=y.do_no
       WHERE
-        y.status=\"SAVED\") AS b
+        y.status=\"PROVISIONAL\") AS b
     ON
       a.ia_no=b.ia_no AND
       a.so_no=b.so_no AND
@@ -309,7 +309,7 @@
       `ia_header` AS c
     ON a.ia_no=c.ia_no
     WHERE
-      c.status IS NULL OR c.status=\"DO\"
+      c.status IS NULL OR c.status=\"SAVED\"
     ORDER BY
       a.ia_no ASC,
       a.brand_code ASC,
@@ -356,7 +356,7 @@
     FROM
       `ia_header`
     WHERE
-      status=\"DO\"
+      status=\"SAVED\"
     ORDER BY
       ia_no ASC
   ");

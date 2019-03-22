@@ -39,8 +39,8 @@
         WHERE
           " . join(" OR ", array_map(function ($i, $s, $b, $m) use ($warehouseCode) {
             return "(
-              ((ia_no=\"$i\" AND warehouse_code=\"\") OR
-              (ia_no=\"\" AND warehouse_code=\"$warehouseCode\")) AND
+              (ia_no=\"$i\" AND warehouse_code=\"\" OR
+              ia_no=\"\" AND warehouse_code=\"$warehouseCode\") AND
               so_no=\"$s\" AND
               brand_code=\"$b\" AND
               model_no=\"$m\"
@@ -71,7 +71,8 @@
               exchange_rate,
               discount,
               tax,
-              warehouse_code
+              warehouse_code,
+              status
             )
           VALUES
             (
@@ -85,7 +86,8 @@
               \"$exchangeRate\",
               \"$discount\",
               \"$tax\",
-              \"$warehouseCode\"
+              \"$warehouseCode\",
+              \"PROVISIONAL\"
             )
       ");
 
@@ -191,7 +193,7 @@
       a.brand_code=h.brand_code AND
       a.model_no=h.model_no
     WHERE
-      a.qty IS NOT NULL AND (g.status IS NULL OR g.status=\"DO\")
+      a.qty IS NOT NULL AND (g.status IS NULL OR g.status=\"SAVED\")
       $whereClause
     ORDER BY
       c.debtor_code ASC,
@@ -281,7 +283,7 @@
       `ia_header` AS d
     ON b.ia_no=d.ia_no
     WHERE
-      b.qty IS NOT NULL AND (d.status IS NULL OR d.status=\"DO\")
+      b.qty IS NOT NULL AND (d.status IS NULL OR d.status=\"SAVED\")
     ORDER BY
       a.debtor_code ASC
   ");

@@ -331,23 +331,40 @@
   }
 
   $warehouses = query("
-    SELECT
-      code AS `code`,
-      name AS `name`
+    SELECT DISTINCT
+      b.code AS `code`,
+      b.name AS `name`
     FROM
-      `warehouse`
+      `stock` AS a
+    LEFT JOIN
+      `warehouse` AS b
+    ON a.warehouse_code=b.code
     ORDER BY
-      name ASC
+      b.name ASC
   ");
 
   $debtors = query("
     SELECT DISTINCT
-      code            AS `code`,
-      english_name    AS `name`
+      c.code            AS `code`,
+      c.english_name    AS `name`
     FROM
-      `debtor`
+      `so_header` AS a
+    LEFT JOIN
+      (SELECT
+        so_no                 AS `so_no`,
+        SUM(qty_outstanding)  AS `qty_outstanding`
+      FROM
+        `so_model`
+      GROUP BY
+        so_no) AS b
+    ON a.so_no=b.so_no
+    LEFT JOIN
+      `debtor` AS c
+    ON a.debtor_code=c.code
+    WHERE
+      a.status=\"CONFIRMED\" AND b.qty_outstanding > 0
     ORDER BY
-      code ASC
+      c.code ASC
   ");
 
   $soNos = query("
@@ -365,7 +382,7 @@
         so_no) AS b
     ON a.so_no=b.so_no
     WHERE
-      b.qty_outstanding > 0
+      a.status=\"CONFIRMED\" AND b.qty_outstanding > 0
     ORDER BY
       a.so_no ASC
   ");

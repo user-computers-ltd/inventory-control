@@ -65,6 +65,16 @@
   text-overflow: ellipsis;
 }
 
+.stock-results td .cell {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  height: 25px;
+}
+
+.stock-results td .cell.hide {
+  display: none;
+}
+
 .stock-results .number {
   text-align: right;
 }
