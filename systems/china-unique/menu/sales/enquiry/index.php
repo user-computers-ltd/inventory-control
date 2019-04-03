@@ -162,9 +162,9 @@
             </tr>
             <tr>
               <th class="number">要求</th>
-              <th class="number">手上</th>
-              <th class="number">已預訂</th>
               <th class="number">現有</th>
+              <th class="number">已預訂</th>
+              <th class="number">可提供</th>
               <th class="number">提供</th>
               <th class="number">來貨</th>
               <th class="number">已預訂</th>
@@ -232,8 +232,6 @@
           }
         ?>
       </datalist>
-      <?php include_once ROOT_PATH . "includes/components/confirm-dialog/index.php"; ?>
-      <?php include_once ROOT_PATH . "includes/components/loading-screen/index.php"; ?>
       <script>
         var enquiryModels = <?php echo json_encode($enquiryModels); ?>;
         var currencies = <?php echo json_encode($currencies); ?>;

@@ -4,7 +4,6 @@
   $currencyCode = $_POST["currency_code"];
   $exchangeRate = $_POST["exchange_rate"];
   $discount = $_POST["discount"];
-  $tax = $_POST["tax"];
   $warehouseCode = $_POST["warehouse_code"];
   $action = $_POST["action"];
   $iaNos = $_POST["ia_no"];
@@ -22,7 +21,6 @@
     assigned($currencyCode) &&
     assigned($exchangeRate) &&
     assigned($discount) &&
-    assigned($tax) &&
     assigned($warehouseCode) &&
     assigned($action) &&
     assigned($iaNos) &&
@@ -56,6 +54,7 @@
       $address = $debtor["factory_address"];
       $contact = $debtor["contact"];
       $tel = $debtor["tel"];
+      $tax = COMPANY_TAX;
 
       array_push($queries, "
         INSERT INTO
@@ -134,10 +133,10 @@
       c.currency_code                                               AS `currency_code`,
       c.exchange_rate                                               AS `exchange_rate`,
       c.discount                                                    AS `discount`,
-      c.tax                                                         AS `tax`,
       IFNULL(h.do_id, '')                                           AS `do_id`,
       IFNULL(h.do_no, '')                                           AS `do_no`,
       IF(a.warehouse_code='', g.warehouse_code, a.warehouse_code)   AS `warehouse_code`,
+      g.status                                                      AS `ia_status`,
       a.so_no                                                       AS `so_no`,
       c.id                                                          AS `so_id`,
       a.brand_code                                                  AS `brand_code`,
@@ -191,13 +190,12 @@
       a.brand_code=h.brand_code AND
       a.model_no=h.model_no
     WHERE
-      a.qty IS NOT NULL AND (g.status IS NULL OR g.status=\"DO\")
+      a.qty IS NOT NULL AND (g.status IS NULL OR g.status=\"SAVED\" OR g.status=\"DO\")
       $whereClause
     ORDER BY
       c.debtor_code ASC,
       CONCAT(c.currency_code, '-', c.exchange_rate) ASC,
       c.discount ASC,
-      c.tax ASC,
       h.do_no,
       a.brand_code ASC,
       a.model_no ASC,
@@ -213,7 +211,6 @@
     $currencyCode = $allotment["currency_code"];
     $exchangeRate = $allotment["exchange_rate"];
     $discount = $allotment["discount"];
-    $tax = $allotment["tax"];
     $warehouseCode = $allotment["warehouse_code"];
     $doId = $allotment["do_id"];
     $doNo = $allotment["do_no"];
@@ -239,11 +236,6 @@
       $arrayPointer[$discount] = array();
     }
     $arrayPointer = &$arrayPointer[$discount];
-
-    if (!isset($arrayPointer[$tax])) {
-      $arrayPointer[$tax] = array();
-    }
-    $arrayPointer = &$arrayPointer[$tax];
 
     if (!isset($arrayPointer[$warehouseCode])) {
       $arrayPointer[$warehouseCode] = array();

@@ -65,7 +65,7 @@
           <button type="button" onclick="confirmConfirm(event)" class="web-only">Confirm</button>
           <button type="submit" name="action" value="print" class="web-only">Print</button>
           <button type="submit" name="action" value="delete" style="display: none;"></button>
-          <button type="button" onclick="confirmDelete(event)" class="web-only">Delete</button>
+          <button type="button" onclick="confirmDelete(event)" class="delete-button web-only">Delete</button>
           <table id="so-results">
             <colgroup>
               <col class="web-only" style="width: 30px">
@@ -112,6 +112,7 @@
                   $currency = $soHeader["currency"];
                   $outstandingAmt = $soHeader["outstanding_amt"];
                   $outstandingAmtBase = $soHeader["outstanding_amt_base"];
+                  $ongoingDelivery = $outstandingQty < $qty ? "true" : "false";
 
                   $totalQty += $qty;
                   $totalOutstanding += $outstandingQty;
@@ -119,7 +120,7 @@
 
                   echo "
                     <tr>
-                      <td class=\"web-only\"><input type=\"checkbox\" name=\"so_id[]\" data-so_no=\"$soNo\" value=\"$id\" /></td>
+                      <td class=\"web-only\"><input type=\"checkbox\" name=\"so_id[]\" data-so_no=\"$soNo\" data-ongoing=\"$ongoingDelivery\" value=\"$id\" onchange=\"onUpdateSelection()\" /></td>
                       <td title=\"$date\">$date</td>
                       <td title=\"$soNo\"><a class=\"link\" href=\"" . SALES_ORDER_URL . "?id=$id\">$soNo</a></td>
                       <td title=\"$debtorName\">$debtorName</td>
@@ -148,12 +149,11 @@
             </tbody>
           </table>
         </form>
-        <?php include_once ROOT_PATH . "includes/components/confirm-dialog/index.php"; ?>
-        <?php include_once ROOT_PATH . "includes/components/loading-screen/index.php"; ?>
         <script>
           var salesOrderFormElement = document.querySelector("#sales-order-form");
           var confirmButtonElement = salesOrderFormElement.querySelector("button[value=\"confirm\"]");
           var deleteButtonElement = salesOrderFormElement.querySelector("button[value=\"delete\"]");
+          var deleteLabelButtonElement = salesOrderFormElement.querySelector("button.delete-button");
 
           function confirmConfirm(event) {
             var checkedItems = salesOrderFormElement.querySelectorAll("input[name=\"so_id[]\"]:checked");
@@ -195,6 +195,11 @@
                 toggleLoadingScreen(true);
               });
             }
+          }
+
+          function onUpdateSelection() {
+            var disableDelete = salesOrderFormElement.querySelectorAll("input[name=\"so_id[]\"][data-ongoing=\"true\"]:checked").length > 0;
+            toggleClass(deleteLabelButtonElement, "hide", disableDelete);
           }
         </script>
       <?php else : ?>

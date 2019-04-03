@@ -159,7 +159,7 @@
                   <th class="number">Outstanding Qty</th>
                   <th class="number">Currency</th>
                   <th class="number">Outstanding Amt</th>
-                  <th class="number">$InBaseCurrency</th>
+                  <th class="number"><?php echo $InBaseCurrency; ?></th>
                   <th class="number">Discount</th>
                 </tr>
               </thead>

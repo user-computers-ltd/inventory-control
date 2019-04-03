@@ -32,6 +32,19 @@ button:active {
   border-bottom: 1px solid darkgray;
 }
 
+input[readonly=""],
+select[readonly=""] {
+  border: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+input[hidden=""],
+select[hidden=""] {
+  display: none;
+}
+
 table {
   margin: 20px 0px;
   clear: both;
@@ -60,7 +73,7 @@ table thead th {
 .page-wrapper {
   display: block;
   margin: auto;
-  padding: 0px 80px;
+  padding: 0px 80px 40px 80px;
   width: 800px;
 }
 

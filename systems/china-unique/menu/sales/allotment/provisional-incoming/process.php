@@ -298,18 +298,13 @@
         `sdo_header` AS y
       ON x.do_no=y.do_no
       WHERE
-        y.status=\"PROVISIONAL\") AS b
+        y.status=\"SAVED\") AS b
     ON
       a.ia_no=b.ia_no AND
       a.so_no=b.so_no AND
       a.brand_code=b.brand_code AND
       a.model_no=b.model_no AND
       a.qty=b.qty
-    LEFT JOIN
-      `ia_header` AS c
-    ON a.ia_no=c.ia_no
-    WHERE
-      c.status IS NULL OR c.status=\"SAVED\"
     ORDER BY
       a.ia_no ASC,
       a.brand_code ASC,

@@ -64,217 +64,218 @@
               foreach ($currencyAllotmentModels as $discount => $discountAllotments) {
                 $discountFactor = (100 - $discount) / 100;
 
-                foreach ($discountAllotments as $tax => $taxAllotments) {
-                  $taxFactor = (100 + $tax) / 100;
+                foreach ($discountAllotments as $warehouseCode => $warehouseAllotments) {
 
-                  foreach ($taxAllotments as $warehouseCode => $warehouseAllotments) {
+                  foreach ($warehouseAllotments as $doNo => $do) {
+                    $doId = $do["id"];
+                    $doAllotments = $do["models"];
+                    $isProvisional = count(array_filter($doAllotments, function ($models) {
+                      return array_sum(array_map(function ($model) {
+                        return $model["ia_status"] === "SAVED" ? 1 : 0;
+                      }, $models)) > 0;
+                    })) > 0 ? "Provisional" : "";
 
-                    foreach ($warehouseAllotments as $doNo => $do) {
-                      $doId = $do["id"];
-                      $doAllotments = $do["models"];
-                      $option = "";
+                    $option = "";
 
-                      if ($doId == "") {
-                        $option = "
-                          <button name=\"action\" type=\"submit\" value=\"create\" style=\"display: none\"></button>
-                          <button type=\"button\" onclick=\"confirmCreate(event)\" class=\"web-only\">Create Delivery Order</button>
-                          <button name=\"action\" type=\"submit\" value=\"delete\" style=\"display: none\"></button>
-                          <button type=\"button\" onclick=\"confirmDelete(event)\" class=\"web-only\">Delete Allotments</button>
-                        ";
-                      } else {
-                        $option = "
-                          <span class=\"delivery-order\">
-                            Delivery Order: <a href=\"" . SALES_DELIVERY_ORDER_URL . "?id=$doId\">$doNo</a>
-                          </span>
-                        ";
-                      }
+                    if ($doId == "") {
+                      $option = "
+                        <button name=\"action\" type=\"submit\" value=\"create\" style=\"display: none\"></button>
+                        <button type=\"button\" onclick=\"confirmCreate(event)\" class=\"web-only\">Create Delivery Order</button>
+                        <button name=\"action\" type=\"submit\" value=\"delete\" style=\"display: none\"></button>
+                        <button type=\"button\" onclick=\"confirmDelete(event)\" class=\"web-only\">Delete Allotments</button>
+                      ";
+                    } else {
+                      $option = "
+                        <span class=\"delivery-order\">
+                          $isProvisional Delivery Order: <a href=\"" . SALES_DELIVERY_ORDER_URL . "?id=$doId\">$doNo</a>
+                        </span>
+                      ";
+                    }
+                    echo "
+                      <form method=\"post\">
+                        <div class=\"so-client-header\">
+                          $option
+                          <span class=\"currency\">$currencyCode @ $exchangeRate</span>
+                          <span class=\"discount\">Discount: $discount%</span>
+                          <span class=\"warehouse\">Warehouse: $warehouseCode</span>
+                          <input name=\"debtor_code\" value=\"$debtorCode\" hidden />
+                          <input name=\"currency_code\" value=\"$currencyCode\" hidden />
+                          <input name=\"exchange_rate\" value=\"$exchangeRate\" hidden />
+                          <input name=\"discount\" value=\"$discount\" hidden />
+                          <input name=\"warehouse_code\" value=\"$warehouseCode\" hidden />
+                        </div>
+                    ";
+
+                    if (count($doAllotments) > 0) {
                       echo "
-                        <form method=\"post\">
-                          <div class=\"so-client-header\">
-                            $option
-                            <span class=\"currency\">$currencyCode @ $exchangeRate</span>
-                            <span class=\"discount\">Discount: $discount%</span>
-                            <span class=\"warehouse\">Warehouse: $warehouseCode</span>
-                            <input name=\"debtor_code\" value=\"$debtorCode\" hidden />
-                            <input name=\"currency_code\" value=\"$currencyCode\" hidden />
-                            <input name=\"exchange_rate\" value=\"$exchangeRate\" hidden />
-                            <input name=\"discount\" value=\"$discount\" hidden />
-                            <input name=\"tax\" value=\"$tax\" hidden />
-                            <input name=\"warehouse_code\" value=\"$warehouseCode\" hidden />
-                          </div>
+                        <table class=\"so-client-results\">
+                          <colgroup>
+                            <col class=\"web-only\" style=\"width: 30px\">
+                            <col style=\"width: 100px\">
+                            <col style=\"width: 60px\">
+                            <col style=\"width: 120px\">
+                            <col>
+                            <col style=\"width: 80px\">
+                            <col style=\"width: 80px\">
+                            <col style=\"width: 80px\">
+                            <col style=\"width: 80px\">
+                          </colgroup>
+                          <thead>
+                            <tr></tr>
+                            <tr>
+                              <th class=\"web-only\">
+                                " . ($doId == "" ? "<input
+                                  type=\"checkbox\"
+                                  onchange=\"disableAllAllotments(event)\"
+                                  checked
+                                />" : "") . "
+                              </th>
+                              <th>DO No. / On Hand</th>
+                              <th>Brand</th>
+                              <th>Model No.</th>
+                              <th>Order No.</th>
+                              <th class=\"number\">Outstanding Qty</th>
+                              <th class=\"number\">Allotted Qty</th>
+                              <th class=\"number\">Price</th>
+                              <th class=\"number\">Allotted Subtotal</th>
+                            </tr>
+                          </thead>
+                          <tbody>
                       ";
 
-                      if (count($doAllotments) > 0) {
-                        echo "
-                          <table class=\"so-client-results\">
-                            <colgroup>
-                              <col class=\"web-only\" style=\"width: 30px\">
-                              <col style=\"width: 100px\">
-                              <col style=\"width: 60px\">
-                              <col style=\"width: 120px\">
-                              <col>
-                              <col style=\"width: 80px\">
-                              <col style=\"width: 80px\">
-                              <col style=\"width: 80px\">
-                              <col style=\"width: 80px\">
-                            </colgroup>
-                            <thead>
-                              <tr></tr>
-                              <tr>
-                                <th class=\"web-only\">
-                                  " . ($doId == "" ? "<input
-                                    type=\"checkbox\"
-                                    onchange=\"disableAllAllotments(event)\"
-                                    checked
-                                  />" : "") . "
-                                </th>
-                                <th>DO No. / On Hand</th>
-                                <th>Brand</th>
-                                <th>Model No.</th>
-                                <th>Order No.</th>
-                                <th class=\"number\">Outstanding Qty</th>
-                                <th class=\"number\">Allotted Qty</th>
-                                <th class=\"number\">Price</th>
-                                <th class=\"number\">Allotted Subtotal</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                        ";
+                      $totalOutstanding = 0;
+                      $totalAllottedQty = 0;
+                      $totalAmt = 0;
 
-                        $totalOutstanding = 0;
-                        $totalAllottedQty = 0;
-                        $totalAmt = 0;
+                      $d = 0;
+                      foreach ($doAllotments as $models) {
 
-                        $d = 0;
-                        foreach ($doAllotments as $models) {
+                        for ($i = 0; $i < count($models); $i++) {
+                          $allotment = $models[$i];
+                          $iaNo = $allotment["ia_no"];
+                          $soId = $allotment["so_id"];
+                          $soNo = $allotment["so_no"];
+                          $brandCode = $allotment["brand_code"];
+                          $brandName = $allotment["brand_name"];
+                          $modelNo = $allotment["model_no"];
+                          $price = $allotment["price"];
+                          $outstandingQty = $allotment["outstanding_qty"];
+                          $qty = $allotment["qty"];
+                          $iaNo = $allotment["ia_no"];
+                          $warehouseCode = $allotment["warehouse_code"];
+                          $subTotal = $price * $qty;
+                          $costAverage = $allotment["cost_average"];
+                          $totalCost = $costAverage * $qty;
+                          $removeIndex = $d * count($models) + $i;
+                          $totalOutstanding += $outstandingQty;
+                          $totalAllottedQty += $qty;
+                          $totalAmt += $subTotal;
 
-                          for ($i = 0; $i < count($models); $i++) {
-                            $allotment = $models[$i];
-                            $iaNo = $allotment["ia_no"];
-                            $soId = $allotment["so_id"];
-                            $soNo = $allotment["so_no"];
-                            $brandCode = $allotment["brand_code"];
-                            $brandName = $allotment["brand_name"];
-                            $modelNo = $allotment["model_no"];
-                            $price = $allotment["price"];
-                            $outstandingQty = $allotment["outstanding_qty"];
-                            $qty = $allotment["qty"];
-                            $iaNo = $allotment["ia_no"];
-                            $warehouseCode = $allotment["warehouse_code"];
-                            $subTotal = $price * $qty;
-                            $costAverage = $allotment["cost_average"];
-                            $totalCost = $costAverage * $qty;
-                            $removeIndex = $d * count($models) + $i;
-                            $totalOutstanding += $outstandingQty;
-                            $totalAllottedQty += $qty;
-                            $totalAmt += $subTotal;
+                          $checkboxColumn = $doId == "" ? "
+                            <td class=\"web-only\">
+                              <input
+                                type=\"checkbox\"
+                                onchange=\"disableAllotment(event)\"
+                                data-ia_no=\"$iaNo\"
+                                data-so_no=\"$soNo\"
+                                data-brand_code=\"$brandCode\"
+                                data-model_no=\"$modelNo\"
+                                data-price=\"$price\"
+                                data-qty=\"$qty\"
+                                checked
+                              />
+                            </td>
+                          " : "<td class=\"web-only\"></td>";
 
-                            $checkboxColumn = $doId == "" ? "
-                              <td class=\"web-only\">
-                                <input
-                                  type=\"checkbox\"
-                                  onchange=\"disableAllotment(event)\"
-                                  data-ia_no=\"$iaNo\"
-                                  data-so_no=\"$soNo\"
-                                  data-brand_code=\"$brandCode\"
-                                  data-model_no=\"$modelNo\"
-                                  data-price=\"$price\"
-                                  data-qty=\"$qty\"
-                                  checked
-                                />
-                              </td>
-                            " : "<td class=\"web-only\"></td>";
+                          $sourceColumn = assigned($iaNo) ? "
+                            <td><a class=\"link\" title=\"$iaNo\">$iaNo</a></td>
+                          " : "<td>On Hand</td>";
 
-                            $sourceColumn = assigned($iaNo) ? "
-                              <td><a class=\"link\" title=\"$iaNo\">$iaNo</a></td>
-                            " : "<td>On Hand</td>";
+                          $modelColumns = $i == 0 ? "
+                            <td rowspan=\"" . count($models) . "\" title=\"$brandName\">
+                              $brandName
+                            </td>
+                            <td rowspan=\"" . count($models) . "\" title=\"$modelNo\">
+                              $modelNo
+                            </td>
+                            <td rowspan=\"" . count($models) . "\" title=\"$soNo\">
+                              <a class=\"link\" href=\"" . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?id[]=$soId\">$soNo</a>
+                            </td>
+                            <td rowspan=\"" . count($models) . "\" class=\"number\" title=\"$outstandingQty\">
+                            " . number_format($outstandingQty) . "
+                            </td>
+                          " : "";
 
-                            $modelColumns = $i == 0 ? "
-                              <td rowspan=\"" . count($models) . "\" title=\"$brandName\">
-                                $brandName
-                              </td>
-                              <td rowspan=\"" . count($models) . "\" title=\"$modelNo\">
-                                $modelNo
-                              </td>
-                              <td rowspan=\"" . count($models) . "\" title=\"$soNo\">
-                                <a class=\"link\" href=\"" . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?id[]=$soId\">$soNo</a>
-                              </td>
-                              <td rowspan=\"" . count($models) . "\" class=\"number\" title=\"$outstandingQty\">
-                              " . number_format($outstandingQty) . "
-                              </td>
-                            " : "";
-
-                            echo "
-                              <tr>
-                                $checkboxColumn
-                                $sourceColumn
-                                $modelColumns
-                                <td class=\"number\">
-                                  " . number_format($qty) . "
-                                  <input type=\"hidden\" name=\"ia_no[]\" value=\"$iaNo\" />
-                                  <input type=\"hidden\" name=\"so_no[]\" value=\"$soNo\" />
-                                  <input type=\"hidden\" name=\"brand_code[]\" value=\"$brandCode\" />
-                                  <input type=\"hidden\" name=\"model_no[]\" value=\"$modelNo\" />
-                                  <input type=\"hidden\" name=\"price[]\" value=\"$price\" />
-                                  <input type=\"hidden\" name=\"qty[]\" value=\"$qty\" />
-                                </td>
-                                <td class=\"number\">" . number_format($price, 2) . "</td>
-                                <td class=\"number\">" . number_format($subTotal, 2) . "</td>
-                              </tr>
-                            ";
-                          }
-
-                          $d++;
-                        }
-
-                        if ($discount > 0) {
                           echo "
                             <tr>
-                              <th class=\"web-only\"></th>
-                              <th></th>
-                              <th></th>
-                              <th></th>
-                              <th></th>
-                              <th></th>
-                              <th></th>
-                              <th></th>
-                              <th class=\"number\">" . number_format($totalAmt, 2) . "</th>
-                            </tr>
-                            <tr>
-                              <th class=\"web-only\"></th>
-                              <th></th>
-                              <th></th>
-                              <th></th>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td class=\"number\">Disc. $discount%</td>
-                              <td class=\"number\">" . number_format($totalAmt * $discount / 100, 2) . "</td>
+                              $checkboxColumn
+                              $sourceColumn
+                              $modelColumns
+                              <td class=\"number\">
+                                " . number_format($qty) . "
+                                <input type=\"hidden\" name=\"ia_no[]\" value=\"$iaNo\" />
+                                <input type=\"hidden\" name=\"so_no[]\" value=\"$soNo\" />
+                                <input type=\"hidden\" name=\"brand_code[]\" value=\"$brandCode\" />
+                                <input type=\"hidden\" name=\"model_no[]\" value=\"$modelNo\" />
+                                <input type=\"hidden\" name=\"price[]\" value=\"$price\" />
+                                <input type=\"hidden\" name=\"qty[]\" value=\"$qty\" />
+                              </td>
+                              <td class=\"number\">" . number_format($price, 2) . "</td>
+                              <td class=\"number\">" . number_format($subTotal, 2) . "</td>
                             </tr>
                           ";
                         }
 
-                        echo "
-                              <tr>
-                                <th class=\"web-only\"></th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                                <th class=\"number\">Total:</th>
-                                <th class=\"number\">" . number_format($totalOutstanding) . "</th>
-                                <th class=\"number\">" . number_format($totalAllottedQty) . "</th>
-                                <th></th>
-                                <th class=\"number\">" . number_format($totalAmt * $discountFactor, 2) . "</th>
-                              </tr>
-                            </tbody>
-                          </table>
-                        ";
-                      } else {
-                        echo "<div class=\"so-client-no-results\">No sales details</div>";
+                        $d++;
                       }
 
-                      echo "</form>";
+                      if ($discount > 0) {
+                        echo "
+                          <tr>
+                            <th class=\"web-only\"></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th class=\"number\">" . number_format($totalAmt, 2) . "</th>
+                          </tr>
+                          <tr>
+                            <th class=\"web-only\"></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td class=\"number\">Disc. $discount%</td>
+                            <td class=\"number\">" . number_format($totalAmt * $discount / 100, 2) . "</td>
+                          </tr>
+                        ";
+                      }
+
+                      echo "
+                            <tr>
+                              <th class=\"web-only\"></th>
+                              <th></th>
+                              <th></th>
+                              <th></th>
+                              <th class=\"number\">Total:</th>
+                              <th class=\"number\">" . number_format($totalOutstanding) . "</th>
+                              <th class=\"number\">" . number_format($totalAllottedQty) . "</th>
+                              <th></th>
+                              <th class=\"number\">" . number_format($totalAmt * $discountFactor, 2) . "</th>
+                            </tr>
+                          </tbody>
+                        </table>
+                      ";
+                    } else {
+                      echo "<div class=\"so-client-no-results\">No sales details</div>";
                     }
+
+                    echo "</form>";
                   }
                 }
               }
@@ -287,8 +288,6 @@
         }
       ?>
     </div>
-    <?php include_once ROOT_PATH . "includes/components/confirm-dialog/index.php"; ?>
-    <?php include_once ROOT_PATH . "includes/components/loading-screen/index.php"; ?>
     <script>
       function generateItems(formElement, deliveryOrder = true) {
         var discount = formElement.querySelector("input[name=\"discount\"]").value;

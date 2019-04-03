@@ -82,5 +82,7 @@
         }
       </script>
     <?php endif ?>
+    <?php include_once ROOT_PATH . "includes/components/confirm-dialog/index.php"; ?>
+    <?php include_once ROOT_PATH . "includes/components/loading-screen/index.php"; ?>
   </body>
 </html>

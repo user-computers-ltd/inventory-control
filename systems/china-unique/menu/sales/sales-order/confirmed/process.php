@@ -11,33 +11,36 @@
   if (assigned($action) && assigned($soIds) && count($soIds) > 0) {
     $queries = array();
 
-    if ($action == "cancel" || $action == "reverse") {
+    if ($action === "reverse" || $action === "delete") {
+      /* Delete all the sales order items from the existing saved delivery order. */
       array_push($queries, "
         DELETE a
         FROM
           `sdo_model` AS a
         LEFT JOIN
-          `so_header` AS b
-        ON a.so_no=b.so_no
+          `sdo_header` AS b
+        ON a.do_no=b.do_no
+        LEFT JOIN
+          `so_header` AS c
+        ON a.so_no=c.so_no
         WHERE
-          " . join(" OR ", array_map(function ($i) { return "b.id=\"$i\""; }, $soIds)) . "
+          b.status=\"SAVED\" AND
+          (" . join(" OR ", array_map(function ($i) { return "c.id=\"$i\""; }, $soIds)) . ")
       ");
+
+      /* Delete the delivery order if there is no items left. */
       array_push($queries, "
         DELETE a
         FROM
           `sdo_header`AS a
         LEFT JOIN
-          (SELECT
-            do_no     AS `do_no`,
-            COUNT(*)  AS `count`
-          FROM
-            `sdo_model`
-          GROUP BY
-            do_no) AS b
+          `sdo_model` AS b
         ON a.do_no=b.do_no
         WHERE
-          b.count=0
-        ");
+          b.model_no IS NULL
+      ");
+
+      /* Delete the allotments for the sales orders. */
       array_push($queries, "
         DELETE a
         FROM
@@ -49,22 +52,45 @@
           " . join(" OR ", array_map(function ($i) { return "b.id=\"$i\""; }, $soIds)) . "
       ");
 
-      $status = $action == "cancel" ? "CANCELLED" : "SAVED";
+      if ($action === "reverse") {
+        /* Reverse the sales order status back to saved. */
+        array_push($queries, "
+          UPDATE
+            `so_header`
+          SET status=\"SAVED\"
+          WHERE
+            " . join(" OR ", array_map(function ($i) { return "id=\"$i\""; }, $soIds)) . "
+        ");
+      } else if ($action === "delete") {
+        /* Delete the sales order items and their headers. */
+        array_push($queries, "
+          DELETE a FROM
+            `so_model` AS a
+          LEFT JOIN
+            `so_header` AS b
+          ON a.so_no=b.so_no
+          WHERE
+            " . join(" OR ", array_map(function ($i) { return "b.id=\"$i\""; }, $soIds)) . "
+        ");
+        array_push($queries, "
+          DELETE FROM
+            `so_header`
+          WHERE
+            " . join(" OR ", array_map(function ($i) { return "id=\"$i\""; }, $soIds)) . "
+        ");
+      }
 
-      array_push($queries, "
-        UPDATE
-          `so_header`
-        SET status=\"$status\"
-        WHERE
-          " . join(" OR ", array_map(function ($i) { return "id=\"$i\""; }, $soIds)) . "
-      ");
-    } else if ($action == "print") {
+      execute($queries);
+
+      if ($action === "reverse") {
+        header("Location: " . SALES_ORDER_SAVED_URL);
+        exit(0);
+      }
+    } else if ($action === "print") {
       $idParams = join("&", array_map(function ($i) { return "id[]=$i"; }, $soIds));
       header("Location: " . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?$idParams");
       exit(0);
     }
-
-    execute($queries);
   }
 
   $whereClause = "";

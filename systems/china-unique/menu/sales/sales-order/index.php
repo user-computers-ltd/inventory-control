@@ -201,7 +201,6 @@
           var focusedFieldName = null;
 
           var discountElement = document.querySelector("#discount");
-          var taxElement = document.querySelector("#tax");
           var currencyCodeElement = document.querySelector("#currency-code");
           var exchangeRateElement = document.querySelector("#exchange-rate");
           var tableBodyElement = document.querySelector("#so-models tbody");
@@ -303,6 +302,11 @@
                     + "required "
                     + (modelPrice !== undefined ? "data-duplicate=\"true\"" : "")
                   + "/>"
+                  + "<input "
+                    + "type=\"hidden\" "
+                    + "value=\"" + (soModel["qty"] - soModel["qty_delivered"]) + "\" "
+                    + "name=\"qty_outstanding[]\" "
+                  + "/>"
                 + "</td>"
                 + "<td class=\"number\">"
                   + "<input "
@@ -317,11 +321,11 @@
                     + "onblur=\"onFieldBlurred()\" "
                     + "onkeydown=\"onPriceKeyDown(event, " + i + ")\" "
                     + "required "
-                    + (modelPrice !== undefined ? "readonly" : "")
+                    + (modelPrice !== undefined || ongoingDelivery ? "readonly" : "")
                   + "/>"
                 + "</td>"
                 + "<td class=\"total-amount number\">" + soModel["total_amount"].toFixed(2) + "</td>"
-                + "<td><div class=\"remove\" onclick=\"removeSalesModel(" + i + ")\">×</div></td>"
+                + "<td>" + (ongoingDelivery ? "" : "<div class=\"remove\" onclick=\"removeSalesModel(" + i + ")\">×</div>") + "</td>"
                 + "</tr>";
 
               newRowElement.innerHTML = rowInnerHTML;
@@ -376,10 +380,10 @@
             soModel["qty_on_order"] = parseFloat(model["qty_on_order"]) || 0;
           }
 
-          function updateQuantity (index, qty = 0) {
+          function updateQuantity(index, qty = 0) {
             var soModel = soModels[index];
 
-            soModel["qty"] = Math.max(0, parseFloat(qty));
+            soModel["qty"] = Math.max(soModel["qty_delivered"], parseFloat(qty));
 
             if (soModel["price"]) {
               soModel["total_amount"] = soModel["price"] * soModel["qty"];

@@ -13,6 +13,7 @@
 
     $whereClause = join(" OR ", array_map(function ($warehouseCode, $soNo, $brandCode, $modelNo) {
       return "
+        ia_no=\"\" AND
         warehouse_code=\"$warehouseCode\" AND
         so_no=\"$soNo\" AND
         brand_code=\"$brandCode\" AND
@@ -47,6 +48,7 @@
     execute($queries);
 
     header("Location: " . SALES_ALLOTMENT_REPORT_CUSTOMER_URL);
+    exit(0);
   }
 
   $filterWarehouseCodes = $_GET["filter_warehouse_code"];

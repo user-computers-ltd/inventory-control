@@ -371,10 +371,10 @@
           var doNo = allotment["do_no"] ? allotment["do_no"] : "";
           var outstandingQty = parseFloat(soModels[brandCode][modelNo][soNo]["qty_outstanding"]);
           var availableQty = Math.floor(parseFloat(stockModels[warehouseCode][brandCode][modelNo]["qty"]) * (1 - reservePercentage / 100));
-          var otherAllotedIaQty = getOtherWarehouseAllottedQty(warehouseCode, brandCode, modelNo, soNo);
+          var otherAllotedWarehouseQty = getOtherWarehouseAllottedQty(warehouseCode, brandCode, modelNo, soNo);
           var otherAllotedSoQty = getOtherSoAllottedQty(warehouseCode, brandCode, modelNo, soNo);
           var allottableIaQty = availableQty - otherAllotedSoQty;
-          var allottableSoQty = outstandingQty - otherAllotedIaQty;
+          var allottableSoQty = outstandingQty - otherAllotedWarehouseQty;
           var maxQty = Math.min(allottableIaQty, allottableSoQty);
           allotQty = Math.min(maxQty, allotQty);
 
@@ -467,8 +467,8 @@
 
             var soNo = allotQtyElement.dataset.so_no;
             var outstandingQty = parseFloat(soModels[brandCode][modelNo][soNo]["qty_outstanding"]);
-            var otherAllotedIaQty = getOtherWarehouseAllottedQty(warehouseCode, brandCode, modelNo, soNo);
-            var allottableSoQty = outstandingQty - otherAllotedIaQty;
+            var otherAllotedWarehouseQty = getOtherWarehouseAllottedQty(warehouseCode, brandCode, modelNo, soNo);
+            var allottableSoQty = outstandingQty - otherAllotedWarehouseQty;
 
             allotments[warehouseCode][brandCode][modelNo][soNo]["qty"] = allottableSoQty;
 
@@ -520,15 +520,15 @@
             var soNo = allotQtyElement.dataset.so_no;
 
             var outstandingQty = parseFloat(soModels[brandCode][modelNo][soNo]["qty_outstanding"]);
-            var otherAllotedIaQty = getOtherWarehouseAllottedQty(warehouseCode, brandCode, modelNo, soNo);
-            var allottableSoQty = outstandingQty - otherAllotedIaQty;
+            var otherAllotedWarehouseQty = getOtherWarehouseAllottedQty(warehouseCode, brandCode, modelNo, soNo);
+            var allottableSoQty = outstandingQty - otherAllotedWarehouseQty;
             var totalModelAllottableQty = 0;
             var soNos = Object.keys(soModels[brandCode][modelNo]);
 
             for (var k = 0; k < soNos.length; k++) {
               var outstandingQty2 = parseFloat(soModels[brandCode][modelNo][soNos[k]]["qty_outstanding"]);
-              var otherAllotedIaQty2 = getOtherWarehouseAllottedQty(warehouseCode, brandCode, modelNo, soNos[k]);
-              var allottableSoQty2 = outstandingQty2 - otherAllotedIaQty2;
+              var otherAllotedWarehouseQty2 = getOtherWarehouseAllottedQty(warehouseCode, brandCode, modelNo, soNos[k]);
+              var allottableSoQty2 = outstandingQty2 - otherAllotedWarehouseQty2;
 
               totalModelAllottableQty += allottableSoQty2;
             }

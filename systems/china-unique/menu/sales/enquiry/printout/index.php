@@ -58,7 +58,7 @@
                     <th>品牌</th>
                     <th>型號</th>
                     <th class="number">數量</th>
-                    <th class="number">可提供數量</th>
+                    <th class="number">可交貨數量</th>
                     <?php if ($showPrice) : ?>
                       <th class="number">含稅單價</th>
                       <th class="number">含稅總金額</th>

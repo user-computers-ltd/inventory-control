@@ -78,11 +78,11 @@
       </form>
       <?php if (count($soHeaders) > 0) : ?>
         <form id="sales-order-form" method="post">
-          <button type="submit" name="action" value="cancel" style="display: none;"></button>
-          <button type="button" class="cancel-button web-only" style="display: none;" onclick="confirmCancel(event)">Cancel</button>
-          <button type="submit" name="action" value="print" class="web-only">Print</button>
           <button type="submit" name="action" value="reverse" style="display: none;"></button>
           <button type="button" class="reverse-button web-only" onclick="confirmReverse(event)">Reverse</button>
+          <button type="submit" name="action" value="print" class="web-only">Print</button>
+          <button type="submit" name="action" value="delete" style="display: none;"></button>
+          <button type="button" class="delete-button web-only" onclick="confirmDelete(event)">Delete</button>
           <table id="so-results">
             <colgroup>
               <col class="web-only" style="width: 30px">
@@ -169,16 +169,14 @@
             </tbody>
           </table>
         </form>
-        <?php include_once ROOT_PATH . "includes/components/confirm-dialog/index.php"; ?>
-        <?php include_once ROOT_PATH . "includes/components/loading-screen/index.php"; ?>
         <script>
           var salesOrderFormElement = document.querySelector("#sales-order-form");
-          var cancelButtonElement = salesOrderFormElement.querySelector("button[value=\"cancel\"]");
-          var cancelLabelButtonElement = salesOrderFormElement.querySelector("button.cancel-button");
+          var deleteButtonElement = salesOrderFormElement.querySelector("button[value=\"delete\"]");
+          var deleteLabelButtonElement = salesOrderFormElement.querySelector("button.delete-button");
           var reverseButtonElement = salesOrderFormElement.querySelector("button[value=\"reverse\"]");
           var reverseLabelButtonElement = salesOrderFormElement.querySelector("button.reverse-button");
 
-          function confirmCancel(event) {
+          function confirmDelete(event) {
             var checkedItems = salesOrderFormElement.querySelectorAll("input[name=\"so_id[]\"]:checked");
 
             if (checkedItems.length > 0) {
@@ -191,9 +189,9 @@
 
               listElement += "</ul>";
 
-              showConfirmDialog("<b>Are you sure you want to cancel to following?</b><br/><br/>" + listElement, function () {
-                cancelButtonElement.click();
-                setLoadingMessage("Canceling...")
+              showConfirmDialog("<b>Are you sure you want to delete to following?</b><br/><br/>" + listElement, function () {
+                deleteButtonElement.click();
+                setLoadingMessage("Deleting...")
                 toggleLoadingScreen(true);
               });
             }
@@ -221,10 +219,8 @@
           }
 
           function onUpdateSelection() {
-            var disableCancel = salesOrderFormElement.querySelectorAll("input[name=\"so_id[]\"][data-completed=\"true\"]:checked").length > 0;
-            var disableReverse = salesOrderFormElement.querySelectorAll("input[name=\"so_id[]\"][data-ongoing=\"true\"]:checked").length > 0;
-            toggleClass(cancelLabelButtonElement, "hide", disableCancel);
-            toggleClass(reverseLabelButtonElement, "hide", disableReverse);
+            var disableDelete = salesOrderFormElement.querySelectorAll("input[name=\"so_id[]\"][data-ongoing=\"true\"]:checked").length > 0;
+            toggleClass(deleteLabelButtonElement, "hide", disableDelete);
           }
 
           function onOutstandingOnlyChanged(event) {

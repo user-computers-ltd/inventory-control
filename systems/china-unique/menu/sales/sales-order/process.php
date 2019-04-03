@@ -15,6 +15,7 @@
   $modelNos = $_POST["model_no"];
   $prices = $_POST["price"];
   $qtys = $_POST["qty"];
+  $qtyOutstandings = $_POST["qty_outstanding"];
 
   /* If a form is submitted, update or insert the sales order. */
   if (
@@ -30,7 +31,8 @@
     assigned($brandCodes) &&
     assigned($modelNos) &&
     assigned($prices) &&
-    assigned($qtys)
+    assigned($qtys) &&
+    assigned($qtyOutstandings)
   ) {
     $queries = array();
 
@@ -40,9 +42,7 @@
       array_push($queries, "DELETE FROM `so_header` WHERE id=\"$id\"");
     }
 
-    /* If the status is not delete, insert a new sales order. */
-    if ($status != "DELETED") {
-
+    if ($status === "CONFIRMED" || $status === "SAVED") {
       $items = array();
 
       for ($i = 0; $i < count($brandCodes); $i++) {
@@ -52,17 +52,19 @@
 
         if (!isset($arrayPointer[$model])) {
           $arrayPointer[$model] = array(
-            "index"       => $i,
-            "brand_code"  => $brandCodes[$i],
-            "model_no"    => $modelNos[$i],
-            "price"       => $prices[$i],
-            "qty"         => 0,
-            "occurrence"  => array()
+            "index"               => $i,
+            "brand_code"          => $brandCodes[$i],
+            "model_no"            => $modelNos[$i],
+            "price"               => $prices[$i],
+            "qty"                 => 0,
+            "qty_outstanding"     => 0,
+            "occurrence"          => array()
           );
         }
         $arrayPointer = &$arrayPointer[$model];
 
         $arrayPointer["qty"] = $arrayPointer["qty"] + $qtys[$i];
+        $arrayPointer["qty_outstanding"] = $arrayPointer["qty_outstanding"] + $qtyOutstandings[$i];
         array_push($arrayPointer["occurrence"], $qtys[$i]);
       }
 
@@ -74,9 +76,10 @@
         $modelNo = $item["model_no"];
         $price = $item["price"];
         $qty = $item["qty"];
+        $qtyOutstanding = $item["qty_outstanding"];
         $occurrence = join(",", $item["occurrence"]);
 
-        array_push($values, "(\"$soNo\", \"$i\", \"$brandCode\", \"$modelNo\", \"$price\", \"$qty\", \"$qty\", \"$occurrence\")");
+        array_push($values, "(\"$soNo\", \"$i\", \"$brandCode\", \"$modelNo\", \"$price\", \"$qty\", \"$qtyOutstanding\", \"$occurrence\")");
       }
 
       if (count($values) > 0) {
@@ -106,15 +109,15 @@
               \"$remarks\"
             )
       ");
-    } else {
-      $queries = concat($queries, onDeleteSalesOrder($soNo));
     }
 
     execute($queries);
 
-    $id = query("SELECT id FROM `so_header` WHERE so_no=\"$soNo\"")[0]["id"];
-    $_SESSION["back_url"] = SALES_ORDER_URL . "?id=$id";
-    header("Location: " . SALES_ORDER_SAVED_URL);
+    if ($status === "CONFIRMED") {
+      header("Location: " . SALES_ALLOTMENT_STOCK_URL . "?filter_so_no[]=$soNo");
+    } else {
+      header("Location: " . SALES_ORDER_SAVED_URL);
+    }
   }
 
   $debtors = query("SELECT code, english_name AS name FROM `debtor` ORDER BY code ASC");
@@ -205,16 +208,22 @@
 
       foreach ($results as $soModel) {
         $occurrences = explode(",", $soModel["occurrence"]);
+        $delivered = $soModel["qty_delivered"];
 
         foreach ($occurrences as $occurrence) {
           array_push($soModels, array(
-            "brand_code"  => $soModel["brand_code"],
-            "model_no"    => $soModel["model_no"],
-            "price"       => $soModel["price"],
-            "qty"         => $occurrence
+            "brand_code"    => $soModel["brand_code"],
+            "model_no"      => $soModel["model_no"],
+            "price"         => $soModel["price"],
+            "qty"           => $occurrence,
+            "qty_delivered" => max(0, min($occurrence, $delivered))
           ));
+
+          $delivered = $delivered - $occurrence;
         }
       }
+
+      consoleLog($soModels);
     }
   }
 
@@ -239,10 +248,11 @@
         $qty = $qtys[$i];
 
         array_push($soModels, array(
-          "brand_code"  => $brandCode,
-          "model_no"    => $modelNo,
-          "price"       => $price,
-          "qty"         => $qty
+          "brand_code"    => $brandCode,
+          "model_no"      => $modelNo,
+          "price"         => $price,
+          "qty"           => $qty,
+          "qty_delivered" => 0
         ));
       }
     }

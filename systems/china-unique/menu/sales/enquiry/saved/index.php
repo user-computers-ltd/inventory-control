@@ -124,8 +124,6 @@
             </tbody>
           </table>
         </form>
-        <?php include_once ROOT_PATH . "includes/components/confirm-dialog/index.php"; ?>
-        <?php include_once ROOT_PATH . "includes/components/loading-screen/index.php"; ?>
         <script>
           var enquiryFormElement = document.querySelector("#enquiry-form");
           var deleteButtonElement = enquiryFormElement.querySelector("button[value=\"delete\"]");

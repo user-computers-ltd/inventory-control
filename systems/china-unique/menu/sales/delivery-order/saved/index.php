@@ -63,7 +63,7 @@
       <?php if (count($doHeaders) > 0) : ?>
         <form id="delivery-form" method="post">
           <button type="submit" name="action" value="post" style="display: none;"></button>
-          <button type="button" onclick="confirmPost(event)" class="web-only">Post</button>
+          <button type="button" onclick="confirmPost(event)" class="post-button web-only">Post</button>
           <button type="submit" name="action" value="print" class="web-only">Print</button>
           <button type="submit" name="action" value="delete" style="display: none;"></button>
           <button type="button" onclick="confirmDelete(event)" class="web-only">Delete</button>
@@ -73,11 +73,10 @@
               <col style="width: 80px">
               <col>
               <col>
-              <col style="width: 60px">
+              <col style="width: 80px">
+              <col style="width: 80px">
               <col style="width: 80px">
               <col style="width: 60px">
-              <col style="width: 60px">
-              <col style="width: 80px">
               <col style="width: 80px">
             </colgroup>
             <thead>
@@ -87,12 +86,11 @@
                 <th>Date</th>
                 <th>Order No.</th>
                 <th>Client</th>
+                <th>Item Status</th>
                 <th>Price Category</th>
                 <th class="number">Total Qty</th>
                 <th class="number">Discount</th>
-                <th class="number">Currency</th>
-                <th class="number">Total Amt</th>
-                <th class="number"><?php echo $InBaseCurrency; ?></th>
+                <th class="number">Total Amt <?php echo $InBaseCurrency; ?></th>
               </tr>
             </thead>
             <tbody>
@@ -106,11 +104,10 @@
                   $date = $doHeader["date"];
                   $debtor = $doHeader["debtor"];
                   $doNo = $doHeader["do_no"];
+                  $itemStatus = $doHeader["item_status"];
                   $priceCategory = $doHeader["price_category"];
                   $qty = $doHeader["qty"];
                   $discount = $doHeader["discount"];
-                  $currency = $doHeader["currency"];
-                  $totalAmt = $doHeader["total_amt"];
                   $totalAmtBase = $doHeader["total_amt_base"];
 
                   $totalQty += $qty;
@@ -118,15 +115,16 @@
 
                   echo "
                     <tr>
-                      <td class=\"web-only\"><input type=\"checkbox\" name=\"do_id[]\" data-do_no=\"$doNo\" value=\"$doId\" /></td>
+                      <td class=\"web-only\">
+                        <input type=\"checkbox\" name=\"do_id[]\" data-do_no=\"$doNo\" data-item_status=\"$itemStatus\"value=\"$doId\" onchange=\"onUpdateSelection()\" />
+                      </td>
                       <td title=\"$date\">$date</td>
                       <td title=\"$doNo\"><a class=\"link\" href=\"" . SALES_DELIVERY_ORDER_URL . "?id=$doId\">$doNo</a></td>
                       <td title=\"$debtor\">$debtor</td>
+                      <td title=\"$itemStatus\">$itemStatus</td>
                       <td title=\"$priceCategory\">$priceCategory</td>
                       <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
                       <td title=\"$discount\" class=\"number\">" . number_format($discount, 2) . "%</td>
-                      <td title=\"$currency\" class=\"number\">$currency</td>
-                      <td title=\"$totalAmt\" class=\"number\">" . number_format($totalAmt, 2) . "</td>
                       <td title=\"$totalAmtBase\" class=\"number\">" . number_format($totalAmtBase, 2) . "</td>
                     </tr>
                   ";
@@ -137,21 +135,19 @@
                 <th></th>
                 <th></th>
                 <th></th>
+                <th></th>
                 <th class="number">Total:</th>
                 <th class="number"><?php echo number_format($totalQty); ?></th>
-                <th></th>
-                <th></th>
                 <th></th>
                 <th class="number"><?php echo number_format($totalAmtBaseSum, 2); ?></th>
               </tr>
             </tbody>
           </table>
         </form>
-        <?php include_once ROOT_PATH . "includes/components/confirm-dialog/index.php"; ?>
-        <?php include_once ROOT_PATH . "includes/components/loading-screen/index.php"; ?>
         <script>
           var deliveryFormElement = document.querySelector("#delivery-form");
           var postButtonElement = deliveryFormElement.querySelector("button[value=\"post\"]");
+          var postLabelButtonElement = deliveryFormElement.querySelector("button.post-button");
           var deleteButtonElement = deliveryFormElement.querySelector("button[value=\"delete\"]");
 
           function confirmPost(event) {
@@ -192,6 +188,14 @@
                 toggleLoadingScreen(true);
               });
             }
+          }
+
+          function onUpdateSelection() {
+            var provisionalSelector = "input[name=\"do_id[]\"][data-item_status=\"provisional\"]:checked";
+            var incomingSelector = "input[name=\"do_id[]\"][data-item_status=\"incoming\"]:checked";
+            var disablePost = deliveryFormElement.querySelectorAll(provisionalSelector + ", " + incomingSelector).length > 0;
+
+            toggleClass(postLabelButtonElement, "hide", disablePost);
           }
         </script>
       <?php else : ?>

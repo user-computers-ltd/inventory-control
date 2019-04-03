@@ -49,9 +49,9 @@
       COUNT(DISTINCT b.debtor_code)                                                               AS `client_count`,
       SUM(a.qty_outstanding)                                                                      AS `qty_outstanding`,
       IFNULL(e.qty_on_hand, 0)                                                                    AS `qty_on_hand`,
-      IFNULL(f.qty_on_order, 0)                                                                   AS `qty_on_order`,
       IFNULL(g.qty_on_reserve, 0)                                                                 AS `qty_on_reserve`,
       GREATEST(0, IFNULL(e.qty_on_hand, 0) - IFNULL(g.qty_on_reserve, 0))                         AS `qty_available`,
+      IFNULL(f.qty_on_order, 0)                                                                   AS `qty_on_order`,
       GREATEST(0, SUM(a.qty_outstanding) - IFNULL(e.qty_on_hand, 0) - IFNULL(f.qty_on_order, 0))  AS `qty_to_order`,
       IFNULL(h.qty_sold, 0)                                                                       AS `qty_sold`
     FROM
@@ -95,7 +95,8 @@
         `sdo_header` AS h
       ON m.do_no=h.do_no
       WHERE
-        h.status=\"SAVED\"
+        h.status=\"SAVED\" AND
+        m.ia_no=\"\"
       GROUP BY
         m.brand_code, m.model_no) AS g
     ON a.brand_code=g.brand_code AND a.model_no=g.model_no
@@ -275,9 +276,9 @@
                 <tr>
                   <th class="number">SO Outstanding</th>
                   <th class="number">On Hand</th>
-                  <th class="number">On Order</th>
-                  <th class="number">On Reserve</th>
+                  <th class="number">Reserved</th>
                   <th class="number">Available</th>
+                  <th class="number">On Order</th>
                   <th class="number">To Order</th>
                   <th class="number">Sales</th>
                 </tr>
@@ -293,9 +294,9 @@
                     $clientCount = $soModel["client_count"];
                     $outstandingQty = $soModel["qty_outstanding"];
                     $onHandQty = $soModel["qty_on_hand"];
-                    $onOrderQty = $soModel["qty_on_order"];
                     $onReserveQty = $soModel["qty_on_reserve"];
                     $availableQty = $soModel["qty_available"];
+                    $onOrderQty = $soModel["qty_on_order"];
                     $toOrderQty = $soModel["qty_to_order"];
                     $soldQty = $soModel["qty_sold"];
 
@@ -311,9 +312,9 @@
                         <td title=\"$clientCount\" class=\"number\">" . number_format($clientCount) . "</td>
                         <td title=\"$outstandingQty\" class=\"number\">" . number_format($outstandingQty) . "</td>
                         <td title=\"$onHandQty\" class=\"number\">" . number_format($onHandQty) . "</td>
-                        <td title=\"$onOrderQty\" class=\"number\">" . number_format($onOrderQty) . "</td>
                         <td title=\"$onReserveQty\" class=\"number\">" . number_format($onReserveQty) . "</td>
                         <td title=\"$availableQty\" class=\"number\">" . number_format($availableQty) . "</td>
+                        <td title=\"$onOrderQty\" class=\"number\">" . number_format($onOrderQty) . "</td>
                         <td title=\"$toOrderQty\" class=\"number\">" . number_format($toOrderQty) . "</td>
                         <td title=\"$soldQty\" class=\"number\">" . number_format($soldQty) . "</td>
                       </tr>
