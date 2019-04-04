@@ -378,6 +378,7 @@
             soModel["total_amount"] = (soModel["qty"] || 0) * soModel["price"];
             soModel["qty_on_hand"] = parseFloat(model["qty_on_hand"]) || 0;
             soModel["qty_on_order"] = parseFloat(model["qty_on_order"]) || 0;
+            soModel["qty_delivered"] = soModel["qty_delivered"] || 0;
           }
 
           function updateQuantity(index, qty = 0) {
