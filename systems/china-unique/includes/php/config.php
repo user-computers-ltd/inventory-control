@@ -23,7 +23,7 @@
     A2210
   ");
   define("COMPANY_TEL", "0755 2360 4173");
-  define("COMPANY_TAX", 16);
+  define("COMPANY_TAX", 13);
   define("COMPANY_CURRENCY", "RMB");
   define("MENU_DIRECTORY", ROOT_PATH . "systems/china-unique/menu");
   date_default_timezone_set("Asia/Taipei");
