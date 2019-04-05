@@ -41,6 +41,12 @@
       b.name                            AS `brand_name`,
       a.model_no                        AS `model_no`,
       a.cost_average                    AS `cost_average`,
+      a.cost_pri                        AS `cost_normal`,
+      a.cost_sec                        AS `cost_special`,
+      a.retail_normal                   AS `price_normal`,
+      a.retail_special                  AS `price_special`,
+      a.wholesale_special               AS `price_end_user`,
+      a.wholesale_normal                AS `price_wholesale`,
       IFNULL(c.qty_on_hand, 0)          AS `qty_on_hand`,
       IFNULL(d.qty_on_hand_reserve, 0)  AS `qty_on_hand_reserve`,
       IFNULL(e.qty_on_order, 0)         AS `qty_on_order`,
@@ -236,29 +242,19 @@
           <thead>
             <tr></tr>
             <tr>
-              <th rowspan="2">Brand</th>
-              <th rowspan="2">Model No.</th>
-              <th rowspan="2" class="number">Average Cost</th>
-              <th colspan="6" class="quantity">Quantity</th>
-            </tr>
-            <tr>
-              <th class="number">On Hand</th>
-              <th class="number">Reserved</th>
-              <th class="number">Available</th>
-              <th class="number">On Order</th>
-              <th class="number">On Demand</th>
-              <th class="number">To Order</th>
+              <th>Brand</th>
+              <th>Model No.</th>
+              <th class="number">Average Cost</th>
+              <th class="number">Normal Cost</th>
+              <th class="number">Special Cost</th>
+              <th class="number">Normal Price</th>
+              <th class="number">Special Price</th>
+              <th class="number">End User Price</th>
+              <th class="number">Wholesale Price</th>
             </tr>
           </thead>
           <tbody>
             <?php
-              $totalOnHand = 0;
-              $totalOnReserve = 0;
-              $totalAvailable = 0;
-              $totalOnOrder = 0;
-              $totalOnDemand = 0;
-              $totalToOrder = 0;
-
               for ($i = 0; $i < count($results); $i++) {
                 $model = $results[$i];
                 $id = $model["id"];
@@ -266,46 +262,28 @@
                 $brandName = $model["brand_name"];
                 $modelNo = $model["model_no"];
                 $costAverage = $model["cost_average"];
-                $qtyOnHand = $model["qty_on_hand"];
-                $qtyOnReserve = $model["qty_on_hand_reserve"];
-                $qtyAvailable = max(0, $qtyOnHand - $qtyOnReserve);
-                $qtyOnOrder = $model["qty_on_order"];
-                $qtyOnDemand = $model["qty_on_demand"];
-                $qtyToOrder = max(0, $qtyOnDemand - $qtyOnHand - $qtyOnOrder);
-
-                $totalOnHand += $qtyOnHand;
-                $totalOnReserve += $qtyOnReserve;
-                $totalAvailable += $qtyAvailable;
-                $totalOnOrder += $qtyOnOrder;
-                $totalOnDemand += $qtyOnDemand;
-                $totalToOrder += $qtyToOrder;
+                $costNormal = $model["cost_normal"];
+                $costSpecial = $model["cost_special"];
+                $priceNormal = $model["price_normal"];
+                $priceSpecial = $model["price_special"];
+                $priceEndUser = $model["price_end_user"];
+                $priceWholesale = $model["price_wholesale"];
 
                 echo "
                   <tr>
                     <td title=\"$brandCode\">$brandCode - $brandName</td>
                     <td title=\"$modelNo\"><a href=\"" . DATA_MODEL_MODEL_DETAIL_URL . "?id=$id\">$modelNo</a></td>
                     <td class=\"number\" title=\"$costAverage\">" . number_format($costAverage, 2) . "</td>
-                    <td class=\"number\" title=\"$qtyOnHand\">" . number_format($qtyOnHand) . "</td>
-                    <td class=\"number\" title=\"$qtyOnReserve\">" . number_format($qtyOnReserve) . "</td>
-                    <td class=\"number\" title=\"$qtyAvailable\">" . number_format($qtyAvailable) . "</td>
-                    <td class=\"number\" title=\"$qtyOnOrder\">" . number_format($qtyOnOrder) . "</td>
-                    <td class=\"number\" title=\"$qtyOnDemand\">" . number_format($qtyOnDemand) . "</td>
-                    <td class=\"number\" title=\"$qtyToOrder\">" . ($qtyToOrder > 0 ? number_format($qtyToOrder) : "-") . "</td>
+                    <td class=\"number\" title=\"$costNormal\">" . number_format($costNormal, 2) . "</td>
+                    <td class=\"number\" title=\"$costSpecial\">" . number_format($costSpecial, 2) . "</td>
+                    <td class=\"number\" title=\"$priceNormal\">" . number_format($priceNormal, 2) . "</td>
+                    <td class=\"number\" title=\"$priceSpecial\">" . number_format($priceSpecial, 2) . "</td>
+                    <td class=\"number\" title=\"$priceEndUser\">" . number_format($priceEndUser, 2) . "</td>
+                    <td class=\"number\" title=\"$priceWholesale\">" . number_format($priceWholesale, 2) . "</td>
                   </tr>
                 ";
               }
             ?>
-            <tr>
-              <th></th>
-              <th></th>
-              <th class="number">Total:</th>
-              <th class="number" title="<?php echo $totalOnHand; ?>"><?php echo number_format($totalOnHand); ?></th>
-              <th class="number" title="<?php echo $totalOnReserve; ?>"><?php echo number_format($totalOnReserve); ?></th>
-              <th class="number" title="<?php echo $totalAvailable; ?>"><?php echo number_format($totalAvailable); ?></th>
-              <th class="number" title="<?php echo $totalOnOrder; ?>"><?php echo number_format($totalOnOrder); ?></th>
-              <th class="number" title="<?php echo $totalOnDemand; ?>"><?php echo number_format($totalOnDemand); ?></th>
-              <th class="number" title="<?php echo $totalToOrder; ?>"><?php echo number_format($totalToOrder); ?></th>
-            </tr>
           </tbody>
         </table>
       <?php else : ?>
