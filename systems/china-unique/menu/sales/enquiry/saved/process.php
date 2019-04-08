@@ -14,10 +14,10 @@
     $modelWhereClause = join(" OR ", array_map(function ($i) { return "b.id=\"$i\""; }, $enquiryIds));
     $printoutParams = join("&", array_map(function ($i) { return "id[]=$i"; }, $enquiryIds));
 
-    if ($action == "delete") {
+    if ($action === "delete") {
       array_push($queries, "DELETE a FROM `enquiry_model` AS a LEFT JOIN `enquiry_header` AS b ON a.enquiry_no=b.enquiry_no WHERE $modelWhereClause");
       array_push($queries, "DELETE FROM `enquiry_header` WHERE $headerWhereClause");
-    } else if ($action == "print") {
+    } else if ($action === "print") {
       header("Location: " . SALES_ENQUIRY_PRINTOUT_URL . "?$printoutParams");
       exit(0);
     }

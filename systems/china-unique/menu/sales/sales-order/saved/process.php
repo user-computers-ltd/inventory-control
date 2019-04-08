@@ -12,7 +12,7 @@
     if ($action === "confirm" || $action === "delete") {
       $queries = array();
 
-      if ($action == "delete") {
+      if ($action === "delete") {
         array_push($queries, "
           DELETE a FROM
             `so_model` AS a
@@ -28,7 +28,7 @@
           WHERE
             " . join(" OR ", array_map(function ($i) { return "id=\"$i\""; }, $soIds)) . "
         ");
-      } else if ($action == "confirm") {
+      } else if ($action === "confirm") {
         array_push($queries, "
           UPDATE
             `so_header`
@@ -41,14 +41,13 @@
 
       execute($queries);
 
-      if ($action === "confirm") {        
+      if ($action === "confirm") {
         header("Location: " . SALES_ORDER_CONFIRMED_URL);
         exit(0);
       }
     } else if ($action === "print") {
-      header("Location:
-      " . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?
-      " . join("&", array_map(function ($i) { return "id[]=$i"; }, $soIds)));
+      $soIdParams = join("&", array_map(function ($i) { return "id[]=$i"; }, $soIds));
+      header("Location: " . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?$soIdParams");
       exit(0);
     }
   }
