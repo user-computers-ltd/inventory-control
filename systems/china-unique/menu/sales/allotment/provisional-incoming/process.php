@@ -46,7 +46,7 @@
 
     execute($queries);
 
-    header("Location: " . SALES_ALLOTMENT_REPORT_PROVISIONAL_CUSTOMER_URL);
+    header("Location: " . SALES_ALLOTMENT_REPORT_CUSTOMER_URL);
   }
 
   $filterIaNos = $_GET["filter_ia_no"];
