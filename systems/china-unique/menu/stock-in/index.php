@@ -55,7 +55,7 @@
               </td>
             </tr>
             <tr class="option-row">
-              <td>Creditor:</td>
+              <td>Client:</td>
               <td>
                 <select id="creditor-code" class="option-field" name="creditor_code" required <?php echo $useDebtor ? "disabled hidden" : ""; ?>>
                   <?php

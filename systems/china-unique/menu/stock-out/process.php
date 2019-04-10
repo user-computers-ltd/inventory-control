@@ -10,7 +10,6 @@
   $netAmount = isset($_POST["net_amount"]) ? $_POST["net_amount"] : 0;
   $discount = isset($_POST["discount"]) ? $_POST["discount"] : 0;
   $tax = $_POST["tax"];
-  $invoiceNo = $_POST["invoice_no"];
   $remarks = $_POST["remarks"];
   $status = $_POST["status"];
   $brandCodes = $_POST["brand_code"];
@@ -24,6 +23,7 @@
     assigned($stockOutDate) &&
     assigned($transactionCode) &&
     assigned($warehouseCode) &&
+    assigned($debtorCode) &&
     assigned($tax) &&
     assigned($status) &&
     assigned($brandCodes) &&
@@ -39,7 +39,7 @@
     }
 
     /* If the status is not delete, insert a new stock out voucher. */
-    if ($status != "DELETED") {
+    if ($status !== "DELETED") {
 
       $values = array();
 
@@ -75,7 +75,6 @@
               net_amount,
               discount,
               tax,
-              invoice_no,
               remarks,
               status
             )
@@ -91,13 +90,12 @@
               \"$netAmount\",
               \"$discount\",
               \"$tax\",
-              \"$invoiceNo\",
               \"$remarks\",
               \"$status\"
             )
       ");
 
-      if (assigned($id) && $status == "POSTED") {
+      if (assigned($id) && $status === "POSTED") {
         $queries = concat($queries, onPostStockOutVoucher($stockOutNo));
       }
     }
@@ -188,7 +186,6 @@
       $netAmount = $stockOutHeader["net_amount"];
       $discount = $stockOutHeader["discount"];
       $tax = $stockOutHeader["tax"];
-      $invoiceNo = $stockOutHeader["invoice_no"];
       $remarks = $stockOutHeader["remarks"];
       $status = $stockOutHeader["status"];
       $stockOutModels = query("
@@ -223,4 +220,6 @@
     $status = "DRAFT";
     $stockOutModels = array();
   }
+
+  $useCreditor = $transactionCode === "S3";
 ?>

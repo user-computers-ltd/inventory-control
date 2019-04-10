@@ -9,7 +9,7 @@
   if (assigned($action) && assigned($stockInIds) && count($stockInIds) > 0) {
     $printoutParams = join("&", array_map(function ($i) { return "id[]=$i"; }, $stockInIds));
 
-    if ($action == "print") {
+    if ($action === "print") {
       header("Location: " . STOCK_IN_PRINTOUT_URL . "?$printoutParams");
       exit(0);
     }

@@ -144,17 +144,11 @@
               <div class="stock-out-models-no-results">No models</div>
             <?php endif ?>
             <table class="stock-out-footer">
-              <?php if (assigned($stockOutHeader["invoice_no"])) : ?>
-                <tr>
-                  <td>Invoice No.:</td>
-                  <td><?php echo $stockOutHeader["invoice_no"]; ?></td>
-                </tr>
-              <?php endif ?>
               <?php if (assigned($stockOutHeader["remarks"])) : ?>
-              <tr>
-                <td>Remarks:</td>
-                <td><?php echo $stockOutHeader["remarks"]; ?></td>
-              </tr>
+                <tr>
+                  <td>Remarks:</td>
+                  <td><?php echo $stockOutHeader["remarks"]; ?></td>
+                </tr>
               <?php endif ?>
             </table>
           </div>

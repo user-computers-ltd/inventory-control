@@ -39,7 +39,7 @@
     }
 
     /* If the status is not delete, insert a new stock in voucher. */
-    if ($status != "DELETED") {
+    if ($status !== "DELETED") {
 
       $values = array();
 
@@ -95,7 +95,7 @@
             )
       ");
 
-      if (assigned($id) && $status == "POSTED") {
+      if (assigned($id) && $status === "POSTED") {
         $queries = concat($queries, onPostStockInVoucher($stockInNo));
       }
     }
@@ -214,5 +214,5 @@
     $stockInModels = array();
   }
 
-  $useDebtor = $transactionCode == "R3";
+  $useDebtor = $transactionCode === "R3";
 ?>

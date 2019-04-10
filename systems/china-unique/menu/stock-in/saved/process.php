@@ -14,16 +14,16 @@
     $printoutParams = join("&", array_map(function ($i) { return "id[]=$i"; }, $stockInIds));
     $postStockInNos = array_map(function ($i) { return $i["stock_in_no"]; }, query("SELECT stock_in_no FROM `stock_in_header` WHERE $headerWhereClause"));
 
-    if ($action == "delete") {
+    if ($action === "delete") {
       array_push($queries, "DELETE a FROM `stock_in_model` AS a LEFT JOIN `stock_in_header` AS b ON a.stock_in_no=b.stock_in_no WHERE $modelWhereClause");
       array_push($queries, "DELETE FROM `stock_in_header` WHERE $headerWhereClause");
-    } else if ($action == "post") {
+    } else if ($action === "post") {
       array_push($queries, "UPDATE `stock_in_header` SET status=\"POSTED\" WHERE $headerWhereClause");
 
       foreach ($postStockInNos as $stockInNo) {
         $queries = concat($queries, onPostStockInVoucher($stockInNo));
       }
-    } else if ($action == "print") {
+    } else if ($action === "print") {
       header("Location: " . STOCK_IN_PRINTOUT_URL . "?$printoutParams");
       exit(0);
     }
