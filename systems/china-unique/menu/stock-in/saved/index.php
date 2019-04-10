@@ -58,7 +58,7 @@
                 <th>Date</th>
                 <th class="number">#</th>
                 <th>Voucher No.</th>
-                <th>Creditor</th>
+                <th>Client</th>
                 <th class="number">Total Qty</th>
                 <th class="number">Discount</th>
                 <th class="number">Currency</th>

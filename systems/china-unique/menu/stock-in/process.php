@@ -10,7 +10,6 @@
   $netAmount = isset($_POST["net_amount"]) ? $_POST["net_amount"] : 0;
   $discount = isset($_POST["discount"]) ? $_POST["discount"] : 0;
   $tax = $_POST["tax"];
-  $invoiceNo = $_POST["invoice_no"];
   $remarks = $_POST["remarks"];
   $status = $_POST["status"];
   $brandCodes = $_POST["brand_code"];
@@ -24,6 +23,7 @@
     assigned($stockInDate) &&
     assigned($transactionCode) &&
     assigned($warehouseCode) &&
+    assigned($creditorCode) &&
     assigned($tax) &&
     assigned($status) &&
     assigned($brandCodes) &&
@@ -75,7 +75,6 @@
               net_amount,
               discount,
               tax,
-              invoice_no,
               remarks,
               status
             )
@@ -91,7 +90,6 @@
               \"$netAmount\",
               \"$discount\",
               \"$tax\",
-              \"$invoiceNo\",
               \"$remarks\",
               \"$status\"
             )
@@ -181,7 +179,6 @@
       $netAmount = $stockInHeader["net_amount"];
       $discount = $stockInHeader["discount"];
       $tax = $stockInHeader["tax"];
-      $invoiceNo = $stockInHeader["invoice_no"];
       $remarks = $stockInHeader["remarks"];
       $status = $stockInHeader["status"];
       $stockInModels = query("
@@ -216,4 +213,6 @@
     $status = "DRAFT";
     $stockInModels = array();
   }
+
+  $useDebtor = $transactionCode == "R3";
 ?>

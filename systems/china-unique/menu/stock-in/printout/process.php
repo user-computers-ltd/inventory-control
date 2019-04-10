@@ -10,7 +10,6 @@
   $netAmount = $_POST["net_amount"];
   $discount = $_POST["discount"];
   $tax = $_POST["tax"];
-  $invoiceNo = $_POST["invoice_no"];
   $remarks = $_POST["remarks"];
   $status = $_POST["status"];
   $brandCodes = $_POST["brand_code"];
@@ -39,7 +38,6 @@
         net_amount                               AS `net_amount`,
         discount                                 AS `discount`,
         tax                                      AS `tax`,
-        invoice_no                                AS `invoice_no`,
         remarks                                  AS `remarks`,
         status                                   AS `status`
       FROM
@@ -100,7 +98,6 @@
       "net_amount"          => $netAmount,
       "discount"            => $discount,
       "tax"                 => $tax,
-      "invoice_no"          => $invoiceNo,
       "remarks"             => $remarks,
       "status"              => $status
     ));
@@ -120,13 +117,16 @@
   if (count($stockInHeaders) > 0) {
     foreach ($stockInHeaders as &$stockInHeader) {
       $creditor = query("SELECT english_name AS name FROM `creditor` WHERE code=\"" . $stockInHeader["creditor_code"] . "\"")[0];
+      $creditor = isset($creditor) ? $creditor["name"] : "Unknown";
+      $debtor = query("SELECT english_name AS name FROM `debtor` WHERE code=\"" . $stockInHeader["creditor_code"] . "\"")[0];
+      $debtor = isset($debtor) ? $debtor["name"] : "Unknown";
       $warehouse = query("SELECT name FROM `warehouse` WHERE code=\"" . $stockInHeader["warehouse_code"] . "\"")[0];
 
       $stockInHeader["transaction_type"] = $stockInHeader["transaction_code"] . " - " . $TRANSACTION_CODES[$stockInHeader["transaction_code"]];
       $stockInHeader["warehouse"] = $stockInHeader["warehouse_code"] . " - " . (isset($warehouse) ? $warehouse["name"] : "Unknown");
-      $stockInHeader["creditor"] = $stockInHeader["creditor_code"] . " - " . (isset($creditor) ? $creditor["name"] : "Unknown");
+      $stockInHeader["creditor"] = $stockInHeader["creditor_code"] . " - " . ($stockInHeader["transaction_code"] === "R3" ? $debtor : $creditor);
       $stockInHeader["currency"] = $stockInHeader["currency_code"] . " @ " . $stockInHeader["exchange_rate"];
-      $stockInHeader["miscellaneous"] = $stockInHeader["transaction_code"] != "R1" && $stockInHeader["transaction_code"] != "R3";
+      $stockInHeader["miscellaneous"] = $stockInHeader["transaction_code"] != "R1" && $stockInHeader["transaction_code"] !== "R3";
     }
   }
 

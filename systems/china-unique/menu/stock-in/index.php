@@ -57,11 +57,21 @@
             <tr class="option-row">
               <td>Creditor:</td>
               <td>
-                <select id="creditor-code" class="option-field" name="creditor_code" required>
+                <select id="creditor-code" class="option-field" name="creditor_code" required <?php echo $useDebtor ? "disabled hidden" : ""; ?>>
                   <?php
                     foreach ($creditors as $creditor) {
                       $code = $creditor["code"];
                       $label = $creditor["code"] . " - " . $creditor["name"];
+                      $selected = $creditorCode == $code ? "selected" : "";
+                      echo "<option value=\"$code\" $selected>$label</option>";
+                    }
+                  ?>
+                </select>
+                <select id="debtor-code" class="option-field" name="creditor_code" required <?php echo $useDebtor ? "" : "disabled hidden"; ?>>
+                  <?php
+                    foreach ($debtors as $debtor) {
+                      $code = $debtor["code"];
+                      $label = $debtor["code"] . " - " . $debtor["name"];
                       $selected = $creditorCode == $code ? "selected" : "";
                       echo "<option value=\"$code\" $selected>$label</option>";
                     }
@@ -201,10 +211,6 @@
           </table>
           <table id="stock-in-footer">
             <tr>
-              <td>Invoice No.:</td>
-              <td><input id="invoice-no" name="invoice_no" value="<?php echo $invoiceNo; ?>" /></td>
-            </tr>
-            <tr>
               <td>Remarks:</td>
               <td><textarea id="remarks" name="remarks"><?php echo $remarks; ?></textarea></td>
             </tr>
@@ -241,6 +247,8 @@
           var netAmountElement = document.querySelector("#net-amount");
           var discountElement = document.querySelector("#discount");
           var taxElement = document.querySelector("#tax");
+          var creditorCodeElement = document.querySelector("#creditor-code");
+          var debtorCodeElement = document.querySelector("#debtor-code");
           var currencyCodeElement = document.querySelector("#currency-code");
           var exchangeRateElement = document.querySelector("#exchange-rate");
           var tableBodyElement = document.querySelector("#stock-in-models tbody");
@@ -469,6 +477,11 @@
             for (var i = 0; i < optionColumns.length; i++) {
               toggleClass(optionColumns[i], "hide", miscellaneous);
             }
+
+            creditorCodeElement.disabled = transactionCode === "R3";
+            creditorCodeElement.hidden = transactionCode === "R3";
+            debtorCodeElement.disabled = transactionCode !== "R3";
+            debtorCodeElement.hidden = transactionCode !== "R3";
           }
 
           function onNetAmountChange() {
