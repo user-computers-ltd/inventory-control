@@ -229,9 +229,9 @@
       <?php if (count($results) > 0) : ?>
         <table id="model-results">
           <colgroup>
+            <col style="width: 60px;">
             <col>
-            <col>
-            <col>
+            <col style="width: 80px;">
             <col style="width: 80px;">
             <col style="width: 80px;">
             <col style="width: 80px;">
@@ -244,13 +244,13 @@
             <tr>
               <th>Brand</th>
               <th>Model No.</th>
-              <th class="number">Average Cost</th>
-              <th class="number">Normal Cost</th>
-              <th class="number">Special Cost</th>
-              <th class="number">Normal Price</th>
-              <th class="number">Special Price</th>
-              <th class="number">End User Price</th>
-              <th class="number">Wholesale Price</th>
+              <th class="number">Average<br/>Cost</th>
+              <th class="number">Normal<br/>Cost</th>
+              <th class="number">Special<br/>Cost</th>
+              <th class="number">Normal<br/>Price</th>
+              <th class="number">Special<br/>Price</th>
+              <th class="number">End User<br/>Price</th>
+              <th class="number">Wholesale<br/>Price</th>
             </tr>
           </thead>
           <tbody>
@@ -271,7 +271,7 @@
 
                 echo "
                   <tr>
-                    <td title=\"$brandCode\">$brandCode - $brandName</td>
+                    <td title=\"$brandCode\">$brandName</td>
                     <td title=\"$modelNo\"><a href=\"" . DATA_MODEL_MODEL_DETAIL_URL . "?id=$id\">$modelNo</a></td>
                     <td class=\"number\" title=\"$costAverage\">" . number_format($costAverage, 2) . "</td>
                     <td class=\"number\" title=\"$costNormal\">" . number_format($costNormal, 2) . "</td>
