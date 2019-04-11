@@ -57,8 +57,8 @@
                     <th>型號</th>
                     <th class="number">數量</th>
                     <?php if (!$hidePrice) : ?>
-                      <th class="number">含稅單價</th>
-                      <th class="number">含稅總金額</th>
+                      <th class="number">含稅單價<br/>(<?php echo $doHeader["tax"]; ?>%)</th>
+                      <th class="number">含稅總金額<br/>(<?php echo $doHeader["tax"]; ?>%)</th>
                     <?php endif ?>
                   </tr>
                 </thead>
