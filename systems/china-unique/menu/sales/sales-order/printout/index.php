@@ -79,7 +79,7 @@
                           <td>$index</td>
                           <td>$brand</td>
                             <td>$modelNo</td>
-                            <td class=\"number\">" . number_format($price, 2) . "</td>
+                            <td class=\"number\">" . rtrim(rtrim($price, "0"), ".") . "</td>
                             <td class=\"number\">" . number_format($occurrences[$j]) . "</td>
                             <td class=\"number\">" . number_format($occurrences[$j] * $price, 2) . "</td>
                           </tr>
