@@ -34,7 +34,7 @@
   border-bottom: 1px solid;
 }
 
-.stock-in-models tbody tr:last-child th {
+.stock-in-models tbody tr:nth-last-child(2) th {
   border-top: 1px solid;
 }
 

@@ -71,6 +71,7 @@
                     $totalQty = 0;
                     $subtotalSum = 0;
                     $discount = $stockInHeader["discount"];
+                    $tax = $stockInHeader["tax"];
                     $models = $stockInModels[$stockInHeader["stock_in_no"]];
 
                     for ($i = 0; $i < count($models); $i++) {
@@ -120,6 +121,15 @@
                     <th class="number"><?php echo number_format($totalQty); ?></th>
                     <?php if (!$miscellaneous) : ?>
                       <th class="number"><?php echo number_format($subtotalSum * (100 - $discount) / 100, 2); ?></th>
+                    <?php endif ?>
+                  </tr>
+                  <tr>
+                    <?php if ($stockInHeader["transaction_code"] === "R3") : ?>
+                      <th></th>
+                      <?php if (!$miscellaneous) : ?><th></th><?php endif ?>
+                      <th class="number">Total Cost:</th>
+                      <th></th>
+                      <th class="number"><?php echo number_format($subtotalSum * (100 - $discount) / (100 + $tax), 2); ?></th>
                     <?php endif ?>
                   </tr>
                 </tbody>
