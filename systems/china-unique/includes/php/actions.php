@@ -34,7 +34,7 @@
 
       if ($qty > 0) {
         /* Update model average cost. */
-        if ($transactionCode == "R1" || $transactionCode == "R2") {
+        if ($transactionCode === "R1" || $transactionCode === "R2") {
           array_push($queries, "
             UPDATE
               `model` AS a

@@ -49,8 +49,14 @@ table {
   margin: 20px 0px;
   clear: both;
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0px;
   font-size: 11px;
+}
+
+table thead {
+  position: sticky;
+  top: 0px;
 }
 
 table th,
@@ -151,6 +157,14 @@ table thead th {
 }
 
 @media print {
+  table {
+    border-collapse: collapse;
+  }
+
+  table thead {
+    position: inherit;
+  }
+
   .web-only {
     display: none;
   }
