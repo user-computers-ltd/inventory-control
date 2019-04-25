@@ -49,6 +49,7 @@
   max-width: 0px;
   border-left: none;
   border-right: none;
+  border-bottom: none;
   line-height: 25px;
   overflow: hidden;
 }
