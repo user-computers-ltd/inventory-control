@@ -331,7 +331,7 @@
                   + "/>"
                 + "</td>"
                 + "<td class=\"number\">"
-                  + doModel["price"].toFixed(2)
+                  + doModel["price"]
                   + "<input "
                     + "class=\"qty number\" "
                     + "type=\"hidden\" "

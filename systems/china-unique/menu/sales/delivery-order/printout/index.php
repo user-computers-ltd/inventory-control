@@ -107,7 +107,7 @@
 
                           if (!$hidePrice) {
                             echo "
-                              <td class=\"number\">" . number_format($price, 2) . "</td>
+                              <td class=\"number\">" . rtrim(rtrim($price, "0"), ".") . "</td>
                               <td class=\"number\">" . number_format($subtotal, 2) . "</td>
                             ";
                           }

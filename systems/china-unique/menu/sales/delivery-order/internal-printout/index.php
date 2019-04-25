@@ -105,7 +105,7 @@
                               <td>$brand</td>
                               <td>$modelNo</td>
                               <td class=\"number\">" . number_format($showQty) . "</td>
-                              <td class=\"number\">" . number_format($price, 2) . "</td>
+                              <td class=\"number\">" . rtrim(rtrim($price, "0"), ".") . "</td>
                               <td class=\"number\">" . number_format($showQty * $price, 2) . "</td>
                             </tr>
                           ";
