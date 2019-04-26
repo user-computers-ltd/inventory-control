@@ -188,7 +188,7 @@
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo SALES_REPORT_MODEL_SUMMARY_TITLE; ?></div>
       <form>
-        <table id="so-input" class="web-only">
+        <table id="so-input">
           <tr>
             <th>Brand:</th>
             <th>Model No.:</th>
@@ -197,7 +197,7 @@
           </tr>
           <tr>
             <td>
-              <select name="brand_code[]" multiple>
+              <select name="brand_code[]" multiple class="web-only">
                 <?php
                   foreach ($brands as $brand) {
                     $code = $brand["code"];
@@ -207,9 +207,12 @@
                   }
                 ?>
               </select>
+              <span class="print-only">
+                <?php echo assigned($brandCodes) ? join(", ", $brandCodes) : "ALL"; ?>
+              </span>
             </td>
             <td>
-              <select name="model_no[]" multiple>
+              <select name="model_no[]" multiple class="web-only">
                 <?php
                   foreach ($models as $model) {
                     $modelNo = $model["model_no"];
@@ -218,20 +221,33 @@
                   }
                 ?>
               </select>
+              <span class="print-only">
+                <?php echo assigned($modelNos) ? join(", ", $modelNos) : "ALL"; ?>
+              </span>
             </td>
-            <td><input type="date" name="from" value="<?php echo $from; ?>" max="<?php echo date("Y-m-d"); ?>" /></td>
-            <td><input type="date" name="to" value="<?php echo $to; ?>" max="<?php echo date("Y-m-d"); ?>" /></td>
+            <td>
+              <input type="date" name="from" value="<?php echo $from; ?>" max="<?php echo date("Y-m-d"); ?>" class="web-only" />
+              <span class="print-only"><?php echo assigned($from) ? $from : "ANY"; ?></span>
+            </td>
+            <td>
+              <input type="date" name="to" value="<?php echo $to; ?>" max="<?php echo date("Y-m-d"); ?>" class="web-only" />
+              <span class="print-only"><?php echo assigned($to) ? $to : "ANY"; ?></span>
+            </td>
             <td><button type="submit">Go</button></td>
           </tr>
           <tr>
             <th>
               <input
                 id="input-outstanding-only"
+                class="web-only"
                 type="checkbox"
                 onchange="onOutstandingOnlyChanged(event)"
-                <?php echo $showMode == "outstanding_only" ? "checked" : "" ?>
+                <?php echo $showMode === "outstanding_only" ? "checked" : "" ?>
               />
-              <label for="input-outstanding-only">Outstanding only</label>
+              <label class="web-only" for="input-outstanding-only">Outstanding only</label>
+              <span id="input-outstanding-only-print" class="print-only">
+                <?php echo $showMode === "outstanding_only" ? "Outstanding only" : ""; ?>
+              </span>
               <input
                 id="input-show-mode"
                 type="hidden"
@@ -240,12 +256,16 @@
               />
               <input
                 id="input-to-order-only"
+                class="web-only"
                 type="checkbox"
                 name="to_order_only"
                 onchange="this.form.submit()"
                 <?php echo $showToOrderOnly ? "checked" : "" ?>
               />
-              <label for="input-to-order-only">To order only</label>
+              <label class="web-only" for="input-to-order-only">To order only</label>
+              <span id="input-to-order-only-print" class="print-only">
+                <?php echo $showToOrderOnly ? "To order only" : ""; ?>
+              </span>
             </th>
           </tr>
         </table>

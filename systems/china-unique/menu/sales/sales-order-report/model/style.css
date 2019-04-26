@@ -13,6 +13,11 @@
   margin: 0px;
 }
 
+#so-input #input-outstanding-only-print,
+#so-input #input-to-order-only-print {
+  text-indent: 5px;
+}
+
 #so-input #input-to-order-only {
   margin-left: 10px;
 }

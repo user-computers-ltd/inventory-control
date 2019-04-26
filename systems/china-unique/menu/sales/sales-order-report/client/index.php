@@ -82,13 +82,13 @@
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo SALES_REPORT_CUSTOMER_SUMMARY_TITLE; ?></div>
       <form>
-        <table id="so-input" class="web-only">
+        <table id="so-input">
           <tr>
             <th>Client:</th>
           </tr>
           <tr>
             <td>
-              <select name="debtor_code[]" multiple>
+              <select name="debtor_code[]" multiple class="web-only">
                 <?php
                   foreach ($debtors as $debtor) {
                     $code = $debtor["code"];
@@ -98,6 +98,15 @@
                   }
                 ?>
               </select>
+              <span class="print-only">
+                <?php
+                  echo assigned($debtorCodes) ? join(", ", array_map(function ($d) {
+                    return $d["code"] . " - " . $d["name"];
+                  }, array_filter($debtors, function ($i) use ($debtorCodes) {
+                    return in_array($i["code"], $debtorCodes);
+                  }))) : "ALL";
+                ?>
+              </span>
             </td>
             <td><button type="submit">Go</button></td>
           </tr>
@@ -105,17 +114,21 @@
             <th>
               <input
                 id="input-outstanding-only"
+                class="web-only"
                 type="checkbox"
                 onchange="onOutstandingOnlyChanged(event)"
-                <?php echo $showMode == "outstanding_only" ? "checked" : "" ?>
+                <?php echo $showMode === "outstanding_only" ? "checked" : "" ?>
               />
-              <label for="input-outstanding-only">Outstanding only</label>
+              <label class="web-only" for="input-outstanding-only">Outstanding only</label>
               <input
                 id="input-show-mode"
                 type="hidden"
                 name="show_mode"
                 value="<?php echo $showMode; ?>"
               />
+              <span class="print-only">
+                <?php echo $showMode === "outstanding_only" ? "Outstanding only" : ""; ?>
+              </span>
             </th>
           </tr>
         </table>

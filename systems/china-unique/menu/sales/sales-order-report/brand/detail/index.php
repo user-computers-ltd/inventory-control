@@ -107,13 +107,13 @@
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo SALES_REPORT_BRAND_DETAIL_TITLE; ?></div>
       <form>
-        <table id="so-input" class="web-only">
+        <table id="so-input">
           <tr>
             <th>Brand:</th>
           </tr>
           <tr>
             <td>
-              <select name="brand_code[]" multiple>
+              <select name="brand_code[]" multiple class="web-only">
                 <?php
                   foreach ($brands as $brand) {
                     $code = $brand["code"];
@@ -123,6 +123,9 @@
                   }
                 ?>
               </select>
+              <span class="print-only">
+                <?php echo assigned($brandCodes) ? join(", ", $brandCodes) : "ALL"; ?>
+              </span>
             </td>
             <td><button type="submit">Go</button></td>
           </tr>
@@ -130,17 +133,21 @@
             <th>
               <input
                 id="input-outstanding-only"
+                class="web-only"
                 type="checkbox"
                 onchange="onOutstandingOnlyChanged(event)"
-                <?php echo $showMode == "outstanding_only" ? "checked" : "" ?>
+                <?php echo $showMode === "outstanding_only" ? "checked" : "" ?>
               />
-              <label for="input-outstanding-only">Outstanding only</label>
+              <label class="web-only" for="input-outstanding-only">Outstanding only</label>
               <input
                 id="input-show-mode"
                 type="hidden"
                 name="show_mode"
                 value="<?php echo $showMode; ?>"
               />
+              <span class="print-only">
+                <?php echo $showMode === "outstanding_only" ? "Outstanding only" : ""; ?>
+              </span>
             </th>
           </tr>
         </table>
