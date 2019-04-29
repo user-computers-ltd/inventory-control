@@ -6,7 +6,7 @@
 
   $results = query("
     SELECT
-      CONCAT(b.code, ' - ', b.name)   AS `warehouse`,
+      CONCAT(b.code, \" - \", b.name) AS `warehouse`,
       b.id                            AS `warehouse_id`,
       c.code                          AS `brand_code`,
       c.name                          AS `brand_name`,
@@ -36,7 +36,8 @@
         `sdo_header` AS h
       ON m.do_no=h.do_no
       WHERE
-        h.status=\"SAVED\"
+        h.status=\"SAVED\" AND
+        m.ia_no=\"\"
       GROUP BY
         h.warehouse_code, m.brand_code, m.model_no) AS e
     ON a.warehouse_code=e.warehouse_code AND a.brand_code=e.brand_code AND a.model_no=e.model_no

@@ -58,7 +58,8 @@
         `sdo_header` AS h
       ON m.do_no=h.do_no
       WHERE
-        h.status=\"SAVED\"
+        h.status=\"SAVED\" AND
+        m.ia_no=\"\"
       GROUP BY
         h.warehouse_code, m.brand_code, m.model_no) AS d
     ON a.warehouse_code=d.warehouse_code AND a.brand_code=d.brand_code AND a.model_no=d.model_no
