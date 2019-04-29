@@ -306,6 +306,11 @@
               <tbody>
                 <?php
                   $totalOutstanding = 0;
+                  $totalOnHandQty = 0;
+                  $totalReserveQty = 0;
+                  $totalAvailableQty = 0;
+                  $totalOnOrderQty = 0;
+                  $totalToOrderQty = 0;
 
                   for ($i = 0; $i < count($models); $i++) {
                     $soModel = $models[$i];
@@ -323,6 +328,12 @@
                     $linkParams = "?show_mode=$showMode&brand_code[]=" . urlencode($brandCode) . "&model_no[]=" . urlencode($modelNo);
 
                     $totalOutstanding += $outstandingQty;
+                    $totalOnHandQty += $onHandQty;
+                    $totalReserveQty += $onReserveQty;
+                    $totalAvailableQty += $availableQty;
+                    $totalOnOrderQty += $onOrderQty;
+                    $totalToOrderQty += $toOrderQty;
+                    $totalSoldQty += $soldQty;
 
                     echo "
                       <tr>
@@ -345,12 +356,12 @@
                   <th class="number">Total:</th>
                   <th></th>
                   <th class="number"><?php echo number_format($totalOutstanding); ?></th>
-                  <th></th>
-                  <th></th>
-                  <th></th>
-                  <th></th>
-                  <th></th>
-                  <th></th>
+                  <th class="number"><?php echo number_format($totalOnHandQty); ?></th>
+                  <th class="number"><?php echo number_format($totalReserveQty); ?></th>
+                  <th class="number"><?php echo number_format($totalAvailableQty); ?></th>
+                  <th class="number"><?php echo number_format($totalOnOrderQty); ?></th>
+                  <th class="number"><?php echo number_format($totalToOrderQty); ?></th>
+                  <th class="number"><?php echo number_format($totalSoldQty); ?></th>
                 </tr>
               </tbody>
             </table>
