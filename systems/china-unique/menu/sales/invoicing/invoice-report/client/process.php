@@ -24,16 +24,20 @@
 
   $doWhereClause = "";
   $stockOutWhereClause = "";
+  $stockInReturnWhereClause = "";
   $invoiceWhereClause = "";
   $currentInvoiceWhereClause = "";
 
   if (assigned($period)) {
     $doWhereClause = $doWhereClause . "
-      AND (IFNULL(b.amount, 0) * (100 - a.discount) / 100) - IFNULL(e.invoice_sum, 0) > 0
+      AND ROUND(IFNULL(b.amount, 0) * (100 - a.discount) / 100, 2) - IFNULL(e.invoice_sum, 0) > 0.5
       AND DATE_FORMAT(a.do_date, \"%Y-%m\") <= \"$period\"";
     $stockOutWhereClause = $stockOutWhereClause . "
-      AND (IFNULL(b.amount, 0) * (100 - a.discount) / 100) - IFNULL(e.invoice_sum, 0) > 0
+      AND ROUND(IFNULL(b.amount, 0) * (100 - a.discount) / 100, 2) - IFNULL(e.invoice_sum, 0) > 0.5
       AND DATE_FORMAT(a.stock_out_date, \"%Y-%m\") <= \"$period\"";
+    $stockInReturnWhereClause = $stockInReturnWhereClause . "
+      AND ROUND(IFNULL(b.amount, 0) * (100 - a.discount) / 100, 2) - IFNULL(e.invoice_sum, 0) != 0
+      AND DATE_FORMAT(a.stock_in_date, \"%Y-%m\") <= \"$period\"";
     $invoiceWhereClause = $invoiceWhereClause . "
       y.invoice_date < \"$period-01\"";
     $currentInvoiceWhereClause = $currentInvoiceWhereClause . "
@@ -45,165 +49,151 @@
       AND (" . join(" OR ", array_map(function ($d) { return "a.debtor_code=\"$d\""; }, $filterDebtorCodes)) . ")";
     $stockOutWhereClause = $stockOutWhereClause . "
       AND (" . join(" OR ", array_map(function ($d) { return "a.debtor_code=\"$d\""; }, $filterDebtorCodes)) . ")";
+    $stockInReturnWhereClause = $stockInReturnWhereClause . "
+      AND (" . join(" OR ", array_map(function ($d) { return "a.creditor_code=\"$d\""; }, $filterDebtorCodes)) . ")";
   }
 
   $incomeHeaders = array();
 
+  function getColumns($soNo, $dateC, $doIdC, $doNoC, $stockOutIdC, $stockOutNoC, $stockInIdC, $stockInNoC, $clientCode) {
+    return "
+      $soNo                                                                               AS `so_no`,
+      $dateC                                                                              AS `date_`,
+      DATE_FORMAT($dateC, \"%d-%m-%Y\")                                                   AS `date`,
+      DATE_FORMAT($dateC, \"%Y-%m\")                                                      AS `period`,
+      b.count                                                                             AS `count`,
+      $doIdC                                                                              AS `do_id`,
+      $doNoC                                                                              AS `do_no`,
+      $stockOutIdC                                                                        AS `stock_out_id`,
+      $stockOutNoC                                                                        AS `stock_out_no`,
+      $stockInIdC                                                                         AS `stock_in_id`,
+      $stockInNoC                                                                         AS `stock_in_no`,
+      $clientCode                                                                         AS `debtor_code`,
+      IFNULL(c.english_name, \"Unknown\")                                                 AS `debtor_name`,
+      IFNULL(b.qty, 0)                                                                    AS `qty`,
+      a.currency_code                                                                     AS `currency`,
+      IFNULL(b.amount, 0) * (100 - a.discount) / 100                                      AS `amount`,
+      IFNULL(b.amount, 0) * (100 - a.discount) / 100 - IFNULL(e.invoice_sum, 0)           AS `pending`,
+      IFNULL(b.amount, 0) * (100 - a.discount) / (100 + a.tax)                            AS `net`,
+      IFNULL(b.cost, 0)                                                                   AS `cost`,
+      IFNULL(d.invoice_amounts, \"\")                                                     AS `invoice_amounts`,
+      IFNULL(d.invoice_dates, \"\")                                                       AS `invoice_dates`,
+      IFNULL(d.invoice_nos, \"\")                                                         AS `invoice_nos`,
+      IFNULL(d.invoice_ids, \"\")                                                         AS `invoice_ids`
+    ";
+  }
+
+  function joinModelTable($table, $as, $link, $otherColumns, $negateValues = false) {
+    $prefix = $negateValues ? "-" : "";
+    return "
+      LEFT JOIN
+        (SELECT
+          x.$link                               AS `$link`,
+          $otherColumns
+          COUNT(*)                              AS `count`,
+          $prefix SUM(x.qty)                    AS `qty`,
+          $prefix SUM(x.qty * x.price)          AS `amount`,
+          $prefix SUM(x.qty * y.cost_average)   AS `cost`
+        FROM
+          `$table` AS x
+        LEFT JOIN
+          `model` AS y
+        ON x.brand_code=y.brand_code AND x.model_no=y.model_no
+        GROUP BY
+          $link) AS $as
+      ON a.$link=$as.$link
+    ";
+  }
+
+  function joinInvoiceTable($as, $columnName, $whereClause) {
+    return "
+      LEFT JOIN
+        (SELECT
+          x.$columnName                                           AS `$columnName`,
+          GROUP_CONCAT(DATE_FORMAT(y.invoice_date, \"%d-%m-%Y\")) AS `invoice_dates`,
+          GROUP_CONCAT(y.id)                                      AS `invoice_ids`,
+          GROUP_CONCAT(x.invoice_no)                              AS `invoice_nos`,
+          GROUP_CONCAT(x.amount)                                  AS `invoice_amounts`
+        FROM
+          `out_inv_model` AS x
+        LEFT JOIN
+          `out_inv_header` AS y
+        ON x.invoice_no=y.invoice_no
+        WHERE
+          $whereClause
+        GROUP BY
+          x.$columnName) AS $as
+      ON a.$columnName=$as.$columnName
+    ";
+  }
+
+  function joinInvoiceSumTable($as, $columnName, $whereClause) {
+    return "
+      LEFT JOIN
+        (SELECT
+          x.$columnName                 AS `$columnName`,
+          SUM(x.amount)                 AS `invoice_sum`
+        FROM
+          `out_inv_model` AS x
+        LEFT JOIN
+          `out_inv_header` AS y
+        ON x.invoice_no=y.invoice_no
+        WHERE
+          $whereClause
+        GROUP BY
+          x.$columnName) AS $as
+      ON a.$columnName=$as.$columnName
+    ";
+  }
+
   $results = query("
     SELECT
-      a.do_date                                                                     AS `date_`,
-      DATE_FORMAT(a.do_date, '%d-%m-%Y')                                            AS `date`,
-      DATE_FORMAT(a.do_date, '%Y-%m')                                               AS `period`,
-      b.count                                                                       AS `count`,
-      a.id                                                                          AS `do_id`,
-      a.do_no                                                                       AS `do_no`,
-      b.so_no                                                                       AS `so_no`,
-      \"\"                                                                          AS `stock_out_id`,
-      \"\"                                                                          AS `stock_out_no`,
-      a.debtor_code                                                                 AS `debtor_code`,
-      IFNULL(c.english_name, 'Unknown')                                             AS `debtor_name`,
-      IFNULL(b.qty, 0)                                                              AS `qty`,
-      a.currency_code                                                               AS `currency`,
-      IFNULL(b.amount, 0) * (100 - a.discount) / 100                                AS `amount`,
-      (IFNULL(b.amount, 0) * (100 - a.discount) / 100) - IFNULL(e.invoice_sum, 0)   AS `pending`,
-      IFNULL(b.amount, 0) * (100 - a.discount) / (100 + a.tax)                      AS `net`,
-      IFNULL(b.cost, 0)                                                             AS `cost`,
-      IFNULL(d.invoice_amounts, \"\")                                               AS `invoice_amounts`,
-      IFNULL(d.invoice_dates, \"\")                                                 AS `invoice_dates`,
-      IFNULL(d.invoice_nos, \"\")                                                   AS `invoice_nos`,
-      IFNULL(d.invoice_ids, \"\")                                                   AS `invoice_ids`
+      " . getColumns("b.so_no", "a.do_date", "a.id", "a.do_no", "\"\"", "\"\"", "\"\"", "\"\"", "a.debtor_code") . "
     FROM
       `sdo_header` AS a
-    LEFT JOIN
-      (SELECT
-        x.do_no                         AS `do_no`,
-        GROUP_CONCAT(DISTINCT x.so_no)  AS `so_no`,
-        COUNT(*)                        AS `count`,
-        SUM(x.qty)                      AS `qty`,
-        SUM(x.qty * x.price)            AS `amount`,
-        SUM(x.qty * y.cost_average)     AS `cost`
-      FROM
-        `sdo_model` AS x
-      LEFT JOIN
-        `model` AS y
-      ON x.brand_code=y.brand_code AND x.model_no=y.model_no
-      GROUP BY
-        do_no) AS b
-    ON a.do_no=b.do_no
+    " . joinModelTable("sdo_model", "b", "do_no", "GROUP_CONCAT(DISTINCT x.so_no)  AS `so_no`,") . "
     LEFT JOIN
       `debtor` AS c
     ON a.debtor_code=c.code
-    LEFT JOIN
-      (SELECT
-        x.do_no                                                   AS `do_no`,
-        GROUP_CONCAT(DATE_FORMAT(y.invoice_date, '%d-%m-%Y'))     AS `invoice_dates`,
-        GROUP_CONCAT(y.id)                                        AS `invoice_ids`,
-        GROUP_CONCAT(x.invoice_no)                                AS `invoice_nos`,
-        GROUP_CONCAT(x.amount)                                    AS `invoice_amounts`
-      FROM
-        `out_inv_model` AS x
-      LEFT JOIN
-        `out_inv_header` AS y
-      ON x.invoice_no=y.invoice_no
-      WHERE
-        $currentInvoiceWhereClause
-      GROUP BY
-        x.do_no) AS d
-    ON a.do_no=d.do_no
-    LEFT JOIN
-      (SELECT
-        x.do_no                       AS `do_no`,
-        SUM(x.amount)                 AS `invoice_sum`
-      FROM
-        `out_inv_model` AS x
-      LEFT JOIN
-        `out_inv_header` AS y
-      ON x.invoice_no=y.invoice_no
-      WHERE
-        $invoiceWhereClause
-      GROUP BY
-        x.do_no) AS e
-    ON a.do_no=e.do_no
+    " . joinInvoiceTable("d", "do_no", $currentInvoiceWhereClause) . "
+    " . joinInvoiceSumTable("e", "do_no", $invoiceWhereClause) . "
     WHERE
       a.status=\"POSTED\"
       $doWhereClause
     UNION
     SELECT
-      a.stock_out_date                                                              AS `date_`,
-      DATE_FORMAT(a.stock_out_date, '%d-%m-%Y')                                     AS `date`,
-      DATE_FORMAT(a.stock_out_date, '%Y-%m')                                        AS `period`,
-      b.count                                                                       AS `count`,
-      \"\"                                                                          AS `do_id`,
-      \"\"                                                                          AS `do_no`,
-      \"\"                                                                          AS `so_no`,
-      a.id                                                                          AS `stock_out_id`,
-      a.stock_out_no                                                                AS `stock_out_no`,
-      a.debtor_code                                                                 AS `debtor_code`,
-      IFNULL(c.english_name, 'Unknown')                                             AS `debtor_name`,
-      IFNULL(b.qty, 0)                                                              AS `qty`,
-      a.currency_code                                                               AS `currency`,
-      IFNULL(b.amount, 0) * (100 - a.discount) / 100                                AS `amount`,
-      (IFNULL(b.amount, 0) * (100 - a.discount) / 100) - IFNULL(e.invoice_sum, 0)   AS `pending`,
-      IFNULL(b.amount, 0) * (100 - a.discount) / (100 + a.tax)                      AS `net`,
-      IFNULL(b.cost, 0)                                                             AS `cost`,
-      IFNULL(d.invoice_amounts, \"\")                                               AS `invoice_amounts`,
-      IFNULL(d.invoice_dates, \"\")                                                 AS `invoice_dates`,
-      IFNULL(d.invoice_nos, \"\")                                                   AS `invoice_nos`,
-      IFNULL(d.invoice_ids, \"\")                                                   AS `invoice_ids`
+      " . getColumns("a.transaction_code", "a.stock_out_date", "\"\"", "\"\"", "a.id", "a.stock_out_no", "\"\"", "\"\"", "a.debtor_code") . "
     FROM
       `stock_out_header` AS a
-    LEFT JOIN
-      (SELECT
-        x.stock_out_no                AS `stock_out_no`,
-        COUNT(*)                      AS `count`,
-        SUM(x.qty)                    AS `qty`,
-        SUM(x.qty * x.price)          AS `amount`,
-        SUM(x.qty * y.cost_average)   AS `cost`
-      FROM
-        `stock_out_model` AS x
-      LEFT JOIN
-        `model` AS y
-      ON x.brand_code=y.brand_code AND x.model_no=y.model_no
-      GROUP BY
-        stock_out_no) AS b
-    ON a.stock_out_no=b.stock_out_no
+    " . joinModelTable("stock_out_model", "b", "stock_out_no", "") . "
     LEFT JOIN
       `debtor` AS c
     ON a.debtor_code=c.code
-    LEFT JOIN
-      (SELECT
-        x.stock_out_no                                            AS `stock_out_no`,
-        GROUP_CONCAT(DATE_FORMAT(y.invoice_date, '%d-%m-%Y'))     AS `invoice_dates`,
-        GROUP_CONCAT(y.id)                                        AS `invoice_ids`,
-        GROUP_CONCAT(x.invoice_no)                                AS `invoice_nos`,
-        GROUP_CONCAT(x.amount)                                    AS `invoice_amounts`
-      FROM
-        `out_inv_model` AS x
-      LEFT JOIN
-        `out_inv_header` AS y
-      ON x.invoice_no=y.invoice_no
-      WHERE
-        $currentInvoiceWhereClause
-      GROUP BY
-        x.stock_out_no) AS d
-    ON a.stock_out_no=d.stock_out_no
-    LEFT JOIN
-      (SELECT
-        x.stock_out_no                AS `stock_out_no`,
-        SUM(x.amount)                 AS `invoice_sum`
-      FROM
-        `out_inv_model` AS x
-      LEFT JOIN
-        `out_inv_header` AS y
-      ON x.invoice_no=y.invoice_no
-      WHERE
-        $invoiceWhereClause
-      GROUP BY
-        x.stock_out_no) AS e
-    ON a.stock_out_no=e.stock_out_no
+    " . joinInvoiceTable("d", "stock_out_no", $currentInvoiceWhereClause) . "
+    " . joinInvoiceSumTable("e", "stock_out_no", $invoiceWhereClause) . "
     WHERE
-      a.status=\"POSTED\" AND (a.transaction_code=\"S1\" OR a.transaction_code=\"S2\")
+      a.status=\"POSTED\" AND
+      (a.transaction_code=\"S1\" OR a.transaction_code=\"S2\")
       $stockOutWhereClause
+    UNION
+    SELECT
+      " . getColumns("\"R3\"", "a.stock_in_date", "\"\"", "\"\"", "a.id", "a.stock_in_no", "\"\"", "\"\"", "a.creditor_code") . "
+    FROM
+      `stock_in_header` AS a
+    " . joinModelTable("stock_in_model", "b", "stock_in_no", "", true) . "
+    LEFT JOIN
+      `creditor` AS c
+    ON a.creditor_code=c.code
+    LEFT JOIN
+      (SELECT \"\" AS `invoice_amounts`, \"\" AS `invoice_dates`, \"\" AS `invoice_nos`, \"\" AS `invoice_ids`) AS d
+    ON a.id=a.id
+    LEFT JOIN
+      (SELECT \"0\" AS `invoice_sum`) AS e
+    ON a.id=a.id
+    WHERE
+      a.status=\"POSTED\" AND
+      a.transaction_code=\"R3\"
+      $stockInReturnWhereClause
     ORDER BY
       debtor_code ASC,
       date_ ASC

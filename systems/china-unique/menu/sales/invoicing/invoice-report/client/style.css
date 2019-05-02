@@ -17,6 +17,12 @@
   text-overflow: ellipsis;
 }
 
+.invoice-results td > * {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .invoice-results .number,
 .invoice-results-total .number {
   text-align: right;

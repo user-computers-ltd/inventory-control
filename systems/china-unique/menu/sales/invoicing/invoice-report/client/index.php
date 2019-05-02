@@ -90,7 +90,7 @@
                 <th>Code</th>
                 <th>Client</th>
                 <th>DO No. / Stock Out No.</th>
-                <th>SO No.</th>
+                <th>SO No. / Trans. Code</th>
                 <th class="number">Qty</th>
                 <th class="number">Actual Cost (Exc. Tax)</th>
                 <th class="number">Net Sales Amount (Exc. Tax)</th>
@@ -119,9 +119,11 @@
                   $date = $incomeHeader["date"];
                   $doId = $incomeHeader["do_id"];
                   $doNo = $incomeHeader["do_no"];
-                  $soNos = join("", array_map(function ($s) { return "<div>$s</div>"; }, explode(",", $incomeHeader["so_no"])));
+                  $soNos = join("", array_map(function ($s) { return "<div title=\"$s\">$s</div>"; }, explode(",", $incomeHeader["so_no"])));
                   $stockOutId = $incomeHeader["stock_out_id"];
                   $stockOutNo = $incomeHeader["stock_out_no"];
+                  $stockInId = $incomeHeader["stock_in_id"];
+                  $stockInNo = $incomeHeader["stock_in_no"];
                   $debtorCode = $incomeHeader["debtor_code"];
                   $debtorName = $incomeHeader["debtor_name"];
                   $qty = $incomeHeader["qty"];
@@ -159,7 +161,9 @@
                         <a class=\"link\" href=\"" . SALES_DELIVERY_ORDER_PRINTOUT_URL . "?id[]=$doId\">$doNo</a>
                       </td>" : (assigned($stockOutId) ? "<td title=\"$stockOutNo\" rowspan=\"$invoiceCount\">
                         <a class=\"link\" href=\"" . STOCK_OUT_PRINTOUT_URL . "?id[]=$stockOutId\">$stockOutNo</a>
-                      </td>" : "");
+                      </td>" : (assigned($stockInId) ? "<td title=\"$stockInNo\" rowspan=\"$invoiceCount\">
+                        <a class=\"link\" href=\"" . STOCK_IN_PRINTOUT_URL . "?id[]=$stockInId\">$stockInNo</a>
+                      </td>" : ""));
 
                       echo "
                         <tr>
