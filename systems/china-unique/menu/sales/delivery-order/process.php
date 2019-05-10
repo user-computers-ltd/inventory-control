@@ -39,27 +39,7 @@
       $queries = array();
 
       if ($status === "SAVED" || $status === "POSTED") {
-        array_push($queries, "
-          DELETE d FROM
-            `sdo_model` AS a
-          LEFT JOIN
-            `sdo_header` AS b
-          ON a.do_no=b.do_no
-          LEFT JOIN
-            `ia_header` AS c
-          ON a.ia_no=c.ia_no
-          LEFT JOIN
-            `so_allotment` AS d
-          ON
-            a.ia_no=d.ia_no AND
-            b.warehouse_code=IF(d.warehouse_code=\"\", c.warehouse_code, d.warehouse_code) AND
-            a.so_no=d.so_no AND
-            a.brand_code=d.brand_code AND
-            a.model_no=d.model_no
-          WHERE
-            b.id=\"$id\"
-        ");
-
+        // Delete all models and allotments for this delivery order.
         array_push($queries, "
           DELETE a, d FROM
             `sdo_model` AS a
@@ -97,6 +77,7 @@
           array_push($sdoValues, "(\"$doNo\", \"$i\", \"$iaNo\", \"$soNo\", \"$brandCode\", \"$modelNo\", \"$price\", \"$qty\")");
         }
 
+        // Re-insert all models and allotments for this delivery order.
         array_push($queries, "
           INSERT INTO
             `so_allotment`

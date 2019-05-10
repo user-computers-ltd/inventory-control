@@ -133,17 +133,17 @@
               <td><textarea id="remarks" name="remarks"><?php echo $doHeader["remarks"]; ?></textarea></td>
             </tr>
           </table>
-          <?php if ($status == "SAVED") : ?>
+          <?php if ($status === "SAVED") : ?>
             <button name="status" type="submit" value="SAVED">Save</button>
           <?php endif ?>
           <button name="status" type="submit" value="<?php echo $status; ?>" formaction="<?php echo SALES_DELIVERY_ORDER_PRINTOUT_URL . "?id[]=$id"; ?>">Print</button>
-          <?php if ($status == "SAVED" && !$hasIncoming) : ?>
+          <?php if ($status === "SAVED" && !$hasIncoming) : ?>
           <div id="post-wrapper">
             <button name="status" type="submit" value="POSTED" style="display: none;"></button>
             <button type="button" onclick="confirmPost(event)">Post</button>
           </div>
           <?php endif ?>
-          <?php if ($status == "SAVED") : ?>
+          <?php if ($status === "SAVED") : ?>
             <button name="status" type="submit" value="DELETED" style="display: none;"></button>
             <button type="button" onclick="confirmDelete(event)">Delete</button>
           <?php endif ?>
