@@ -94,4 +94,7 @@
       <?php endif ?>
     </div>
   </body>
+  <script>
+    setTableSortable(document.querySelector(".invoice-models"));
+  </script>
 </html>

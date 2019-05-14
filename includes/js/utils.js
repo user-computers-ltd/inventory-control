@@ -236,3 +236,56 @@ function getTime(dateString) {
     return 0;
   }
 }
+
+function setTableSortable(table) {
+  var headerColumns = table.querySelectorAll("thead tr th");
+
+  for (var i = 0; i < headerColumns.length; i++) {
+    var s = function(index) {
+      return function() {
+        sortTable(table, index);
+      };
+    };
+    headerColumns[i].addEventListener("click", s(i));
+  }
+}
+
+function sortTable(table, columnIndex) {
+  var rows,
+    x,
+    y,
+    shouldSwitch,
+    switching = true;
+
+  while (switching) {
+    switching = false;
+    rows = table.querySelectorAll("tbody tr");
+
+    for (var i = 0; i < rows.length - 1; i++) {
+      shouldSwitch = false;
+
+      x = rows[i].getElementsByTagName("td")[columnIndex];
+      y = rows[i + 1].getElementsByTagName("td")[columnIndex];
+
+      if (x && y) {
+        var xValue = x.innerHTML.toLowerCase();
+        var yValue = y.innerHTML.toLowerCase();
+
+        if (!isNaN(parseFloat(xValue)) && !isNaN(parseFloat(yValue))) {
+          xValue = parseFloat(xValue.replace(",", ""));
+          yValue = parseFloat(yValue.replace(",", ""));
+        }
+
+        if (xValue > yValue) {
+          shouldSwitch = true;
+          break;
+        }
+      }
+    }
+
+    if (shouldSwitch) {
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+    }
+  }
+}

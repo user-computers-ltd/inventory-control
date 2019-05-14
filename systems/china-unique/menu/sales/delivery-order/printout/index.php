@@ -192,4 +192,7 @@
       <?php endif ?>
     </div>
   </body>
+  <script>
+    setTableSortable(document.querySelector(".do-models"));
+  </script>
 </html>

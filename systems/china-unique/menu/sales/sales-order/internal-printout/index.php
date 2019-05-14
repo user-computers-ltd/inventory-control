@@ -152,4 +152,7 @@
       <?php endif ?>
     </div>
   </body>
+  <script>
+    setTableSortable(document.querySelector(".so-models"));
+  </script>
 </html>

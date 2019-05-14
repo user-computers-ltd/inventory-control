@@ -160,4 +160,7 @@
       <?php endif ?>
     </div>
   </body>
+  <script>
+    setTableSortable(document.querySelector(".enquiry-models"));
+  </script>
 </html>

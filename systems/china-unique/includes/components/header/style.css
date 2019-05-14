@@ -20,3 +20,9 @@
   font-size: 18px;
   line-height: 24px;
 }
+
+.time-generation {
+  float: right;
+  font-size: 13px;
+  line-height: 40px;
+}

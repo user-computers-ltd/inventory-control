@@ -48,6 +48,7 @@
             <td><button type="submit" class="web-only">Go</button></td>
           </tr>
         </table>
+        <div class="time-generation print-only">Time of generation: <?php echo date("H:i:s d-m-Y"); ?></div>
       </form>
       <?php
         if (count($allotments) > 0) {
