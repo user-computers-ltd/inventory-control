@@ -68,18 +68,18 @@
       $clientCode                                                                   AS `debtor_code`,
       a.currency_code                                                               AS `currency`,
       IFNULL(c.english_name, \"Unknown\")                                           AS `debtor_name`,
-      IFNULL(bM.qty, 0)                                                             AS `qtyM`,
-      IFNULL(bM.amount, 0) * (100 - a.discount) / 100                               AS `amountM`,
-      IFNULL(bM.amount, 0) * (100 - a.discount) / (100 + a.tax)                     AS `netM`,
-      IFNULL(bM.cost, 0)                                                            AS `costM`,
-      IFNULL(bS.qty, 0)                                                             AS `qtyS`,
-      IFNULL(bS.amount, 0) * (100 - a.discount) / 100                               AS `amountS`,
-      IFNULL(bS.amount, 0) * (100 - a.discount) / (100 + a.tax)                     AS `netS`,
-      IFNULL(bS.cost, 0)                                                            AS `costS`,
-      IFNULL(bO.qty, 0)                                                             AS `qtyO`,
-      IFNULL(bO.amount, 0) * (100 - a.discount) / 100                               AS `amountO`,
-      IFNULL(bO.amount, 0) * (100 - a.discount) / (100 + a.tax)                     AS `netO`,
-      IFNULL(bO.cost, 0)                                                            AS `costO`,
+      IFNULL(b.qtyM, 0)                                                             AS `qtyM`,
+      IFNULL(b.amountM, 0) * (100 - a.discount) / 100                               AS `amountM`,
+      IFNULL(b.amountM, 0) * (100 - a.discount) / (100 + a.tax)                     AS `netM`,
+      IFNULL(b.costM, 0)                                                            AS `costM`,
+      IFNULL(b.qtyS, 0)                                                             AS `qtyS`,
+      IFNULL(b.amountS, 0) * (100 - a.discount) / 100                               AS `amountS`,
+      IFNULL(b.amountS, 0) * (100 - a.discount) / (100 + a.tax)                     AS `netS`,
+      IFNULL(b.costS, 0)                                                            AS `costS`,
+      IFNULL(b.qtyO, 0)                                                             AS `qtyO`,
+      IFNULL(b.amountO, 0) * (100 - a.discount) / 100                               AS `amountO`,
+      IFNULL(b.amountO, 0) * (100 - a.discount) / (100 + a.tax)                     AS `netO`,
+      IFNULL(b.costO, 0)                                                            AS `costO`,
       IFNULL(d.invoice_amounts, \"\")                                               AS `invoice_amounts`,
       IFNULL(d.invoice_dates, \"\")                                                 AS `invoice_dates`,
       IFNULL(d.invoice_nos, \"\")                                                   AS `invoice_nos`,
@@ -87,27 +87,31 @@
     ";
   }
 
-  function joinModelTable($table, $as, $link, $otherColumns, $type, $whereClause, $negateValues = false) {
+  function joinModelTable($as, $link, $whereClause, $negateValues = false) {
     $prefix = $negateValues ? "-" : "";
     return "
       LEFT JOIN
         (SELECT
-          x.$link                               AS `$link`,
-          $otherColumns
-          COUNT(*)                              AS `count`,
-          $prefix SUM(x.qty)                    AS `qty`,
-          $prefix SUM(x.qty * x.price)          AS `amount`,
-          $prefix SUM(x.qty * y.cost_average)   AS `cost`
+          x.header_no                                                                         AS `$link`,
+          $prefix SUM(CASE WHEN y.product_type=\"M\" THEN x.qty ELSE 0 END)                   AS `qtyM`,
+          $prefix SUM(CASE WHEN y.product_type=\"M\" THEN x.qty * x.price ELSE 0 END)         AS `amountM`,
+          $prefix SUM(CASE WHEN y.product_type=\"M\" THEN x.qty * x.cost_average ELSE 0 END)  AS `costM`,
+          $prefix SUM(CASE WHEN y.product_type=\"S\" THEN x.qty ELSE 0 END)                   AS `qtyS`,
+          $prefix SUM(CASE WHEN y.product_type=\"S\" THEN x.qty * x.price ELSE 0 END)         AS `amountS`,
+          $prefix SUM(CASE WHEN y.product_type=\"S\" THEN x.qty * x.cost_average ELSE 0 END)  AS `costS`,
+          $prefix SUM(CASE WHEN y.product_type=\"O\" THEN x.qty ELSE 0 END)                   AS `qtyO`,
+          $prefix SUM(CASE WHEN y.product_type=\"O\" THEN x.qty * x.price ELSE 0 END)         AS `amountO`,
+          $prefix SUM(CASE WHEN y.product_type=\"O\" THEN x.qty * x.cost_average ELSE 0 END)  AS `costO`
         FROM
-          `$table` AS x
+          `transaction` AS x
         LEFT JOIN
           `model` AS y
         ON x.brand_code=y.brand_code AND x.model_no=y.model_no
         WHERE
-          y.product_type" . (assigned($type) ? "=\"$type\"" : " IS NOT NULL") . "
+          y.product_type IS NOT NULL
           $whereClause
         GROUP BY
-          $link) AS $as
+          x.header_no) AS $as
       ON a.$link=$as.$link
     ";
   }
@@ -134,30 +138,34 @@
 
   $results = query("
     SELECT
-      " . getColumns("IFNULL(bSO.so_no, \"\")", "a.do_date", "a.id", "a.do_no", "\"\"", "\"\"", "\"\"", "\"\"", "a.debtor_code") . "
+      " . getColumns("IFNULL(b2.so_nos, \"\")", "a.do_date", "a.id", "a.do_no", "\"\"", "\"\"", "\"\"", "\"\"", "a.debtor_code") . "
     FROM
       `sdo_header` AS a
-    " . joinModelTable("sdo_model", "bM", "do_no", "", "M", $modelWhereClause) . "
-    " . joinModelTable("sdo_model", "bS", "do_no", "", "S", $modelWhereClause) . "
-    " . joinModelTable("sdo_model", "bO", "do_no", "", "O", $modelWhereClause) . "
-    " . joinModelTable("sdo_model", "bSO", "do_no", "GROUP_CONCAT(DISTINCT x.so_no) AS `so_no`,", "", $modelWhereClause) . "
+    " . joinModelTable("b", "do_no", $modelWhereClause) . "
+    LEFT JOIN
+      (SELECT
+        do_no                        AS `do_no`,
+        GROUP_CONCAT(DISTINCT so_no) AS `so_nos`
+      FROM
+        `sdo_model`
+      GROUP BY
+        do_no) AS b2
+    ON a.do_no=b2.do_no
     LEFT JOIN
       `debtor` AS c
     ON a.debtor_code=c.code
     " . joinInvoiceTable("d", "do_no") . "
     WHERE
       a.status=\"POSTED\" AND
-      IFNULL(bM.qty, 0) + IFNULL(bS.qty, 0) + IFNULL(bO.qty, 0) != 0 AND
-      IFNULL(bM.amount, 0) + IFNULL(bS.amount, 0) + IFNULL(bO.amount, 0) != 0
+      IFNULL(b.qtyM, 0) + IFNULL(b.qtyS, 0) + IFNULL(b.qtyO, 0) != 0 AND
+      IFNULL(b.amountM, 0) + IFNULL(b.amountS, 0) + IFNULL(b.amountO, 0) != 0
       $doWhereClause
     UNION
     SELECT
       " . getColumns("a.transaction_code", "a.stock_out_date", "\"\"", "\"\"", "a.id", "a.stock_out_no", "\"\"", "\"\"",  "a.debtor_code") . "
     FROM
       `stock_out_header` AS a
-    " . joinModelTable("stock_out_model", "bM", "stock_out_no", "", "M", $modelWhereClause) . "
-    " . joinModelTable("stock_out_model", "bS", "stock_out_no", "", "S", $modelWhereClause) . "
-    " . joinModelTable("stock_out_model", "bO", "stock_out_no", "", "O", $modelWhereClause) . "
+    " . joinModelTable("b", "stock_out_no", $modelWhereClause) . "
     LEFT JOIN
       `debtor` AS c
     ON a.debtor_code=c.code
@@ -165,19 +173,17 @@
     WHERE
       a.status=\"POSTED\" AND
       (a.transaction_code=\"S1\" OR a.transaction_code=\"S2\") AND
-      IFNULL(bM.qty, 0) + IFNULL(bS.qty, 0) + IFNULL(bO.qty, 0) != 0 AND
-      IFNULL(bM.amount, 0) + IFNULL(bS.amount, 0) + IFNULL(bO.amount, 0) != 0
+      IFNULL(b.qtyM, 0) + IFNULL(b.qtyS, 0) + IFNULL(b.qtyO, 0) != 0 AND
+      IFNULL(b.amountM, 0) + IFNULL(b.amountS, 0) + IFNULL(b.amountO, 0) != 0
       $stockOutWhereClause
     UNION
     SELECT
       " . getColumns("\"R3\"", "a.stock_in_date", "\"\"", "\"\"", "\"\"", "\"\"", "a.id", "a.stock_in_no", "a.creditor_code") . "
     FROM
       `stock_in_header` AS a
-    " . joinModelTable("stock_in_model", "bM", "stock_in_no", "", "M", $modelWhereClause, true) . "
-    " . joinModelTable("stock_in_model", "bS", "stock_in_no", "", "S", $modelWhereClause, true) . "
-    " . joinModelTable("stock_in_model", "bO", "stock_in_no", "", "O", $modelWhereClause, true) . "
+    " . joinModelTable("b", "stock_in_no", $modelWhereClause, true) . "
     LEFT JOIN
-      `creditor` AS c
+      `debtor` AS c
     ON a.creditor_code=c.code
     LEFT JOIN
       (SELECT \"\" AS `invoice_amounts`, \"\" AS `invoice_dates`, \"\" AS `invoice_nos`, \"\" AS `invoice_ids`) AS d
@@ -185,8 +191,8 @@
     WHERE
       a.status=\"POSTED\" AND
       a.transaction_code=\"R3\" AND
-      IFNULL(bM.qty, 0) + IFNULL(bS.qty, 0) + IFNULL(bO.qty, 0) != 0 AND
-      IFNULL(bM.amount, 0) + IFNULL(bS.amount, 0) + IFNULL(bO.amount, 0) != 0
+      IFNULL(b.qtyM, 0) + IFNULL(b.qtyS, 0) + IFNULL(b.qtyO, 0) != 0 AND
+      IFNULL(b.amountM, 0) + IFNULL(b.amountS, 0) + IFNULL(b.amountO, 0) != 0
       $stockInReturnWhereClause
     ORDER BY
       date_ ASC
