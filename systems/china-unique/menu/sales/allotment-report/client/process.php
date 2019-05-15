@@ -273,7 +273,7 @@
       `ia_header` AS d
     ON b.ia_no=d.ia_no
     WHERE
-      b.qty IS NOT NULL AND (d.status IS NULL OR d.status=\"DO\")
+      b.qty IS NOT NULL AND (d.status IS NULL OR d.status=\"SAVED\" OR d.status=\"DO\")
     ORDER BY
       a.debtor_code ASC
   ");

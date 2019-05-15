@@ -11,6 +11,7 @@
   $brandCode = $_GET["brand_code"];
   $modelNo = $_GET["model_no"];
   $transactionCode = $_GET["transaction_code"];
+  $clientCode = $_GET["client_code"];
 
   $whereClause = "";
 
@@ -27,6 +28,11 @@
   if (assigned($brandCode)) {
     $whereClause = $whereClause . "
       AND a.brand_code=\"$brandCode\"";
+  }
+
+  if (assigned($clientCode)) {
+    $whereClause = $whereClause . "
+      AND a.client_code=\"$clientCode\"";
   }
 
   if (assigned($modelNo)) {
@@ -82,6 +88,13 @@
         a.model_no ASC
     ");
   }
+
+  $clients = query("
+    SELECT code, IFNULL(english_name, 'Unknown') AS `name` FROM `debtor`
+    UNION
+    SELECT code, IFNULL(english_name, 'Unknown') AS `name` FROM `creditor`
+    ORDER BY code ASC
+  ");
 ?>
 
 <!DOCTYPE html>
@@ -100,6 +113,7 @@
           <tr>
             <th>From:</th>
             <th>To:</th>
+            <th>Client Code:</th>
             <th>Brand Code:</th>
             <th>Model No:</th>
             <th>Transaction Code:</th>
@@ -112,6 +126,20 @@
             <td>
               <input type="date" name="to" value="<?php echo $to; ?>" max="<?php echo date("Y-m-d"); ?>" class="web-only" />
               <span class="print-only"><?php echo assigned($to) ? $to : "-"; ?></span>
+            </td>
+            <td>
+              <select name="client_code" class="web-only">
+                <option value=""></option>
+                <?php
+                  foreach ($clients as $client) {
+                    $code = $client["code"];
+                    $name = $client["name"];
+                    $selected = $clientCode == $code ? "selected" : "";
+                    echo "<option value=\"$code\" $selected>$code - $name</option>";
+                  }
+                ?>
+              </select>
+              <span class="print-only"><?php echo assigned($transactionCode) ? $transactionCode : "-"; ?></span>
             </td>
             <td>
               <input type="text" name="brand_code" value="<?php echo $brandCode; ?>" class="web-only" />
@@ -133,7 +161,7 @@
               </select>
               <span class="print-only"><?php echo assigned($transactionCode) ? $transactionCode : "-"; ?></span>
             </td>
-            <td><button type="submit">Go</button></td>
+            <td><button type="submit" class="web-only">Go</button></td>
           </tr>
         </table>
       </form>
@@ -238,4 +266,7 @@
       <?php endif ?>
     </div>
   </body>
+  <script>
+    setTableSortable(document.querySelector("#trans-results"));
+  </script>
 </html>
