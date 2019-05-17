@@ -48,7 +48,7 @@
             </table>
             <div class="headline"><?php echo SALES_DELIVERY_ORDER_PRINTOUT_TITLE . " (" . $doHeader["warehouse"] . "發貨)" ?></div>
             <?php if (count($doModels[$doHeader["do_no"]]) > 0) : ?>
-              <table class="do-models">
+              <table class="do-models sortable">
                 <thead>
                   <tr></tr>
                   <tr>
@@ -192,7 +192,4 @@
       <?php endif ?>
     </div>
   </body>
-  <script>
-    setTableSortable(document.querySelector(".do-models"));
-  </script>
 </html>

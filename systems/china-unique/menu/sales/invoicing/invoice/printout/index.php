@@ -21,7 +21,7 @@
           <div class="page">
             <?php include SYSTEM_PATH . "includes/components/header/index.php"; ?>
             <div class="headline"><?php echo SALES_INVOICE_PRINTOUT_TITLE ?></div>
-            <table class="invoice-header">
+            <table class="invoice-header sortable">
               <tr>
                 <td>Invoice No.:</td>
                 <td><?php echo $invoiceHeader["invoice_no"]; ?></td>
@@ -94,7 +94,4 @@
       <?php endif ?>
     </div>
   </body>
-  <script>
-    setTableSortable(document.querySelector(".invoice-models"));
-  </script>
 </html>

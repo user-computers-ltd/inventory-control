@@ -46,7 +46,7 @@
               </tr>
             </table>
             <?php if (count($soModels[$soHeader["so_no"]]) > 0) : ?>
-              <table class="so-models">
+              <table class="so-models sortable">
                 <thead>
                   <tr></tr>
                   <tr>
@@ -152,7 +152,4 @@
       <?php endif ?>
     </div>
   </body>
-  <script>
-    setTableSortable(document.querySelector(".so-models"));
-  </script>
 </html>

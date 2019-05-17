@@ -42,7 +42,7 @@
             </table>
             <div class="generation-date">產生時間: <?php echo $date; ?></div>
             <?php if (count($enquiryModels[$enquiryHeader["enquiry_no"]]) > 0) : ?>
-              <table class="enquiry-models">
+              <table class="enquiry-models sortable">
                 <colgroup>
                   <col style="width: 30px">
                   <col style="width: 80px">
@@ -160,7 +160,4 @@
       <?php endif ?>
     </div>
   </body>
-  <script>
-    setTableSortable(document.querySelector(".enquiry-models"));
-  </script>
 </html>

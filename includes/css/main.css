@@ -179,3 +179,27 @@ table thead th {
     padding: 0px;
   }
 }
+
+.sortable .sort-column {
+  position: relative;
+  cursor: pointer;
+}
+
+.sortable .sort-column.sorted-asc::after,
+.sortable .sort-column.sorted-desc::after {
+  content: "";
+  display: inline-block;
+  margin-left: 5px;
+  width: 0px;
+  height: 0px;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+}
+
+.sortable .sort-column.sorted-asc::after {
+  border-top: 5px solid black;
+}
+
+.sortable .sort-column.sorted-desc::after {
+  border-bottom: 5px solid black;
+}

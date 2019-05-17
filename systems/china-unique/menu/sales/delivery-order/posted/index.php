@@ -15,7 +15,7 @@
   </head>
   <body>
     <?php include_once SYSTEM_PATH . "includes/components/menu/index.php"; ?>
-    <div class="page-wrapper">
+    <div class="page-wrapper landscape">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo SALES_DELIVERY_ORDER_POSTED_TITLE; ?></div>
       <form>
@@ -62,11 +62,11 @@
       <?php if (count($doHeaders) > 0) : ?>
         <form method="post">
           <button type="submit" name="action" value="print" class="web-only">Print</button>
-        <table id="do-results">
+        <table id="do-results" class="sortable">
           <colgroup>
             <col class="web-only" style="width: 30px">
-            <col style="width: 80px">
-            <col>
+            <col style="width: 100px">
+            <col style="width: 160px">
             <col>
             <col style="width: 60px">
             <col style="width: 80px">

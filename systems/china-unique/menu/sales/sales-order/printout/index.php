@@ -21,7 +21,7 @@
           <div class="page">
             <?php include SYSTEM_PATH . "includes/components/header/index.php"; ?>
             <div class="headline"><?php echo SALES_ORDER_PRINTOUT_TITLE ?></div>
-            <table class="so-header">
+            <table class="so-header sortable">
               <tr>
                 <td>Order No.:</td>
                 <td><?php echo $soHeader["so_no"]; ?></td>
@@ -137,7 +137,4 @@
       <?php endif ?>
     </div>
   </body>
-  <script>
-    setTableSortable(document.querySelector(".so-models"));
-  </script>
 </html>

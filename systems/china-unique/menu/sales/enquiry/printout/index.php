@@ -50,7 +50,7 @@
             </table>
             <?php if (count($enquiryModels[$enquiryHeader["enquiry_no"]]) > 0) : ?>
               <div class="enquiry-precaution">以下貨物乃現庫存，以最後確認為準。謝謝。</div>
-              <table class="enquiry-models">
+              <table class="enquiry-models sortable">
                 <thead>
                   <tr></tr>
                   <tr>
@@ -186,7 +186,4 @@
       <?php endif ?>
     </div>
   </body>
-  <script>
-    setTableSortable(document.querySelector(".enquiry-models"));
-  </script>
 </html>

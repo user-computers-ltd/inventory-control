@@ -101,6 +101,10 @@ function post(settings) {
   ajax(settings);
 }
 
+function hasClass(element, className) {
+  return element.className.split(" ").indexOf(className) !== -1;
+}
+
 function toggleClass(element, className, toggle) {
   var classes = element.className.split(" ");
   var index = classes.indexOf(className);
@@ -241,6 +245,8 @@ function setTableSortable(table) {
   var headerColumns = table.querySelectorAll("thead tr th");
 
   for (var i = 0; i < headerColumns.length; i++) {
+    toggleClass(headerColumns[i], "sort-column", true);
+
     var s = function(index) {
       return function() {
         sortTable(table, index);
@@ -257,6 +263,19 @@ function sortTable(table, columnIndex) {
     shouldSwitch,
     switching = true;
 
+  var headerColumns = table.querySelectorAll("thead tr th");
+  var sortedAsc = hasClass(headerColumns[columnIndex], "sorted-asc");
+
+  for (var i = 0; i < headerColumns.length; i++) {
+    if (columnIndex === i) {
+      toggleClass(headerColumns[i], "sorted-asc", !sortedAsc);
+      toggleClass(headerColumns[i], "sorted-desc", sortedAsc);
+    } else {
+      toggleClass(headerColumns[i], "sorted-asc", false);
+      toggleClass(headerColumns[i], "sorted-desc", false);
+    }
+  }
+
   while (switching) {
     switching = false;
     rows = table.querySelectorAll("tbody tr");
@@ -268,15 +287,26 @@ function sortTable(table, columnIndex) {
       y = rows[i + 1].getElementsByTagName("td")[columnIndex];
 
       if (x && y) {
-        var xValue = x.innerHTML.toLowerCase();
-        var yValue = y.innerHTML.toLowerCase();
+        var xValue = x.innerText.toLowerCase();
+        var yValue = y.innerText.toLowerCase();
+        var xDateMatches = xValue.match(/([0-9]+)\-([0-9]+)\-([0-9]+)/g) || [];
+        var yDateMatches = yValue.match(/([0-9]+)\-([0-9]+)\-([0-9]+)/g) || [];
 
-        if (!isNaN(parseFloat(xValue)) && !isNaN(parseFloat(yValue))) {
+        if (xDateMatches.length > 0 && yDateMatches.length > 0) {
+          xValue = xDateMatches[0]
+            .split("-")
+            .reverse()
+            .join("");
+          yValue = yDateMatches[0]
+            .split("-")
+            .reverse()
+            .join("");
+        } else if (!isNaN(parseFloat(xValue)) && !isNaN(parseFloat(yValue))) {
           xValue = parseFloat(xValue.replace(",", ""));
           yValue = parseFloat(yValue.replace(",", ""));
         }
 
-        if (xValue > yValue) {
+        if ((!sortedAsc && xValue > yValue) || (sortedAsc && xValue < yValue)) {
           shouldSwitch = true;
           break;
         }
@@ -289,3 +319,11 @@ function sortTable(table, columnIndex) {
     }
   }
 }
+
+window.onload = function() {
+  var tables = document.querySelectorAll("table.sortable");
+
+  for (var i = 0; i < tables.length; i++) {
+    setTableSortable(tables[i]);
+  }
+};

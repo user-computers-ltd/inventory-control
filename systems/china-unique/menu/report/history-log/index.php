@@ -121,11 +121,11 @@
           <tr>
             <td>
               <input type="date" name="from" value="<?php echo $from; ?>" max="<?php echo date("Y-m-d"); ?>" class="web-only" />
-              <span class="print-only"><?php echo assigned($from) ? $from : "-"; ?></span>
+              <span class="print-only"><?php echo assigned($from) ? $from : "ANY"; ?></span>
             </td>
             <td>
               <input type="date" name="to" value="<?php echo $to; ?>" max="<?php echo date("Y-m-d"); ?>" class="web-only" />
-              <span class="print-only"><?php echo assigned($to) ? $to : "-"; ?></span>
+              <span class="print-only"><?php echo assigned($to) ? $to : "ANY"; ?></span>
             </td>
             <td>
               <select name="client_code" class="web-only">
@@ -139,15 +139,15 @@
                   }
                 ?>
               </select>
-              <span class="print-only"><?php echo assigned($transactionCode) ? $transactionCode : "-"; ?></span>
+              <span class="print-only"><?php echo assigned($transactionCode) ? $transactionCode : "ANY"; ?></span>
             </td>
             <td>
               <input type="text" name="brand_code" value="<?php echo $brandCode; ?>" class="web-only" />
-              <span class="print-only"><?php echo assigned($brandCode) ? $brandCode : "-"; ?></span>
+              <span class="print-only"><?php echo assigned($brandCode) ? $brandCode : "ANY"; ?></span>
             </td>
             <td>
               <input type="text" name="model_no" value="<?php echo $modelNo; ?>" class="web-only" />
-              <span class="print-only"><?php echo assigned($modelNo) ? $modelNo : "-"; ?></span>
+              <span class="print-only"><?php echo assigned($modelNo) ? $modelNo : "ANY"; ?></span>
             </td>
             <td>
               <select name="transaction_code" class="web-only">
@@ -166,7 +166,7 @@
         </table>
       </form>
       <?php if (count($transactions) > 0) : ?>
-        <table id="trans-results">
+        <table id="trans-results" class="sortable">
           <colgroup>
             <col style="width: 70px">
             <col style="width: 90px">
@@ -266,7 +266,4 @@
       <?php endif ?>
     </div>
   </body>
-  <script>
-    setTableSortable(document.querySelector("#trans-results"));
-  </script>
 </html>

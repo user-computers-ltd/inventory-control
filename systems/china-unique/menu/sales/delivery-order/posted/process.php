@@ -41,10 +41,10 @@
       CONCAT(a.debtor_code, ' - ', IFNULL(c.english_name, 'Unknown'))         AS `debtor`,
       IFNULL(b.total_qty, 0)                                                  AS `qty`,
       (CASE
-        WHEN b.normal_count=b.count   THEN \"normal\"
-        WHEN b.special_count=b.count  THEN \"special\"
-        WHEN b.end_user_count=b.count THEN \"end user\"
-        ELSE \"custom\"
+        WHEN b.normal_count=b.count   THEN \"N\"
+        WHEN b.special_count=b.count  THEN \"S\"
+        WHEN b.end_user_count=b.count THEN \"E\"
+        ELSE \"C\"
       END)                                                                    AS `price_category`,
       a.discount                                                              AS `discount`,
       a.currency_code                                                         AS `currency`,
