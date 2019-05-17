@@ -60,14 +60,14 @@
                 ?>
               </span>
             </td>
-            <td><button type="submit">Go</button></td>
+            <td><button type="submit" class="web-only">Go</button></td>
           </tr>
         </table>
       </form>
       <?php if (count($incomeHeaders) > 0) : ?>
         <?php foreach ($incomeHeaders as $currency => &$headers) : ?>
           <h4><?php echo $currency; ?></h4>
-          <table class="invoice-results">
+          <table class="invoice-results sortable">
             <colgroup>
               <col style="width: 70px">
               <col style="width: 50px">
@@ -149,49 +149,51 @@
                   $previousIssued += $period != $incomeHeader["period"] ? $invoiceSum : 0;
                   $currentIssued += $period == $incomeHeader["period"] ? $invoiceSum : 0;
 
+                  $voucherColumn = assigned($doId) ? "<td title=\"$doNo\">
+                    <a class=\"link\" href=\"" . SALES_DELIVERY_ORDER_PRINTOUT_URL . "?id[]=$doId\">$doNo</a>
+                  </td>" : (assigned($stockOutId) ? "<td title=\"$stockOutNo\">
+                    <a class=\"link\" href=\"" . STOCK_OUT_PRINTOUT_URL . "?id[]=$stockOutId\">$stockOutNo</a>
+                  </td>" : (assigned($stockInId) ? "<td title=\"$stockInNo\">
+                    <a class=\"link\" href=\"" . STOCK_IN_PRINTOUT_URL . "?id[]=$stockInId\">$stockInNo</a>
+                  </td>" : ""));
+
+                  $invoiceDateColumn = "";
+                  $invoiceAmountColumn = "";
+                  $invoiceNoColumn = "";
+
                   for ($j = 0; $j < $invoiceCount; $j++) {
-                    $invoiceAmount = $invoiceAmounts[$j];
+                    $invoiceAmount = number_format($invoiceAmounts[$j], 2);
                     $invoiceDate = $invoiceDates[$j];
                     $invoiceNo = $invoiceNos[$j];
                     $invoiceId = $invoiceIds[$j];
                     $totalInvAmount += $invoiceAmount;
 
-                    if ($j == 0) {
-                      $voucherColumn = assigned($doId) ? "<td title=\"$doNo\" rowspan=\"$invoiceCount\">
-                        <a class=\"link\" href=\"" . SALES_DELIVERY_ORDER_PRINTOUT_URL . "?id[]=$doId\">$doNo</a>
-                      </td>" : (assigned($stockOutId) ? "<td title=\"$stockOutNo\" rowspan=\"$invoiceCount\">
-                        <a class=\"link\" href=\"" . STOCK_OUT_PRINTOUT_URL . "?id[]=$stockOutId\">$stockOutNo</a>
-                      </td>" : (assigned($stockInId) ? "<td title=\"$stockInNo\" rowspan=\"$invoiceCount\">
-                        <a class=\"link\" href=\"" . STOCK_IN_PRINTOUT_URL . "?id[]=$stockInId\">$stockInNo</a>
-                      </td>" : ""));
-
-                      echo "
-                        <tr>
-                          <td title=\"$date\" rowspan=\"$invoiceCount\">$date</td>
-                          <td title=\"$debtorCode\" rowspan=\"$invoiceCount\">$debtorCode</td>
-                          <td title=\"$debtorName\" rowspan=\"$invoiceCount\">$debtorName</td>
-                          $voucherColumn
-                          <td rowspan=\"$invoiceCount\">$soNos</td>
-                          <td title=\"$qty\" rowspan=\"$invoiceCount\" class=\"number\">" . number_format($qty) . "</td>
-                          <td title=\"$cost\" rowspan=\"$invoiceCount\" class=\"number\">" . number_format($cost, 2) . "</td>
-                          <td title=\"$net\" rowspan=\"$invoiceCount\" class=\"number\">" . number_format($net, 2) . "</td>
-                          <td title=\"$profit\" rowspan=\"$invoiceCount\" class=\"number\">" . number_format($profit, 2) . "%</td>
-                          <td title=\"$amount\" rowspan=\"$invoiceCount\" class=\"number\">" . number_format($amount, 2) . "</td>
-                          <td title=\"$invoiceDate\">$invoiceDate</td>
-                          <td title=\"$invoiceAmount\" class=\"number\">" . number_format($invoiceAmount, 2) . "</td>
-                          <td title=\"$invoiceNo\"><a class=\"link\" href=\"" . SALES_INVOICE_PRINTOUT_URL . "?id[]=$invoiceId\">$invoiceNo</a></td>
-                        </tr>
-                      ";
-                    } else {
-                      echo "
-                        <tr>
-                          <td title=\"$invoiceDate\">$invoiceDate</td>
-                          <td title=\"$invoiceAmount\" class=\"number\">" . number_format($invoiceAmount, 2) . "</td>
-                          <td title=\"$invoiceNo\"><a class=\"link\" href=\"" . SALES_INVOICE_PRINTOUT_URL . "?id[]=$invoiceId\">$invoiceNo</a></td>
-                        </tr>
-                      ";
-                    }
+                    $invoiceDateColumn = $invoiceDateColumn . "
+                      <div title=\"$invoiceDate\">$invoiceDate</div>";
+                      $invoiceAmountColumn = $invoiceAmountColumn . "<div class=\"number\" title=\"$invoiceAmount\">$invoiceAmount</div>";
+                      $invoiceNoColumn = $invoiceNoColumn . "<div title=\"$invoiceNo\">
+                        <a class=\"link\" href=\"" . SALES_INVOICE_PRINTOUT_URL . "?id[]=$invoiceId\">$invoiceNo</a>
+                      </div>
+                    ";
                   }
+
+                  echo "
+                    <tr>
+                      <td title=\"$date\">$date</td>
+                      <td title=\"$debtorCode\">$debtorCode</td>
+                      <td title=\"$debtorName\">$debtorName</td>
+                      $voucherColumn
+                      <td>$soNos</td>
+                      <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
+                      <td title=\"$cost\" class=\"number\">" . number_format($cost, 2) . "</td>
+                      <td title=\"$net\" class=\"number\">" . number_format($net, 2) . "</td>
+                      <td title=\"$profit\" class=\"number\">" . number_format($profit, 2) . "%</td>
+                      <td title=\"$amount\" class=\"number\">" . number_format($amount, 2) . "</td>
+                      <td title=\"$invoiceDate\">$invoiceDateColumn</td>
+                      <td title=\"$invoiceAmount\">$invoiceAmountColumn</td>
+                      <td title=\"$invoiceNo\">$invoiceNoColumn</td>
+                    </tr>
+                  ";
                 }
 
                 $averagePM /= count($headers);

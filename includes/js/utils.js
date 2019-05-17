@@ -243,6 +243,29 @@ function getTime(dateString) {
 
 function setTableSortable(table) {
   var headerColumns = table.querySelectorAll("thead tr th");
+  var rows = table.querySelectorAll("tbody tr");
+
+  for (var i = 0; i < rows.length - 1; i++) {
+    for (var j = 0; j < headerColumns.length; j++) {
+      var cell = rows[i].getElementsByTagName("td")[j];
+
+      if (cell) {
+        var value = cell.innerText.toLowerCase();
+        var dateMatches = value.match(/([0-9]+)\-([0-9]+)\-([0-9]+)/g) || [];
+
+        if (dateMatches.length > 0) {
+          value = dateMatches[0]
+            .split("-")
+            .reverse()
+            .join("");
+        } else if (hasClass(headerColumns[j], "number")) {
+          value = parseFloat(value.replace(",", "")) || 0;
+        }
+
+        cell.dataset.sortvalue = value;
+      }
+    }
+  }
 
   for (var i = 0; i < headerColumns.length; i++) {
     toggleClass(headerColumns[i], "sort-column", true);
@@ -257,14 +280,21 @@ function setTableSortable(table) {
 }
 
 function sortTable(table, columnIndex) {
-  var rows,
-    x,
-    y,
-    shouldSwitch,
-    switching = true;
-
   var headerColumns = table.querySelectorAll("thead tr th");
+  var tbody = table.querySelector("tbody");
+  var rowElements = tbody.querySelectorAll("tr:not(:last-child)");
+  var rows = [];
   var sortedAsc = hasClass(headerColumns[columnIndex], "sorted-asc");
+
+  var parseValue = hasClass(headerColumns[columnIndex], "number")
+    ? parseFloat
+    : function(v) {
+        return v;
+      };
+
+  for (var i = 0; i < rowElements.length; i++) {
+    rows.push(rowElements[i]);
+  }
 
   for (var i = 0; i < headerColumns.length; i++) {
     if (columnIndex === i) {
@@ -276,47 +306,22 @@ function sortTable(table, columnIndex) {
     }
   }
 
-  while (switching) {
-    switching = false;
-    rows = table.querySelectorAll("tbody tr");
+  rows.sort(function(a, b) {
+    var x = a.getElementsByTagName("td")[columnIndex];
+    var y = b.getElementsByTagName("td")[columnIndex];
 
-    for (var i = 0; i < rows.length - 1; i++) {
-      shouldSwitch = false;
+    if (x && y) {
+      var xValue = parseValue(x.dataset.sortvalue);
+      var yValue = parseValue(y.dataset.sortvalue);
 
-      x = rows[i].getElementsByTagName("td")[columnIndex];
-      y = rows[i + 1].getElementsByTagName("td")[columnIndex];
-
-      if (x && y) {
-        var xValue = x.innerText.toLowerCase();
-        var yValue = y.innerText.toLowerCase();
-        var xDateMatches = xValue.match(/([0-9]+)\-([0-9]+)\-([0-9]+)/g) || [];
-        var yDateMatches = yValue.match(/([0-9]+)\-([0-9]+)\-([0-9]+)/g) || [];
-
-        if (xDateMatches.length > 0 && yDateMatches.length > 0) {
-          xValue = xDateMatches[0]
-            .split("-")
-            .reverse()
-            .join("");
-          yValue = yDateMatches[0]
-            .split("-")
-            .reverse()
-            .join("");
-        } else if (!isNaN(parseFloat(xValue)) && !isNaN(parseFloat(yValue))) {
-          xValue = parseFloat(xValue.replace(",", ""));
-          yValue = parseFloat(yValue.replace(",", ""));
-        }
-
-        if ((!sortedAsc && xValue > yValue) || (sortedAsc && xValue < yValue)) {
-          shouldSwitch = true;
-          break;
-        }
-      }
+      return (!sortedAsc && xValue > yValue) || (sortedAsc && xValue < yValue);
     }
+  });
 
-    if (shouldSwitch) {
-      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-      switching = true;
-    }
+  tbody.innerHTML = "";
+
+  for (var i = 0; i < rows.length; i++) {
+    tbody.appendChild(rows[i]);
   }
 }
 
