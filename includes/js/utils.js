@@ -325,10 +325,10 @@ function sortTable(table, columnIndex) {
   }
 }
 
-window.onload = function() {
+window.addEventListener("load", function() {
   var tables = document.querySelectorAll("table.sortable");
 
   for (var i = 0; i < tables.length; i++) {
     setTableSortable(tables[i]);
   }
-};
+});

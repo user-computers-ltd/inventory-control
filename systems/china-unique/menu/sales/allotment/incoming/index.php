@@ -578,7 +578,7 @@
         render();
       }
 
-      window.onload = function () {
+      window.addEventListener("load", function () {
         var iaForms = document.querySelectorAll(".ia-form");
 
         for (var i = 0; i < iaForms.length; i++) {
@@ -586,7 +586,7 @@
         }
 
         render();
-      }
+      });
     </script>
   </body>
 </html>

@@ -436,7 +436,7 @@
             }
           }
 
-          window.onload = function () {
+          window.addEventListener("load", function () {
             document.querySelector("#invoice-form").reset();
 
             for (var i = 0; i < invoiceVouchers.length; i++) {
@@ -455,7 +455,7 @@
             }
 
             render();
-          }
+          });
         </script>
       <?php else : ?>
         <div id="invoice-entry-not-found">Invoice not found</div>

@@ -523,7 +523,7 @@
             }
           }
 
-          window.onload = function () {
+          window.addEventListener("load", function () {
             document.querySelector("#so-form").reset();
 
             for (var i = 0; i < soModels.length; i++) {
@@ -540,7 +540,7 @@
             }
 
             render();
-          }
+          });
         </script>
       <?php else : ?>
         <div id="so-entry-not-found">Sales order not found</div>

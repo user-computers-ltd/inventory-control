@@ -604,7 +604,7 @@
           });
         }
 
-        window.onload = function () {
+        window.addEventListener("load", function () {
           document.querySelector("#enquiry-form").reset();
 
           for (var i = 0; i < enquiryModels.length; i++) {
@@ -621,7 +621,7 @@
           }
 
           render();
-        }
+        });
       </script>
     </div>
   </body>

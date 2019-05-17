@@ -510,7 +510,7 @@
             }
           }
 
-          window.onload = function () {
+          window.addEventListener("load", function () {
             document.querySelector("#delivery-form").reset();
 
             for (var i = 0; i < doModels.length; i++) {
@@ -523,7 +523,7 @@
             }
 
             render();
-          }
+          });
 
           function confirmPost(event) {
             showConfirmDialog("<b>Are you sure you want to post?", function () {

@@ -618,7 +618,7 @@
             }
           }
 
-          window.onload = function () {
+          window.addEventListener("load", function () {
             document.querySelector("#stock-out-form").reset();
 
             for (var i = 0; i < stockOutModels.length; i++) {
@@ -634,7 +634,7 @@
             render();
 
             onTransactionCodeChange();
-          }
+          });
         </script>
       <?php else : ?>
         <div id="stock-out-entry-not-found">Stock in voucher not found</div>

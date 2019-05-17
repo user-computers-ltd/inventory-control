@@ -570,7 +570,7 @@
         render();
       }
 
-      window.onload = function () {
+      window.addEventListener("load", function () {
         var stockForms = document.querySelectorAll(".stock-form");
 
         for (var i = 0; i < stockForms.length; i++) {
@@ -578,7 +578,7 @@
         }
 
         render();
-      }
+      });
     </script>
   </body>
 </html>
