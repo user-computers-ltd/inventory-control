@@ -178,7 +178,7 @@
       $stockOutWhereClause
     UNION
     SELECT
-      " . getColumns("\"R3\"", "a.stock_in_date", "\"\"", "\"\"", "\"\"", "\"\"", "a.id", "a.stock_in_no", "a.creditor_code") . "
+      " . getColumns("a.transaction_code", "a.stock_in_date", "\"\"", "\"\"", "\"\"", "\"\"", "a.id", "a.stock_in_no", "a.creditor_code") . "
     FROM
       `stock_in_header` AS a
     " . joinModelTable("b", "stock_in_no", $modelWhereClause, true) . "

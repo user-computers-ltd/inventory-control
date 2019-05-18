@@ -177,12 +177,12 @@
       $stockOutWhereClause
     UNION
     SELECT
-      " . getColumns("\"R3\"", "a.stock_in_date", "\"\"", "\"\"", "a.id", "a.stock_in_no", "\"\"", "\"\"", "a.creditor_code") . "
+      " . getColumns("a.transaction_code", "a.stock_in_date", "\"\"", "\"\"", "\"\"", "\"\"", "a.id", "a.stock_in_no", "a.creditor_code") . "
     FROM
       `stock_in_header` AS a
     " . joinModelTable("stock_in_model", "b", "stock_in_no", "", true) . "
     LEFT JOIN
-      `creditor` AS c
+      `debtor` AS c
     ON a.creditor_code=c.code
     LEFT JOIN
       (SELECT \"\" AS `invoice_amounts`, \"\" AS `invoice_dates`, \"\" AS `invoice_nos`, \"\" AS `invoice_ids`) AS d

@@ -166,7 +166,7 @@
                     $invoiceDate = $invoiceDates[$j];
                     $invoiceNo = $invoiceNos[$j];
                     $invoiceId = $invoiceIds[$j];
-                    $totalInvAmount += $invoiceAmount;
+                    $totalInvAmount += $invoiceAmounts[$j];
 
                     $invoiceDateColumn = $invoiceDateColumn . "
                       <div title=\"$invoiceDate\">$invoiceDate</div>";
