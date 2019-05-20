@@ -95,12 +95,12 @@
             )
       ");
 
-      if (assigned($id) && $status === "POSTED") {
-        $queries = concat($queries, onPostStockOutVoucher($stockOutNo));
+      execute($queries);
+
+      if ($status === "POSTED") {
+        execute(onPostStockOutVoucher($stockOutNo));
       }
     }
-
-    execute($queries);
 
     header("Location: " . STOCK_OUT_SAVED_URL);
   }

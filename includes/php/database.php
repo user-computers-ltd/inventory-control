@@ -102,7 +102,7 @@
     } else {
       mysqli_rollback($connection);
 
-      if ($failSafe == false) {
+      if ($failSafe === false) {
         throwError($error);
       } else {
         throw new Exception($error);

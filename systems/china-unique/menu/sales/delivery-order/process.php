@@ -108,11 +108,11 @@
             id=\"$id\"
         ");
 
-        if ($status === "POSTED") {
-          $queries = concat($queries, onPostSalesDeliveryOrder($doNo));
-        }
-
         execute($queries);
+
+        if ($status === "POSTED") {
+          execute(onPostSalesDeliveryOrder($doNo));
+        }
       } else if ($status === "DELETED") {
         execute(array(
           "DELETE a FROM `sdo_model` AS a LEFT JOIN `sdo_header` AS b ON a.do_no=b.do_no WHERE b.id=\"$id\"",
