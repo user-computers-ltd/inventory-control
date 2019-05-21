@@ -8,10 +8,10 @@
 
   $from = $_GET["from"];
   $to = $_GET["to"];
-  $brandCode = $_GET["brand_code"];
-  $modelNo = $_GET["model_no"];
-  $transactionCode = $_GET["transaction_code"];
-  $clientCode = $_GET["client_code"];
+  $brandCodes = $_GET["brand_code"];
+  $modelNos = $_GET["model_no"];
+  $transactionCodes = $_GET["transaction_code"];
+  $clientCodes = $_GET["client_code"];
 
   $whereClause = "";
 
@@ -25,24 +25,24 @@
       AND a.transaction_date<=\"$to\"";
   }
 
-  if (assigned($brandCode)) {
+  if (assigned($clientCodes)) {
     $whereClause = $whereClause . "
-      AND a.brand_code=\"$brandCode\"";
+    AND (" . join(" OR ", array_map(function ($i) { return "a.client_code=\"$i\""; }, $clientCodes)) . ")";
   }
 
-  if (assigned($clientCode)) {
+  if (assigned($brandCodes) && count($brandCodes) > 0) {
     $whereClause = $whereClause . "
-      AND a.client_code=\"$clientCode\"";
+      AND (" . join(" OR ", array_map(function ($i) { return "a.brand_code=\"$i\""; }, $brandCodes)) . ")";
   }
 
-  if (assigned($modelNo)) {
+  if (assigned($modelNos) && count($modelNos) > 0) {
     $whereClause = $whereClause . "
-      AND a.model_no=\"$modelNo\"";
+      AND (" . join(" OR ", array_map(function ($m) { return "a.model_no=\"$m\""; }, $modelNos)) . ")";
   }
 
-  if (assigned($transactionCode)) {
+  if (assigned($transactionCodes) && count($transactionCodes) > 0) {
     $whereClause = $whereClause . "
-      AND a.transaction_code=\"$transactionCode\"";
+      AND (" . join(" OR ", array_map(function ($i) { return "a.transaction_code=\"$i\""; }, $transactionCodes)) . ")";
   }
 
   $hasFilter = assigned($whereClause);
@@ -95,6 +95,25 @@
     SELECT code, IFNULL(english_name, 'Unknown') AS `name` FROM `creditor`
     ORDER BY code ASC
   ");
+
+  $brands = query("
+    SELECT DISTINCT
+      code  AS `code`,
+      name  AS `name`
+    FROM
+      `brand`
+    ORDER BY
+      code ASC
+  ");
+
+  $models = query("
+    SELECT DISTINCT
+      model_no AS `model_no`
+    FROM
+      `so_model`
+    ORDER BY
+      model_no ASC
+  ");
 ?>
 
 <!DOCTYPE html>
@@ -128,38 +147,67 @@
               <span class="print-only"><?php echo assigned($to) ? $to : "ANY"; ?></span>
             </td>
             <td>
-              <select name="client_code" class="web-only">
-                <option value=""></option>
+              <select name="client_code[]" multiple class="web-only">
                 <?php
                   foreach ($clients as $client) {
                     $code = $client["code"];
                     $name = $client["name"];
-                    $selected = $clientCode == $code ? "selected" : "";
+                    $selected = assigned($clientCodes) && in_array($code, $clientCodes) ? "selected" : "";
                     echo "<option value=\"$code\" $selected>$code - $name</option>";
                   }
                 ?>
               </select>
-              <span class="print-only"><?php echo assigned($transactionCode) ? $transactionCode : "ANY"; ?></span>
+              <span class="print-only">
+                <?php
+                  echo assigned($clientCodes) ? join(", ", array_map(function ($d) {
+                    return $d["code"] . " - " . $d["name"];
+                  }, array_filter($clients, function ($i) use ($clientCodes) {
+                    return in_array($i["code"], $clientCodes);
+                  }))) : "ALL";
+                ?>
+              </span>
             </td>
             <td>
-              <input type="text" name="brand_code" value="<?php echo $brandCode; ?>" class="web-only" />
-              <span class="print-only"><?php echo assigned($brandCode) ? $brandCode : "ANY"; ?></span>
+              <select name="brand_code[]" multiple class="web-only">
+                <?php
+                  foreach ($brands as $brand) {
+                    $code = $brand["code"];
+                    $name = $brand["name"];
+                    $selected = assigned($brandCodes) && in_array($code, $brandCodes) ? "selected" : "";
+                    echo "<option value=\"$code\" $selected>$code - $name</option>";
+                  }
+                ?>
+              </select>
+              <span class="print-only">
+                <?php echo assigned($brandCodes) ? join(", ", $brandCodes) : "ALL"; ?>
+              </span>
             </td>
             <td>
-              <input type="text" name="model_no" value="<?php echo $modelNo; ?>" class="web-only" />
-              <span class="print-only"><?php echo assigned($modelNo) ? $modelNo : "ANY"; ?></span>
+              <select name="model_no[]" multiple class="web-only">
+                <?php
+                  foreach ($models as $model) {
+                    $modelNo = $model["model_no"];
+                    $selected = assigned($modelNos) && in_array($modelNo, $modelNos) ? "selected" : "";
+                    echo "<option value=\"$modelNo\" $selected>$modelNo</option>";
+                  }
+                ?>
+              </select>
+              <span class="print-only">
+                <?php echo assigned($modelNos) ? join(", ", $modelNos) : "ALL"; ?>
+              </span>
             </td>
             <td>
-              <select name="transaction_code" class="web-only">
-                <option value=""></option>
+              <select name="transaction_code[]" multiple class="web-only">
                 <?php
                   foreach ($TRANSACTION_CODES as $code => $desc) {
-                    $selected = $transactionCode == $code ? "selected" : "";
+                    $selected = assigned($transactionCodes) && in_array($code, $transactionCodes) ? "selected" : "";
                     echo "<option value=\"$code\" $selected>$code - $desc</option>";
                   }
                 ?>
               </select>
-              <span class="print-only"><?php echo assigned($transactionCode) ? $transactionCode : "-"; ?></span>
+              <span class="print-only">
+                <?php echo assigned($transactionCodes) ? join(", ", $transactionCodes) : "ALL"; ?>
+              </span>
             </td>
             <td><button type="submit" class="web-only">Go</button></td>
           </tr>

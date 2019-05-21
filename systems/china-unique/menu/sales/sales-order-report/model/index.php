@@ -156,21 +156,11 @@
       a.brand_code ASC
   ");
 
-  $modelWhereClause = "";
-
-  if (assigned($brandCodes) && count($brandCodes) > 0) {
-    $modelWhereClause = $modelWhereClause . "
-      AND (" . join(" OR ", array_map(function ($i) { return "brand_code=\"$i\""; }, $brandCodes)) . ")";
-  }
-
   $models = query("
     SELECT DISTINCT
       model_no AS `model_no`
     FROM
       `so_model`
-    WHERE
-      model_no IS NOT NULL
-      $modelWhereClause
     ORDER BY
       model_no ASC
   ");
