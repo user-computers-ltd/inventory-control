@@ -61,7 +61,6 @@
       $dateC                                                                                                  AS `date_`,
       DATE_FORMAT($dateC, \"%d-%m-%Y\")                                                                       AS `date`,
       DATE_FORMAT($dateC, \"%Y-%m\")                                                                          AS `period`,
-      b.count                                                                                                 AS `count`,
       $doIdC                                                                                                  AS `do_id`,
       $doNoC                                                                                                  AS `do_no`,
       $stockOutIdC                                                                                            AS `stock_out_id`,
@@ -84,24 +83,22 @@
     ";
   }
 
-  function joinModelTable($table, $as, $link, $otherColumns, $negateValues = false) {
+  function joinModelTable($as, $link, $negateValues = false) {
     $prefix = $negateValues ? "-" : "";
     return "
       LEFT JOIN
         (SELECT
-          x.$link                               AS `$link`,
-          $otherColumns
-          COUNT(*)                              AS `count`,
+          x.header_no                           AS `$link`,
           $prefix SUM(x.qty)                    AS `qty`,
           $prefix SUM(x.qty * x.price)          AS `amount`,
           $prefix SUM(x.qty * y.cost_average)   AS `cost`
         FROM
-          `$table` AS x
+          `transaction` AS x
         LEFT JOIN
           `model` AS y
         ON x.brand_code=y.brand_code AND x.model_no=y.model_no
         GROUP BY
-          $link) AS $as
+          x.header_no) AS $as
       ON a.$link=$as.$link
     ";
   }
@@ -151,10 +148,19 @@
 
   $results = query("
     SELECT
-      " . getColumns("b.so_no", "a.do_date", "a.id", "a.do_no", "\"\"", "\"\"", "\"\"", "\"\"", "a.debtor_code") . "
+      " . getColumns("IFNULL(b2.so_nos, \"\")", "a.do_date", "a.id", "a.do_no", "\"\"", "\"\"", "\"\"", "\"\"", "a.debtor_code") . "
     FROM
       `sdo_header` AS a
-    " . joinModelTable("sdo_model", "b", "do_no", "GROUP_CONCAT(DISTINCT x.so_no)  AS `so_no`,") . "
+    " . joinModelTable("b", "do_no") . "
+    LEFT JOIN
+      (SELECT
+        do_no                        AS `do_no`,
+        GROUP_CONCAT(DISTINCT so_no) AS `so_nos`
+      FROM
+        `sdo_model`
+      GROUP BY
+        do_no) AS b2
+    ON a.do_no=b2.do_no
     LEFT JOIN
       `debtor` AS c
     ON a.debtor_code=c.code
@@ -168,7 +174,7 @@
       " . getColumns("a.transaction_code", "a.stock_out_date", "\"\"", "\"\"", "a.id", "a.stock_out_no", "\"\"", "\"\"", "a.debtor_code") . "
     FROM
       `stock_out_header` AS a
-    " . joinModelTable("stock_out_model", "b", "stock_out_no", "") . "
+    " . joinModelTable("b", "stock_out_no") . "
     LEFT JOIN
       `debtor` AS c
     ON a.debtor_code=c.code
@@ -183,7 +189,7 @@
       " . getColumns("a.transaction_code", "a.stock_in_date", "\"\"", "\"\"", "\"\"", "\"\"", "a.id", "a.stock_in_no", "a.creditor_code") . "
     FROM
       `stock_in_header` AS a
-    " . joinModelTable("stock_in_model", "b", "stock_in_no", "", true) . "
+    " . joinModelTable("b", "stock_in_no", true) . "
     LEFT JOIN
       `debtor` AS c
     ON a.creditor_code=c.code
