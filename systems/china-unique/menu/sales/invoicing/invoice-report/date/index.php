@@ -31,7 +31,7 @@
           </tr>
           <tr>
             <td>
-              <select name="period" class="web-only">
+              <select name="period" class="web-only" onchange="this.form.submit()">
                 <?php
                   foreach ($periods as $p) {
                     $selected = $period === $p ? "selected" : "";
@@ -94,6 +94,7 @@
               <col style="width: 70px">
               <col style="width: 80px">
               <col style="width: 100px">
+              <col style="width: 60px">
             </colgroup>
             <thead>
               <tr></tr>
@@ -111,6 +112,7 @@
                 <th>Inv. Date</th>
                 <th class="number">Inv. Amount</th>
                 <th>Inv. No.</th>
+                <th>Pending</th>
               </tr>
             </thead>
             <tbody>
@@ -155,11 +157,13 @@
                   $amount = $incomeHeader["amountM"] + $incomeHeader["amountS"] + $incomeHeader["amountO"];
                   $profit = getProfit($net, $cost);
                   $invoiceAmounts = explode(",", $incomeHeader["invoice_amounts"]);
+                  $invoiceOffsets = explode(",", $incomeHeader["invoice_offsets"]);
                   $invoiceDates = explode(",", $incomeHeader["invoice_dates"]);
                   $invoiceNos = explode(",", $incomeHeader["invoice_nos"]);
                   $invoiceIds = explode(",", $incomeHeader["invoice_ids"]);
                   $invoiceSum = array_sum($invoiceAmounts);
-                  $pendingAmount = $amount - $invoiceSum;
+                  $invoiceOffsetSum = array_sum($invoiceOffsets);
+                  $pendingAmount = round($amount - $invoiceSum - $invoiceOffsetSum, 2);
 
                   accumulateType($totalQty, $incomeHeader["qtyM"], $incomeHeader["qtyS"], $incomeHeader["qtyO"]);
                   accumulateType($totalCost, $incomeHeader["costM"], $incomeHeader["costS"], $incomeHeader["costO"]);
@@ -194,7 +198,7 @@
                       <div title=\"$invoiceDate\">$invoiceDate</div>";
                       $invoiceAmountColumn = $invoiceAmountColumn . "<div class=\"number\" title=\"$invoiceAmount\">$invoiceAmount</div>";
                       $invoiceNoColumn = $invoiceNoColumn . "<div title=\"$invoiceNo\">
-                        <a class=\"link\" href=\"" . SALES_INVOICE_PRINTOUT_URL . "?id[]=$invoiceId\">$invoiceNo</a>
+                        <a class=\"link\" href=\"" . SALES_INVOICE_URL . "?id=$invoiceId\">$invoiceNo</a>
                       </div>
                     ";
                   }
@@ -217,6 +221,7 @@
                       <td title=\"$invoiceDate\">$invoiceDateColumn</td>
                       <td title=\"$invoiceAmount\">$invoiceAmountColumn</td>
                       <td title=\"$invoiceNo\">$invoiceNoColumn</td>
+                      <td title=\"$pendingAmount\" class=\"number\">" . ($pendingAmount > 0 ? number_format($pendingAmount, 2) : "") . "</td>
                     </tr>
                   ";
                 }
@@ -239,6 +244,7 @@
                 <th></th>
                 <th class="number"><?php echo number_format($totalInvAmount, 2); ?></th>
                 <th></th>
+                <th class="number"><?php echo number_format($totalPending, 2); ?></th>
                 <th></th>
               </tr>
               <?php if (!assigned($filterProductTypes)) : ?>
@@ -253,6 +259,7 @@
                   <th class="number"><?php echo number_format($totalNet["M"], 2); ?></th>
                   <th class="number"><?php echo number_format(getProfit($totalNet["M"], $totalCost["M"]), 2); ?>%</th>
                   <th class="number"><?php echo number_format($totalSales["M"], 2); ?></th>
+                  <th></th>
                   <th></th>
                   <th></th>
                   <th></th>
@@ -273,6 +280,7 @@
                   <th></th>
                   <th></th>
                   <th></th>
+                  <th></th>
                 </tr>
                 <tr>
                   <th></th>
@@ -285,6 +293,7 @@
                   <th class="number"><?php echo number_format($totalNet["O"], 2); ?></th>
                   <th class="number"><?php echo number_format(getProfit($totalNet["O"], $totalCost["O"]), 2); ?>%</th>
                   <th class="number"><?php echo number_format($totalSales["O"], 2); ?></th>
+                  <th></th>
                   <th></th>
                   <th></th>
                   <th></th>

@@ -81,6 +81,7 @@
       IFNULL(b.amountO, 0) * (100 - a.discount) / (100 + a.tax)                     AS `netO`,
       IFNULL(b.costO, 0)                                                            AS `costO`,
       IFNULL(d.invoice_amounts, \"\")                                               AS `invoice_amounts`,
+      IFNULL(d.invoice_offsets, \"\")                                               AS `invoice_offsets`,
       IFNULL(d.invoice_dates, \"\")                                                 AS `invoice_dates`,
       IFNULL(d.invoice_nos, \"\")                                                   AS `invoice_nos`,
       IFNULL(d.invoice_ids, \"\")                                                   AS `invoice_ids`
@@ -92,16 +93,16 @@
     return "
       LEFT JOIN
         (SELECT
-          x.header_no                                                                         AS `$link`,
-          $prefix SUM(CASE WHEN y.product_type=\"M\" THEN x.qty ELSE 0 END)                   AS `qtyM`,
-          $prefix SUM(CASE WHEN y.product_type=\"M\" THEN x.qty * x.price ELSE 0 END)         AS `amountM`,
-          $prefix SUM(CASE WHEN y.product_type=\"M\" THEN x.qty * x.cost_average ELSE 0 END)  AS `costM`,
-          $prefix SUM(CASE WHEN y.product_type=\"S\" THEN x.qty ELSE 0 END)                   AS `qtyS`,
-          $prefix SUM(CASE WHEN y.product_type=\"S\" THEN x.qty * x.price ELSE 0 END)         AS `amountS`,
-          $prefix SUM(CASE WHEN y.product_type=\"S\" THEN x.qty * x.cost_average ELSE 0 END)  AS `costS`,
-          $prefix SUM(CASE WHEN y.product_type=\"O\" THEN x.qty ELSE 0 END)                   AS `qtyO`,
-          $prefix SUM(CASE WHEN y.product_type=\"O\" THEN x.qty * x.price ELSE 0 END)         AS `amountO`,
-          $prefix SUM(CASE WHEN y.product_type=\"O\" THEN x.qty * x.cost_average ELSE 0 END)  AS `costO`
+          x.header_no                                                       AS `$link`,
+          $prefix SUM(IF(y.product_type=\"M\", x.qty, 0))                   AS `qtyM`,
+          $prefix SUM(IF(y.product_type=\"M\", x.qty * x.price, 0))         AS `amountM`,
+          $prefix SUM(IF(y.product_type=\"M\", x.qty * x.cost_average, 0))  AS `costM`,
+          $prefix SUM(IF(y.product_type=\"S\", x.qty, 0))                   AS `qtyS`,
+          $prefix SUM(IF(y.product_type=\"S\", x.qty * x.price, 0))         AS `amountS`,
+          $prefix SUM(IF(y.product_type=\"S\", x.qty * x.cost_average, 0))  AS `costS`,
+          $prefix SUM(IF(y.product_type=\"O\", x.qty, 0))                   AS `qtyO`,
+          $prefix SUM(IF(y.product_type=\"O\", x.qty * x.price, 0))         AS `amountO`,
+          $prefix SUM(IF(y.product_type=\"O\", x.qty * x.cost_average, 0))  AS `costO`
         FROM
           `transaction` AS x
         LEFT JOIN
@@ -124,7 +125,8 @@
           GROUP_CONCAT(DATE_FORMAT(y.invoice_date, \"%d-%m-%Y\")) AS `invoice_dates`,
           GROUP_CONCAT(y.id)                                      AS `invoice_ids`,
           GROUP_CONCAT(x.invoice_no)                              AS `invoice_nos`,
-          GROUP_CONCAT(x.amount)                                  AS `invoice_amounts`
+          GROUP_CONCAT(x.amount)                                  AS `invoice_amounts`,
+          GROUP_CONCAT(x.offset)                                  AS `invoice_offsets`
         FROM
           `out_inv_model` AS x
         LEFT JOIN
@@ -186,7 +188,7 @@
       `debtor` AS c
     ON a.creditor_code=c.code
     LEFT JOIN
-      (SELECT \"\" AS `invoice_amounts`, \"\" AS `invoice_dates`, \"\" AS `invoice_nos`, \"\" AS `invoice_ids`) AS d
+      (SELECT \"\" AS `invoice_amounts`, \"\" AS `invoice_offsets`, \"\" AS `invoice_dates`, \"\" AS `invoice_nos`, \"\" AS `invoice_ids`) AS d
     ON a.id=a.id
     WHERE
       a.status=\"POSTED\" AND

@@ -30,7 +30,7 @@
           </tr>
           <tr>
             <td>
-              <select name="period" class="web-only">
+              <select name="period" class="web-only" onchange="this.form.submit()">
                 <?php
                   foreach ($periods as $p) {
                     $selected = $period === $p ? "selected" : "";
@@ -82,6 +82,7 @@
               <col style="width: 70px">
               <col style="width: 80px">
               <col style="width: 100px">
+              <col style="width: 60px">
             </colgroup>
             <thead>
               <tr></tr>
@@ -99,6 +100,7 @@
                 <th>Inv. Date</th>
                 <th class="number">Inv. Amount</th>
                 <th>Inv. No.</th>
+                <th>Pending</th>
               </tr>
             </thead>
             <tbody>
@@ -132,22 +134,24 @@
                   $profit = ($net - $cost) / $cost * 100;
                   $amount = $incomeHeader["pending"];
                   $invoiceAmounts = explode(",", $incomeHeader["invoice_amounts"]);
+                  $invoiceOffsets = explode(",", $incomeHeader["invoice_offsets"]);
                   $invoiceDates = explode(",", $incomeHeader["invoice_dates"]);
                   $invoiceNos = explode(",", $incomeHeader["invoice_nos"]);
                   $invoiceIds = explode(",", $incomeHeader["invoice_ids"]);
                   $invoiceCount = count($invoiceAmounts);
                   $invoiceSum = array_sum($invoiceAmounts);
-                  $pendingAmount = $amount - $invoiceSum;
+                  $invoiceOffsetSum = array_sum($invoiceOffsets);
+                  $pendingAmount = round($amount - $invoiceSum - $invoiceOffsetSum, 2);
 
                   $totalQty += $qty;
                   $totalCost += $cost;
                   $totalNet += $net;
                   $averagePM += $profit;
                   $totalSales += $amount;
-                  $previousPending += $period != $incomeHeader["period"] ? $pendingAmount : 0;
-                  $currentPending += $period == $incomeHeader["period"] ? $pendingAmount : 0;
-                  $previousIssued += $period != $incomeHeader["period"] ? $invoiceSum : 0;
-                  $currentIssued += $period == $incomeHeader["period"] ? $invoiceSum : 0;
+                  $previousPending += $period !== $incomeHeader["period"] ? $pendingAmount : 0;
+                  $currentPending += $period === $incomeHeader["period"] ? $pendingAmount : 0;
+                  $previousIssued += $period !== $incomeHeader["period"] ? $invoiceSum : 0;
+                  $currentIssued += $period === $incomeHeader["period"] ? $invoiceSum : 0;
 
                   $voucherColumn = assigned($doId) ? "<td title=\"$doNo\">
                     <a class=\"link\" href=\"" . SALES_DELIVERY_ORDER_PRINTOUT_URL . "?id[]=$doId\">$doNo</a>
@@ -172,7 +176,7 @@
                       <div title=\"$invoiceDate\">$invoiceDate</div>";
                       $invoiceAmountColumn = $invoiceAmountColumn . "<div class=\"number\" title=\"$invoiceAmount\">$invoiceAmount</div>";
                       $invoiceNoColumn = $invoiceNoColumn . "<div title=\"$invoiceNo\">
-                        <a class=\"link\" href=\"" . SALES_INVOICE_PRINTOUT_URL . "?id[]=$invoiceId\">$invoiceNo</a>
+                        <a class=\"link\" href=\"" . SALES_INVOICE_URL . "?id=$invoiceId\">$invoiceNo</a>
                       </div>
                     ";
                   }
@@ -192,11 +196,14 @@
                       <td title=\"$invoiceDate\">$invoiceDateColumn</td>
                       <td title=\"$invoiceAmount\">$invoiceAmountColumn</td>
                       <td title=\"$invoiceNo\">$invoiceNoColumn</td>
+                      <td title=\"$pendingAmount\" class=\"number\">" . ($pendingAmount > 0 ? number_format($pendingAmount, 2) : "") . "</td>
                     </tr>
                   ";
                 }
 
                 $averagePM /= count($headers);
+
+                $totalPendingAmount = $previousPending + $currentPending;
               ?>
               <tr>
                 <th></th>
@@ -212,6 +219,7 @@
                 <th></th>
                 <th class="number"><?php echo number_format($totalInvAmount, 2); ?></th>
                 <th></th>
+                <th class="number"><?php echo number_format($totalPendingAmount, 2); ?></th>
               </tr>
             </tbody>
           </table>

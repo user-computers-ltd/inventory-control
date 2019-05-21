@@ -47,6 +47,7 @@
               <col style="width: 60px">
               <col style="width: 80px">
               <col style="width: 80px">
+              <col style="width: 80px">
             </colgroup>
             <thead>
               <tr></tr>
@@ -59,11 +60,13 @@
                 <th>Currency</th>
                 <th class="number">Amount</th>
                 <th class="number"><?php echo $InBaseCurrency; ?></th>
+                <th class="number">Offset</th>
               </tr>
             </thead>
             <tbody>
               <?php
                 $totalAmountBase = 0;
+                $totalOffset = 0;
 
                 for ($i = 0; $i < count($invoiceHeaders); $i++) {
                   $invoiceHeader = $invoiceHeaders[$i];
@@ -75,8 +78,10 @@
                   $currencyCode = $invoiceHeader["currency_code"];
                   $amount = $invoiceHeader["amount"];
                   $amountBase = $invoiceHeader["amount_base"];
+                  $offset = $invoiceHeader["offset"];
 
                   $totalAmountBase += $amountBase;
+                  $totalOffset += $offset;
 
                   echo "
                     <tr>
@@ -88,6 +93,7 @@
                       <td title=\"$currencyCode\">$currencyCode</td>
                       <td title=\"$amount\" class=\"number\">" . number_format($amount, 2) . "</td>
                       <td title=\"$amountBase\" class=\"number\">" . number_format($amountBase, 2) . "</td>
+                      <td title=\"$offset\" class=\"number\">" . number_format($offset, 2) . "</td>
                     </tr>
                   ";
                 }
@@ -101,6 +107,7 @@
                 <th></th>
                 <th class="number">Total:</th>
                 <th class="number"><?php echo number_format($totalAmountBase, 2); ?></th>
+                <th class="number"><?php echo number_format($totalOffset, 2); ?></th>
               </tr>
             </tbody>
           </table>

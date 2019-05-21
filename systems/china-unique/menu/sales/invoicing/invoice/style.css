@@ -48,6 +48,14 @@
   display: none;
 }
 
+#invoice-vouchers td > .offset-remarks {
+  padding: 5px;
+  max-width: 100%;
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 13px;
+}
+
 #invoice-vouchers th,
 #invoice-vouchers td {
   min-width: 0px;

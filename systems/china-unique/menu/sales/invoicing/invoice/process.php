@@ -10,6 +10,8 @@
   $stockOutNos = $_POST["stock_out_no"];
   $doNos = $_POST["do_no"];
   $amounts = $_POST["amount"];
+  $offsets = $_POST["offset"];
+  $offsetRemarkss = $_POST["offset_remarks"];
 
   /* If a form is submitted, update or insert the outbound invoice. */
   if (
@@ -21,7 +23,9 @@
     assigned($status) &&
     assigned($stockOutNos) &&
     assigned($doNos) &&
-    assigned($amounts)
+    assigned($amounts) &&
+    assigned($offsets) &&
+    assigned($offsetRemarkss)
   ) {
     $queries = array();
 
@@ -40,15 +44,17 @@
         $stockOutNo = $stockOutNos[$i];
         $doNo = $doNos[$i];
         $amount = $amounts[$i];
+        $offset = $offsets[$i];
+        $offsetRemarks = $offsetRemarkss[$i];
 
-        array_push($values, "(\"$invoiceNo\", \"$i\", \"$stockOutNo\", \"$doNo\", \"$amount\")");
+        array_push($values, "(\"$invoiceNo\", \"$i\", \"$stockOutNo\", \"$doNo\", \"$amount\", \"$offset\", \"$offsetRemarks\")");
       }
 
       if (count($values) > 0) {
         array_push($queries, "
           INSERT INTO
             `out_inv_model`
-              (invoice_no, invoice_index, stock_out_no, do_no, amount)
+              (invoice_no, invoice_index, stock_out_no, do_no, amount, offset, offset_remarks)
             VALUES
         " . join(", ", $values));
       }
@@ -124,7 +130,8 @@
         WHERE
           a.status=\"POSTED\" AND
           a.debtor_code=\"$dCode\" AND
-          a.currency_code=\"$cCode\"
+          a.currency_code=\"$cCode\" AND
+          (b.amount * (100 - a.discount) / 100) - IFNULL(c.paid_amount, 0) > 0
       ");
 
       $doResults = query("
@@ -158,7 +165,8 @@
         WHERE
           a.status=\"POSTED\" AND
           a.debtor_code=\"$dCode\" AND
-          a.currency_code=\"$cCode\"
+          a.currency_code=\"$cCode\" AND
+          (b.amount * (100 - a.discount) / 100) - IFNULL(c.paid_amount, 0) > 0
       ");
 
       if (count($stockOutResults) > 0) {
@@ -196,7 +204,9 @@
         SELECT
           stock_out_no,
           do_no,
-          amount
+          amount,
+          offset,
+          IFNULL(offset_remarks, \"\") AS `offset_remarks`
         FROM
           `out_inv_model`
         WHERE
