@@ -24,12 +24,11 @@
       <div id="database">
         <h4>
           <?php echo "<a href='" . BASE_URL . "admin'>Databases</a>"; ?>
-          <span>></span>
         </h4>
         <h2><?php echo $database; ?></h2>
         <div id="database-query">
           <textarea></textarea>
-          <button onclick="queryDatabase()">query</button>
+          <button onclick="queryDatabase()">execute statement</button>
         </div>
         <button onclick="createTable()">create</button>
         <ul>

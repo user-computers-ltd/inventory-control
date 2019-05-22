@@ -49,7 +49,6 @@
           <?php echo "<a href='" . BASE_URL . "admin'>Databases</a>"; ?>
           <span>></span>
           <?php echo "<a href='" . BASE_URL . "admin/db?db=$database'>$database</a>"; ?>
-          <span>></span>
         </h4>
         <h2><?php echo $table; ?></h2>
         <div id="table-tab">
@@ -62,8 +61,12 @@
         <div id="content" class="tabcontent show">
           <form id="table-query" method="post">
             <textarea name="sql"><?php echo $sql; ?></textarea>
-            <button type="submit">query</button>
-            <div id="table-query-settings">
+            <button type="submit">execute statement</button>
+          </form>
+          <?php if (count($results) > 0) : ?>
+            <div id="table-query-count">Total <?php echo count($results) . " row" . (count($results) > 1 ? "s" : ""); ?></div>
+            <form id="table-query-settings" method="post">
+              <textarea name="sql"><?php echo $sql; ?></textarea>
               <?php
                 for ($i = 0; $i < $pageCount; $i++) {
                   $index = $i + 1;
@@ -82,33 +85,33 @@
                 <option value="200" <?php echo $count == 200 ? "selected" : ""; ?>>200</option>
                 <option value="500" <?php echo $count == 500 ? "selected" : ""; ?>>500</option>
               </select>
-            </div>
-          </form>
-          <?php if (count($results) > 0) : ?>
-            <table id="table-query-results">
-              <thead>
-                <tr>
+            </form>
+            <div id="table-query-results-wrapper">
+              <table id="table-query-results">
+                <thead>
+                  <tr>
+                    <?php
+                      foreach ($results[0] as $key => $value) {
+                        echo "<th>$key</th>";
+                      }
+                    ?>
+                  </tr>
+                </thead>
+                <tbody>
                   <?php
-                    foreach ($results[0] as $key => $value) {
-                      echo "<th>$key</th>";
+                    for ($i = $offset; $i < count($results) && $i < $offset + $count; $i++) {
+                      echo "<tr>";
+
+                      foreach ($results[$i] as $key => $value) {
+                        echo "<td>$value</td>";
+                      }
+
+                      echo "</tr>";
                     }
                   ?>
-                </tr>
-              </thead>
-              <tbody>
-                <?php
-                  for ($i = $offset; $i < count($results) && $i < $offset + $count; $i++) {
-                    echo "<tr>";
-
-                    foreach ($results[$i] as $key => $value) {
-                      echo "<td>$value</td>";
-                    }
-
-                    echo "</tr>";
-                  }
-                ?>
-              </tbody>
-            </table>
+                </tbody>
+              </table>
+            </div>
           <?php elseif (isset($error)) : ?>
             <div id="table-query-error"><?php echo $error; ?></div>
           <?php else : ?>
