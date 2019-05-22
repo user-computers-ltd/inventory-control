@@ -143,7 +143,7 @@
       " . getColumns("IFNULL(b2.so_nos, \"\")", "a.do_date", "a.id", "a.do_no", "\"\"", "\"\"", "\"\"", "\"\"", "a.debtor_code") . "
     FROM
       `sdo_header` AS a
-    " . joinModelTable("b", "do_no", $modelWhereClause) . "
+    " . joinModelTable("b", "do_no",  "$modelWhereClause AND x.transaction_code=\"S2\"") . "
     LEFT JOIN
       (SELECT
         do_no                        AS `do_no`,
@@ -167,14 +167,14 @@
       " . getColumns("a.transaction_code", "a.stock_out_date", "\"\"", "\"\"", "a.id", "a.stock_out_no", "\"\"", "\"\"",  "a.debtor_code") . "
     FROM
       `stock_out_header` AS a
-    " . joinModelTable("b", "stock_out_no", $modelWhereClause) . "
+    " . joinModelTable("b", "stock_out_no", "$modelWhereClause AND x.transaction_code=\"S1\"") . "
     LEFT JOIN
       `debtor` AS c
     ON a.debtor_code=c.code
     " . joinInvoiceTable("d", "stock_out_no") . "
     WHERE
       a.status=\"POSTED\" AND
-      (a.transaction_code=\"S1\" OR a.transaction_code=\"S2\") AND
+      a.transaction_code=\"S1\" AND
       IFNULL(b.qtyM, 0) + IFNULL(b.qtyS, 0) + IFNULL(b.qtyO, 0) != 0 AND
       IFNULL(b.amountM, 0) + IFNULL(b.amountS, 0) + IFNULL(b.amountO, 0) != 0
       $stockOutWhereClause
@@ -183,7 +183,7 @@
       " . getColumns("a.transaction_code", "a.stock_in_date", "\"\"", "\"\"", "\"\"", "\"\"", "a.id", "a.stock_in_no", "a.creditor_code") . "
     FROM
       `stock_in_header` AS a
-    " . joinModelTable("b", "stock_in_no", $modelWhereClause, true) . "
+    " . joinModelTable("b", "stock_in_no", "$modelWhereClause AND x.transaction_code=\"R3\"", true) . "
     LEFT JOIN
       `debtor` AS c
     ON a.creditor_code=c.code
