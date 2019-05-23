@@ -108,7 +108,6 @@
                 $totalQty = 0;
                 $totalCost = 0;
                 $totalNet = 0;
-                $averagePM = 0;
                 $totalSales = 0;
                 $totalInvAmount = 0;
                 $previousPending = 0;
@@ -146,7 +145,6 @@
                   $totalQty += $qty;
                   $totalCost += $cost;
                   $totalNet += $net;
-                  $averagePM += $profit;
                   $totalSales += $amount;
                   $previousPending += $period !== $incomeHeader["period"] ? $pendingAmount : 0;
                   $currentPending += $period === $incomeHeader["period"] ? $pendingAmount : 0;
@@ -201,8 +199,6 @@
                   ";
                 }
 
-                $averagePM /= count($headers);
-
                 $totalPendingAmount = $previousPending + $currentPending;
               ?>
               <tr>
@@ -214,7 +210,7 @@
                 <th class="number"><?php echo number_format($totalQty); ?></th>
                 <th class="number"><?php echo number_format($totalCost, 2); ?></th>
                 <th class="number"><?php echo number_format($totalNet, 2); ?></th>
-                <th class="number"><?php echo number_format($averagePM, 2); ?>%</th>
+                <th class="number"><?php echo number_format(($totalNet - $totalCost) / $totalCost * 100, 2); ?>%</th>
                 <th class="number"><?php echo number_format($totalSales, 2); ?></th>
                 <th></th>
                 <th class="number"><?php echo number_format($totalInvAmount, 2); ?></th>

@@ -134,7 +134,6 @@
                 $totalQty = array("M" => 0, "S" => 0, "O" => 0);
                 $totalCost = array("M" => 0, "S" => 0, "O" => 0);
                 $totalNet = array("M" => 0, "S" => 0, "O" => 0);
-                $averagePM = array("M" => 0, "S" => 0, "O" => 0);
                 $totalSales = array("M" => 0, "S" => 0, "O" => 0);
                 $totalPending = 0;
                 $totalInvAmount = 0;
@@ -169,12 +168,6 @@
                   accumulateType($totalCost, $incomeHeader["costM"], $incomeHeader["costS"], $incomeHeader["costO"]);
                   accumulateType($totalNet, $incomeHeader["netM"], $incomeHeader["netS"], $incomeHeader["netO"]);
                   accumulateType($totalSales, $incomeHeader["amountM"], $incomeHeader["amountS"], $incomeHeader["amountO"]);
-                  accumulateType(
-                    $averagePM,
-                    getProfit($incomeHeader["netM"], $incomeHeader["costM"]),
-                    getProfit($incomeHeader["netS"], $incomeHeader["costS"]),
-                    getProfit($incomeHeader["netO"], $incomeHeader["costO"])
-                  );
 
                   $voucherColumn = assigned($doId) ? "<td title=\"$doNo\">
                     <a class=\"link\" href=\"" . SALES_DELIVERY_ORDER_PRINTOUT_URL . "?id[]=$doId\">$doNo</a>
@@ -225,10 +218,6 @@
                     </tr>
                   ";
                 }
-
-                $averagePM["M"] /= count($headers);
-                $averagePM["S"] /= count($headers);
-                $averagePM["O"] /= count($headers);
               ?>
               <tr>
                 <th></th>
