@@ -147,8 +147,8 @@
                       $totalOutstanding = 0;
                       $totalAllottedQty = 0;
                       $totalAmt = 0;
-
                       $d = 0;
+
                       foreach ($doAllotments as $models) {
 
                         for ($i = 0; $i < count($models); $i++) {
@@ -168,7 +168,7 @@
                           $costAverage = $allotment["cost_average"];
                           $totalCost = $costAverage * $qty;
                           $removeIndex = $d * count($models) + $i;
-                          $totalOutstanding += $outstandingQty;
+                          $totalOutstanding += $i == 0 ? $outstandingQty : 0;
                           $totalAllottedQty += $qty;
                           $totalAmt += $subTotal;
 
