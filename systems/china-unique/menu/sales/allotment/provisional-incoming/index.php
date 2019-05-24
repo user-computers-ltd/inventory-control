@@ -124,8 +124,9 @@
                         <col style=\"width: 70px\">
                         <col>
                         <col style=\"width: 75px\">
+                        <col style=\"width: 75px\">
                         <col>
-                        <col style=\"width: 90px\">
+                        <col style=\"width: 70px\">
                         <col style=\"width: 80px\">
                         <col style=\"width: 75px\">
                         <col style=\"width: 75px\">
@@ -137,6 +138,7 @@
                           <th>Brand</th>
                           <th>Model No.</th>
                           <th class=\"number\">Available Qty</th>
+                          <th class=\"number\">On Hand Available Qty</th>
                           <th>SO No.</th>
                           <th>Client</th>
                           <th>Date</th>
@@ -156,6 +158,7 @@
                     $brandName = $model["brand_name"];
                     $modelNo = $model["model_no"];
                     $qty = $model["qty_available"];
+                    $onHandQty = $model["qty_on_hand_available"];
                     $totalQty += $qty;
 
                     $soNoColumn = "";
@@ -220,6 +223,7 @@
                         <td title=\"$brandName\">$brandName</td>
                         <td title=\"$modelNo\">$modelNo</td>
                         <td class=\"number\">$qty</td>
+                        <td class=\"number\">$onHandQty</td>
                         <td>$soNoColumn</td>
                         <td>$debtorNameColumn</td>
                         <td>$dateColumn</td>
@@ -240,9 +244,11 @@
                           <th></th>
                           <th></th>
                           <th></th>
+                          <th></th>
                           <th class=\"total-allot-qty number\"></th>
                         </tr>
                         <tr>
+                          <th></th>
                           <th></th>
                           <th></th>
                           <th></th>

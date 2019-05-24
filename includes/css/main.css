@@ -158,28 +158,6 @@ table thead th {
   background-image: url("../../resources/restart.png");
 }
 
-@media print {
-  table {
-    border-collapse: collapse;
-  }
-
-  table thead {
-    position: inherit;
-  }
-
-  .web-only {
-    display: none;
-  }
-
-  .print-only {
-    display: inherit;
-  }
-
-  .page-wrapper {
-    padding: 0px;
-  }
-}
-
 .sortable .sort-column {
   position: relative;
   cursor: pointer;
@@ -202,4 +180,18 @@ table thead th {
 
 .sortable .sort-column.sorted-desc::after {
   border-bottom: 5px solid black;
+}
+
+@media print {
+  .web-only {
+    display: none;
+  }
+
+  .print-only {
+    display: inherit;
+  }
+
+  .page-wrapper {
+    padding: 0px;
+  }
 }

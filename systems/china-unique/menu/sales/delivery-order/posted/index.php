@@ -127,6 +127,8 @@
                 ";
               }
             ?>
+          </tbody>
+          <tbody>
             <tr>
               <th class="web-only"></th>
               <th></th>

@@ -116,6 +116,8 @@
                       }
                     }
                   ?>
+                </tbody>
+                <tbody>
                   <?php if ($discount > 0) : ?>
                     <tr>
                       <th></th>
@@ -144,7 +146,6 @@
                       <?php echo number_format($subtotalSum * (100 - $discount) / 100, 2); ?>
                     </th>
                   </tr>
-
                 </tbody>
               </table>
             <?php else : ?>

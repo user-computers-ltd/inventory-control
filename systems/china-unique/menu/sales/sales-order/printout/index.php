@@ -88,6 +88,8 @@
                       }
                     }
                   ?>
+                </tbody>
+                <tbody>
                   <?php if ($discount > 0) : ?>
                     <tr>
                       <td></td>

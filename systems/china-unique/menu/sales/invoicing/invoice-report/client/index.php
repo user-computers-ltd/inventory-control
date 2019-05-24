@@ -201,6 +201,8 @@
 
                 $totalPendingAmount = $previousPending + $currentPending;
               ?>
+            </tbody>
+            <tbody>
               <tr>
                 <th></th>
                 <th></th>

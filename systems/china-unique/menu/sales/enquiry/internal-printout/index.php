@@ -117,6 +117,8 @@
                       ";
                     }
                   ?>
+                </tbody>
+                <tbody>
                   <tr>
                     <th></th>
                     <th></th>

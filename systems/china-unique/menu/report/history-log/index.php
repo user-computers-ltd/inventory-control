@@ -296,6 +296,8 @@
                 ";
               }
             ?>
+          </tbody>
+          <tbody>
             <tr>
               <th colspan="6" class="number">Total:</th>
               <th class="number"><?php echo number_format($totalQtyIn); ?></th>

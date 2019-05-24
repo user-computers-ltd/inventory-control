@@ -282,7 +282,7 @@ function setTableSortable(table) {
 function sortTable(table, columnIndex) {
   var headerColumns = table.querySelectorAll("thead tr th");
   var tbody = table.querySelector("tbody");
-  var rowElements = tbody.querySelectorAll("tr:not(:last-child)");
+  var rowElements = tbody.querySelectorAll("tr");
   var rows = [];
   var sortedAsc = hasClass(headerColumns[columnIndex], "sorted-asc");
 
