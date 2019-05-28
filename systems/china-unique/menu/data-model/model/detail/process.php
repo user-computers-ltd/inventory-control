@@ -61,6 +61,7 @@
         `sdo_header` AS h
       ON m.do_no=h.do_no
       WHERE
+        m.ia_no=\"\" AND
         h.status=\"SAVED\"
       GROUP BY
         m.model_no, m.brand_code) AS e
