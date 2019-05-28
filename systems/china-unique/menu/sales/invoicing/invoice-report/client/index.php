@@ -212,6 +212,7 @@
                   ";
                 }
 
+                $totalIssuedAmount = $previousIssued + $currentIssued;
                 $totalPendingAmount = $previousPending + $currentPending;
               ?>
             </tbody>
@@ -259,9 +260,14 @@
               <td>Invoice Pending:</td>
               <td class="number"><?php echo number_format($currentPending, 2); ?></td>
             </tr>
+            <tr><td></td><td></td></tr>
             <tr>
               <th>Total Invoice Issued:</th>
-              <th class="number"><?php echo number_format($previousIssued + $currentIssued, 2); ?></th>
+              <th class="number"><?php echo number_format($totalIssuedAmount, 2); ?></th>
+            </tr>
+            <tr>
+              <th>Total Invoice Pending:</th>
+              <th class="number"><?php echo number_format($totalPendingAmount, 2); ?></th>
             </tr>
           </table>
         <?php endforeach ?>
