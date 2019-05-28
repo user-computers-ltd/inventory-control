@@ -228,7 +228,7 @@
                 <col style="width: 80px;">
                 <col style="width: 80px;">
                 <col style="width: 80px;">
-                <col style="width: 80px;">
+                <col style="width: 110px;">
                 <col style="width: 80px;">
               </colgroup>
               <thead>
@@ -281,7 +281,7 @@
                             <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
                             <td title=\"$qtyOnReserve\" class=\"number\">" . number_format($qtyOnReserve) . "</td>
                             <td title=\"$qtyAvailable\" class=\"number\">" . number_format($qtyAvailable) . "</td>
-                            <td title=\"$costAverage\" class=\"number\">" . number_format($costAverage, 2) . "</td>
+                            <td title=\"$costAverage\" class=\"number\">" . number_format($costAverage, 6) . "</td>
                             <td title=\"$subtotal\" class=\"number\">" . number_format($subtotal, 2) . "</td>
                           </tr>
                         ";

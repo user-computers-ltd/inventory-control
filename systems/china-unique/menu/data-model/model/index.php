@@ -229,9 +229,9 @@
       <?php if (count($results) > 0) : ?>
         <table id="model-results">
           <colgroup>
-            <col style="width: 60px;">
+            <col style="width: 50px;">
             <col>
-            <col style="width: 80px;">
+            <col style="width: 110px;">
             <col style="width: 80px;">
             <col style="width: 80px;">
             <col style="width: 80px;">
@@ -273,7 +273,7 @@
                   <tr>
                     <td title=\"$brandCode\">$brandName</td>
                     <td title=\"$modelNo\"><a href=\"" . DATA_MODEL_MODEL_DETAIL_URL . "?id=$id\">$modelNo</a></td>
-                    <td class=\"number\" title=\"$costAverage\">" . number_format($costAverage, 2) . "</td>
+                    <td class=\"number\" title=\"$costAverage\">" . number_format($costAverage, 6) . "</td>
                     <td class=\"number\" title=\"$costNormal\">" . number_format($costNormal, 2) . "</td>
                     <td class=\"number\" title=\"$costSpecial\">" . number_format($costSpecial, 2) . "</td>
                     <td class=\"number\" title=\"$priceNormal\">" . number_format($priceNormal, 2) . "</td>
