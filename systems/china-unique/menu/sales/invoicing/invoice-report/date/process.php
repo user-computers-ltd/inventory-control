@@ -80,8 +80,12 @@
       IFNULL(b.amountO, 0) * (100 - a.discount) / 100                               AS `amountO`,
       IFNULL(b.amountO, 0) * (100 - a.discount) / (100 + a.tax)                     AS `netO`,
       IFNULL(b.costO, 0)                                                            AS `costO`,
+      CASE
+        WHEN d.invoice_settlement>0 THEN \"FULL\"
+        WHEN d.invoice_settlement=0 THEN \"PARTIAL\"
+        ELSE \"PENDING\"
+      END                                                                           AS `settlement`,
       IFNULL(d.invoice_amounts, \"\")                                               AS `invoice_amounts`,
-      IFNULL(d.invoice_offsets, \"\")                                               AS `invoice_offsets`,
       IFNULL(d.invoice_dates, \"\")                                                 AS `invoice_dates`,
       IFNULL(d.invoice_nos, \"\")                                                   AS `invoice_nos`,
       IFNULL(d.invoice_ids, \"\")                                                   AS `invoice_ids`
@@ -126,7 +130,7 @@
           GROUP_CONCAT(y.id)                                      AS `invoice_ids`,
           GROUP_CONCAT(x.invoice_no)                              AS `invoice_nos`,
           GROUP_CONCAT(x.amount)                                  AS `invoice_amounts`,
-          GROUP_CONCAT(x.offset)                                  AS `invoice_offsets`
+          SUM(IF(x.settlement=\"FULL\",1, 0))                     AS `invoice_settlement`
         FROM
           `out_inv_model` AS x
         LEFT JOIN
@@ -188,7 +192,7 @@
       `debtor` AS c
     ON a.creditor_code=c.code
     LEFT JOIN
-      (SELECT \"\" AS `invoice_amounts`, \"\" AS `invoice_offsets`, \"\" AS `invoice_dates`, \"\" AS `invoice_nos`, \"\" AS `invoice_ids`) AS d
+      (SELECT \"\" AS `invoice_amounts`, \"0\" AS `invoice_settlement`, \"\" AS `invoice_dates`, \"\" AS `invoice_nos`, \"\" AS `invoice_ids`) AS d
     ON a.id=a.id
     WHERE
       a.status=\"POSTED\" AND

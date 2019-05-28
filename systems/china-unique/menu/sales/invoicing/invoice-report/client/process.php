@@ -30,13 +30,13 @@
 
   if (assigned($period)) {
     $doWhereClause = $doWhereClause . "
-      AND ROUND(IFNULL(b.amount, 0) * (100 - a.discount) / 100, 2) - IFNULL(e.invoice_sum, 0) - IFNULL(e.invoice_offset, 0) > 0
+      AND (e.invoice_settlement IS NULL OR e.invoice_settlement = 0)
       AND DATE_FORMAT(a.do_date, \"%Y-%m\") <= \"$period\"";
     $stockOutWhereClause = $stockOutWhereClause . "
-      AND ROUND(IFNULL(b.amount, 0) * (100 - a.discount) / 100, 2) - IFNULL(e.invoice_sum, 0) - IFNULL(e.invoice_offset, 0) > 0
+      AND (e.invoice_settlement IS NULL OR e.invoice_settlement = 0)
       AND DATE_FORMAT(a.stock_out_date, \"%Y-%m\") <= \"$period\"";
     $stockInReturnWhereClause = $stockInReturnWhereClause . "
-      AND ROUND(IFNULL(b.amount, 0) * (100 - a.discount) / 100, 2) - IFNULL(e.invoice_sum, 0) - IFNULL(e.invoice_offset, 0) != 0
+      AND (e.invoice_settlement IS NULL OR e.invoice_settlement = 0)
       AND DATE_FORMAT(a.stock_in_date, \"%Y-%m\") <= \"$period\"";
     $invoiceWhereClause = $invoiceWhereClause . "
       y.invoice_date < \"$period-01\"";
@@ -57,29 +57,33 @@
 
   function getColumns($soNo, $dateC, $doIdC, $doNoC, $stockOutIdC, $stockOutNoC, $stockInIdC, $stockInNoC, $clientCode) {
     return "
-      $soNo                                                                                                   AS `so_no`,
-      $dateC                                                                                                  AS `date_`,
-      DATE_FORMAT($dateC, \"%d-%m-%Y\")                                                                       AS `date`,
-      DATE_FORMAT($dateC, \"%Y-%m\")                                                                          AS `period`,
-      $doIdC                                                                                                  AS `do_id`,
-      $doNoC                                                                                                  AS `do_no`,
-      $stockOutIdC                                                                                            AS `stock_out_id`,
-      $stockOutNoC                                                                                            AS `stock_out_no`,
-      $stockInIdC                                                                                             AS `stock_in_id`,
-      $stockInNoC                                                                                             AS `stock_in_no`,
-      $clientCode                                                                                             AS `debtor_code`,
-      IFNULL(c.english_name, \"Unknown\")                                                                     AS `debtor_name`,
-      IFNULL(b.qty, 0)                                                                                        AS `qty`,
-      a.currency_code                                                                                         AS `currency`,
-      IFNULL(b.amount, 0) * (100 - a.discount) / 100                                                          AS `amount`,
-      IFNULL(b.amount, 0) * (100 - a.discount) / 100 - IFNULL(e.invoice_sum, 0) - IFNULL(e.invoice_offset, 0) AS `pending`,
-      IFNULL(b.amount, 0) * (100 - a.discount) / (100 + a.tax)                                                AS `net`,
-      IFNULL(b.cost, 0)                                                                                       AS `cost`,
-      IFNULL(d.invoice_amounts, \"\")                                                                         AS `invoice_amounts`,
-      IFNULL(d.invoice_offsets, \"\")                                                                         AS `invoice_offsets`,
-      IFNULL(d.invoice_dates, \"\")                                                                           AS `invoice_dates`,
-      IFNULL(d.invoice_nos, \"\")                                                                             AS `invoice_nos`,
-      IFNULL(d.invoice_ids, \"\")                                                                             AS `invoice_ids`
+      $soNo                                                                     AS `so_no`,
+      $dateC                                                                    AS `date_`,
+      DATE_FORMAT($dateC, \"%d-%m-%Y\")                                         AS `date`,
+      DATE_FORMAT($dateC, \"%Y-%m\")                                            AS `period`,
+      $doIdC                                                                    AS `do_id`,
+      $doNoC                                                                    AS `do_no`,
+      $stockOutIdC                                                              AS `stock_out_id`,
+      $stockOutNoC                                                              AS `stock_out_no`,
+      $stockInIdC                                                               AS `stock_in_id`,
+      $stockInNoC                                                               AS `stock_in_no`,
+      $clientCode                                                               AS `debtor_code`,
+      IFNULL(c.english_name, \"Unknown\")                                       AS `debtor_name`,
+      IFNULL(b.qty, 0)                                                          AS `qty`,
+      a.currency_code                                                           AS `currency`,
+      IFNULL(b.amount, 0) * (100 - a.discount) / 100                            AS `amount`,
+      IFNULL(b.amount, 0) * (100 - a.discount) / 100 - IFNULL(e.invoice_sum, 0) AS `pending`,
+      IFNULL(b.amount, 0) * (100 - a.discount) / (100 + a.tax)                  AS `net`,
+      IFNULL(b.cost, 0)                                                         AS `cost`,
+      CASE
+        WHEN d.invoice_settlement>0 THEN \"FULL\"
+        WHEN d.invoice_settlement=0 THEN \"PARTIAL\"
+        ELSE \"PENDING\"
+      END                                                                       AS `settlement`,
+      IFNULL(d.invoice_amounts, \"\")                                           AS `invoice_amounts`,
+      IFNULL(d.invoice_dates, \"\")                                             AS `invoice_dates`,
+      IFNULL(d.invoice_nos, \"\")                                               AS `invoice_nos`,
+      IFNULL(d.invoice_ids, \"\")                                               AS `invoice_ids`
     ";
   }
 
@@ -114,7 +118,7 @@
           GROUP_CONCAT(y.id)                                      AS `invoice_ids`,
           GROUP_CONCAT(x.invoice_no)                              AS `invoice_nos`,
           GROUP_CONCAT(x.amount)                                  AS `invoice_amounts`,
-          GROUP_CONCAT(x.offset)                                  AS `invoice_offsets`
+          SUM(IF(x.settlement=\"FULL\",1, 0))                     AS `invoice_settlement`
         FROM
           `out_inv_model` AS x
         LEFT JOIN
@@ -132,9 +136,9 @@
     return "
       LEFT JOIN
         (SELECT
-          x.$columnName                 AS `$columnName`,
-          SUM(x.amount)                 AS `invoice_sum`,
-          SUM(x.offset)                 AS `invoice_offset`
+          x.$columnName                       AS `$columnName`,
+          SUM(x.amount)                       AS `invoice_sum`,
+          SUM(IF(x.settlement=\"FULL\",1, 0)) AS `invoice_settlement`
         FROM
           `out_inv_model` AS x
         LEFT JOIN
@@ -169,7 +173,8 @@
     " . joinInvoiceTable("d", "do_no", $currentInvoiceWhereClause) . "
     " . joinInvoiceSumTable("e", "do_no", $invoiceWhereClause) . "
     WHERE
-      a.status=\"POSTED\"
+      a.status=\"POSTED\" AND
+      IFNULL(b.qty, 0) != 0
       $doWhereClause
     UNION
     SELECT
@@ -196,10 +201,10 @@
       `debtor` AS c
     ON a.creditor_code=c.code
     LEFT JOIN
-      (SELECT \"\" AS `invoice_amounts`, \"\" AS `invoice_offsets`, \"\" AS `invoice_dates`, \"\" AS `invoice_nos`, \"\" AS `invoice_ids`) AS d
+      (SELECT \"\" AS `invoice_amounts`, \"0\" AS `invoice_settlement`, \"\" AS `invoice_dates`, \"\" AS `invoice_nos`, \"\" AS `invoice_ids`) AS d
     ON a.id=a.id
     LEFT JOIN
-      (SELECT \"0\" AS `invoice_sum`, \"0\" AS `invoice_offset`) AS e
+      (SELECT \"0\" AS `invoice_sum`, \"0\" AS `invoice_settlement`) AS e
     ON a.id=a.id
     WHERE
       a.status=\"POSTED\" AND

@@ -100,7 +100,7 @@
                 <th>Inv. Date</th>
                 <th class="number">Inv. Amount</th>
                 <th>Inv. No.</th>
-                <th>Pending</th>
+                <th>Variance</th>
               </tr>
             </thead>
             <tbody>
@@ -110,6 +110,7 @@
                 $totalNet = 0;
                 $totalSales = 0;
                 $totalInvAmount = 0;
+                $totalVariance = 0;
                 $previousPending = 0;
                 $currentPending = 0;
                 $previousIssued = 0;
@@ -133,7 +134,6 @@
                   $profit = ($net - $cost) / $cost * 100;
                   $amount = $incomeHeader["pending"];
                   $invoiceAmounts = explode(",", $incomeHeader["invoice_amounts"]);
-                  $invoiceOffsets = explode(",", $incomeHeader["invoice_offsets"]);
                   $invoiceDates = explode(",", $incomeHeader["invoice_dates"]);
                   $invoiceNos = explode(",", $incomeHeader["invoice_nos"]);
                   $invoiceIds = explode(",", $incomeHeader["invoice_ids"]);
@@ -141,13 +141,26 @@
                   $invoiceSum = array_sum($invoiceAmounts);
                   $invoiceOffsetSum = array_sum($invoiceOffsets);
                   $pendingAmount = round($amount - $invoiceSum - $invoiceOffsetSum, 2);
+                  $settlement = $incomeHeader["settlement"];
+
+                  if ($settlement === "FULL") {
+                    $variance = number_format($pendingAmount, 2);
+                    $totalVariance += $variance;
+                  } else if ($settlement === "PARTIAL") {
+                    $variance = "PI";
+                    $previousPending += $period !== $incomeHeader["period"] ? $pendingAmount : 0;
+                    $currentPending += $period === $incomeHeader["period"] ? $pendingAmount : 0;
+                  } else {
+                    $variance = "";
+                    $previousPending += $period !== $incomeHeader["period"] ? $pendingAmount : 0;
+                    $currentPending += $period === $incomeHeader["period"] ? $pendingAmount : 0;
+                  }
 
                   $totalQty += $qty;
                   $totalCost += $cost;
                   $totalNet += $net;
                   $totalSales += $amount;
-                  $previousPending += $period !== $incomeHeader["period"] ? $pendingAmount : 0;
-                  $currentPending += $period === $incomeHeader["period"] ? $pendingAmount : 0;
+
                   $previousIssued += $period !== $incomeHeader["period"] ? $invoiceSum : 0;
                   $currentIssued += $period === $incomeHeader["period"] ? $invoiceSum : 0;
 
@@ -194,7 +207,7 @@
                       <td title=\"$invoiceDate\">$invoiceDateColumn</td>
                       <td title=\"$invoiceAmount\">$invoiceAmountColumn</td>
                       <td title=\"$invoiceNo\">$invoiceNoColumn</td>
-                      <td title=\"$pendingAmount\" class=\"number\">" . ($pendingAmount > 0 ? number_format($pendingAmount, 2) : "") . "</td>
+                      <td title=\"$variance\" class=\"number\">$variance</td>
                     </tr>
                   ";
                 }
@@ -217,7 +230,7 @@
                 <th></th>
                 <th class="number"><?php echo number_format($totalInvAmount, 2); ?></th>
                 <th></th>
-                <th class="number"><?php echo number_format($totalPendingAmount, 2); ?></th>
+                <th class="number"><?php echo number_format($totalVariance, 2); ?></th>
               </tr>
             </tbody>
           </table>

@@ -81,10 +81,10 @@
               <tr>
                 <th></th>
                 <th>DO No. / Stock Out No.</th>
-                <th class="number">Amount Payable</th>
+                <th class="number">Payable</th>
                 <th class="number">Amount</th>
-                <th class="number">Offset</th>
-                <th class="number">Remarks</th>
+                <th>Settlement</th>
+                <th>Remarks</th>
                 <th></th>
               </tr>
             </thead>
@@ -94,7 +94,7 @@
                 <th></th>
                 <th class="number">Total:</th>
                 <th id="total-amount" class="number"></th>
-                <th id="total-offset" class="number"></th>
+                <th></th>
                 <th></th>
                 <th></th>
               <tr>
@@ -157,7 +157,6 @@
           var exchangeRateElement = document.querySelector("#exchange-rate");
           var tableBodyElement = document.querySelector("#invoice-vouchers tbody");
           var totalAmountElement = document.querySelector("#total-amount");
-          var totalOffsetElement = document.querySelector("#total-offset");
           var modelListElement = document.querySelector("#model-list");
 
           function getStockOutVouchers(stockOutNo) {
@@ -195,7 +194,6 @@
 
             var totalQty = 0;
             var totalAmount = 0;
-            var totalOffset = 0;
 
             for (var i = 0; i < invoiceVouchers.length; i++) {
               var debtorCode = debtorCodeElement.value;
@@ -208,19 +206,21 @@
                   "<td>"
                   + "<div>"
                     + "<input "
+                      + "id=\"by_order_do_" + i + "\" "
                       + "type=\"radio\" "
                       + "name=\"by_order_" + i + "\" "
                       + "value=\"true\" "
                       + "onchange=\"onByOrderChange(true, " + i + ")\" "
                       + (invoiceVoucher["by_order"] ? "checked" : "")
-                    + ">DO No.<br/>"
+                    + "/><label for=\"by_order_do_" + i + "\">DO No.</label><br/>"
                     + "<input "
+                      + "id=\"by_order_si_" + i + "\" "
                       + "type=\"radio\" "
                       + "name=\"by_order_" + i + "\" "
                       + "value=\"false\" "
                       + "onchange=\"onByOrderChange(false, " + i + ")\" "
                       + (invoiceVoucher["by_order"] ? "" : "checked")
-                    + ">Stock Out No."
+                    + "/><label for=\"by_order_si_" + i + "\">Stock Out No.</label>"
                   + "</div>"
                 + "</td>"
                 + "<td>"
@@ -265,35 +265,46 @@
                   + "/>"
                 + "</td>"
                 + "<td>"
-                  + "<input "
-                    + "class=\"offset number\" "
-                    + "type=\"number\" "
-                    + "step=\"0.01\" "
-                    + "min=\"0\" "
-                    + "name=\"offset[]\" "
-                    + "value=\"" + invoiceVoucher["offset"].toFixed(2) + "\" "
-                    + "onchange=\"onOffsetChange(event, " + i + ")\" "
-                    + "onfocus=\"onFieldFocused(" + i + ", 'offset[]')\" "
-                    + "onblur=\"onFieldBlurred()\" "
-                    + "required "
-                  + "/>"
+                + "<input "
+                  + "type=\"hidden\" "
+                  + "name=\"settlement[]\" "
+                  + "value=\"" + invoiceVoucher["settlement"] + "\" "
+                  + "required "
+                + "/>"
+                  + "<div>"
+                    + "<input "
+                      + "id=\"settlement_full_" + i + "\" "
+                      + "type=\"radio\" "
+                      + "name=\"settlement_" + i + "\" "
+                      + "value=\"FULL\" "
+                      + "onchange=\"onSettlementChange('FULL', " + i + ")\" "
+                      + (invoiceVoucher["settlement"] === "FULL" ? "checked" : "")
+                    + "><label for=\"settlement_full_" + i + "\">Full</label><br/>"
+                    + "<input "
+                      + "id=\"settlement_partial_" + i + "\" "
+                      + "type=\"radio\" "
+                      + "name=\"settlement_" + i + "\" "
+                      + "value=\"PARTIAL\" "
+                      + "onchange=\"onSettlementChange('PARTIAL', " + i + ")\" "
+                      + (invoiceVoucher["settlement"] === "PARTIAL" ? "checked" : "")
+                    + "><label for=\"settlement_partial_" + i + "\">Partial</label>"
+                  + "</div>"
                 + "</td>"
                 + "<td>"
                   + "<textarea "
-                    + "class=\"offset-remarks\" "
-                    + "name=\"offset_remarks[]\" "
-                    + "onfocus=\"onFieldFocused(" + i + ", 'offset_remarks[]')\" "
+                    + "class=\"settle-remarks\" "
+                    + "name=\"settle_remarks[]\" "
+                    + "onfocus=\"onFieldFocused(" + i + ", 'settle_remarks[]')\" "
                     + "onblur=\"onFieldBlurred()\" "
-                    + "onchange=\"onOffsetRemarksChange(event, " + i + ")\" "
-                    + "onkeydown=\"onOffsetRemarksKeyDown(event, " + i + ")\" "
-                  + "/>" + invoiceVoucher["offset_remarks"] + "</textarea>"
+                    + "onchange=\"onSettleRemarksChange(event, " + i + ")\" "
+                    + "onkeydown=\"onSettleRemarksKeyDown(event, " + i + ")\" "
+                  + "/>" + invoiceVoucher["settle_remarks"] + "</textarea>"
                 + "</td>"
                 + "<td><div class=\"remove\" onclick=\"removeItem(" + i + ")\">×</div></td>";
 
               newRowElement.innerHTML = rowInnerHTML;
 
               totalAmount += parseFloat(invoiceVoucher["amount"]);
-              totalOffset += parseFloat(invoiceVoucher["offset"]);
 
               tableBodyElement.appendChild(newRowElement);
 
@@ -309,7 +320,6 @@
             }
 
             totalAmountElement.innerHTML = totalAmount.toFixed(2);
-            totalOffsetElement.innerHTML = totalOffset.toFixed(2);
 
             if (focusedElement) {
               focusedElement.focus();
@@ -334,8 +344,8 @@
             invoiceVoucher["by_order"] = voucher["stock_out_no"] ? false : true;
             invoiceVoucher["amount_payable"] = parseFloat(voucher["amount"]) || 0;
             invoiceVoucher["amount"] = parseFloat(voucher["amount"]) || 0;
-            invoiceVoucher["offset"] = parseFloat(voucher["offset"]) || 0;
-            invoiceVoucher["offset_remarks"] = voucher["offset_remarks"] || "";
+            invoiceVoucher["settlement"] = voucher["settlement"] || "FULL";
+            invoiceVoucher["settle_remarks"] = voucher["settle_remarks"] || "";
           }
 
           function updateAmount(index, amount = 0) {
@@ -343,14 +353,19 @@
             invoiceVoucher["amount"] = parseFloat(amount);
           }
 
+          function updateSettlement(index, settlement = "FULL") {
+            var invoiceVoucher = invoiceVouchers[index];
+            invoiceVoucher["settlement"] = settlement;
+          }
+
           function updateOffset(index, offset = 0) {
             var invoiceVoucher = invoiceVouchers[index];
             invoiceVoucher["offset"] = parseFloat(offset);
           }
 
-          function updateOffsetRemarks(index, remarks = "") {
+          function updateSettleRemarks(index, remarks = "") {
             var invoiceVoucher = invoiceVouchers[index];
-            invoiceVoucher["offset_remarks"] = remarks;
+            invoiceVoucher["settle_remarks"] = remarks;
           }
 
           function addItem() {
@@ -473,17 +488,17 @@
             render();
           }
 
-          function onOffsetChange(event, index) {
-            updateOffset(index, event.target.value);
+          function onSettlementChange(settlement, index) {
+            updateSettlement(index, settlement);
             render();
           }
 
-          function onOffsetRemarksChange(event, index) {
-            updateOffsetRemarks(index, event.target.value);
+          function onSettleRemarksChange(event, index) {
+            updateSettleRemarks(index, event.target.value);
             render();
           }
 
-          function onOffsetRemarksKeyDown(event, index) {
+          function onSettleRemarksKeyDown(event, index) {
             var invoiceVoucher = invoiceVouchers[index];
 
             if (
@@ -504,8 +519,8 @@
               var doNo = invoiceVoucher["do_no"];
               var stockOutNo = invoiceVoucher["stock_out_no"];
               var amount = invoiceVoucher["amount"];
-              var offset = invoiceVoucher["offset"];
-              var offsetRemarks = invoiceVoucher["offset_remarks"];
+              var settlement = invoiceVoucher["settlement"];
+              var settleRemarks = invoiceVoucher["settle_remarks"];
 
               if (doNo) {
                 updateVoucher(i, getDeliveryOrders(doNo)[0]);
@@ -513,9 +528,9 @@
                 updateVoucher(i, getStockOutVouchers(stockOutNo)[0]);
               }
 
+              updateSettlement(i, settlement);
+              updateSettleRemarks(i, settleRemarks);
               updateAmount(i, amount);
-              updateOffset(i, offset);
-              updateOffsetRemarks(i, offsetRemarks);
             }
 
             render();

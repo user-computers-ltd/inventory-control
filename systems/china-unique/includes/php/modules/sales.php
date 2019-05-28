@@ -45,7 +45,6 @@
   define("SALES_INVOICE_URL", SALES_INVOICING_URL . "invoice/");
   define("SALES_INVOICE_PRINTOUT_URL", SALES_INVOICE_URL . "printout/");
   define("SALES_INVOICE_SAVED_URL", SALES_INVOICE_URL . "saved/");
-  define("SALES_INVOICE_SETTLED_URL", SALES_INVOICE_URL . "settled/");
 
   define("SALES_INVOICE_REPORT_URL", SALES_INVOICING_URL . "invoice-report/");
   define("SALES_INVOICE_REPORT_DATE_URL", SALES_INVOICE_REPORT_URL . "date/");
@@ -100,7 +99,6 @@
   define("SALES_INVOICE_PRINTOUT_TITLE", "Sales Invoice");
   define("SALES_INVOICE_CREATE_TITLE", "(F7a) Create Sales Invoice");
   define("SALES_INVOICE_SAVED_TITLE", "(F7b) Saved Sales Invoices");
-  define("SALES_INVOICE_SETTLED_TITLE", "(F7c) Settled Sales Invoices");
 
   define("SALES_INVOICE_REPORT_TITLE", "(F8) Monthly Stock Out Report");
   define("SALES_INVOICE_REPORT_DATE_TITLE", "(F8a) Monthly Stock Out By Date");
@@ -144,8 +142,7 @@
     ),
     SALES_INVOICE_TITLE => array(
       SALES_INVOICE_CREATE_TITLE                          => SALES_INVOICE_URL,
-      SALES_INVOICE_SAVED_TITLE                           => SALES_INVOICE_SAVED_URL,
-      SALES_INVOICE_SETTLED_TITLE                         => SALES_INVOICE_SETTLED_URL
+      SALES_INVOICE_SAVED_TITLE                           => SALES_INVOICE_SAVED_URL
     ),
     SALES_INVOICE_REPORT_TITLE => array(
       SALES_INVOICE_REPORT_DATE_TITLE                     => SALES_INVOICE_REPORT_DATE_URL,

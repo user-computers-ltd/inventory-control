@@ -5,8 +5,8 @@ CREATE TABLE `out_inv_model` (
   `stock_out_no`      VARCHAR(30)     NOT NULL,
   `do_no`             VARCHAR(30)     NOT NULL,
   `amount`            DECIMAL(16,6)   NOT NULL,
-  `offset`            DECIMAL(16,6)   NOT NULL,
-  `offset_remarks`    TEXT,
+  `settlement`        VARCHAR(30)     NOT NULL,
+  `settle_remarks`    TEXT,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_index` (`invoice_no`, `stock_out_no`, `do_no`)
 );

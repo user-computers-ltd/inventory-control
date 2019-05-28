@@ -10,8 +10,8 @@
   $stockOutNos = $_POST["stock_out_no"];
   $doNos = $_POST["do_no"];
   $amounts = $_POST["amount"];
-  $offsets = $_POST["offset"];
-  $offsetRemarkss = $_POST["offset_remarks"];
+  $settlements = $_POST["settlement"];
+  $settleRemarkss = $_POST["settle_remarks"];
 
   /* If a form is submitted, update or insert the outbound invoice. */
   if (
@@ -24,8 +24,8 @@
     assigned($stockOutNos) &&
     assigned($doNos) &&
     assigned($amounts) &&
-    assigned($offsets) &&
-    assigned($offsetRemarkss)
+    assigned($settlements) &&
+    assigned($settleRemarkss)
   ) {
     $queries = array();
 
@@ -44,17 +44,17 @@
         $stockOutNo = $stockOutNos[$i];
         $doNo = $doNos[$i];
         $amount = $amounts[$i];
-        $offset = $offsets[$i];
-        $offsetRemarks = $offsetRemarkss[$i];
+        $settlement = $settlements[$i];
+        $settleRemarks = $settleRemarkss[$i];
 
-        array_push($values, "(\"$invoiceNo\", \"$i\", \"$stockOutNo\", \"$doNo\", \"$amount\", \"$offset\", \"$offsetRemarks\")");
+        array_push($values, "(\"$invoiceNo\", \"$i\", \"$stockOutNo\", \"$doNo\", \"$amount\", \"$settlement\", \"$settleRemarks\")");
       }
 
       if (count($values) > 0) {
         array_push($queries, "
           INSERT INTO
             `out_inv_model`
-              (invoice_no, invoice_index, stock_out_no, do_no, amount, offset, offset_remarks)
+              (invoice_no, invoice_index, stock_out_no, do_no, amount, settlement, settle_remarks)
             VALUES
         " . join(", ", $values));
       }
@@ -116,8 +116,9 @@
         ON a.stock_out_no=b.stock_out_no
         LEFT JOIN
           (SELECT
-            stock_out_no      AS `stock_out_no`,
-            SUM(amount)       AS `paid_amount`
+            m.stock_out_no                      AS `stock_out_no`,
+            SUM(m.amount)                       AS `paid_amount`,
+            SUM(IF(m.settlement=\"FULL\",1, 0)) AS `settled`
           FROM
             `out_inv_model` AS m
           LEFT JOIN
@@ -125,13 +126,14 @@
           ON
             m.invoice_no=h.invoice_no WHERE h.id!=\"$id\"
           GROUP BY
-            stock_out_no) AS c
+            m.stock_out_no) AS c
         ON a.stock_out_no=c.stock_out_no
         WHERE
           a.status=\"POSTED\" AND
           a.debtor_code=\"$dCode\" AND
           a.currency_code=\"$cCode\" AND
-          (b.amount * (100 - a.discount) / 100) - IFNULL(c.paid_amount, 0) > 0
+          (c.settled IS NULL OR c.settled=0) AND
+          ROUND((b.amount * (100 - a.discount) / 100) - IFNULL(c.paid_amount, 0), 2) > 0
       ");
 
       $doResults = query("
@@ -151,8 +153,9 @@
         ON a.do_no=b.do_no
         LEFT JOIN
           (SELECT
-            do_no             AS `do_no`,
-            SUM(amount)       AS `paid_amount`
+            m.do_no                             AS `do_no`,
+            SUM(m.amount)                       AS `paid_amount`,
+            SUM(IF(m.settlement=\"FULL\",1, 0)) AS `settled`
           FROM
             `out_inv_model` AS m
           LEFT JOIN
@@ -160,13 +163,14 @@
           ON
             m.invoice_no=h.invoice_no WHERE h.id!=\"$id\"
           GROUP BY
-            do_no) AS c
+            m.do_no) AS c
         ON a.do_no=c.do_no
         WHERE
           a.status=\"POSTED\" AND
           a.debtor_code=\"$dCode\" AND
           a.currency_code=\"$cCode\" AND
-          (b.amount * (100 - a.discount) / 100) - IFNULL(c.paid_amount, 0) > 0
+          (c.settled IS NULL OR c.settled=0) AND
+          ROUND((b.amount * (100 - a.discount) / 100) - IFNULL(c.paid_amount, 0), 2) > 0
       ");
 
       if (count($stockOutResults) > 0) {
@@ -205,8 +209,8 @@
           stock_out_no,
           do_no,
           amount,
-          offset,
-          IFNULL(offset_remarks, \"\") AS `offset_remarks`
+          settlement,
+          IFNULL(settle_remarks, \"\") AS `settle_remarks`
         FROM
           `out_inv_model`
         WHERE

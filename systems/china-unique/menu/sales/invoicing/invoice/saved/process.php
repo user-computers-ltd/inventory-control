@@ -47,16 +47,14 @@
       IFNULL(c.english_name, 'Unknown')         AS `debtor_name`,
       a.currency_code                           AS `currency_code`,
       IFNULL(b.amount, 0)                       AS `amount`,
-      IFNULL(b.amount, 0) * a.exchange_rate     AS `amount_base`,
-      IFNULL(b.offset, 0)                       AS `offset`
+      IFNULL(b.amount, 0) * a.exchange_rate     AS `amount_base`
     FROM
       `out_inv_header` AS a
     LEFT JOIN
       (SELECT
         COUNT(*)                      AS `count`,
         invoice_no                    AS `invoice_no`,
-        SUM(amount)                   AS `amount`,
-        SUM(offset)                   AS `offset`
+        SUM(amount)                   AS `amount`
       FROM
         `out_inv_model`
       GROUP BY

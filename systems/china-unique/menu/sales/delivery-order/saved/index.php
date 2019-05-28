@@ -116,7 +116,7 @@
                   echo "
                     <tr>
                       <td class=\"web-only\">
-                        <input type=\"checkbox\" name=\"do_id[]\" data-do_no=\"$doNo\" data-item_status=\"$itemStatus\"value=\"$doId\" onchange=\"onUpdateSelection()\" />
+                        <input type=\"checkbox\" name=\"do_id[]\" data-do_no=\"$doNo\" data-item_status=\"$itemStatus\" value=\"$doId\" onchange=\"onUpdateSelection()\" />
                       </td>
                       <td title=\"$date\">$date</td>
                       <td title=\"$doNo\"><a class=\"link\" href=\"" . SALES_DELIVERY_ORDER_URL . "?id=$doId\">$doNo</a></td>

@@ -33,10 +33,10 @@
         </table>
       </form>
       <?php if (count($invoiceHeaders) > 0) : ?>
-        <form method="post">
-          <button type="submit" name="action" value="settle">Settle</button>
-          <button type="submit" name="action" value="print">Print</button>
-          <button type="submit" name="action" value="delete">Delete</button>
+        <form id="invoice-form" method="post">
+          <button type="submit" name="action" value="print" class="web-only">Print</button>
+          <button type="submit" name="action" value="delete" style="display: none;"></button>
+          <button type="button" onclick="confirmDelete(event)" class="web-only">Delete</button>
           <table id="invoice-results">
             <colgroup>
               <col class="web-only" style="width: 30px">
@@ -45,7 +45,6 @@
               <col>
               <col>
               <col style="width: 60px">
-              <col style="width: 80px">
               <col style="width: 80px">
               <col style="width: 80px">
             </colgroup>
@@ -60,13 +59,11 @@
                 <th>Currency</th>
                 <th class="number">Amount</th>
                 <th class="number"><?php echo $InBaseCurrency; ?></th>
-                <th class="number">Offset</th>
               </tr>
             </thead>
             <tbody>
               <?php
                 $totalAmountBase = 0;
-                $totalOffset = 0;
 
                 for ($i = 0; $i < count($invoiceHeaders); $i++) {
                   $invoiceHeader = $invoiceHeaders[$i];
@@ -78,14 +75,14 @@
                   $currencyCode = $invoiceHeader["currency_code"];
                   $amount = $invoiceHeader["amount"];
                   $amountBase = $invoiceHeader["amount_base"];
-                  $offset = $invoiceHeader["offset"];
 
                   $totalAmountBase += $amountBase;
-                  $totalOffset += $offset;
 
                   echo "
                     <tr>
-                      <td class=\"web-only\"><input type=\"checkbox\" name=\"invoice_id[]\" value=\"$id\" /></td>
+                      <td class=\"web-only\">
+                        <input type=\"checkbox\" name=\"invoice_id[]\" data-invoice_no=\"$invoiceNo\" value=\"$id\" />
+                      </td>
                       <td title=\"$date\">$date</td>
                       <td title=\"$count\" class=\"number\">$count</td>
                       <td title=\"$invoiceNo\"><a class=\"link\" href=\"" . SALES_INVOICE_URL . "?id=$id\">$invoiceNo</a></td>
@@ -93,7 +90,6 @@
                       <td title=\"$currencyCode\">$currencyCode</td>
                       <td title=\"$amount\" class=\"number\">" . number_format($amount, 2) . "</td>
                       <td title=\"$amountBase\" class=\"number\">" . number_format($amountBase, 2) . "</td>
-                      <td title=\"$offset\" class=\"number\">" . number_format($offset, 2) . "</td>
                     </tr>
                   ";
                 }
@@ -107,11 +103,34 @@
                 <th></th>
                 <th class="number">Total:</th>
                 <th class="number"><?php echo number_format($totalAmountBase, 2); ?></th>
-                <th class="number"><?php echo number_format($totalOffset, 2); ?></th>
               </tr>
             </tbody>
           </table>
         </form>
+        <script>
+          var invoiceFormElement = document.querySelector("#invoice-form");
+          var deleteButtonElement = invoiceFormElement.querySelector("button[value=\"delete\"]");
+
+          function confirmDelete(event) {
+            var checkedItems = invoiceFormElement.querySelectorAll("input[name=\"invoice_id[]\"]:checked");
+
+            if (checkedItems.length > 0) {
+              var listElement = "<ul>";
+
+              for (var i = 0; i < checkedItems.length; i++) {
+                listElement += "<li>" + checkedItems[i].dataset["invoice_no"] + "</li>";
+              }
+
+              listElement += "</ul>";
+
+              showConfirmDialog("<b>Are you sure you want to delete the following?</b><br/><br/>" + listElement, function () {
+                deleteButtonElement.click();
+                setLoadingMessage("Deleting...")
+                toggleLoadingScreen(true);
+              });
+            }
+          }
+        </script>
       <?php else : ?>
         <div class="invoice-client-no-results">No results</div>
       <?php endif ?>
