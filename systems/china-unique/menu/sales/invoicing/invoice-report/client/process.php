@@ -95,7 +95,7 @@
           x.header_no                           AS `$link`,
           $prefix SUM(x.qty)                    AS `qty`,
           $prefix SUM(x.qty * x.price)          AS `amount`,
-          $prefix SUM(x.qty * y.cost_average)   AS `cost`
+          $prefix SUM(x.qty * x.cost_average)   AS `cost`
         FROM
           `transaction` AS x
         LEFT JOIN
