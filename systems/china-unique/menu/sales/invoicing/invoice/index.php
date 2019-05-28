@@ -70,7 +70,7 @@
           <table id="invoice-vouchers">
             <colgroup>
               <col>
-              <col>
+              <col style="width: 150px">
               <col>
               <col>
               <col>
@@ -202,6 +202,10 @@
               var invoiceVoucher = invoiceVouchers[i];
               var newRowElement = document.createElement("tr");
 
+              var byOrder = invoiceVoucher["by_order"];
+              var doListElement = document.querySelector("#delivery-order-list-" + debtorCode + "-" + currencyCode + "");
+              var stockOutListElement = document.querySelector("#stock-out-voucher-list-" + debtorCode + "-" + currencyCode + "");
+
               var rowInnerHTML =
                   "<td>"
                   + "<div>"
@@ -211,7 +215,7 @@
                       + "name=\"by_order_" + i + "\" "
                       + "value=\"true\" "
                       + "onchange=\"onByOrderChange(true, " + i + ")\" "
-                      + (invoiceVoucher["by_order"] ? "checked" : "")
+                      + (byOrder ? "checked" : "")
                     + "/><label for=\"by_order_do_" + i + "\">DO No.</label><br/>"
                     + "<input "
                       + "id=\"by_order_si_" + i + "\" "
@@ -219,33 +223,53 @@
                       + "name=\"by_order_" + i + "\" "
                       + "value=\"false\" "
                       + "onchange=\"onByOrderChange(false, " + i + ")\" "
-                      + (invoiceVoucher["by_order"] ? "" : "checked")
+                      + (byOrder ? "" : "checked")
                     + "/><label for=\"by_order_si_" + i + "\">Stock Out No.</label>"
                   + "</div>"
                 + "</td>"
                 + "<td>"
-                  + "<input "
-                    + "class=\"do-no " + (invoiceVoucher["by_order"] ? "" : "hide") + "\" "
-                    + "type=\"text\" "
+                  + "<select "
+                    + "class=\"do-no " + (byOrder ? "" : "hide") + "\" "
                     + "name=\"do_no[]\" "
-                    + "list=\"delivery-order-list-" + debtorCode + "-" + currencyCode + "\" "
-                    + "value=\"" + invoiceVoucher["do_no"] + "\" "
+                    + "onchange=\"onDONoChange(event, " + i + ")\" "
                     + "onfocus=\"onFieldFocused(" + i + ", 'do_no[]')\" "
-                    + "onblur=\"onDONoChange(event, " + i + ")\" "
-                    + "autocomplete=\"on\" "
-                    + (invoiceVoucher["by_order"] ? "required" : "")
-                  + "/>"
-                  + "<input "
-                    + "class=\"stock-out-no " + (invoiceVoucher["by_order"] ? "hide" : "") + "\" "
-                    + "type=\"text\" "
+                    + "onblur=\"onFieldBlurred()\" "
+                    + (byOrder ? "required" : "")
+                  + ">"
+                    + "<option value=\"\"></option>";
+
+              if (doListElement) {
+                for (var j = 0; j < doListElement.children.length; j++) {
+                  var doNo = doListElement.children[j].value;
+                  var selected = invoiceVoucher["do_no"] === doNo ? " selected" : "";
+                  var disabled = invoiceVouchers.filter(function (m, mi) {
+                    return mi !== i && m["do_no"] === doNo;
+                  }).length > 0 ? " disabled" : "";
+                  rowInnerHTML += "<option value=\"" + doNo + "\"" + selected + disabled + ">" + doNo + "</option>";
+                }
+              }
+
+              rowInnerHTML += "</select>"
+                  + "<select "
+                    + "class=\"stock-out-no " + (byOrder ? "hide" : "") + "\" "
                     + "name=\"stock_out_no[]\" "
-                    + "list=\"stock-out-voucher-list-" + debtorCode + "-" + currencyCode + "\" "
-                    + "value=\"" + invoiceVoucher["stock_out_no"] + "\" "
+                    + "onchange=\"onStockOutNoChange(event, " + i + ")\" "
                     + "onfocus=\"onFieldFocused(" + i + ", 'stock_out_no[]')\" "
-                    + "onblur=\"onStockOutNoChange(event, " + i + ")\" "
-                    + "autocomplete=\"on\" "
-                    + (invoiceVoucher["by_order"] ? "" : "required")
-                  + "/>"
+                    + "onblur=\"onFieldBlurred()\" "
+                    + (byOrder ? "required" : "")
+                  + ">"
+                    + "<option value=\"\"></option>";
+
+              if (stockOutListElement) {
+                for (var j = 0; j < stockOutListElement.children.length; j++) {
+                  var stockOutNo = stockOutListElement.children[j].value;
+                  var selected = invoiceVoucher["stock_out_no"] === stockOutNo ? " selected" : "";
+
+                  rowInnerHTML += "<option value=\"" + stockOutNo + "\"" + selected + ">" + stockOutNo + "</option>";
+                }
+              }
+
+              rowInnerHTML += "</select>"
                 + "</td>"
                 + "<td>"
                   + "<span class=\"number\">" + invoiceVoucher["amount_payable"] + "</span>"
