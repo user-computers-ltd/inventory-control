@@ -256,7 +256,7 @@
                     + "onchange=\"onStockOutNoChange(event, " + i + ")\" "
                     + "onfocus=\"onFieldFocused(" + i + ", 'stock_out_no[]')\" "
                     + "onblur=\"onFieldBlurred()\" "
-                    + (byOrder ? "required" : "")
+                    + (byOrder ? "" : "required")
                   + ">"
                     + "<option value=\"\"></option>";
 
