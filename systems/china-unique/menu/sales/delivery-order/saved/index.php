@@ -67,6 +67,8 @@
           <button type="submit" name="action" value="print" class="web-only">Print</button>
           <button type="submit" name="action" value="delete" style="display: none;"></button>
           <button type="button" onclick="confirmDelete(event)" class="web-only">Delete</button>
+          <input id="delete-allotments" name="delete_allotments" type="checkbox" checked/>
+          <label for="delete-allotments">Clear allotments on delete</label>
           <table id="do-results">
             <colgroup>
               <col class="web-only" style="width: 30px">

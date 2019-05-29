@@ -13,6 +13,11 @@ button.hide {
   display: none;
 }
 
+#delete-allotments + label {
+  font-size: 13px;
+  line-height: 30px;
+}
+
 #do-results td {
   min-width: 0px;
   max-width: 0px;

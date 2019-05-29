@@ -81,7 +81,7 @@
                     if ($doId == "") {
                       $option = "
                         <button name=\"action\" type=\"submit\" value=\"create\" style=\"display: none\"></button>
-                        <button type=\"button\" onclick=\"confirmCreate(event)\" class=\"web-only\">Create Delivery Order</button>
+                        <button type=\"submit\" formaction=\"" . SALES_DELIVERY_ORDER_URL . "\">Create Delivery Order</button>
                         <button name=\"action\" type=\"submit\" value=\"delete\" style=\"display: none\"></button>
                         <button type=\"button\" onclick=\"confirmDelete(event)\" class=\"web-only\">Delete Allotments</button>
                       ";

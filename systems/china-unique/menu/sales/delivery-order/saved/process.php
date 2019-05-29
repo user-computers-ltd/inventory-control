@@ -6,6 +6,7 @@
   $filterDebtorCodes = $_GET["filter_debtor_code"];
   $action = $_POST["action"];
   $doIds = $_POST["do_id"];
+  $deleteAllotments = $_POST["delete_allotments"];
 
   if (assigned($action) && assigned($doIds) && count($doIds) > 0) {
     $queries = array();
@@ -16,8 +17,26 @@
     $postDoNos = array_map(function ($i) { return $i["do_no"]; }, query("SELECT do_no FROM `sdo_header` WHERE $headerWhereClause"));
 
     if ($action === "delete") {
-      array_push($queries, "DELETE a FROM `sdo_model` AS a LEFT JOIN `sdo_header` AS b ON a.do_no=b.do_no WHERE $modelWhereClause");
-      array_push($queries, "DELETE FROM `sdo_header` WHERE $headerWhereClause");
+      array_push($queries, "
+        DELETE a, b" . (isset($deleteAllotments) ? ", d" : "") . " FROM
+          `sdo_model` AS a
+        LEFT JOIN
+          `sdo_header` AS b
+        ON a.do_no=b.do_no
+        LEFT JOIN
+          `ia_header` AS c
+        ON a.ia_no=c.ia_no
+        LEFT JOIN
+          `so_allotment` AS d
+        ON
+          a.ia_no=d.ia_no AND
+          b.warehouse_code=IF(d.warehouse_code=\"\", c.warehouse_code, d.warehouse_code) AND
+          a.so_no=d.so_no AND
+          a.brand_code=d.brand_code AND
+          a.model_no=d.model_no
+        WHERE
+          $modelWhereClause
+      ");
     } else if ($action === "post") {
       array_push($queries, "UPDATE `sdo_header` SET status=\"POSTED\" WHERE $headerWhereClause");
 

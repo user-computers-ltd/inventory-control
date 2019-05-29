@@ -19,34 +19,40 @@
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo SALES_DELIVERY_ORDER_PRINTOUT_TITLE; ?></div>
-      <?php if (isset($doHeader)) : ?>
-        <?php
-          $discount = $doHeader["discount"];
-          $status = $doHeader["status"];
-        ?>
+      <?php if (assigned($doNo)) : ?>
         <form id="delivery-form" method="post">
           <table id="do-header">
             <tr>
               <td>Order No.:</td>
-              <td><input type="text" name="do_no" value="<?php echo $doHeader["do_no"]; ?>" required /></td>
+              <td><input type="text" name="do_no" value="<?php echo $doNo; ?>" required /></td>
               <td>Date:</td>
-              <td><input type="date" name="do_date" value="<?php echo $doHeader["do_date"]; ?>" max="<?php echo date("Y-m-d"); ?>" required /></td>
+              <td><input type="date" name="do_date" value="<?php echo $doDate; ?>" max="<?php echo date("Y-m-d"); ?>" required /></td>
             </tr>
             <tr>
               <td>Client:</td>
-              <td><?php echo $doHeader["debtor_code"] . " - " . $doHeader["debtor_name"]; ?></td>
+              <td>
+                <?php echo $debtor; ?>
+                <input type="hidden" name="debtor_code" value="<?php echo $debtorCode; ?>" />
+              </td>
               <td>Currency:</td>
-              <td><?php echo $doHeader["currency_code"] . " @ " . $doHeader["exchange_rate"]; ?></td>
+              <td>
+                <?php echo "$currencyCode @ $exchangeRate"; ?>
+                <input type="hidden" name="currency_code" value="<?php echo $currencyCode; ?>" />
+                <input type="hidden" name="exchange_rate" value="<?php echo $exchangeRate; ?>" />
+              </td>
             </tr>
             <tr>
               <td>Address:</td>
-              <td><textarea name="address"><?php echo $doHeader["debtor_address"]; ?></textarea></td>
+              <td><textarea name="address"><?php echo $address; ?></textarea></td>
               <td>Discount:</td>
-              <td><?php echo $doHeader["discount"]; ?>%</td>
+              <td>
+                <?php echo $discount; ?>%
+                <input type="hidden" name="discount" value="<?php echo $discount; ?>" />
+              </td>
             </tr>
             <tr>
               <td>Contact:</td>
-              <td><input type="text" name="contact" value="<?php echo $doHeader["debtor_contact"]; ?>" required /></td>
+              <td><input type="text" name="contact" value="<?php echo $contact; ?>" required /></td>
               <td>Tax:</td>
               <td>
                 <input
@@ -56,22 +62,22 @@
                   step="0.01"
                   min="0"
                   max="100"
-                  value="<?php echo $doHeader["tax"]; ?>"
+                  value="<?php echo $tax; ?>"
                   required
                 /><span>%</span>
                 <input
                   id="warehouse-code"
                   name="warehouse_code"
                   type="hidden"
-                  value="<?php echo $doHeader["warehouse_code"]; ?>"
+                  value="<?php echo $warehouseCode; ?>"
                   required
                 />
             </tr>
             <tr>
               <td>Tel:</td>
-              <td><input type="text" name="tel" value="<?php echo $doHeader["debtor_tel"]; ?>" required /></td>
+              <td><input type="text" name="tel" value="<?php echo $tel; ?>" required /></td>
               <td>Status:</td>
-              <td><?php echo $doHeader["is_provisional"] ? "PROVISIONAL" : $status; ?></td>
+              <td><?php echo $isProvisional ? "PROVISIONAL" : $status; ?></td>
             </tr>
           </table>
           <!-- <button type="button" onclick="addItem()">Add</button> -->
@@ -111,7 +117,7 @@
               <tr class="discount-row">
                 <td colspan="5"></td>
                 <td class="number">Discount:</td>
-                <td id="discount-percentage" class="number"><?php echo $doHeader["discount"]; ?></td>
+                <td id="discount-percentage" class="number"><?php echo $discount; ?></td>
                 <td id="discount-amount" class="number"></td>
                 <td></td>
               </tr>
@@ -130,18 +136,25 @@
           <table id="do-footer">
             <tr>
               <td>Remarks:</td>
-              <td><textarea id="remarks" name="remarks"><?php echo $doHeader["remarks"]; ?></textarea></td>
+              <td><textarea id="remarks" name="remarks"><?php echo $remarks; ?></textarea></td>
             </tr>
+            <?php if ($status === "SAVED") : ?>
+              <tr>
+                <td></td>
+                <td>
+                  <input id="delete-allotments" name="delete_allotments" type="checkbox" checked/>
+                  <label for="delete-allotments">Clear allotments on delete</label>
+                </td>
+              </tr>
+            <?php endif ?>
           </table>
-          <?php if ($status === "SAVED") : ?>
-            <button name="status" type="submit" value="SAVED">Save</button>
-          <?php endif ?>
+          <button name="status" type="submit" value="SAVED">Save</button>
           <button name="status" type="submit" value="<?php echo $status; ?>" formaction="<?php echo SALES_DELIVERY_ORDER_PRINTOUT_URL . "?id[]=$id"; ?>">Print</button>
           <?php if ($status === "SAVED" && !$hasIncoming) : ?>
-          <div id="post-wrapper">
-            <button name="status" type="submit" value="POSTED" style="display: none;"></button>
-            <button type="button" onclick="confirmPost(event)">Post</button>
-          </div>
+            <div id="post-wrapper">
+              <button name="status" type="submit" value="POSTED" style="display: none;"></button>
+              <button type="button" onclick="confirmPost(event)">Post</button>
+            </div>
           <?php endif ?>
           <?php if ($status === "SAVED") : ?>
             <button name="status" type="submit" value="DELETED" style="display: none;"></button>
@@ -189,8 +202,8 @@
         <script>
           var doModels = <?php echo json_encode($doModels); ?>;
           var brands = <?php echo json_encode($brands); ?>;
-          var iaNos = <?php echo json_encode($iaNos); ?>;
-          var discount = <?php echo $doHeader["discount"]; ?>;
+          var iaNos = <?php echo json_encode($debtorIaNos); ?>;
+          var discount = <?php echo $discount; ?>;
 
           var focusedRow = null;
           var focusedFieldName = null;
@@ -318,7 +331,7 @@
                 + "<td>"
                   + "<input "
                     + "class=\"qty number\" "
-                    + "type=\"number\" "
+                    + "type=\"<?php if (assigned($id)) : ?>number<?php else : ?>hidden<?php endif ?>\" "
                     + "min=\"0\""
                     + "max=\"" + (doModel["qty_max"]) + "\" "
                     + "name=\"qty[]\" "
@@ -327,8 +340,9 @@
                     + "onfocus=\"onFieldFocused(" + i + ", 'qty[]')\" "
                     + "onblur=\"onFieldBlurred()\" "
                     + "onkeydown=\"onQuantityKeyDown(event, " + i + ")\" "
-                    + "required "
+                    + "required"
                   + "/>"
+                   <?php if (!assigned($id)) : ?> + "<span class=\"number\">" + doModel["qty"] + "</span>"<?php endif ?>
                 + "</td>"
                 + "<td class=\"number\">"
                   + doModel["price"]
@@ -341,7 +355,7 @@
                   + "/>"
                 + "</td>"
                 + "<td class=\"total-amount number\">" + (doModel["amount"]).toFixed(2) + "</td>"
-                + "<td><div class=\"remove\" onclick=\"removeItem(" + i + ")\">×</div></td>"
+                + "<td><?php if (assigned($id)) : ?><div class=\"remove\" onclick=\"removeItem(" + i + ")\">×</div><?php endif ?></td>"
                 + "</tr>";
 
               newRowElement.innerHTML = rowInnerHTML;
