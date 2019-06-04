@@ -27,19 +27,19 @@
               </tr>
               <tr>
                 <td>致:</td>
-                <td><?php echo $doHeader["client_name"] . " (" . $doHeader["client_code"] . ")"; ?></td>
+                <td><?php echo $doHeader["debtor_name"] . " (" . $doHeader["debtor_code"] . ")"; ?></td>
               </tr>
               <tr>
                 <td>地址:</td>
-                <td><?php echo $doHeader["client_address"]; ?></td>
+                <td><?php echo $doHeader["address"]; ?></td>
               </tr>
               <tr>
                 <td>收貨人:</td>
-                <td><?php echo $doHeader["client_contact"]; ?></td>
+                <td><?php echo $doHeader["contact"]; ?></td>
               </tr>
               <tr>
                 <td>電話:</td>
-                <td><?php echo $doHeader["client_tel"]; ?></td>
+                <td><?php echo $doHeader["tel"]; ?></td>
               </tr>
               <tr>
                 <td>日期:</td>
@@ -187,6 +187,13 @@
           } else {
             $_GET["show_price"] = "on";
             echo generateRedirectButton(CURRENT_URL, "顯示價格");
+          }
+
+          unset($_GET["show_price"]);
+
+          if (assigned($editId)) {
+            $_POST["editing"] = "on";
+            echo generateRedirectButton(SALES_DELIVERY_ORDER_URL . "?id=$editId", "編輯");
           }
         ?>
       <?php else : ?>

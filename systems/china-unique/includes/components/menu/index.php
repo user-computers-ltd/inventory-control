@@ -46,7 +46,7 @@
         <?php echo generateSitemap($SITEMAP[getAccessLevel()], ""); ?>
         <?php if (isset($username)) : ?>
           <a class="menu-item link logout" href="<?php echo SYSTEM_URL; ?>logout.php">
-            <span class="initial">Z</span><span class="label">Logout</span>
+            <span class="initial"></span><span class="label">Logout</span>
           </a>
         <?php endif ?>
       </div>
@@ -82,6 +82,7 @@
         }
       </script>
     <?php endif ?>
+    <?php include_once ROOT_PATH . "includes/components/message-dialog/index.php"; ?>
     <?php include_once ROOT_PATH . "includes/components/confirm-dialog/index.php"; ?>
     <?php include_once ROOT_PATH . "includes/components/loading-screen/index.php"; ?>
   </body>

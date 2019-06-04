@@ -80,14 +80,14 @@
               <td><?php echo $isProvisional ? "PROVISIONAL" : $status; ?></td>
             </tr>
           </table>
-          <!-- <button type="button" onclick="addItem()">Add</button> -->
+          <button type="button" onclick="addItem()">Add</button>
           <table id="do-models">
             <colgroup>
               <col style="width: 30px">
               <col>
               <col>
               <col style="width: 80px">
-              <col>
+              <col style="width: 150px">
               <col style="width: 80px">
               <col style="width: 80px">
               <col style="width: 80px">
@@ -140,7 +140,9 @@
             </tr>
             <?php if ($status === "SAVED") : ?>
               <tr>
-                <td></td>
+                <td>
+                  <input name="id" type="hidden" value="<?php echo $id; ?>" />
+                </td>
                 <td>
                   <input id="delete-allotments" name="delete_allotments" type="checkbox" checked/>
                   <label for="delete-allotments">Clear allotments on delete</label>
@@ -149,7 +151,7 @@
             <?php endif ?>
           </table>
           <button name="status" type="submit" value="SAVED">Save</button>
-          <button name="status" type="submit" value="<?php echo $status; ?>" formaction="<?php echo SALES_DELIVERY_ORDER_PRINTOUT_URL . "?id[]=$id"; ?>">Print</button>
+          <button name="status" type="submit" value="<?php echo $status; ?>" formaction="<?php echo SALES_DELIVERY_ORDER_PRINTOUT_URL; ?>">Print</button>
           <?php if ($status === "SAVED" && !$hasIncoming) : ?>
             <div id="post-wrapper">
               <button name="status" type="submit" value="POSTED" style="display: none;"></button>
@@ -180,8 +182,8 @@
           echo "</datalist>";
 
           foreach ($iaVouchers as $iaNo => $models) {
-
-            echo "<datalist class=\"ia-voucher-list\" data-ia_no=\"$iaNo\">";
+            $iaId = preg_replace("/\//", "", $iaNo);
+            echo "<datalist class=\"ia-voucher-list\" data-ia_no=\"$iaId\">";
 
             foreach ($models as $model) {
               echo "<option value=\"" . $model["model_no"]
@@ -220,16 +222,32 @@
           var deleteButtonElement = deliveryFormElement.querySelector("button[value=\"DELETED\"]");
 
           function getModels(iaNo, modelNo, brandCode) {
-            var modelListElement = document.querySelector(iaNo ? ".ia-voucher-list[data-ia_no=\"" + iaNo + "\"]" : "#stock-model-list");
+            var modelListElement = document.querySelector(iaNo ? ".ia-voucher-list[data-ia_no=\"" + iaNo.replace("/", "") + "\"]" : "#stock-model-list");
+            var modelNoSearch = modelNo ? "[value=\"" + modelNo + "\"]" : "";
             var brandCodeSearch = brandCode ? "[data-brand_code=\"" + brandCode + "\"]" : "";
-            var matchedModelElements = modelListElement.querySelectorAll("option[value=\"" + modelNo + "\"]" + brandCodeSearch);
+            var matchedModelElements = modelListElement.querySelectorAll("option" + modelNoSearch + brandCodeSearch);
             var models = [];
-
             for (var i = 0; i < matchedModelElements.length; i++) {
               models.push(matchedModelElements[i].dataset);
             }
 
             return models;
+          }
+
+          function getAvailableModels(iaNo, modelNo, brandCode, soNo) {
+            return getModels(iaNo, modelNo, brandCode).filter(function (m) {
+              var soNos = soNo ? [ soNo ] : m["so_nos"].split(",");
+
+              for (var i = 0; i < soNos.length; i++) {
+                if (doModels.filter(function (dm) {
+                  return iaNo === dm["ia_no"] && m["model_no"] === dm["model_no"] && m["brand_code"] === dm["brand_code"] && soNos[i] === dm["so_no"];
+                }).length > 0) {
+                  return false;
+                }
+              }
+
+              return true;
+            });
           }
 
           function render() {
@@ -242,78 +260,84 @@
 
             for (var i = 0; i < doModels.length; i++) {
               var doModel = doModels[i];
-              var modelListId = doModel["ia_no"] ? "ia-voucher-list-" + doModel["ia_no"] : "stock-model-list";
-              var matchedModels = getModels(doModel["ia_no"], doModel["model_no"]);
+              var iaNo = doModel["ia_no"];
+              var modelNo = doModel["model_no"];
+              var brandCode = doModel["brand_code"];
+              var soNo = doModel["so_no"];
+              var modelListId = iaNo ? ".ia-voucher-list[data-ia_no=\"" + iaNo.replace("/", "") + "\"]" : "#stock-model-list";
+              var modelListElement = document.querySelector(modelListId);
               var newRowElement = document.createElement("tr");
-              var isIA = doModel["ia_no"] !== "";
+              var selected = iaNo === "" ? " selected" : "";
+              var disabled = iaNo !== "" && getAvailableModels("").length === 0 ? " disabled" : "";
               var rowInnerHTML =
                   "<tr>"
                 + "<td>" + (i + 1) + "</td>"
                 + "<td>"
-                 + (doModel["ia_no"] === "" ? "On Hand" : doModel["ia_no"])
                   + "<select "
-                    + "style=\"display: none;\""
                     + "class=\"ia-no\" "
                     + "name=\"ia_no[]\" "
-                    + "value=\"" + doModel["ia_no"] + "\" "
-                    + "onchange=\"onIANoChange(event, " + i + ")\" "
+                    + "onchange=\"onSourceChange(event, " + i + ")\" "
                     + "onfocus=\"onFieldFocused(" + i + ", 'ia_no[]')\" "
                     + "onblur=\"onFieldBlurred()\" "
                   + ">"
-                  + "<option value=\"\"" + (!isIA ? " selected" : "") + ">On Hand</option>";
+                  + "<option value=\"\"" +  selected + disabled + ">On Hand</option>";
 
               for (var j = 0; j < iaNos.length; j++) {
-                var selected = doModel["ia_no"] === iaNos[j] ? " selected" : "";
-                rowInnerHTML += "<option value=\"" + iaNos[j] + "\"" + selected + ">" + iaNos[j] + "</option>";
+                var value = iaNos[j];
+                var selected = iaNo === value ? " selected" : "";
+                var disabled = iaNo !== value && getAvailableModels(value).length === 0 ? " disabled" : "";
+                rowInnerHTML += "<option value=\"" + value + "\"" + selected + disabled + ">" + value + "</option>";
               }
 
               rowInnerHTML += "</select>"
                 + "</td>"
                 + "<td>"
-                  + "<input "
+                  + "<select "
                     + "class=\"model-no\" "
-                    + "type=\"text\" "
                     + "name=\"model_no[]\" "
-                    + "list=\"" + modelListId + "\" "
-                    + "value=\"" + doModel["model_no"] + "\" "
+                    + "onchange=\"onModelNoChange(event, " + i + ")\" "
                     + "onfocus=\"onFieldFocused(" + i + ", 'model_no[]')\" "
-                    + "onblur=\"onModelNoChange(event, " + i + ")\" "
-                    + "autocomplete=\"on\" "
+                    + "onblur=\"onFieldBlurred()\" "
                     + "required "
-                    + "readonly "
-                  + "/>"
+                  + ">";
+
+              for (var j = 0; j < modelListElement.children.length; j++) {
+                var value = modelListElement.children[j].value;
+                var selected = modelNo === value ? " selected" : "";
+                var disabled = modelNo !== value && getAvailableModels(iaNo, value).length === 0 ? " disabled" : "";
+                rowInnerHTML += "<option value=\"" + value + "\"" + selected + disabled + ">" + value + "</option>";
+              }
+
+              rowInnerHTML += "</select>"
                 + "</td>"
                 + "<td>"
                   + "<select "
                     + "class=\"brand-code\" "
                     + "name=\"brand_code[]\" "
-                    + "value=\"" + doModel["brand_code"] + "\" "
+                    + "value=\"" + brandCode + "\" "
                     + "onchange=\"onBrandCodeChange(event, " + i + ")\" "
                     + "onfocus=\"onFieldFocused(" + i + ", 'brand_code[]')\" "
                     + "onblur=\"onFieldBlurred()\" "
                     + "required "
-                    + "readonly "
                   + ">";
 
               for (var j = 0; j < brands.length; j++) {
-                var code = brands[j]["code"];
-                var selected = doModel["brand_code"] === code ? " selected" : "";
-                var disabled = matchedModels.map(function (model) {
-                  return model["brand_code"];
-                }).indexOf(code) === -1 ? " disabled hidden" : "";
-
-                rowInnerHTML += "<option value=\"" + code + "\"" + selected + disabled + ">" + code + "</option>";
+                var value = brands[j]["code"];
+                var selected = brandCode === value ? " selected" : "";
+                var hidden = getModels(iaNo, modelNo).map(function (m) {
+                  return m["brand_code"];
+                }).indexOf(value) === -1 ? " hidden" : "";
+                var disabled = brandCode !== value && getAvailableModels(iaNo, modelNo, value).length === 0 ? " disabled" : "";
+                rowInnerHTML += "<option value=\"" + value + "\"" + selected + disabled + hidden + ">" + value + "</option>";
               }
 
               rowInnerHTML += "</select>"
                 + "</td>"
                 + "<td>"
-                  + doModel["so_no"]
                   + "<select "
-                    + "style=\"display: none;\""
                     + "class=\"so-no\" "
                     + "name=\"so_no[]\" "
-                    + "value=\"" + doModel["so_no"] + "\" "
+                    + "value=\"" + soNo + "\" "
                     + "onchange=\"onSONoChange(event, " + i + ")\" "
                     + "onfocus=\"onFieldFocused(" + i + ", 'so_no[]')\" "
                     + "onblur=\"onFieldBlurred()\" "
@@ -321,9 +345,10 @@
                   + ">";
 
               for (var j = 0; j < doModel["so_nos"].length; j++) {
-                var soNo = doModel["so_nos"][j];
-                var selected = doModel["so_no"] === soNo ? " selected" : "";
-                rowInnerHTML += "<option value=\"" + soNo + "\"" + selected + ">" + soNo + "</option>";
+                var value = doModel["so_nos"][j];
+                var selected = soNo === value ? " selected" : "";
+                var disabled = soNo !== value && getAvailableModels(iaNo, modelNo, brandCode, value).length === 0 ? " disabled" : "";
+                rowInnerHTML += "<option value=\"" + value + "\"" + selected + disabled + ">" + value + "</option>";
               }
 
               rowInnerHTML += "</select>"
@@ -392,10 +417,14 @@
             }
           }
 
+          function updateSource(index, iaNo) {
+            var doModel = doModels[index];
+            doModel["ia_no"] = iaNo || "";
+          }
+
           function updateModel(index, model = {}) {
             var doModel = doModels[index];
 
-            doModel["ia_no"] = model["ia_no"] || "";
             doModel["model_no"] = model["model_no"] || "";
             doModel["brand_code"] = model["brand_code"] || "";
             doModel["so_nos"] = model["so_nos"] && model["so_nos"].split(",") || [];
@@ -432,10 +461,24 @@
           }
 
           function addItem() {
-            doModels.push({});
+            var matchedModels = getAvailableModels("").map(function (m) { m["ia_no"] = ""; return m; });
 
-            updateModel(doModels.length - 1);
-            render();
+            for (var i = 0; i < iaNos.length; i++) {
+              var iaNo = iaNos[i];
+              matchedModels = matchedModels.concat(getAvailableModels(iaNo).map(function (m) { m["ia_no"] = iaNo; return m; }));
+            }
+
+            if (matchedModels.length > 0) {
+              var matchedModel = matchedModels[0];
+              doModels.push({});
+              var index = doModels.length - 1;
+
+              updateSource(index, matchedModel["ia_no"]);
+              updateModel(index, matchedModel);
+              render();
+            } else {
+              showMessageDialog("No more models available");
+            }
           }
 
           function removeItem(index) {
@@ -453,13 +496,17 @@
             focusedFieldName = null;
           }
 
-          function onIANoChange(event, index) {
+          function onSourceChange(event, index) {
             var newIANo = event.target.value;
             var doModel = doModels[index];
-            var matchedModel = getModels(newIANo, doModel["model_no"])[0];
+            var modelNo = doModel["model_no"];
+            var brandCode = doModel["brand_code"];
+            var soNo = doModel["so_no"];
+            var matchedModels = getAvailableModels(newIANo);
 
-            if (doModel["ia_no"] !== newIANo) {
-              updateModel(index, matchedModel);
+            if (doModel["ia_no"] !== newIANo && matchedModels.length > 0) {
+              updateSource(index, newIANo);
+              updateModel(index, matchedModels[0]);
               render();
             }
 
@@ -469,10 +516,13 @@
           function onModelNoChange(event, index) {
             var newModelNo = event.target.value;
             var doModel = doModels[index];
-            var matchedModel = getModels(doModel["ia_no"], newModelNo)[0];
+            var iaNo = doModel["ia_no"];
+            var brandCode = doModel["brand_code"];
+            var soNo = doModel["so_no"];
+            var matchedModels = getAvailableModels(iaNo, newModelNo);
 
-            if (doModel["model_no"] !== newModelNo) {
-              updateModel(index, matchedModel);
+            if (doModel["model_no"] !== newModelNo && matchedModels.length > 0) {
+              updateModel(index, matchedModels[0]);
               render();
             }
 
@@ -480,26 +530,34 @@
           }
 
           function onBrandCodeChange(event, index) {
+            var newBrandCode = event.target.value;
             var doModel = doModels[index];
-            var brandCode = event.target.value;
-            var matchedModel =
-              doModel["model_no"] &&
-              brandCode &&
-              getModels(doModel["ia_no"], doModel["model_no"]).filter(function (model) {
-                return model["brand_code"] === brandCode;
-              })[0] || undefined;
+            var iaNo = doModel["ia_no"];
+            var modelNo = doModel["model_no"];
+            var soNo = doModel["so_no"];
+            var matchedModels = getAvailableModels(iaNo, modelNo, newBrandCode);
 
-            updateModel(index, matchedModel);
-            render();
+            if (doModel["brand_code"] !== newBrandCode && matchedModels.length > 0) {
+              updateModel(index, matchedModels[0]);
+              render();
+            }
           }
 
           function onSONoChange(event, index) {
+            var newSoNo = event.target.value;
             var doModel = doModels[index];
-            var soNo = event.target.value;
-            var matchedModel = getModels(doModel["ia_no"], doModel["model_no"], doModel["brand_code"])[0];
-            matchedModel["so_no"] = soNo;
-            updateModel(index, matchedModel);
-            render();
+            var iaNo = doModel["ia_no"];
+            var modelNo = doModel["model_no"];
+            var brandCode = doModel["brand_code"];
+            var matchedModels = getAvailableModels(iaNo, modelNo, brandCode, newSoNo);
+
+            if (doModel["so_no"] !== newSoNo && matchedModels.length > 0) {
+              var matchedModel = matchedModels[0];
+
+              matchedModel["so_no"] = newSoNo;
+              updateModel(index, matchedModel);
+              render();
+            }
           }
 
           function onQuantityChange(event, index) {

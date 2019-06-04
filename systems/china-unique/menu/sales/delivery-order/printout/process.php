@@ -1,5 +1,24 @@
 <?php
   $ids = $_GET["id"];
+  $editId = $_POST["id"];
+  $doNo = $_POST["do_no"];
+  $doDate = $_POST["do_date"];
+  $debtorCode = $_POST["debtor_code"];
+  $address = $_POST["address"];
+  $contact = $_POST["contact"];
+  $tel = $_POST["tel"];
+  $tax = $_POST["tax"];
+  $warehouseCode = $_POST["warehouse_code"];
+  $currencyCode = $_POST["currency_code"];
+  $exchangeRate = $_POST["exchange_rate"];
+  $discount = $_POST["discount"];
+  $remarks = $_POST["remarks"];
+  $iaNos = $_POST["ia_no"];
+  $soNos = $_POST["so_no"];
+  $brandCodes = $_POST["brand_code"];
+  $modelNos = $_POST["model_no"];
+  $qtys = $_POST["qty"];
+  $prices = $_POST["price"];
   $hidePrice = $_GET["show_price"] === "off";
 
   $doHeaders = array();
@@ -25,8 +44,7 @@
         a.tax                                             AS `tax`,
         c.name                                            AS `warehouse`,
         a.invoice_no                                      AS `invoice_no`,
-        a.remarks                                         AS `remarks`,
-        a.status                                          AS `status`
+        a.remarks                                         AS `remarks`
       FROM
         `sdo_header` AS a
       LEFT JOIN
@@ -42,9 +60,10 @@
     $doModelList = query("
       SELECT
         a.do_no           AS `do_no`,
+        a.ia_no           AS `ia_no`,
+        a.so_no           AS `so_no`,
         b.name            AS `brand`,
         a.model_no        AS `model_no`,
-        a.so_no           AS `so_no`,
         a.price           AS `price`,
         SUM(a.qty)        AS `qty`,
         d.occurrence      AS `occurrence`
@@ -68,6 +87,67 @@
         a.brand_code ASC,
         a.model_no ASC
     ");
+  }
+
+  /* If a complete form is given, follow all the data to printout. */
+  else if (
+    assigned($doNo) &&
+    assigned($doDate) &&
+    assigned($debtorCode) &&
+    assigned($address) &&
+    assigned($contact) &&
+    assigned($tel) &&
+    assigned($tax) &&
+    assigned($warehouseCode) &&
+    assigned($currencyCode) &&
+    assigned($exchangeRate) &&
+    assigned($discount) &&
+    assigned($iaNos) &&
+    assigned($brandCodes) &&
+    assigned($modelNos) &&
+    assigned($soNos) &&
+    assigned($qtys) &&
+    assigned($prices)
+  ) {
+    $brands = query("SELECT code, name FROM `brand`");
+    foreach ($brands as $brand) {
+      $brands[$brand["code"]] = $brand["name"];
+    }
+
+    $debtorName = query("SELECT english_name AS `name` FROM `debtor` WHERE code=\"$debtorCode\"")[0]["name"];
+
+    $doDate = new DateTime($doDate);
+    $doDate = $doDate->format("d-m-Y");
+
+    $doHeaders = array(array(
+      "do_no"           => $doNo,
+      "date"            => $doDate,
+      "debtor_code"     => $debtorCode,
+      "debtor_name"     => $debtorName,
+      "address"         => $address,
+      "contact"         => $contact,
+      "tel"             => $tel,
+      "tax"             => $tax,
+      "warehouse_code"  => $warehouseCode,
+      "currency_code"   => $currencyCode,
+      "exchange_rate"   => $exchangeRate,
+      "discount"        => $discount,
+      "priority"        => $priority,
+      "remarks"         => $remarks
+    ));
+
+    for ($i = 0; $i < count($iaNos); $i++) {
+      array_push($doModelList, array(
+        "do_no"             => $doNo,
+        "ia_no"             => $iaNos[$i],
+        "so_no"             => $soNos[$i],
+        "brand"             => $brands[$brandCodes[$i]],
+        "model_no"          => $modelNos[$i],
+        "price"             => $prices[$i],
+        "qty"               => $qtys[$i],
+        "occurrence"        => $qtys[$i]
+      ));
+    }
   }
 
   if (count($doModelList) > 0) {

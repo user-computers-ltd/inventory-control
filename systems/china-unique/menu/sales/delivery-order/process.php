@@ -20,15 +20,20 @@
   $qtys = $_POST["qty"];
   $prices = $_POST["price"];
   $deleteAllotments = $_POST["delete_allotments"];
+  $editing = assigned($_POST["editing"]);
 
   $doHeader = null;
   $doModels = array();
 
   /* If a form is submitted, update the packing list. */
   if (
+    $editing === false &&
     assigned($doNo) &&
     assigned($doDate) &&
     assigned($debtorCode) &&
+    assigned($address) &&
+    assigned($contact) &&
+    assigned($tel) &&
     assigned($tax) &&
     assigned($warehouseCode) &&
     assigned($currencyCode) &&
@@ -159,7 +164,7 @@
   }
 
   /* When an id is given, retrieve an existing packing list. */
-  if (assigned($id)) {
+  if (assigned($id) && $editing === false) {
     $doHeader = query("
       SELECT
         a.do_no                               AS `do_no`,
@@ -251,19 +256,19 @@
   else {
     $debtorResult = query("SELECT factory_address, contact, tel, english_name FROM `debtor` WHERE code=\"$debtorCode\"")[0];
 
-    $doNo = "DO" . date("YmdHis");
-    $doDate = date("Y-m-d");
+    $doNo = assigned($doNo) ? $doNo : "DO" . date("YmdHis");
+    $doDate = assigned($doDate) ? $doDate : date("Y-m-d");
+    $debtor = "$debtorCode - " . $debtorResult["english_name"];
     $address = $debtorResult["factory_address"];
     $contact = $debtorResult["contact"];
     $tel = $debtorResult["tel"];
-    $debtor = "$debtorCode - " . $debtorResult["english_name"];
     $currencyCode = assigned($currencyCode) ? $currencyCode : COMPANY_CURRENCY;
     $exchangeRate = assigned($exchangeRate) ? $exchangeRate : $currencies[$currencyCode];
     $discount = assigned($discount) ? $discount : 0;
-    $tax = COMPANY_TAX;
+    $tax = assigned($tax) ? $tax : COMPANY_TAX;
     $warehouseCode = assigned($warehouseCode) ? $warehouseCode : "";
     $remarks = assigned($remarks) ? $remarks : "";
-    $status = "DRAFT";
+    $status = assigned($status) ? $status : "DRAFT";
     $isProvisional = 0;
 
     $doModels = array();
@@ -291,8 +296,9 @@
           "so_no"         => $soNo,
           "brand_code"    => $brandCode,
           "model_no"      => $modelNo,
+          "price"         => $price,
           "qty"           => $qty,
-          "price"         => $price
+          "occurrence"    => $qty
         ));
       }
     }
@@ -341,7 +347,7 @@
             LEFT JOIN
               (
                 SELECT
-                  sdm.do_no             AS `do_no`,
+                  sdh.id                AS `do_id`,
                   sdm.ia_no             AS `ia_no`,
                   sdm.so_no             AS `so_no`,
                   sdm.brand_code        AS `brand_code`,
@@ -360,7 +366,7 @@
               x.so_no=z.so_no AND
               x.ia_no=z.ia_no
             WHERE
-              z.do_no!=\"$doNo\" OR x.ia_no!=\"\"
+              z.do_id!=\"$id\" OR x.ia_no!=\"\"
             GROUP BY
               x.brand_code, x.model_no, x.so_no
           ) AS sa
@@ -388,7 +394,7 @@
         LEFT JOIN
           (
             SELECT
-              sdm.do_no             AS `do_no`,
+              sdh.id                AS `do_id`,
               sdm.ia_no             AS `ia_no`,
               sdm.so_no             AS `so_no`,
               sdm.brand_code        AS `brand_code`,
@@ -409,7 +415,7 @@
         WHERE
           x.warehouse_code!=\"\" AND
           (y.debtor_code!=\"$debtorCode\" OR
-          (y.debtor_code=\"$debtorCode\" AND z.do_no!=\"$doNo\"))
+          (y.debtor_code=\"$debtorCode\" AND z.do_id!=\"$id\"))
         GROUP BY
           x.warehouse_code, x.brand_code, x.model_no
       ) AS c
@@ -469,7 +475,7 @@
         LEFT JOIN
           (
             SELECT
-              sdm.do_no             AS `do_no`,
+              sdh.id                AS `do_id`,
               sdm.ia_no             AS `ia_no`,
               sdm.so_no             AS `so_no`,
               sdm.brand_code        AS `brand_code`,
@@ -488,7 +494,7 @@
           x.so_no=z.so_no AND
           x.ia_no=z.ia_no
         WHERE
-          x.ia_no=\"\" OR z.do_no!=\"$doNo\"
+          x.ia_no=\"\" OR z.do_id!=\"$id\"
         GROUP BY
           x.brand_code, x.model_no, x.so_no) AS sa
       ON sm.brand_code=sa.brand_code AND sm.model_no=sa.model_no AND sm.so_no=sa.so_no
@@ -514,7 +520,7 @@
       LEFT JOIN
         (
           SELECT
-            sdm.do_no             AS `do_no`,
+            sdh.id                AS `do_id`,
             sdm.ia_no             AS `ia_no`,
             sdm.so_no             AS `so_no`,
             sdm.brand_code        AS `brand_code`,
@@ -535,7 +541,7 @@
       WHERE
         x.ia_no!=\"\" AND
         (y.debtor_code!=\"$debtorCode\" OR
-        (y.debtor_code=\"$debtorCode\" AND (z.do_no IS NULL OR z.do_no!=\"$doNo\")))
+        (y.debtor_code=\"$debtorCode\" AND (z.do_id IS NULL OR z.do_id!=\"$id\")))
       GROUP BY
         x.ia_no, x.brand_code, x.model_no) AS c
     ON
