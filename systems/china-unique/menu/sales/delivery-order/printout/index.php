@@ -165,7 +165,7 @@
               <?php endif ?>
               <tr><td colspan="2">敬請簽收:</td></tr>
               <tr><td colspan="2"><br/><br/><br/><br/>____________________________________</td></tr>
-              <tr><td colspan="2"><?php echo $doHeader["client_name"]; ?></td></tr>
+              <tr><td colspan="2"><?php echo $doHeader["debtor_name"]; ?></td></tr>
             </table>
           </div>
         <?php endforeach; ?>
