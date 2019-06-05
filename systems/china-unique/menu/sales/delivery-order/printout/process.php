@@ -7,11 +7,11 @@
   $address = $_POST["address"];
   $contact = $_POST["contact"];
   $tel = $_POST["tel"];
-  $tax = $_POST["tax"];
   $warehouseCode = $_POST["warehouse_code"];
   $currencyCode = $_POST["currency_code"];
   $exchangeRate = $_POST["exchange_rate"];
   $discount = $_POST["discount"];
+  $tax = $_POST["tax"];
   $remarks = $_POST["remarks"];
   $iaNos = $_POST["ia_no"];
   $soNos = $_POST["so_no"];
@@ -39,11 +39,10 @@
         a.address                                         AS `address`,
         a.contact                                         AS `contact`,
         a.tel                                             AS `tel`,
+        c.name                                            AS `warehouse`,
         CONCAT(a.currency_code, ' @ ', a.exchange_rate)   AS `currency`,
         a.discount                                        AS `discount`,
         a.tax                                             AS `tax`,
-        c.name                                            AS `warehouse`,
-        a.invoice_no                                      AS `invoice_no`,
         a.remarks                                         AS `remarks`
       FROM
         `sdo_header` AS a
@@ -97,11 +96,11 @@
     assigned($address) &&
     assigned($contact) &&
     assigned($tel) &&
-    assigned($tax) &&
     assigned($warehouseCode) &&
     assigned($currencyCode) &&
     assigned($exchangeRate) &&
     assigned($discount) &&
+    assigned($tax) &&
     assigned($iaNos) &&
     assigned($brandCodes) &&
     assigned($modelNos) &&
@@ -112,6 +111,11 @@
     $brands = query("SELECT code, name FROM `brand`");
     foreach ($brands as $brand) {
       $brands[$brand["code"]] = $brand["name"];
+    }
+
+    $warehouses = query("SELECT code, name FROM `warehouse`");
+    foreach ($warehouses as $warehouse) {
+      $warehouses[$warehouse["code"]] = $warehouse["name"];
     }
 
     $debtorName = query("SELECT english_name AS `name` FROM `debtor` WHERE code=\"$debtorCode\"")[0]["name"];
@@ -127,12 +131,11 @@
       "address"         => $address,
       "contact"         => $contact,
       "tel"             => $tel,
-      "tax"             => $tax,
-      "warehouse_code"  => $warehouseCode,
+      "warehouse"       => $warehouses[$warehouseCode],
       "currency_code"   => $currencyCode,
       "exchange_rate"   => $exchangeRate,
       "discount"        => $discount,
-      "priority"        => $priority,
+      "tax"             => $tax,
       "remarks"         => $remarks
     ));
 

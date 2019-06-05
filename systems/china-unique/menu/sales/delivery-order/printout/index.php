@@ -157,12 +157,6 @@
               <div class="do-models-no-results">沒有項目</div>
             <?php endif ?>
             <table class="do-footer">
-              <?php if (assigned($doHeader["invoice_no"])) : ?>
-                <tr>
-                  <td>發票編號:</td>
-                  <td><?php echo $doHeader["invoice_no"]; ?></td>
-                </tr>
-              <?php endif ?>
               <?php if (assigned($doHeader["remarks"])) : ?>
                 <tr>
                   <td>備註:</td>
