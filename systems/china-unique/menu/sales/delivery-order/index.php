@@ -279,6 +279,7 @@
                     + "onchange=\"onSourceChange(event, " + i + ")\" "
                     + "onfocus=\"onFieldFocused(" + i + ", 'ia_no[]')\" "
                     + "onblur=\"onFieldBlurred()\" "
+                    <?php if (!assigned($id)) : ?> + " readonly"<?php endif ?>
                   + ">"
                   + "<option value=\"\"" +  selected + disabled + ">On Hand</option>";
 
@@ -299,6 +300,7 @@
                     + "onfocus=\"onFieldFocused(" + i + ", 'model_no[]')\" "
                     + "onblur=\"onFieldBlurred()\" "
                     + "required "
+                    <?php if (!assigned($id)) : ?> + " readonly"<?php endif ?>
                   + ">";
 
               for (var j = 0; j < modelListElement.children.length; j++) {
@@ -319,6 +321,7 @@
                     + "onfocus=\"onFieldFocused(" + i + ", 'brand_code[]')\" "
                     + "onblur=\"onFieldBlurred()\" "
                     + "required "
+                    <?php if (!assigned($id)) : ?> + " readonly"<?php endif ?>
                   + ">";
 
               for (var j = 0; j < brands.length; j++) {
@@ -342,6 +345,7 @@
                     + "onfocus=\"onFieldFocused(" + i + ", 'so_no[]')\" "
                     + "onblur=\"onFieldBlurred()\" "
                     + "required "
+                    <?php if (!assigned($id)) : ?> + " readonly"<?php endif ?>
                   + ">";
 
               for (var j = 0; j < doModel["so_nos"].length; j++) {
@@ -366,6 +370,7 @@
                     + "onblur=\"onFieldBlurred()\" "
                     + "onkeydown=\"onQuantityKeyDown(event, " + i + ")\" "
                     + "required"
+                    <?php if (!assigned($id)) : ?> + " readonly"<?php endif ?>
                   + "/>"
                    <?php if (!assigned($id)) : ?> + "<span class=\"number\">" + doModel["qty"] + "</span>"<?php endif ?>
                 + "</td>"
@@ -587,11 +592,13 @@
 
             for (var i = 0; i < doModels.length; i++) {
               var doModel = doModels[i];
-
               var matchedModel = getModels(doModel["ia_no"], doModel["model_no"], doModel["brand_code"])[0];
-              matchedModel["ia_no"] = doModel["ia_no"];
-              matchedModel["so_no"] = doModel["so_no"];
-              updateModel(i, matchedModel);
+
+              if (matchedModel) {
+                matchedModel["ia_no"] = doModel["ia_no"];
+                matchedModel["so_no"] = doModel["so_no"];
+                updateModel(i, matchedModel);
+              }
             }
 
             render();

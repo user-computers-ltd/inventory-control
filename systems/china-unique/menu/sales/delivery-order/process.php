@@ -304,6 +304,8 @@
     }
   }
 
+  $creating = assigned($id) === false;
+
   $brands = query("SELECT code, name FROM `brand`");
 
   $stockModels = query("
@@ -414,8 +416,11 @@
           x.ia_no=z.ia_no
         WHERE
           x.warehouse_code!=\"\" AND
-          (y.debtor_code!=\"$debtorCode\" OR
-          (y.debtor_code=\"$debtorCode\" AND z.do_id!=\"$id\"))
+          (y.debtor_code!=\"$debtorCode\" "
+          . ($creating ? "" : " OR
+            (y.debtor_code=\"$debtorCode\" AND (z.do_id IS NULL OR z.do_id!=\"$id\"))
+          ") . "
+          )
         GROUP BY
           x.warehouse_code, x.brand_code, x.model_no
       ) AS c
@@ -540,8 +545,11 @@
         x.ia_no=z.ia_no
       WHERE
         x.ia_no!=\"\" AND
-        (y.debtor_code!=\"$debtorCode\" OR
-        (y.debtor_code=\"$debtorCode\" AND (z.do_id IS NULL OR z.do_id!=\"$id\")))
+        (y.debtor_code!=\"$debtorCode\" "
+        . ($creating ? "" : " OR
+          (y.debtor_code=\"$debtorCode\" AND (z.do_id IS NULL OR z.do_id!=\"$id\"))
+        ") . "
+        )
       GROUP BY
         x.ia_no, x.brand_code, x.model_no) AS c
     ON
