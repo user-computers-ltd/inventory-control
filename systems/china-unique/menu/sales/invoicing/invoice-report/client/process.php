@@ -200,12 +200,8 @@
     LEFT JOIN
       `debtor` AS c
     ON a.creditor_code=c.code
-    LEFT JOIN
-      (SELECT \"\" AS `invoice_amounts`, \"0\" AS `invoice_settlement`, \"\" AS `invoice_dates`, \"\" AS `invoice_nos`, \"\" AS `invoice_ids`) AS d
-    ON a.id=a.id
-    LEFT JOIN
-      (SELECT \"0\" AS `invoice_sum`, \"0\" AS `invoice_settlement`) AS e
-    ON a.id=a.id
+    " . joinInvoiceTable("d", "stock_in_no", $currentInvoiceWhereClause) . "
+    " . joinInvoiceSumTable("e", "stock_in_no", $invoiceWhereClause) . "
     WHERE
       a.status=\"POSTED\" AND
       a.transaction_code=\"R3\"

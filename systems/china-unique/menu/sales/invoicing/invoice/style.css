@@ -44,7 +44,8 @@
 }
 
 #invoice-vouchers td > .do-no.hide,
-#invoice-vouchers td > .stock-out-no.hide {
+#invoice-vouchers td > .stock-out-no.hide,
+#invoice-vouchers td > .stock-in-no.hide {
   display: none;
 }
 

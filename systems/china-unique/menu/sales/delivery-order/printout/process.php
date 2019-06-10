@@ -59,7 +59,6 @@
     $doModelList = query("
       SELECT
         a.do_no           AS `do_no`,
-        a.ia_no           AS `ia_no`,
         a.so_no           AS `so_no`,
         b.name            AS `brand`,
         a.model_no        AS `model_no`,
@@ -139,17 +138,27 @@
       "remarks"         => $remarks
     ));
 
+    $indexMap = array();
+
     for ($i = 0; $i < count($iaNos); $i++) {
-      array_push($doModelList, array(
-        "do_no"             => $doNo,
-        "ia_no"             => $iaNos[$i],
-        "so_no"             => $soNos[$i],
-        "brand"             => $brands[$brandCodes[$i]],
-        "model_no"          => $modelNos[$i],
-        "price"             => $prices[$i],
-        "qty"               => $qtys[$i],
-        "occurrence"        => $qtys[$i]
-      ));
+      $key = $soNos[$i] . $brandCodes[$i] . $modelNos[$i];
+
+      if (!isset($indexMap[$key])) {
+        $indexMap[$key] = $i;
+
+        array_push($doModelList, array(
+          "do_no"             => $doNo,
+          "ia_no"             => $iaNos[$i],
+          "so_no"             => $soNos[$i],
+          "brand"             => $brands[$brandCodes[$i]],
+          "model_no"          => $modelNos[$i],
+          "price"             => $prices[$i],
+          "qty"               => $qtys[$i],
+          "occurrence"        => $qtys[$i]
+        ));
+      } else {
+        $doModelList[$indexMap[$key]]["qty"] += $qtys[$i];
+      }
     }
   }
 

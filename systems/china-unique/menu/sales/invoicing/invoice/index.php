@@ -80,10 +80,10 @@
             <thead>
               <tr>
                 <th></th>
-                <th>DO No. / Stock Out No.</th>
-                <th class="number">Payable</th>
-                <th class="number">Amount</th>
+                <th>Voucher No.</th>
+                <th class="number">Receivable</th>
                 <th>Settlement</th>
+                <th class="number">Amount</th>
                 <th>Remarks</th>
                 <th></th>
               </tr>
@@ -93,8 +93,8 @@
                 <th></th>
                 <th></th>
                 <th class="number">Total:</th>
-                <th id="total-amount" class="number"></th>
                 <th></th>
+                <th id="total-amount" class="number"></th>
                 <th></th>
                 <th></th>
               <tr>
@@ -120,6 +120,18 @@
           <?php endif ?>
         </form>
         <?php
+          foreach ($deliveryOrders as $dCode => $orderList) {
+            foreach ($orderList as $cCode => $orders) {
+              echo "<datalist id=\"delivery-order-list-$dCode-$cCode\">";
+              foreach ($orders as $order) {
+                echo "<option value=\"" . $order["do_no"]
+                  . "\" data-do_no=\"" . $order["do_no"]
+                  . "\" data-amount=\"" . round($order["amount"], 2)
+                  . "\">" . $order["do_no"] . "</option>";
+              }
+              echo "</datalist>";
+            }
+          }
           foreach ($stockOutVouchers as $dCode => $voucherList) {
             foreach ($voucherList as $cCode => $vouchers) {
               echo "<datalist id=\"stock-out-voucher-list-$dCode-$cCode\">";
@@ -132,14 +144,14 @@
               echo "</datalist>";
             }
           }
-          foreach ($deliveryOrders as $dCode => $orderList) {
-            foreach ($orderList as $cCode => $orders) {
-              echo "<datalist id=\"delivery-order-list-$dCode-$cCode\">";
-              foreach ($orders as $order) {
-                echo "<option value=\"" . $order["do_no"]
-                  . "\" data-do_no=\"" . $order["do_no"]
-                  . "\" data-amount=\"" . round($order["amount"], 2)
-                  . "\">" . $order["do_no"] . "</option>";
+          foreach ($stockInVouchers as $dCode => $voucherList) {
+            foreach ($voucherList as $cCode => $vouchers) {
+              echo "<datalist id=\"stock-in-voucher-list-$dCode-$cCode\">";
+              foreach ($vouchers as $voucher) {
+                echo "<option value=\"" . $voucher["stock_in_no"]
+                  . "\" data-stock_in_no=\"" . $voucher["stock_in_no"]
+                  . "\" data-amount=\"" . round($voucher["amount"], 2)
+                  . "\">" . $voucher["stock_in_no"] . "</option>";
               }
               echo "</datalist>";
             }
@@ -164,6 +176,20 @@
             var currencyCode = currencyCodeElement.value;
             var voucherListElement = document.querySelector("#stock-out-voucher-list-" + debtorCode + "-" + currencyCode);
             var matchedElements = (voucherListElement && voucherListElement.querySelectorAll("option[value=\"" + stockOutNo + "\"]")) || [];
+            var vouchers = [];
+
+            for (var i = 0; i < matchedElements.length; i++) {
+              vouchers.push(matchedElements[i].dataset);
+            }
+
+            return vouchers;
+          }
+
+          function getStockInVouchers(stockInNo) {
+            var debtorCode = debtorCodeElement.value;
+            var currencyCode = currencyCodeElement.value;
+            var voucherListElement = document.querySelector("#stock-in-voucher-list-" + debtorCode + "-" + currencyCode);
+            var matchedElements = (voucherListElement && voucherListElement.querySelectorAll("option[value=\"" + stockInNo + "\"]")) || [];
             var vouchers = [];
 
             for (var i = 0; i < matchedElements.length; i++) {
@@ -202,39 +228,48 @@
               var invoiceVoucher = invoiceVouchers[i];
               var newRowElement = document.createElement("tr");
 
-              var byOrder = invoiceVoucher["by_order"];
+              var source = invoiceVoucher["source"];
               var doListElement = document.querySelector("#delivery-order-list-" + debtorCode + "-" + currencyCode + "");
               var stockOutListElement = document.querySelector("#stock-out-voucher-list-" + debtorCode + "-" + currencyCode + "");
+              var stockInListElement = document.querySelector("#stock-in-voucher-list-" + debtorCode + "-" + currencyCode + "");
 
               var rowInnerHTML =
                   "<td>"
                   + "<div>"
                     + "<input "
-                      + "id=\"by_order_do_" + i + "\" "
+                      + "id=\"source_do_" + i + "\" "
                       + "type=\"radio\" "
-                      + "name=\"by_order_" + i + "\" "
+                      + "name=\"source_" + i + "\" "
                       + "value=\"true\" "
-                      + "onchange=\"onByOrderChange(true, " + i + ")\" "
-                      + (byOrder ? "checked" : "")
-                    + "/><label for=\"by_order_do_" + i + "\">DO No.</label><br/>"
+                      + "onchange=\"onSourceChange('do', " + i + ")\" "
+                      + (source === "do" ? "checked" : "")
+                    + "/><label for=\"source_do_" + i + "\">DO No.</label><br/>"
                     + "<input "
-                      + "id=\"by_order_si_" + i + "\" "
+                      + "id=\"source_so_" + i + "\" "
                       + "type=\"radio\" "
-                      + "name=\"by_order_" + i + "\" "
+                      + "name=\"source_" + i + "\" "
                       + "value=\"false\" "
-                      + "onchange=\"onByOrderChange(false, " + i + ")\" "
-                      + (byOrder ? "" : "checked")
-                    + "/><label for=\"by_order_si_" + i + "\">Stock Out No.</label>"
+                      + "onchange=\"onSourceChange('so', " + i + ")\" "
+                      + (source === "so" ? "checked" : "")
+                    + "/><label for=\"source_so_" + i + "\">Stock Out No.</label><br/>"
+                    + "<input "
+                      + "id=\"source_si_" + i + "\" "
+                      + "type=\"radio\" "
+                      + "name=\"source_" + i + "\" "
+                      + "value=\"false\" "
+                      + "onchange=\"onSourceChange('si', " + i + ")\" "
+                      + (source === "si" ? "checked" : "")
+                    + "/><label for=\"source_si_" + i + "\">Stock In No.</label>"
                   + "</div>"
                 + "</td>"
                 + "<td>"
                   + "<select "
-                    + "class=\"do-no " + (byOrder ? "" : "hide") + "\" "
+                    + "class=\"do-no " + (source === "do" ? "" : "hide") + "\" "
                     + "name=\"do_no[]\" "
                     + "onchange=\"onDONoChange(event, " + i + ")\" "
                     + "onfocus=\"onFieldFocused(" + i + ", 'do_no[]')\" "
                     + "onblur=\"onFieldBlurred()\" "
-                    + (byOrder ? "required" : "")
+                    + (source === "do" ? "required" : "")
                   + ">"
                     + "<option value=\"\"></option>";
 
@@ -251,12 +286,12 @@
 
               rowInnerHTML += "</select>"
                   + "<select "
-                    + "class=\"stock-out-no " + (byOrder ? "hide" : "") + "\" "
+                    + "class=\"stock-out-no " + (source === "so"  ? "" : "hide") + "\" "
                     + "name=\"stock_out_no[]\" "
                     + "onchange=\"onStockOutNoChange(event, " + i + ")\" "
                     + "onfocus=\"onFieldFocused(" + i + ", 'stock_out_no[]')\" "
                     + "onblur=\"onFieldBlurred()\" "
-                    + (byOrder ? "" : "required")
+                    + (source === "so" ? "required" : "")
                   + ">"
                     + "<option value=\"\"></option>";
 
@@ -270,23 +305,29 @@
               }
 
               rowInnerHTML += "</select>"
+                  + "<select "
+                    + "class=\"stock-in-no " + (source === "si"  ? "" : "hide") + "\" "
+                    + "name=\"stock_in_no[]\" "
+                    + "onchange=\"onStockInNoChange(event, " + i + ")\" "
+                    + "onfocus=\"onFieldFocused(" + i + ", 'stock_in_no[]')\" "
+                    + "onblur=\"onFieldBlurred()\" "
+                    + (source === "si" ? "required" : "")
+                  + ">"
+                    + "<option value=\"\"></option>";
+
+              if (stockInListElement) {
+                for (var j = 0; j < stockInListElement.children.length; j++) {
+                  var stockInNo = stockInListElement.children[j].value;
+                  var selected = invoiceVoucher["stock_in_no"] === stockInNo ? " selected" : "";
+
+                  rowInnerHTML += "<option value=\"" + stockInNo + "\"" + selected + ">" + stockInNo + "</option>";
+                }
+              }
+
+              rowInnerHTML += "</select>"
                 + "</td>"
                 + "<td>"
                   + "<span class=\"number\">" + invoiceVoucher["amount_payable"] + "</span>"
-                + "</td>"
-                + "<td>"
-                  + "<input "
-                    + "class=\"amount number\" "
-                    + "type=\"number\" "
-                    + "step=\"0.01\" "
-                    + "min=\"0\" "
-                    + "name=\"amount[]\" "
-                    + "value=\"" + invoiceVoucher["amount"].toFixed(2) + "\" "
-                    + "onchange=\"onAmountChange(event, " + i + ")\" "
-                    + "onfocus=\"onFieldFocused(" + i + ", 'amount[]')\" "
-                    + "onblur=\"onFieldBlurred()\" "
-                    + "required "
-                  + "/>"
                 + "</td>"
                 + "<td>"
                 + "<input "
@@ -313,6 +354,19 @@
                       + (invoiceVoucher["settlement"] === "PARTIAL" ? "checked" : "")
                     + "><label for=\"settlement_partial_" + i + "\">Partial</label>"
                   + "</div>"
+                + "</td>"
+                + "<td>"
+                  + "<input "
+                    + "class=\"amount number\" "
+                    + "type=\"number\" "
+                    + "step=\"0.01\" "
+                    + "name=\"amount[]\" "
+                    + "value=\"" + invoiceVoucher["amount"].toFixed(2) + "\" "
+                    + "onchange=\"onAmountChange(event, " + i + ")\" "
+                    + "onfocus=\"onFieldFocused(" + i + ", 'amount[]')\" "
+                    + "onblur=\"onFieldBlurred()\" "
+                    + "required "
+                  + "/>"
                 + "</td>"
                 + "<td>"
                   + "<textarea "
@@ -350,12 +404,13 @@
             }
           }
 
-          function updateByOrder(index, byOrder = true) {
+          function updateSource(index, source = "do") {
             var invoiceVoucher = invoiceVouchers[index];
 
-            invoiceVoucher["by_order"] = byOrder;
-            invoiceVoucher["stock_out_no"] = byOrder ? "" : invoiceVoucher["stock_out_no"];
-            invoiceVoucher["do_no"] = byOrder ? invoiceVoucher["do_no"] : "";
+            invoiceVoucher["source"] = source;
+            invoiceVoucher["do_no"] = source === "do" ? invoiceVoucher["do_no"] : "";
+            invoiceVoucher["stock_out_no"] = source === "so" ? invoiceVoucher["stock_out_no"] : "";
+            invoiceVoucher["stock_in_no"] = source === "si" ? invoiceVoucher["stock_in_no"] : "";
             invoiceVoucher["amount"] = 0;
             invoiceVoucher["amount_payable"] = 0;
           }
@@ -363,9 +418,10 @@
           function updateVoucher(index, voucher = {}) {
             var invoiceVoucher = invoiceVouchers[index];
 
-            invoiceVoucher["stock_out_no"] = voucher["stock_out_no"] || "";
             invoiceVoucher["do_no"] = voucher["do_no"] || "";
-            invoiceVoucher["by_order"] = voucher["stock_out_no"] ? false : true;
+            invoiceVoucher["stock_out_no"] = voucher["stock_out_no"] || "";
+            invoiceVoucher["stock_in_no"] = voucher["stock_in_no"] || "";
+            invoiceVoucher["source"] = voucher["stock_in_no"] ? "si" : voucher["so"] ? "so" : "do";
             invoiceVoucher["amount_payable"] = parseFloat(voucher["amount"]) || 0;
             invoiceVoucher["amount"] = parseFloat(voucher["amount"]) || 0;
             invoiceVoucher["settlement"] = voucher["settlement"] || "FULL";
@@ -461,10 +517,29 @@
             render();
           }
 
-          function onByOrderChange(byOrder, index) {
-            updateByOrder(index, byOrder);
-
+          function onSourceChange(source, index) {
+            updateSource(index, source);
             render();
+          }
+
+          function onDONoChange(event, index) {
+            var newDONo = event.target.value;
+            var matchedVoucher = getDeliveryOrders(newDONo)[0];
+            var invoiceVoucher = invoiceVouchers[index];
+
+            if (invoiceVoucher["do_no"] !== newDONo) {
+              var existsAlready = invoiceVouchers.filter(function (m) {
+                return newDONo && m["do_no"] === newDONo;
+              }).length > 0;
+
+              if (!existsAlready) {
+                updateVoucher(index, matchedVoucher);
+              }
+
+              render();
+            }
+
+            onFieldBlurred();
           }
 
           function onStockOutNoChange(event, index) {
@@ -487,14 +562,14 @@
             onFieldBlurred();
           }
 
-          function onDONoChange(event, index) {
-            var newDONo = event.target.value;
-            var matchedVoucher = getDeliveryOrders(newDONo)[0];
+          function onStockInNoChange(event, index) {
+            var newStockInNo = event.target.value;
+            var matchedVoucher = getStockInVouchers(newStockInNo)[0];
             var invoiceVoucher = invoiceVouchers[index];
 
-            if (invoiceVoucher["do_no"] !== newDONo) {
+            if (invoiceVoucher["stock_in_no"] !== newStockInNo) {
               var existsAlready = invoiceVouchers.filter(function (m) {
-                return newDONo && m["do_no"] === newDONo;
+                return newStockInNo && m["stock_in_no"] === newStockInNo;
               }).length > 0;
 
               if (!existsAlready) {
@@ -542,6 +617,7 @@
               var invoiceVoucher = invoiceVouchers[i];
               var doNo = invoiceVoucher["do_no"];
               var stockOutNo = invoiceVoucher["stock_out_no"];
+              var stockInNo = invoiceVoucher["stock_in_no"];
               var amount = invoiceVoucher["amount"];
               var settlement = invoiceVoucher["settlement"];
               var settleRemarks = invoiceVoucher["settle_remarks"];
@@ -550,6 +626,8 @@
                 updateVoucher(i, getDeliveryOrders(doNo)[0]);
               } else if (stockOutNo) {
                 updateVoucher(i, getStockOutVouchers(stockOutNo)[0]);
+              } else if (stockInNo) {
+                updateVoucher(i, getStockInVouchers(stockInNo)[0]);
               }
 
               updateSettlement(i, settlement);

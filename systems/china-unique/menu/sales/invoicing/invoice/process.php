@@ -7,8 +7,9 @@
   $exchangeRate = $_POST["exchange_rate"];
   $remarks = $_POST["remarks"];
   $status = $_POST["status"];
-  $stockOutNos = $_POST["stock_out_no"];
   $doNos = $_POST["do_no"];
+  $stockOutNos = $_POST["stock_out_no"];
+  $stockInNos = $_POST["stock_in_no"];
   $amounts = $_POST["amount"];
   $settlements = $_POST["settlement"];
   $settleRemarkss = $_POST["settle_remarks"];
@@ -21,8 +22,9 @@
     assigned($currencyCode) &&
     assigned($exchangeRate) &&
     assigned($status) &&
-    assigned($stockOutNos) &&
     assigned($doNos) &&
+    assigned($stockOutNos) &&
+    assigned($stockInNos) &&
     assigned($amounts) &&
     assigned($settlements) &&
     assigned($settleRemarkss)
@@ -41,20 +43,21 @@
       $values = array();
 
       for ($i = 0; $i < count($stockOutNos); $i++) {
-        $stockOutNo = $stockOutNos[$i];
         $doNo = $doNos[$i];
+        $stockOutNo = $stockOutNos[$i];
+        $stockInNo = $stockInNos[$i];
         $amount = $amounts[$i];
         $settlement = $settlements[$i];
         $settleRemarks = $settleRemarkss[$i];
 
-        array_push($values, "(\"$invoiceNo\", \"$i\", \"$stockOutNo\", \"$doNo\", \"$amount\", \"$settlement\", \"$settleRemarks\")");
+        array_push($values, "(\"$invoiceNo\", \"$i\", \"$doNo\", \"$stockOutNo\", \"$stockInNo\", \"$amount\", \"$settlement\", \"$settleRemarks\")");
       }
 
       if (count($values) > 0) {
         array_push($queries, "
           INSERT INTO
             `out_inv_model`
-              (invoice_no, invoice_index, stock_out_no, do_no, amount, settlement, settle_remarks)
+              (invoice_no, invoice_index, do_no, stock_out_no, stock_in_no, amount, settlement, settle_remarks)
             VALUES
         " . join(", ", $values));
       }
@@ -80,43 +83,6 @@
   foreach ($results as $currency) {
     $currencies[$currency["code"]] = $currency["rate"];
   }
-
-  $stockOutResults = query("
-    SELECT
-      a.debtor_code                                                     AS `debtor_code`,
-      a.currency_code                                                   AS `currency_code`,
-      a.stock_out_no                                                    AS `stock_out_no`,
-      (b.amount * (100 - a.discount) / 100) - IFNULL(c.paid_amount, 0)  AS `amount`
-    FROM
-      `stock_out_header` AS a
-    LEFT JOIN
-      (SELECT
-        stock_out_no      AS `stock_out_no`,
-        SUM(qty * price)  AS `amount`
-      FROM
-        `stock_out_model`
-      GROUP BY
-        stock_out_no) AS b
-    ON a.stock_out_no=b.stock_out_no
-    LEFT JOIN
-      (SELECT
-        m.stock_out_no                      AS `stock_out_no`,
-        SUM(m.amount)                       AS `paid_amount`,
-        SUM(IF(m.settlement=\"FULL\",1, 0)) AS `settled`
-      FROM
-        `out_inv_model` AS m
-      LEFT JOIN
-        `out_inv_header` AS h
-      ON
-        m.invoice_no=h.invoice_no WHERE h.id!=\"$id\"
-      GROUP BY
-        m.stock_out_no) AS c
-    ON a.stock_out_no=c.stock_out_no
-    WHERE
-      a.status=\"POSTED\" AND
-      (c.settled IS NULL OR c.settled=0) AND
-      ROUND((b.amount * (100 - a.discount) / 100) - IFNULL(c.paid_amount, 0), 2) > 0
-  ");
 
   $doResults = query("
     SELECT
@@ -155,8 +121,103 @@
       ROUND((b.amount * (100 - a.discount) / 100) - IFNULL(c.paid_amount, 0), 2) > 0
   ");
 
-  $stockOutVouchers = array();
+  $stockOutResults = query("
+    SELECT
+      a.debtor_code                                                     AS `debtor_code`,
+      a.currency_code                                                   AS `currency_code`,
+      a.stock_out_no                                                    AS `stock_out_no`,
+      (b.amount * (100 - a.discount) / 100) - IFNULL(c.paid_amount, 0)  AS `amount`
+    FROM
+      `stock_out_header` AS a
+    LEFT JOIN
+      (SELECT
+        stock_out_no      AS `stock_out_no`,
+        SUM(qty * price)  AS `amount`
+      FROM
+        `stock_out_model`
+      GROUP BY
+        stock_out_no) AS b
+    ON a.stock_out_no=b.stock_out_no
+    LEFT JOIN
+      (SELECT
+        m.stock_out_no                      AS `stock_out_no`,
+        SUM(m.amount)                       AS `paid_amount`,
+        SUM(IF(m.settlement=\"FULL\",1, 0)) AS `settled`
+      FROM
+        `out_inv_model` AS m
+      LEFT JOIN
+        `out_inv_header` AS h
+      ON
+        m.invoice_no=h.invoice_no WHERE h.id!=\"$id\"
+      GROUP BY
+        m.stock_out_no) AS c
+    ON a.stock_out_no=c.stock_out_no
+    WHERE
+      a.status=\"POSTED\" AND
+      (c.settled IS NULL OR c.settled=0) AND
+      ROUND((b.amount * (100 - a.discount) / 100) - IFNULL(c.paid_amount, 0), 2) > 0
+  ");
+
+  $stockInResults = query("
+    SELECT
+      a.creditor_code                                                     AS `debtor_code`,
+      a.currency_code                                                     AS `currency_code`,
+      a.stock_in_no                                                       AS `stock_in_no`,
+      -(b.amount * (100 - a.discount) / 100) - IFNULL(c.paid_amount, 0)   AS `amount`
+    FROM
+      `stock_in_header` AS a
+    LEFT JOIN
+      (SELECT
+        stock_in_no      AS `stock_in_no`,
+        SUM(qty * price)  AS `amount`
+      FROM
+        `stock_in_model`
+      GROUP BY
+        stock_in_no) AS b
+    ON a.stock_in_no=b.stock_in_no
+    LEFT JOIN
+      (SELECT
+        m.stock_in_no                       AS `stock_in_no`,
+        SUM(m.amount)                       AS `paid_amount`,
+        SUM(IF(m.settlement=\"FULL\",1, 0)) AS `settled`
+      FROM
+        `out_inv_model` AS m
+      LEFT JOIN
+        `out_inv_header` AS h
+      ON
+        m.invoice_no=h.invoice_no WHERE h.id!=\"$id\"
+      GROUP BY
+        m.stock_in_no) AS c
+    ON a.stock_in_no=c.stock_in_no
+    WHERE
+      a.status=\"POSTED\" AND
+      a.transaction_code=\"R3\" AND
+      (c.settled IS NULL OR c.settled=0) AND
+      ROUND((b.amount * (100 - a.discount) / 100) - IFNULL(c.paid_amount, 0), 2) > 0
+  ");
+
   $deliveryOrders = array();
+  $stockOutVouchers = array();
+  $stockInVouchers = array();
+
+  foreach ($doResults as $doResult) {
+    $dCode = $doResult["debtor_code"];
+    $cCode = $doResult["currency_code"];
+
+    $doPointer = &$deliveryOrders;
+
+    if (!isset($doPointer[$dCode])) {
+      $doPointer[$dCode] = array();
+    }
+    $doPointer = &$doPointer[$dCode];
+
+    if (!isset($doPointer[$cCode])) {
+      $doPointer[$cCode] = array();
+    }
+    $doPointer = &$doPointer[$cCode];
+
+    array_push($doPointer, $doResult);
+  }
 
   foreach ($stockOutResults as $stockOutResult) {
     $dCode = $stockOutResult["debtor_code"];
@@ -177,23 +238,23 @@
     array_push($stockOutPointer, $stockOutResult);
   }
 
-  foreach ($doResults as $doResult) {
-    $dCode = $doResult["debtor_code"];
-    $cCode = $doResult["currency_code"];
+  foreach ($stockInResults as $stockInResult) {
+    $dCode = $stockInResult["debtor_code"];
+    $cCode = $stockInResult["currency_code"];
 
-    $doPointer = &$deliveryOrders;
+    $stockInPointer = &$stockInVouchers;
 
-    if (!isset($doPointer[$dCode])) {
-      $doPointer[$dCode] = array();
+    if (!isset($stockInPointer[$dCode])) {
+      $stockInPointer[$dCode] = array();
     }
-    $doPointer = &$doPointer[$dCode];
+    $stockInPointer = &$stockInPointer[$dCode];
 
-    if (!isset($doPointer[$cCode])) {
-      $doPointer[$cCode] = array();
+    if (!isset($stockInPointer[$cCode])) {
+      $stockInPointer[$cCode] = array();
     }
-    $doPointer = &$doPointer[$cCode];
+    $stockInPointer = &$stockInPointer[$cCode];
 
-    array_push($doPointer, $doResult);
+    array_push($stockInPointer, $stockInResult);
   }
 
   /* If an id is given, attempt to retrieve an existing outbound invoice. */
@@ -219,8 +280,9 @@
       $status = $invoiceHeader["status"];
       $invoiceVouchers = query("
         SELECT
-          stock_out_no,
           do_no,
+          stock_out_no,
+          stock_in_no,
           amount,
           settlement,
           IFNULL(settle_remarks, \"\") AS `settle_remarks`
