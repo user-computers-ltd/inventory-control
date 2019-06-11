@@ -49,6 +49,7 @@
   define("SALES_INVOICE_REPORT_URL", SALES_INVOICING_URL . "invoice-report/");
   define("SALES_INVOICE_REPORT_DATE_URL", SALES_INVOICE_REPORT_URL . "date/");
   define("SALES_INVOICE_REPORT_CUSTOMER_URL", SALES_INVOICE_REPORT_URL . "client/");
+  define("SALES_ISSUE_INVOICE_REPORT_URL", SALES_INVOICE_REPORT_URL . "issue/");
 
 
   /* Title configurations. */
@@ -103,6 +104,7 @@
   define("SALES_INVOICE_REPORT_TITLE", "(F8) Monthly Stock Out Report");
   define("SALES_INVOICE_REPORT_DATE_TITLE", "(F8a) Monthly Stock Out By Date");
   define("SALES_INVOICE_REPORT_CUSTOMER_TITLE", "(F8b) Monthly Stock Out By Client");
+  define("SALES_ISSUE_INVOICE_REPORT_TITLE", "(F8c) Issue Invoice Report");
 
   $SALES_MODULE = array(
     SALES_ENQUIRY_TITLE => array(
@@ -146,7 +148,8 @@
     ),
     SALES_INVOICE_REPORT_TITLE => array(
       SALES_INVOICE_REPORT_DATE_TITLE                     => SALES_INVOICE_REPORT_DATE_URL,
-      SALES_INVOICE_REPORT_CUSTOMER_TITLE                 => SALES_INVOICE_REPORT_CUSTOMER_URL
+      SALES_INVOICE_REPORT_CUSTOMER_TITLE                 => SALES_INVOICE_REPORT_CUSTOMER_URL,
+      SALES_ISSUE_INVOICE_REPORT_TITLE                    => SALES_ISSUE_INVOICE_REPORT_URL
     )
   );
 ?>
