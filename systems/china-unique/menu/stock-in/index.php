@@ -54,9 +54,9 @@
                 </select>
               </td>
             </tr>
-            <tr class="option-row">
-              <td>Client:</td>
-              <td>
+            <tr>
+              <td class="r7-cell">Client:</td>
+              <td class="r7-cell">
                 <select id="creditor-code" class="option-field" name="creditor_code" required <?php echo $useDebtor ? "disabled hidden" : ""; ?>>
                   <?php
                     foreach ($creditors as $creditor) {
@@ -78,8 +78,8 @@
                   ?>
                 </select>
               </td>
-              <td>Currency:</td>
-              <td>
+              <td class="misc-cell">Currency:</td>
+              <td class="misc-cell">
                 <select id="currency-code" class="option-field" name="currency_code" onchange="onCurrencyCodeChange()" required>
                   <?php
                     foreach ($currencies as $code => $rate) {
@@ -102,9 +102,9 @@
                 />
               </td>
             </tr>
-            <tr class="option-row">
-              <td>Discount:</td>
-              <td>
+            <tr>
+              <td class="misc-cell">Discount:</td>
+              <td class="misc-cell">
                 <input
                   id="discount"
                   class="option-field"
@@ -119,8 +119,8 @@
                 /><span>%</span>
                 <input id="tax" name="tax" type="number" value="<?php echo $tax; ?>" hidden required />
               </td>
-              <td>Net Amount:</td>
-              <td>
+              <td class="misc-cell">Net Amount:</td>
+              <td class="misc-cell">
                 <input
                   id="net-amount"
                   class="option-field"
@@ -134,8 +134,8 @@
                 />
               </td>
             </tr>
-            <tr class="option-row">
-              <td colspan="2">
+            <tr>
+              <td colspan="2" class="misc-cell">
                 <input
                   id="normal-price"
                   name="price_standard"
@@ -459,15 +459,19 @@
           }
 
           function onTransactionCodeChange() {
-            var optionRows = document.querySelectorAll(".option-row");
+            var miscCells = document.querySelectorAll(".misc-cell");
+            var r7Cells = document.querySelectorAll(".r7-cell");
             var optionFields = document.querySelectorAll(".option-field");
             var optionColumns = document.querySelectorAll(".option-column");
-
             var transactionCode = transactionCodeElement.value;
             var miscellaneous = transactionCode !== "R1" && transactionCode !== "R3";
 
-            for (var i = 0; i < optionRows.length; i++) {
-              toggleClass(optionRows[i], "hide", miscellaneous);
+            for (var i = 0; i < miscCells.length; i++) {
+              toggleClass(miscCells[i], "hide", miscellaneous);
+            }
+
+            for (var i = 0; i < r7Cells.length; i++) {
+              toggleClass(r7Cells[i], "hide", miscellaneous && transactionCode !== "R7");
             }
 
             for (var i = 0; i < optionFields.length; i++) {
@@ -480,8 +484,8 @@
 
             creditorCodeElement.disabled = transactionCode === "R3";
             creditorCodeElement.hidden = transactionCode === "R3";
-            debtorCodeElement.disabled = transactionCode !== "R3";
-            debtorCodeElement.hidden = transactionCode !== "R3";
+            debtorCodeElement.disabled = transactionCode === "R1" || transactionCode === "R7";
+            debtorCodeElement.hidden = transactionCode === "R1" || transactionCode === "R7";
           }
 
           function onNetAmountChange() {

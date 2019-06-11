@@ -34,13 +34,17 @@
                 <td>Warehouse:</td>
                 <td><?php echo $stockInHeader["warehouse"]; ?></td>
               </tr>
-              <?php if (!$stockInHeader["miscellaneous"]) : ?>
-                <tr>
+              <tr>
+                <?php if (!$stockInHeader["miscellaneous"] || $stockInHeader["transaction_code"] === "R7") : ?>
                   <td>Client:</td>
                   <td><?php echo $stockInHeader["creditor"]; ?></td>
+                <?php endif ?>
+                <?php if (!$stockInHeader["miscellaneous"]) : ?>
                   <td>Currency:</td>
                   <td><?php echo $stockInHeader["currency"]; ?></td>
-                </tr>
+                <?php endif ?>
+              </tr>
+              <?php if (!$stockInHeader["miscellaneous"]) : ?>
                 <tr>
                   <td>Discount:</td>
                   <td><?php echo $stockInHeader["discount"]; ?>%</td>

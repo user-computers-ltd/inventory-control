@@ -11,7 +11,7 @@
   width: 100%;
 }
 
-#stock-out-header .option-row.hide {
+#stock-out-header .hide {
   display: none;
 }
 

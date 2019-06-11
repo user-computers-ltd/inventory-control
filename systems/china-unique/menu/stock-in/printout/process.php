@@ -126,7 +126,7 @@
       $stockInHeader["warehouse"] = $stockInHeader["warehouse_code"] . " - " . (isset($warehouse) ? $warehouse["name"] : "Unknown");
       $stockInHeader["creditor"] = $stockInHeader["creditor_code"] . " - " . ($stockInHeader["transaction_code"] === "R3" ? $debtor : $creditor);
       $stockInHeader["currency"] = $stockInHeader["currency_code"] . " @ " . $stockInHeader["exchange_rate"];
-      $stockInHeader["miscellaneous"] = $stockInHeader["transaction_code"] != "R1" && $stockInHeader["transaction_code"] !== "R3";
+      $stockInHeader["miscellaneous"] = $stockInHeader["transaction_code"] !== "R1" && $stockInHeader["transaction_code"] !== "R3";
     }
   }
 

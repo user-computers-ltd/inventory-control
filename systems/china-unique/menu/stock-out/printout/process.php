@@ -134,7 +134,7 @@
       $stockOutHeader["warehouse"] = $stockOutHeader["warehouse_code"] . " - " . (isset($warehouse) ? $warehouse["name"] : "Unknown");
       $stockOutHeader["debtor"] = $stockOutHeader["debtor_code"] . " - " . ($stockOutHeader["transaction_code"] === "S3" ? $creditor : $debtor);
       $stockOutHeader["currency"] = $stockOutHeader["currency_code"] . " @ " . $stockOutHeader["exchange_rate"];
-      $stockOutHeader["miscellaneous"] = $stockOutHeader["transaction_code"] != "S1" && $stockOutHeader["transaction_code"] != "S3";
+      $stockOutHeader["miscellaneous"] = $stockOutHeader["transaction_code"] !== "S1" && $stockOutHeader["transaction_code"] !== "S3";
     }
   }
 
