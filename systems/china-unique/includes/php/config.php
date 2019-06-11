@@ -25,7 +25,7 @@
   define("COMPANY_TEL", "0755 2360 4173");
   define("COMPANY_TAX", 13);
   define("COMPANY_CURRENCY", "RMB");
-  define("MENU_DIRECTORY", ROOT_PATH . "systems/china-unique/menu");
+  define("MENU_DIRECTORY", SYSTEM_PATH . "/menu");
   date_default_timezone_set("Asia/Taipei");
 
   $TRANSACTION_CODES = array(

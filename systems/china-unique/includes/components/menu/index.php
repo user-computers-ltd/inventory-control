@@ -12,7 +12,7 @@
 
   unset($_SESSION["back_url"]);
 
-  function generateSitemap($sitemap, $prefix) {
+  function generateSitemap($sitemap, $prefix = "") {
     $currentURL = (strpos(CURRENT_URL, "?") === false) ? CURRENT_URL : substr(CURRENT_URL, 0, strpos(CURRENT_URL, "?"));
     $menu = "";
 
@@ -43,7 +43,7 @@
     <?php if (isset($SITEMAP)) : ?>
       <div id="menu-sidebar" class="web-only">
         <button class="toggle-button" onclick="toggleNav()"></button>
-        <?php echo generateSitemap($SITEMAP[getAccessLevel()], ""); ?>
+        <?php echo generateSitemap($SITEMAP[getAccessLevel()]); ?>
         <?php if (isset($username)) : ?>
           <a class="menu-item link logout" href="<?php echo SYSTEM_URL; ?>logout.php">
             <span class="initial"></span><span class="label">Logout</span>
