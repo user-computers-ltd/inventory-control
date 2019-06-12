@@ -19,29 +19,33 @@
   </head>
   <body>
     <?php include_once SYSTEM_PATH . "includes/components/menu/index.php"; ?>
-    <div class="page-wrapper">
+    <div class="page-wrapper landscape">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo SALES_ISSUE_INVOICE_REPORT_TITLE; ?></div>
       <?php if (count($incomeHeaders) > 0) : ?>
-        <?php foreach ($incomeHeaders as $currency => &$headers) : ?>
+        <?php foreach ($incomeHeaders as $currency => &$debtorHeaders) : ?>
           <table class="invoice-results sortable">
             <colgroup>
               <col>
-              <col style="width: 70px">
-              <col style="width: 120px">
-              <col style="width: 70px">
-              <col style="width: 70px">
-              <col style="width: 70px">
+              <col style="width: 100px">
+              <col style="width: 100px">
+              <col style="width: 100px">
+              <col style="width: 100px">
+              <col style="width: 100px">
+              <col style="width: 180px">
+              <col style="width: 100px">
             </colgroup>
             <thead>
               <tr></tr>
               <tr>
                 <th>Client</th>
-                <th>Date</th>
-                <th>DO No. / Stock Out No.</th>
                 <th class="number">Qty</th>
-                <th class="number">Total Sales Amt (Inc. Tax)</th>
-                <th class="number">Tax Amt</th>
+                <th class="number">Total Qty</th>
+                <th class="number">Sales Amt (Inc. Tax)</th>
+                <th class="number">Total Sales Amt</th>
+                <th>Date</th>
+                <th>Voucher No.</th>
+                <th class="number">Total Tax Amt</th>
               </tr>
             </thead>
             <tbody>
@@ -50,42 +54,63 @@
                 $totalSales = 0;
                 $totalTax = 0;
 
-                for ($i = 0; $i < count($headers); $i++) {
-                  $incomeHeader = $headers[$i];
-                  $date = $incomeHeader["date"];
-                  $doId = $incomeHeader["do_id"];
-                  $doNo = $incomeHeader["do_no"];
-                  $stockOutId = $incomeHeader["stock_out_id"];
-                  $stockOutNo = $incomeHeader["stock_out_no"];
-                  $stockInId = $incomeHeader["stock_in_id"];
-                  $stockInNo = $incomeHeader["stock_in_no"];
-                  $debtorCode = $incomeHeader["debtor_code"];
-                  $debtorName = $incomeHeader["debtor_name"];
-                  $qty = $incomeHeader["qty"];
-                  $amount = $incomeHeader["pending"];
-                  $tax = $incomeHeader["tax"];
-                  $taxAmount = $amount - $amount / $tax;
+                foreach ($debtorHeaders as $debtorName => &$headers) {
+                  $qtyColumn = "";
+                  $amountColumn = "";
+                  $taxAmountColumn = "";
+                  $dateColumn = "";
+                  $voucherNoColumn = "";
+                  $debtorTotalQty = 0;
+                  $debtorTotalSales = 0;
+                  $debtorTotalTax = 0;
 
-                  $totalQty += $qty;
-                  $totalSales += $amount;
-                  $totalTax += $taxAmount;
+                  for ($i = 0; $i < count($headers); $i++) {
+                    $incomeHeader = $headers[$i];
+                    $date = $incomeHeader["date"];
+                    $doId = $incomeHeader["do_id"];
+                    $doNo = $incomeHeader["do_no"];
+                    $stockOutId = $incomeHeader["stock_out_id"];
+                    $stockOutNo = $incomeHeader["stock_out_no"];
+                    $stockInId = $incomeHeader["stock_in_id"];
+                    $stockInNo = $incomeHeader["stock_in_no"];
+                    $qty = $incomeHeader["qty"];
+                    $amount = $incomeHeader["pending"];
+                    $tax = $incomeHeader["tax"];
+                    $taxAmount = $amount - $amount / $tax;
 
-                  $voucherColumn = assigned($doId) ? "<td title=\"$doNo\">
-                    <a class=\"link\" href=\"" . SALES_DELIVERY_ORDER_PRINTOUT_URL . "?id[]=$doId\">$doNo</a>
-                  </td>" : (assigned($stockOutId) ? "<td title=\"$stockOutNo\">
-                    <a class=\"link\" href=\"" . STOCK_OUT_PRINTOUT_URL . "?id[]=$stockOutId\">$stockOutNo</a>
-                  </td>" : (assigned($stockInId) ? "<td title=\"$stockInNo\">
-                    <a class=\"link\" href=\"" . STOCK_IN_PRINTOUT_URL . "?id[]=$stockInId\">$stockInNo</a>
-                  </td>" : ""));
+                    $debtorTotalQty += $qty;
+                    $debtorTotalSales += $amount;
+                    $debtorTotalTax += $taxAmount;
+
+                    $voucherColumn = assigned($doId) ? "
+                      <a class=\"link\" title=\"$doNo\" href=\"" . SALES_DELIVERY_ORDER_PRINTOUT_URL . "?id[]=$doId\">$doNo</a>"
+                    : (assigned($stockOutId) ? "
+                      <a class=\"link\" title=\"$stockOutNo\" href=\"" . STOCK_OUT_PRINTOUT_URL . "?id[]=$stockOutId\">$stockOutNo</a>"
+                    : (assigned($stockInId) ? "
+                      <a class=\"link\" title=\"$stockInNo\" href=\"" . STOCK_IN_PRINTOUT_URL . "?id[]=$stockInId\">$stockInNo</a>"
+                    : ""));
+
+                    $qtyColumn = $qtyColumn . "<div title=\"$qty\">" . number_format($qty) . "</div>";
+                    $amountColumn = $amountColumn . "<div title=\"$amount\">" . number_format($amount, 2) . "</div>";
+                    $taxAmountColumn = $taxAmountColumn . "<div title=\"$taxAmount\">" . number_format($taxAmount, 2) . "</div>";
+                    $dateColumn = $dateColumn . "<div title=\"$date\">$date</div>";
+                    $voucherNoColumn = $voucherNoColumn . "<div>" . $voucherColumn . "</div>";
+                  }
+
+                  $totalQty += $debtorTotalQty;
+                  $totalSales += $debtorTotalSales;
+                  $totalTax += $debtorTotalTax;
 
                   echo "
                     <tr>
                       <td title=\"$debtorName\">$debtorName</td>
-                      <td title=\"$date\">$date</td>
-                      $voucherColumn
-                      <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
-                      <td title=\"$amount\" class=\"number\">" . number_format($amount, 2) . "</td>
-                      <td title=\"$taxAmount\" class=\"number\">" . number_format($taxAmount, 2) . "</td>
+                      <td class=\"number\">$qtyColumn</td>
+                      <td class=\"number\">" . number_format($debtorTotalQty) . "</td>
+                      <td class=\"number\">$amountColumn</td>
+                      <td class=\"number\">" . number_format($debtorTotalSales, 2) . "</td>
+                      <td>$dateColumn</td>
+                      <td>$voucherNoColumn</td>
+                      <td class=\"number\">" . number_format($debtorTotalTax, 2) . "</td>
                     </tr>
                   ";
                 }
@@ -93,11 +118,13 @@
             </tbody>
             <tbody>
               <tr>
-                <th></th>
-                <th></th>
                 <th class="number">Total:</th>
+                <th></th>
                 <th class="number"><?php echo number_format($totalQty); ?></th>
+                <th></th>
                 <th class="number"><?php echo number_format($totalSales, 2); ?></th>
+                <th></th>
+                <th></th>
                 <th class="number"><?php echo number_format($totalTax, 2); ?></th>
               </tr>
             </tbody>

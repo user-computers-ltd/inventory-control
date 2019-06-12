@@ -149,6 +149,7 @@
 
   foreach ($results as $incomeHeader) {
     $currency = $incomeHeader["currency"];
+    $debtorName = $incomeHeader["debtor_name"];
 
     $arrayPointer = &$incomeHeaders;
 
@@ -156,6 +157,11 @@
       $arrayPointer[$currency] = array();
     }
     $arrayPointer = &$arrayPointer[$currency];
+
+    if (!isset($arrayPointer[$debtorName])) {
+      $arrayPointer[$debtorName] = array();
+    }
+    $arrayPointer = &$arrayPointer[$debtorName];
 
     array_push($arrayPointer, $incomeHeader);
   }

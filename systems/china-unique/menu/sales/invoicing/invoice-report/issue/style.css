@@ -9,12 +9,18 @@
   box-sizing: border-box;
 }
 
+.invoice-results {
+  font-size: 15px;
+}
+
 .invoice-results td {
   min-width: 0px;
   max-width: 0px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  padding: 10px 5px;
+  line-height: 16px;
 }
 
 .invoice-results td > * {
