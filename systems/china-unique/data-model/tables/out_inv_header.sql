@@ -5,6 +5,7 @@ CREATE TABLE `out_inv_header` (
   `debtor_code`       VARCHAR(30)     NOT NULL,
   `currency_code`     VARCHAR(30)     NOT NULL,
   `exchange_rate`     DECIMAL(16,8)   NOT NULL,
+  `maturity_date`     DATETIME        NOT NULL,
   `remarks`           TEXT,
   `status`            VARCHAR(30)     DEFAULT "SAVED",
   PRIMARY KEY (`id`),

@@ -8,6 +8,5 @@ CREATE TABLE `out_inv_model` (
   `amount`            DECIMAL(16,6)   NOT NULL,
   `settlement`        VARCHAR(30)     NOT NULL,
   `settle_remarks`    TEXT,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `unique_index` (`invoice_no`, `stock_out_no`, `do_no`)
+  PRIMARY KEY (`id`)
 );
