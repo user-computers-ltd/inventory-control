@@ -236,6 +236,10 @@ if (!utilsLoaded) {
     document.body.removeChild(element);
   }
 
+  function doubleDigit(n) {
+    return n < 10 ? "0" + n : n;
+  }
+
   function getTime(dateString) {
     if (dateString) {
       var parts = dateString.split("-");
@@ -247,6 +251,16 @@ if (!utilsLoaded) {
     } else {
       return 0;
     }
+  }
+
+  function formatDate(dateTime) {
+    return (
+      dateTime.getFullYear() +
+      "-" +
+      doubleDigit(dateTime.getMonth() + 1) +
+      "-" +
+      doubleDigit(dateTime.getDate())
+    );
   }
 
   function setTableSortable(table) {

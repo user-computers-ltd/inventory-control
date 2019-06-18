@@ -130,13 +130,13 @@
                       <tr>
                         <th>Brand</th>
                         <th>Model No.</th>
-                        <th class=\"number\">Available Qty</th>
+                        <th class=\"number\">Allottable Qty</th>
                         <th>SO No.</th>
                         <th>Client</th>
                         <th>Date</th>
                         <th class=\"number\">Outstanding Qty</th>
                         <th class=\"number\">Allot Qty</th>
-                        <th class=\"number\">Total Allot Qty</th>
+                        <th class=\"number\">Total Allotted Qty</th>
                       </tr>
                     </thead>
                     <tbody>
