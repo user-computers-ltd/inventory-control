@@ -68,6 +68,7 @@
 }
 
 #menu-sidebar .menu-item.logout {
+  margin-top: 50px;
 }
 
 #menu-sidebar.show .menu-item {

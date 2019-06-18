@@ -1,0 +1,106 @@
+#discount + span {
+  margin-left: -30px;
+}
+
+#so-header,
+#so-footer {
+  font-size: 13px;
+}
+
+#so-header {
+  width: 100%;
+}
+
+#so-header td,
+#so-footer td {
+  border: none;
+  vertical-align: top;
+}
+
+#so-header td:nth-child(2n + 1),
+#so-footer td:nth-child(2n + 1) {
+  font-weight: bold;
+  line-height: 20px;
+}
+
+#so-footer #remarks {
+  padding: 5px;
+  width: 100%;
+  height: 80px;
+  font-family: inherit;
+  font-size: 13px;
+  box-sizing: border-box;
+}
+
+#so-models .number {
+  text-align: right;
+}
+
+#so-models th > *,
+#so-models td > * {
+  display: inline-block;
+  width: 100%;
+  height: 25px;
+  line-height: 25px;
+  box-sizing: border-box;
+}
+
+#so-models th,
+#so-models td {
+  min-width: 0px;
+  max-width: 0px;
+  border-left: none;
+  border-right: none;
+  line-height: 25px;
+}
+
+#so-models td {
+  border-top: none;
+  border-bottom: none;
+}
+
+#so-models thead th {
+  border-bottom: 1px solid;
+}
+
+#so-models tfoot th {
+  border-top: 1px solid;
+}
+
+#so-models .discount-row {
+  display: none;
+}
+
+#so-models .discount-row.show {
+  display: table-row;
+}
+
+#so-models td input[readonly=""],
+#so-models td select[readonly=""] {
+  border: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+#so-models td > .remove {
+  display: block;
+  width: 20px;
+  height: 20px;
+  margin: auto 0px 0px auto;
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
+  line-height: 20px;
+  color: rgb(255, 100, 100);
+  cursor: pointer;
+}
+
+#so-entry-not-found,
+#so-models td#so-entry-no-model {
+  text-align: center;
+  font-size: 40px;
+  font-weight: bold;
+  line-height: 200px;
+  opacity: 0.3;
+}

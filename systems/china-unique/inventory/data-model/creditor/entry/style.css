@@ -1,0 +1,55 @@
+#creditor-table {
+  width: 100%;
+  font-size: 13px;
+}
+
+#creditor-table td {
+  border: none;
+  vertical-align: top;
+}
+
+#creditor-table td:nth-child(2n + 1) {
+  font-weight: bold;
+  line-height: 24px;
+  width: 200px;
+}
+
+#creditor-table td > * {
+  display: inline-block;
+  width: 100%;
+  height: 25px;
+  line-height: 25px;
+  box-sizing: border-box;
+}
+
+#creditor-table td input[readonly=""] {
+  border-color: transparent;
+}
+
+#creditor-table td input[type="number"] {
+  text-align: right;
+}
+
+#creditor-table td input,
+#creditor-table td textarea {
+  padding: 0px 5px;
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 13px;
+}
+
+#creditor-table td textarea {
+  padding: 5px;
+  width: 100%;
+  height: 80px;
+  box-sizing: border-box;
+}
+
+.creditor-no-result {
+  margin: 100px 0px;
+  text-align: center;
+  font-size: 40px;
+  font-weight: bold;
+  line-height: 48px;
+  opacity: 0.3;
+}

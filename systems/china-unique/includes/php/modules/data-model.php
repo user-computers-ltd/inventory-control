@@ -1,6 +1,6 @@
 <?php
   /* URL configurations. */
-  define("DATA_MODEL_URL", MENU_URL . "data-model/");
+  define("DATA_MODEL_URL", INVENTORY_URL . "data-model/");
 
   define("DATA_MODEL_MODEL_URL", DATA_MODEL_URL . "model/");
   define("DATA_MODEL_MODEL_DETAIL_URL", DATA_MODEL_MODEL_URL . "detail/");

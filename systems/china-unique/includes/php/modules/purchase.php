@@ -1,6 +1,6 @@
 <?php
   /* URL configurations. */
-  define("PURCHASE_URL", MENU_URL . "purchase/");
+  define("PURCHASE_URL", INVENTORY_URL . "purchase/");
 
   // define("PURCHASE_ORDER_URL", PURCHASE_URL . "purchase-order/");
   // define("PURCHASE_ORDER_SAVED_URL", PURCHASE_ORDER_URL . "saved/");

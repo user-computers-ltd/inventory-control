@@ -1,0 +1,87 @@
+#so-input {
+  margin: 0px;
+}
+
+#so-input td {
+  border: none;
+  font-size: 13px;
+}
+
+#so-input input,
+#so-input select {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.so-client-header .delivery-order,
+.so-client-header .currency,
+.so-client-header .discount,
+.so-client-header .tax,
+.so-client-header .warehouse {
+  display: inline-block;
+  margin: 10px;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.so-client-header .currency,
+.so-client-header .discount,
+.so-client-header .tax,
+.so-client-header .warehouse {
+  float: right;
+}
+
+.so-client-header .delivery-order {
+  margin-left: 0px;
+}
+
+.so-client-header .currency {
+  margin-right: 0px;
+}
+
+.so-client-results th,
+.so-client-results td {
+  border-left: none;
+  border-right: none;
+}
+
+.so-client-results td {
+  border-top: none;
+}
+
+.so-client-results td {
+  min-width: 0px;
+  max-width: 0px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: top;
+}
+
+.so-client-results .number {
+  text-align: right;
+}
+
+.so-client-results input[type="checkbox"] {
+  margin: 0px;
+  height: 10px;
+}
+
+.so-client-results button.remove {
+  background: none;
+  padding: 0px 5px;
+  border: none;
+  margin: 0px;
+  line-height: 10px;
+  font-size: 18px;
+  color: rgb(255, 100, 100);
+}
+
+.so-client-no-results {
+  margin: 100px 0px;
+  text-align: center;
+  font-size: 40px;
+  font-weight: bold;
+  line-height: 48px;
+  opacity: 0.3;
+}

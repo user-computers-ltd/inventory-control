@@ -32,6 +32,14 @@
 
     return $menu;
   }
+
+  $urlPath = str_replace(SYSTEM_URL, "", CURRENT_URL);
+
+  if (strpos($urlPath, 'inventory') === 0) {
+    $sitemap = $SITEMAP["inventory"][getAccessLevel()];
+  } else if (strpos($urlPath, 'ar') === 0) {
+    $sitemap = $SITEMAP["ar"][getAccessLevel()];
+  }
 ?>
 
 <!DOCTYPE html>
@@ -40,13 +48,16 @@
     <link rel="stylesheet" href="<?php echo SYSTEM_URL; ?>includes/components/menu/style.css">
   </head>
   <body>
-    <?php if (isset($SITEMAP)) : ?>
+    <?php if (isset($sitemap)) : ?>
       <div id="menu-sidebar" class="web-only">
         <button class="toggle-button" onclick="toggleNav()"></button>
-        <?php echo generateSitemap($SITEMAP[getAccessLevel()]); ?>
+        <a class="menu-item link" href="<?php echo SYSTEM_URL; ?>">
+          <span class="initial">←</span><span class="label">Main Menu</span>
+        </a>
+        <?php echo generateSitemap($sitemap); ?>
         <?php if (isset($username)) : ?>
           <a class="menu-item link logout" href="<?php echo SYSTEM_URL; ?>logout.php">
-            <span class="initial"></span><span class="label">Logout</span>
+            <span class="initial"></span><span class="label logout"><?php echo $username; ?> - Log out</span>
           </a>
         <?php endif ?>
       </div>

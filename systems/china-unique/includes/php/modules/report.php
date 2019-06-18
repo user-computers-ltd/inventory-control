@@ -1,6 +1,6 @@
 <?php
   /* URL configurations. */
-  define("REPORT_URL", MENU_URL . "report/");
+  define("REPORT_URL", INVENTORY_URL . "report/");
   define("REPORT_HISTORY_LOG_URL", REPORT_URL . "history-log/");
   define("REPORT_STOCK_TAKE_URL", REPORT_URL . "stock-take/");
   define("REPORT_STOCK_TAKE_WAREHOUSE_URL", REPORT_STOCK_TAKE_URL . "warehouse/");

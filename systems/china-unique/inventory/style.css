@@ -1,0 +1,46 @@
+#page-wrapper {
+  max-width: 800px;
+  margin: 20px auto;
+}
+
+#page-wrapper .menu-item {
+  display: block;
+  padding: 5px 0px 5px 5px;
+  box-sizing: border-box;
+  font-size: 16px;
+  overflow: hidden;
+}
+
+#page-wrapper .menu-item.link:hover {
+  background-color: #dddddd;
+}
+
+#page-wrapper .menu-item span {
+  display: inline-block;
+  padding: 0px;
+  font-size: 16px;
+  line-height: 18px;
+  vertical-align: top;
+  text-align: left;
+}
+
+#page-wrapper .menu-item .initial {
+  padding-right: 10px;
+  box-sizing: initial;
+}
+
+#page-wrapper .sub-menu {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+#page-wrapper .sub-menu .menu-item .initial {
+  padding-left: 20px;
+}
+
+#page-wrapper .sub-menu .sub-menu .menu-item .initial {
+  padding-left: 40px;
+}
+
+#page-wrapper .sub-menu .sub-menu .sub-menu .menu-item .initial {
+  padding-left: 60px;
+}

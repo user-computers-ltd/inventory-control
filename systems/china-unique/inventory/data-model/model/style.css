@@ -1,0 +1,42 @@
+#model-input td {
+  border: none;
+  font-size: 13px;
+}
+
+#model-input select {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#model-input #input-live-only {
+  margin: 0px;
+}
+
+#model-results th,
+#model-results td {
+  min-width: 0px;
+  max-width: 0px;
+}
+
+#model-results td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#model-results .quantity {
+  text-align: center;
+}
+
+#model-results .number {
+  text-align: right;
+}
+
+.model-no-results {
+  margin: 100px 0px;
+  text-align: center;
+  font-size: 40px;
+  font-weight: bold;
+  line-height: 48px;
+  opacity: 0.3;
+}

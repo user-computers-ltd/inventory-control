@@ -1,0 +1,36 @@
+#brand-input td {
+  border: none;
+  font-size: 13px;
+  padding: 0px 5px;
+}
+
+#brand-input input,
+#brand-input select {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.brand-results th,
+.brand-results td {
+  min-width: 0px;
+  max-width: 0px;
+}
+
+.brand-results td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.brand-results .number {
+  text-align: right;
+}
+
+.brand-no-results {
+  margin: 100px 0px;
+  text-align: center;
+  font-size: 40px;
+  font-weight: bold;
+  line-height: 48px;
+  opacity: 0.3;
+}

@@ -1,6 +1,6 @@
 <?php
   /* URL configurations. */
-  define("STOCK_IN_URL", MENU_URL . "stock-in/");
+  define("STOCK_IN_URL", INVENTORY_URL . "stock-in/");
   define("STOCK_IN_PRINTOUT_URL", STOCK_IN_URL . "printout/");
   define("STOCK_IN_SAVED_URL", STOCK_IN_URL . "saved/");
   define("STOCK_IN_POSTED_URL", STOCK_IN_URL . "posted/");

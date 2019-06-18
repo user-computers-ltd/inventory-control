@@ -1,0 +1,57 @@
+#invoice-input td {
+  border: none;
+  font-size: 13px;
+}
+
+#invoice-input input,
+#invoice-input select {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.invoice-results td {
+  min-width: 0px;
+  max-width: 0px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.invoice-results td > * {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.invoice-results .number,
+.invoice-results-total .number {
+  text-align: right;
+}
+
+.invoice-results input[type="checkbox"] {
+  margin: 0px;
+  height: 10px;
+}
+
+.invoice-model-no-results {
+  margin: 100px 0px;
+  text-align: center;
+  font-size: 40px;
+  font-weight: bold;
+  line-height: 48px;
+  opacity: 0.3;
+}
+
+.invoice-results-total {
+  width: 30%;
+  font-size: 13px;
+}
+
+.invoice-results-total .number {
+  text-align: right;
+}
+
+.invoice-results-total th,
+.invoice-results-total td {
+  border: none;
+}

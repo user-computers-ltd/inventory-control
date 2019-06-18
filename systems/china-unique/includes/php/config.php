@@ -49,7 +49,8 @@
 
   /* URL configurations. */
   define("SYSTEM_URL", BASE_URL . "systems/china-unique/");
-  define("MENU_URL", BASE_URL . "systems/china-unique/menu/");
+  define("INVENTORY_URL", SYSTEM_URL . "inventory/");
+  define("AR_URL", SYSTEM_URL . "ar/");
 
   include_once "sitemap.php";
 ?>

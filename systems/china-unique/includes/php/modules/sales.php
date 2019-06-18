@@ -1,6 +1,6 @@
 <?php
   /* URL configurations. */
-  define("SALES_URL", MENU_URL . "sales/");
+  define("SALES_URL", INVENTORY_URL . "sales/");
 
   define("SALES_ENQUIRY_URL", SALES_URL . "enquiry/");
   define("SALES_ENQUIRY_SAVED_URL", SALES_ENQUIRY_URL . "saved/");

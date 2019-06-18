@@ -1,0 +1,32 @@
+#warehouse-input td {
+  border: none;
+  font-size: 13px;
+}
+
+#warehouse-input input,
+#warehouse-input select {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.warehouse-results td {
+  vertical-align: top;
+  min-width: 0px;
+  max-width: 0px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.warehouse-results .number {
+  text-align: right;
+}
+
+.warehouse-no-results {
+  margin: 100px 0px;
+  text-align: center;
+  font-size: 40px;
+  font-weight: bold;
+  line-height: 48px;
+  opacity: 0.3;
+}

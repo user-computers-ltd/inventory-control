@@ -1,0 +1,40 @@
+#debtor-stock {
+  width: 50%;
+}
+
+#debtor-header th,
+#debtor-header td {
+  font-size: 13px;
+}
+
+#debtor-header td {
+  border: none;
+}
+
+#debtor-header th {
+  vertical-align: top;
+  width: 200px;
+}
+
+#debtor-header input,
+#debtor-header select {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#debtor-header .number {
+  text-align: right;
+}
+
+#debtor-header .multi-line {
+  white-space: pre;
+}
+
+.debtor-no-result {
+  margin: 100px 0px;
+  text-align: center;
+  font-size: 40px;
+  font-weight: bold;
+  line-height: 48px;
+  opacity: 0.3;
+}
