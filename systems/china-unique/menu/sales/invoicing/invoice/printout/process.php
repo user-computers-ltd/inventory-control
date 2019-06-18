@@ -7,8 +7,9 @@
   $exchangeRate = $_POST["exchange_rate"];
   $remarks = $_POST["remarks"];
   $status = $_POST["status"];
-  $stockOutNos = $_POST["stock_out_no"];
   $doNos = $_POST["do_no"];
+  $stockOutNos = $_POST["stock_out_no"];
+  $stockInNos = $_POST["stock_in_no"];
   $amounts = $_POST["amount"];
 
   $invoiceHeaders = array();
@@ -38,8 +39,10 @@
     $invoiceModelList = query("
       SELECT
         a.invoice_no                            AS `invoice_no`,
-        a.stock_out_no                          AS `stock_out_no`,
         a.do_no                                 AS `do_no`,
+        a.stock_out_no                          AS `stock_out_no`,
+        a.stock_in_no                           AS `stock_in_no`,
+        a.settle_remarks                        AS `settle_remarks`,
         a.amount                                AS `amount`
       FROM
         `out_inv_model` AS a
@@ -79,8 +82,9 @@
     for ($i = 0; $i < count($stockOutNos); $i++) {
       array_push($invoiceModelList, array(
         "invoice_no"        => $invoiceNo,
-        "stock_out_no"      => $stockOutNos[$i],
         "do_no"             => $doNos[$i],
+        "stock_out_no"      => $stockOutNos[$i],
+        "stock_in_no"       => $stockInNos[$i],
         "amount"            => $amounts[$i]
       ));
     }

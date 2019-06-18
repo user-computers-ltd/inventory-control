@@ -108,14 +108,9 @@
               <td><textarea id="remarks" name="remarks"><?php echo $remarks; ?></textarea></td>
             </tr>
           </table>
-          <?php if ($status == "DRAFT" || $status == "SAVED") : ?>
-            <button name="status" type="submit" value="SAVED">Save</button>
-          <?php endif ?>
-          <?php if ($status == "SAVED") : ?>
-            <button name="status" type="submit" value="PAID">Settle</button>
-          <?php endif ?>
+          <button name="status" type="submit" value="SAVED">Save</button>
           <button name="status" type="submit" value="<?php echo $status; ?>" formaction="<?php echo SALES_INVOICE_PRINTOUT_URL; ?>">Print</button>
-          <?php if ($status == "SAVED" || $status == "PAID") : ?>
+          <?php if ($status === "SAVED") : ?>
             <button name="status" type="submit" value="DELETED">Delete</button>
           <?php endif ?>
         </form>
@@ -603,7 +598,7 @@
             if (
               index === invoiceVouchers.length - 1 &&
               (event.which || event.keyCode) === 9 &&
-              (invoiceVoucher["do_no"] || invoiceVoucher["stock_out_no"]) &&
+              (invoiceVoucher["do_no"] || invoiceVoucher["stock_out_no"] || invoiceVoucher["stock_in_no"]) &&
               invoiceVoucher["amount"]
             ) {
               addItem();

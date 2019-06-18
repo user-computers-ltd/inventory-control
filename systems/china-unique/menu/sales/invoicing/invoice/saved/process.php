@@ -13,12 +13,12 @@
     $modelWhereClause = join(" OR ", array_map(function ($i) { return "b.id=\"$i\""; }, $invoiceIds));
     $printoutParams = join("&", array_map(function ($i) { return "id[]=$i"; }, $invoiceIds));
 
-    if ($action == "delete") {
+    if ($action === "delete") {
       array_push($queries, "DELETE a FROM `out_inv_model` AS a LEFT JOIN `out_inv_header` AS b ON a.invoice_no=b.invoice_no WHERE $modelWhereClause");
       array_push($queries, "DELETE FROM `out_inv_header` WHERE $headerWhereClause");
-    } else if ($action == "settle") {
+    } else if ($action === "settle") {
       array_push($queries, "UPDATE `out_inv_header` SET status=\"SETTLED\" WHERE $headerWhereClause");
-    } else if ($action == "print") {
+    } else if ($action === "print") {
       header("Location: " . SALES_INVOICE_PRINTOUT_URL . "?$printoutParams");
       exit(0);
     }
@@ -57,6 +57,8 @@
         SUM(amount)                   AS `amount`
       FROM
         `out_inv_model`
+      WHERE
+        do_no!=\"\" OR stock_out_no!=\"\" OR stock_in_no!=\"\"
       GROUP BY
         invoice_no) AS b
     ON a.invoice_no=b.invoice_no
@@ -64,7 +66,7 @@
       `debtor` AS c
     ON a.debtor_code=c.code
     WHERE
-      a.status=\"SAVED\"
+      a.status=\"SAVED\" AND b.count > 0
       $whereClause
     ORDER BY
       a.invoice_date DESC

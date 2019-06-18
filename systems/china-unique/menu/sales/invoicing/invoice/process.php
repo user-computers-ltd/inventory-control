@@ -38,7 +38,7 @@
     }
 
     /* If the status is not delete, insert a new outbound invoice. */
-    if ($status != "DELETED") {
+    if ($status !== "DELETED") {
 
       $values = array();
 
@@ -65,9 +65,19 @@
       array_push($queries, "
         INSERT INTO
           `out_inv_header`
-            (invoice_no, invoice_date, debtor_code, currency_code, exchange_rate, remarks, status)
-          VALUES
-            (\"$invoiceNo\", \"$invoiceDate\", \"$debtorCode\", \"$currencyCode\", \"$exchangeRate\", \"$remarks\", \"$status\")
+            (invoice_no, invoice_date, debtor_code, currency_code, exchange_rate, maturity_date, remarks, status)
+          SELECT
+            \"$invoiceNo\"                                        AS `invoice_no`,
+            \"$invoiceDate\"                                      AS `invoice_date`,
+            \"$debtorCode\"                                       AS `debtor_code`,
+            \"$currencyCode\"                                     AS `currency_code`,
+            \"$exchangeRate\"                                     AS `exchange_rate`,
+            DATE_ADD(\"$invoiceDate\", INTERVAL credit_term DAY)  AS `maturity_date`,
+            \"$remarks\"                                          AS `remarks`,
+            \"$status\"                                           AS `status`
+          FROM
+            `debtor`
+          WHERE code=\"$debtorCode\"
       ");
     }
 
@@ -103,9 +113,9 @@
     ON a.do_no=b.do_no
     LEFT JOIN
       (SELECT
-        m.do_no                             AS `do_no`,
-        SUM(m.amount)                       AS `paid_amount`,
-        SUM(IF(m.settlement=\"FULL\",1, 0)) AS `settled`
+        m.do_no                               AS `do_no`,
+        SUM(m.amount)                         AS `paid_amount`,
+        SUM(IF(m.settlement=\"FULL\", 1, 0))  AS `settled`
       FROM
         `out_inv_model` AS m
       LEFT JOIN

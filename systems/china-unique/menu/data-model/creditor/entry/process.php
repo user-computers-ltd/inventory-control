@@ -24,7 +24,6 @@
         UPDATE
           `creditor`
         SET
-          code=\"$creditorCode\",
           english_name=\"$englishName\",
           chinese_name=\"$chineseName\",
           billing_address=\"$billingAddress\",

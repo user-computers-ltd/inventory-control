@@ -23,7 +23,6 @@
         UPDATE
           `debtor`
         SET
-          code=\"$debtorCode\",
           english_name=\"$englishName\",
           chinese_name=\"$chineseName\",
           billing_address=\"$billingAddress\",

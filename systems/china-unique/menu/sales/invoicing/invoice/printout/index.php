@@ -44,7 +44,7 @@
                 <thead>
                   <tr></tr>
                   <tr>
-                    <th>DO No. / Stock Out No.</th>
+                    <th>Voucher No.</th>
                     <th class="number">Amount</th>
                   </tr>
                 </thead>
@@ -55,10 +55,13 @@
 
                     for ($i = 0; $i < count($vouchers); $i++) {
                       $voucher = $vouchers[$i];
-                      $stockOutNo = $voucher["stock_out_no"];
                       $doNo = $voucher["do_no"];
+                      $stockOutNo = $voucher["stock_out_no"];
+                      $stockInNo = $voucher["stock_in_no"];
                       $amount = $voucher["amount"];
-                      $voucherNo = assigned($stockOutNo) ? $stockOutNo : (assigned($doNo) ? $doNo : "");
+                      $voucherNo = assigned($stockInNo) ? $stockInNo :
+                        (assigned($stockOutNo) ? $stockOutNo :
+                        (assigned($doNo) ? $doNo : ""));
 
                       $totalAmount += $amount;
 
