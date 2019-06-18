@@ -22,41 +22,41 @@
     if (assigned($id)) {
       query("
         UPDATE
-          `creditor`
+          `cu_ap`.`creditor`
         SET
-          english_name=\"$englishName\",
-          chinese_name=\"$chineseName\",
-          billing_address=\"$billingAddress\",
+          creditor_name_eng=\"$englishName\",
+          creditor_name_chi=\"$chineseName\",
+          bill_address=\"$billingAddress\",
           factory_address=\"$factoryAddress\",
-          contact=\"$contact\",
+          contact_name_l1=\"$contact\",
           tel=\"$tel\",
           fax=\"$fax\",
           email=\"$email\",
           credit_term=\"$creditTerm\",
           credit_limit=\"$creditLimit\",
-          profile=\"$profile\",
-          remarks=\"$remarks\"
+          company_profile_l1=\"$profile\",
+          remarks_l1=\"$remarks\"
         WHERE
           id=\"$id\"
       ");
     } else {
       query("
         INSERT INTO
-          `creditor`
+          `cu_ap`.`creditor`
           (
-            code,
-            english_name,
-            chinese_name,
-            billing_address,
+            creditor_code,
+            creditor_name_eng,
+            creditor_name_chi,
+            bill_address,
             factory_address,
-            contact,
+            contact_name_l1,
             tel,
             fax,
             email,
             credit_term,
             credit_limit,
-            profile,
-            remarks
+            company_profile_l1,
+            remarks_l1
           )
         VALUES
           (
@@ -76,7 +76,7 @@
           )
       ");
 
-      $id = query("SELECT id FROM `creditor` WHERE code=\"$creditorCode\"")[0]["id"];
+      $id = query("SELECT id FROM `cu_ap`.`creditor` WHERE creditor_code=\"$creditorCode\"")[0]["id"];
     }
 
     header("Location: " . DATA_MODEL_CREDITOR_DETAIL_URL . "?id=$id");
@@ -90,21 +90,21 @@
 
     $creditor = query("
       SELECT
-        code                  AS `code`,
-        english_name          AS `english_name`,
-        chinese_name          AS `chinese_name`,
-        billing_address       AS `billing_address`,
+        creditor_code                  AS `code`,
+        creditor_name_eng          AS `english_name`,
+        creditor_name_chi          AS `chinese_name`,
+        bill_address       AS `billing_address`,
         factory_address       AS `factory_address`,
-        contact               AS `contact`,
+        contact_name_l1               AS `contact`,
         tel                   AS `tel`,
         fax                   AS `fax`,
         email                 AS `email`,
         credit_term           AS `credit_term`,
         credit_limit          AS `credit_limit`,
-        profile               AS `profile`,
-        remarks               AS `remarks`
+        company_profile_l1               AS `profile`,
+        remarks_l1               AS `remarks`
       FROM
-        `creditor`
+        `cu_ap`.`creditor`
       WHERE id=\"$id\"
     ")[0];
 

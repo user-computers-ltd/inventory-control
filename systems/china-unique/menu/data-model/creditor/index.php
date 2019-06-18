@@ -17,27 +17,27 @@
   $results = query("
     SELECT
       id                          AS `id`,
-      code                        AS `code`,
-      english_name                AS `english_name`,
-      chinese_name                AS `chinese_name`,
-      contact                     AS `contact`
+      creditor_code                        AS `code`,
+      creditor_name_eng                AS `english_name`,
+      creditor_name_chi                AS `chinese_name`,
+      contact_name_l1                     AS `contact`
     FROM
-      `creditor`
+      `cu_ap`.`creditor`
     WHERE
-      code IS NOT NULL
+      creditor_code IS NOT NULL
       $whereClause
     ORDER BY
-      code ASC
+      creditor_code ASC
   ");
 
   $creditors = query("
     SELECT DISTINCT
-      code          AS `code`,
-      english_name  AS `name`
+      creditor_code          AS `code`,
+      creditor_name_eng  AS `name`
     FROM
-      `creditor`
+      `cu_ap`.`creditor`
     ORDER BY
-      code ASC
+      creditor_code ASC
   ");
 ?>
 

@@ -3,20 +3,20 @@
 
   $creditor = query("
     SELECT
-      code                  AS `code`,
-      english_name          AS `english_name`,
-      chinese_name          AS `chinese_name`,
-      billing_address       AS `billing_address`,
+      creditor_code                  AS `code`,
+      creditor_name_eng          AS `english_name`,
+      creditor_name_chi          AS `chinese_name`,
+      bill_address       AS `billing_address`,
       factory_address       AS `factory_address`,
-      contact               AS `contact`,
+      contact_name_l1               AS `contact`,
       tel                   AS `tel`,
       fax                   AS `fax`,
       email                 AS `email`,
       credit_term           AS `credit_term`,
-      profile               AS `profile`,
-      remarks               AS `remarks`
+      company_profile_l1               AS `profile`,
+      remarks_l1               AS `remarks`
     FROM
-      `creditor`
+      `cu_ap`.`creditor`
     WHERE
       id=\"$id\"
   ")[0];

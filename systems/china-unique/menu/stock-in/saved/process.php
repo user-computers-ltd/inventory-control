@@ -49,7 +49,7 @@
       DATE_FORMAT(a.stock_in_date, '%d-%m-%Y')                                            AS `date`,
       b.count                                                                             AS `count`,
       a.stock_in_no                                                                       AS `stock_in_no`,
-      IFNULL(IF(a.transaction_code=\"R3\", d.english_name, c.english_name), \"Unknown\")  AS `creditor_name`,
+      IFNULL(IF(a.transaction_code=\"R3\", d.english_name, c.creditor_name_eng), \"Unknown\")  AS `creditor_name`,
       IFNULL(b.total_qty, 0)                                                              AS `qty`,
       a.discount                                                                          AS `discount`,
       a.currency_code                                                                     AS `currency`,
@@ -70,8 +70,8 @@
         stock_in_no) AS b
     ON a.stock_in_no=b.stock_in_no
     LEFT JOIN
-      `creditor` AS c
-    ON a.creditor_code=c.code
+      `cu_ap`.`creditor` AS c
+    ON a.creditor_code=c.creditor_code
     LEFT JOIN
       `debtor` AS d
     ON a.creditor_code=d.code

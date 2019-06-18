@@ -116,7 +116,7 @@
 
   if (count($stockInHeaders) > 0) {
     foreach ($stockInHeaders as &$stockInHeader) {
-      $creditor = query("SELECT english_name AS name FROM `creditor` WHERE code=\"" . $stockInHeader["creditor_code"] . "\"")[0];
+      $creditor = query("SELECT creditor_name_eng AS name FROM `cu_ap`.`creditor` WHERE creditor_code=\"" . $stockInHeader["creditor_code"] . "\"")[0];
       $creditor = isset($creditor) ? $creditor["name"] : "Unknown";
       $debtor = query("SELECT english_name AS name FROM `debtor` WHERE code=\"" . $stockInHeader["creditor_code"] . "\"")[0];
       $debtor = isset($debtor) ? $debtor["name"] : "Unknown";

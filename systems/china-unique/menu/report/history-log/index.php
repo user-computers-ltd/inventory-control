@@ -55,7 +55,7 @@
         DATE_FORMAT(a.transaction_date, '%d-%m-%Y')                                         AS `date`,
         a.header_no                                                                         AS `header_no`,
         a.client_code                                                                       AS `client_code`,
-        IFNULL(b.english_name, IFNULL(c.english_name, ''))                                  AS `client_name`,
+        IFNULL(b.english_name, IFNULL(c.creditor_name_eng, ''))                                  AS `client_name`,
         a.transaction_code                                                                  AS `transaction_code`,
         a.warehouse_code                                                                    AS `warehouse_code`,
         a.discount                                                                          AS `discount`,
@@ -73,8 +73,8 @@
         `debtor` AS b
       ON a.client_code=b.code
       LEFT JOIN
-        `creditor` AS c
-      ON a.client_code=c.code
+        `cu_ap`.`creditor` AS c
+      ON a.client_code=c.creditor_code
       LEFT JOIN
         `brand` AS d
       ON a.brand_code=d.code
@@ -92,7 +92,7 @@
   $clients = query("
     SELECT code, IFNULL(english_name, 'Unknown') AS `name` FROM `debtor`
     UNION
-    SELECT code, IFNULL(english_name, 'Unknown') AS `name` FROM `creditor`
+    SELECT creditor_code AS `code`, IFNULL(creditor_name_eng, 'Unknown') AS `name` FROM `cu_ap`.`creditor`
     ORDER BY code ASC
   ");
 

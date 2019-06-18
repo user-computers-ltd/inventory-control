@@ -79,7 +79,7 @@
   $results = query("
     SELECT
       b.creditor_code                                                       AS `creditor_code`,
-      c.english_name                                                        AS `creditor_name`,
+      c.creditor_name_eng                                                        AS `creditor_name`,
       a.ia_no                                                               AS `ia_no`,
       DATE_FORMAT(b.ia_date, '%d-%m-%Y')                                    AS `date`,
       a.ia_index                                                            AS `index`,
@@ -95,8 +95,8 @@
       `ia_header` AS b
     ON a.ia_no=b.ia_no
     LEFT JOIN
-      `creditor` AS c
-    ON b.creditor_code=c.code
+      `cu_ap`.`creditor` AS c
+    ON b.creditor_code=c.creditor_code
     LEFT JOIN
       `brand` AS d
     ON a.brand_code=d.code

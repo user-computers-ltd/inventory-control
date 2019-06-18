@@ -105,7 +105,7 @@
     header("Location: " . STOCK_IN_SAVED_URL);
   }
 
-  $creditors = query("SELECT code, english_name AS name FROM `creditor`");
+  $creditors = query("SELECT creditor_code AS code, creditor_name_eng AS name FROM `cu_ap`.`creditor`");
   $debtors = query("SELECT code, english_name AS name FROM `debtor`");
   $brands = query("SELECT code, name FROM `brand`");
   $models = query("
