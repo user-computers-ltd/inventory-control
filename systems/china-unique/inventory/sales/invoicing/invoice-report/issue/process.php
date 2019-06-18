@@ -4,26 +4,26 @@
 
   function getColumns($soNo, $dateC, $doIdC, $doNoC, $stockOutIdC, $stockOutNoC, $stockInIdC, $stockInNoC, $clientCode) {
     return "
-      $soNo                                                                     AS `so_no`,
-      $dateC                                                                    AS `date_`,
-      DATE_FORMAT($dateC, \"%d-%m-%Y\")                                         AS `date`,
-      $doIdC                                                                    AS `do_id`,
-      $doNoC                                                                    AS `do_no`,
-      $stockOutIdC                                                              AS `stock_out_id`,
-      $stockOutNoC                                                              AS `stock_out_no`,
-      $stockInIdC                                                               AS `stock_in_id`,
-      $stockInNoC                                                               AS `stock_in_no`,
-      $clientCode                                                               AS `debtor_code`,
-      IFNULL(c.english_name, \"Unknown\")                                       AS `debtor_name`,
-      IFNULL(b.qty, 0)                                                          AS `qty`,
-      a.currency_code                                                           AS `currency`,
-      IFNULL(b.amount, 0) * (100 - a.discount) / 100 - IFNULL(e.invoice_sum, 0) AS `pending`,
-      (100 + a.tax) / 100                                                       AS `tax`,
+      $soNo                                                                               AS `so_no`,
+      $dateC                                                                              AS `date_`,
+      DATE_FORMAT($dateC, \"%d-%m-%Y\")                                                   AS `date`,
+      $doIdC                                                                              AS `do_id`,
+      $doNoC                                                                              AS `do_no`,
+      $stockOutIdC                                                                        AS `stock_out_id`,
+      $stockOutNoC                                                                        AS `stock_out_no`,
+      $stockInIdC                                                                         AS `stock_in_id`,
+      $stockInNoC                                                                         AS `stock_in_no`,
+      $clientCode                                                                         AS `debtor_code`,
+      IFNULL(c.english_name, \"Unknown\")                                                 AS `debtor_name`,
+      IFNULL(b.qty, 0)                                                                    AS `qty`,
+      a.currency_code                                                                     AS `currency`,
+      ROUND(IFNULL(b.amount, 0) * (100 - a.discount) / 100 - IFNULL(e.invoice_sum, 0), 2) AS `pending`,
+      (100 + a.tax) / 100                                                                 AS `tax`,
       CASE
         WHEN d.invoice_settlement>0 THEN \"FULL\"
         WHEN d.invoice_settlement=0 THEN \"PARTIAL\"
         ELSE \"PENDING\"
-      END                                                                       AS `settlement`
+      END                                                                                 AS `settlement`
     ";
   }
 

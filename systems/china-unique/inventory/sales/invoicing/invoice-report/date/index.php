@@ -217,10 +217,10 @@
                       $voucherColumn
                       <td>$soNos</td>
                       <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
-                      <td title=\"$cost\" class=\"number\">" . number_format($cost) . "</td>
-                      <td title=\"$net\" class=\"number\">" . number_format($net) . "</td>
+                      <td title=\"$cost\" class=\"number\">" . number_format($cost, 2) . "</td>
+                      <td title=\"$net\" class=\"number\">" . number_format($net, 2) . "</td>
                       <td title=\"$profit\" class=\"number\">" . number_format($profit, 2) . "%</td>
-                      <td title=\"$amount\" class=\"number\">" . number_format($amount) . "</td>
+                      <td title=\"$amount\" class=\"number\">" . number_format($amount, 2) . "</td>
                       <td title=\"$invoiceDate\">$invoiceDateColumn</td>
                       <td title=\"$invoiceAmount\">$invoiceAmountColumn</td>
                       <td title=\"$invoiceNo\">$invoiceNoColumn</td>
