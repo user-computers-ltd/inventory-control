@@ -1,0 +1,48 @@
+.invoice-footer {
+  page-break-inside: avoid;
+}
+
+.invoice-header,
+.invoice-footer {
+  font-size: 13px;
+}
+
+.invoice-header td,
+.invoice-footer td {
+  border: none;
+}
+
+.invoice-header td:nth-child(2n + 1),
+.invoice-footer td:nth-child(2n + 1) {
+  width: 150px;
+  font-weight: bold;
+}
+
+.invoice-models th,
+.invoice-models td {
+  background-color: transparent;
+  border: none;
+  padding: 4px;
+  font-size: 13px;
+}
+
+.invoice-models .number {
+  text-align: right;
+}
+
+.invoice-models thead th {
+  border-bottom: 1px solid;
+}
+
+.invoice-models tbody tr:last-child th {
+  border-top: 1px solid;
+}
+
+.invoice-models-no-results,
+#invoice-not-found {
+  text-align: center;
+  font-size: 40px;
+  font-weight: bold;
+  line-height: 200px;
+  opacity: 0.3;
+}
