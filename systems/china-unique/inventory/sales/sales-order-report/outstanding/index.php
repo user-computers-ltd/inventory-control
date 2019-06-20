@@ -1,5 +1,5 @@
 <?php
-  define("SYSTEM_PATH", "../../../../../");
+  define("SYSTEM_PATH", "../../../../");
   include_once SYSTEM_PATH . "includes/php/config.php";
   include_once ROOT_PATH . "includes/php/utils.php";
   include_once ROOT_PATH . "includes/php/database.php";
@@ -7,54 +7,89 @@
   $InBaseCurrency = "(" . COMPANY_CURRENCY . ")";
 
   $debtorCodes = $_GET["debtor_code"];
-  $showMode = assigned($_GET["show_mode"]) ? $_GET["show_mode"] : "outstanding_only";
 
-  $whereClause = "";
+  $whereClause = " AND a.qty_outstanding > 0";
 
   if (assigned($debtorCodes) && count($debtorCodes) > 0) {
     $whereClause = $whereClause . "
-      AND (" . join(" OR ", array_map(function ($d) { return "a.debtor_code=\"$d\""; }, $debtorCodes)) . ")";
-  }
-
-  if ($showMode == "outstanding_only") {
-    $whereClause = $whereClause . "
-      AND IFNULL(b.total_qty_outstanding, 0) > 0";
+      AND (" . join(" OR ", array_map(function ($d) { return "b.debtor_code=\"$d\""; }, $debtorCodes)) . ")";
   }
 
   $results = query("
     SELECT
-      CONCAT(a.debtor_code, \" - \", IFNULL(c.english_name, \"Unknown\"))                 AS `debtor`,
-      DATE_FORMAT(a.so_date, \"%d-%m-%Y\")                                                  AS `date`,
-      a.id                                                                                AS `so_id`,
-      a.so_no                                                                             AS `so_no`,
-      IFNULL(b.total_qty, 0)                                                              AS `qty`,
-      IFNULL(b.total_qty_outstanding, 0)                                                  AS `qty_outstanding`,
-      a.discount                                                                          AS `discount`,
-      a.currency_code                                                                     AS `currency`,
-      IFNULL(b.total_amt_outstanding, 0) * (100 - a.discount) / 100                       AS `amt_outstanding`,
-      IFNULL(b.total_amt_outstanding, 0) * (100 - a.discount) / 100 * a.exchange_rate     AS `amt_outstanding_base`
+      CONCAT(b.debtor_code, \" - \", IFNULL(c.english_name, \"Unknown\"))   AS `debtor`,
+      DATE_FORMAT(b.so_date, \"%d-%m-%Y\")                                  AS `date`,
+      a.brand_code                                                          AS `brand_code`,
+      a.model_no                                                            AS `model_no`,
+      a.so_no                                                               AS `so_no`,
+      a.qty                                                                 AS `qty`,
+      a.qty_outstanding                                                     AS `qty_outstanding`,
+      a.qty_outstanding * a.price * (100 - b.discount) / 100                AS `amt_outstanding`,
+      IFNULL(g.qty_on_do, 0)                                                AS `qty_on_do`,
+      IFNULL(d.qty_on_hand, 0) - IFNULL(e.qty_on_reserve, 0)                AS `qty_available`,
+      IFNULL(f.qty_on_order, 0)                                             AS `qty_on_order`
     FROM
-      `so_header` AS a
+      `so_model` AS a
     LEFT JOIN
-      (SELECT
-        so_no                         AS `so_no`,
-        SUM(qty)                      AS `total_qty`,
-        SUM(qty_outstanding)          AS `total_qty_outstanding`,
-        SUM(qty_outstanding * price)  AS `total_amt_outstanding`
-      FROM
-        `so_model`
-      GROUP BY
-        so_no) AS b
+      `so_header` AS b
     ON a.so_no=b.so_no
     LEFT JOIN
       `debtor` AS c
-    ON a.debtor_code=c.code
+    ON b.debtor_code=c.code
+    LEFT JOIN
+      (SELECT
+        brand_code, model_no, SUM(qty) AS `qty_on_hand`
+      FROM
+        `stock`
+      GROUP BY
+        brand_code, model_no) AS d
+    ON a.brand_code=d.brand_code AND a.model_no=d.model_no
+    LEFT JOIN
+      (SELECT
+        m.brand_code, m.model_no, SUM(m.qty) AS `qty_on_reserve`
+      FROM
+        `sdo_model` AS m
+      LEFT JOIN
+        `sdo_header` AS h
+      ON m.do_no=h.do_no
+      WHERE
+        h.status=\"SAVED\" AND
+        m.ia_no=\"\"
+      GROUP BY
+        m.brand_code, m.model_no) AS e
+    ON a.brand_code=e.brand_code AND a.model_no=e.model_no
+    LEFT JOIN
+      (SELECT
+        m.brand_code, m.model_no, SUM(GREATEST(qty_outstanding, 0)) AS `qty_on_order`
+      FROM
+        `po_model` AS m
+      LEFT JOIN
+        `po_header` AS h
+      ON m.po_no=h.po_no
+      WHERE
+        h.status=\"POSTED\"
+      GROUP BY
+        m.brand_code, m.model_no) AS f
+    ON a.brand_code=f.brand_code AND a.model_no=f.model_no
+    LEFT JOIN
+      (SELECT
+        m.brand_code, m.model_no, m.so_no, SUM(m.qty) AS `qty_on_do`
+      FROM
+        `sdo_model` AS m
+      LEFT JOIN
+        `sdo_header` AS h
+      ON m.do_no=h.do_no
+      WHERE
+        h.status=\"SAVED\"
+      GROUP BY
+        m.brand_code, m.model_no, m.so_no) AS g
+    ON a.brand_code=g.brand_code AND a.model_no=g.model_no AND a.so_no=g.so_no
     WHERE
-      a.status=\"CONFIRMED\"
+      b.status=\"CONFIRMED\"
       $whereClause
     ORDER BY
-      a.debtor_code ASC,
-      a.so_date ASC
+      b.debtor_code ASC,
+      b.so_date ASC
   ");
 
   $soHeaders = array();
@@ -88,8 +123,8 @@
       `debtor` AS c
     ON a.debtor_code=c.code
     WHERE
-      a.status=\"CONFIRMED\"
-      " . ($showMode === "outstanding_only" ? "AND IFNULL(b.total_qty_outstanding, 0) > 0" : "") . "
+      a.status=\"CONFIRMED\" AND
+      IFNULL(b.total_qty_outstanding, 0) > 0
     ORDER BY
       a.debtor_code ASC
   ");
@@ -103,9 +138,9 @@
   </head>
   <body>
     <?php include_once SYSTEM_PATH . "includes/components/menu/index.php"; ?>
-    <div class="page-wrapper">
+    <div class="page-wrapper landscape">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
-      <div class="headline"><?php echo SALES_REPORT_CUSTOMER_DETAIL_TITLE; ?></div>
+      <div class="headline"><?php echo SALES_REPORT_OUTSTANDING_TITLE; ?></div>
       <form>
         <table id="so-input">
           <tr>
@@ -135,103 +170,95 @@
             </td>
             <td><button type="submit">Go</button></td>
           </tr>
-          <tr>
-            <th>
-              <input
-                id="input-outstanding-only"
-                class="web-only"
-                type="checkbox"
-                onchange="onOutstandingOnlyChanged(event)"
-                <?php echo $showMode === "outstanding_only" ? "checked" : "" ?>
-              />
-              <label class="web-only" for="input-outstanding-only">Outstanding only</label>
-              <input
-                id="input-show-mode"
-                type="hidden"
-                name="show_mode"
-                value="<?php echo $showMode; ?>"
-              />
-              <span class="print-only">
-                <?php echo $showMode === "outstanding_only" ? "Outstanding only" : ""; ?>
-              </span>
-            </th>
-          </tr>
         </table>
       </form>
       <?php if (count($soHeaders) > 0) : ?>
         <?php foreach ($soHeaders as $client => &$headers) : ?>
           <div class="so-client">
             <h4><?php echo $client; ?></h4>
-            <table class="so-results">
+            <table class="so-results sortable">
               <colgroup>
+                <col style="width: 60px">
+                <col>
                 <col style="width: 80px">
                 <col>
                 <col style="width: 80px">
                 <col style="width: 80px">
-                <col style="width: 60px">
                 <col style="width: 80px">
                 <col style="width: 80px">
-                <col style="width: 40px">
+                <col style="width: 80px">
+                <col style="width: 80px">
               </colgroup>
               <thead>
                 <tr></tr>
                 <tr>
+                  <th>Brand</th>
+                  <th>Model No.</th>
                   <th>Date</th>
                   <th>Order No.</th>
-                  <th class="number">Total Qty</th>
-                  <th class="number">Outstanding Qty</th>
-                  <th class="number">Currency</th>
+                  <th class="number">Qty<br/> Ordered</th>
+                  <th class="number">Qty<br/> Outstanding</th>
                   <th class="number">Outstanding Amt</th>
-                  <th class="number"><?php echo $InBaseCurrency; ?></th>
-                  <th class="number">Discount</th>
+                  <th class="number">Qty<br/> On DO</th>
+                  <th class="number">Qty<br/> Available</th>
+                  <th class="number">Qty<br/> On Order</th>
                 </tr>
               </thead>
               <tbody>
                 <?php
                   $totalQty = 0;
-                  $totalOutstanding = 0;
-                  $totalAmtBase = 0;
+                  $totalQtyOutstanding = 0;
+                  $totalAmtOutstanding = 0;
+                  $totalDOQty = 0;
 
                   for ($i = 0; $i < count($headers); $i++) {
                     $soHeader = $headers[$i];
                     $date = $soHeader["date"];
+                    $brandCode = $soHeader["brand_code"];
+                    $modelNo = $soHeader["model_no"];
                     $soId = $soHeader["so_id"];
                     $soNo = $soHeader["so_no"];
                     $qty = $soHeader["qty"];
                     $outstandingQty = $soHeader["qty_outstanding"];
-                    $discount = $soHeader["discount"];
-                    $currency = $soHeader["currency"];
                     $outstandingAmt = $soHeader["amt_outstanding"];
-                    $outstandingAmtBase = $soHeader["amt_outstanding_base"];
+                    $qtyOnDO = $soHeader["qty_on_do"];
+                    $qtyAvailable = $soHeader["qty_available"];
+                    $qtyOnOrder = $soHeader["qty_on_order"];
 
                     $totalQty += $qty;
-                    $totalOutstanding += $outstandingQty;
-                    $totalAmtBase += $outstandingAmtBase;
+                    $totalQtyOutstanding += $outstandingQty;
+                    $totalAmtOutstanding += $outstandingAmt;
+                    $totalDOQty += $qtyOnDO;
 
                     echo "
                       <tr>
+                        <td title=\"$brandCode\">$brandCode</td>
+                        <td title=\"$modelNo\">$modelNo</td>
                         <td title=\"$date\">$date</td>
                         <td title=\"$soNo\">
                           <a class=\"link\" href=\"" . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?id[]=$soId\">$soNo</a>
                         </td>
                         <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
                         <td title=\"$outstandingQty\" class=\"number\">" . number_format($outstandingQty) . "</td>
-                        <td title=\"$currency\" class=\"number\">$currency</td>
                         <td title=\"$outstandingAmt\" class=\"number\">" . number_format($outstandingAmt, 2) . "</td>
-                        <td title=\"$outstandingAmtBase\" class=\"number\">" . number_format($outstandingAmtBase, 2) . "</td>
-                        <td title=\"$discount\" class=\"number\">" . number_format($discount, 2) . "%</td>
+                        <td title=\"$qtyOnDO\" class=\"number\">" . number_format($qtyOnDO) . "</td>
+                        <td title=\"$qtyAvailable\" class=\"number\">" . number_format($qtyAvailable) . "</td>
+                        <td title=\"$qtyOnOrder\" class=\"number\">" . number_format($qtyOnOrder) . "</td>
                       </tr>
                     ";
                   }
                 ?>
                 <tr>
                   <th></th>
+                  <th></th>
+                  <th></th>
                   <th class="number">Total:</th>
                   <th class="number"><?php echo number_format($totalQty); ?></th>
-                  <th class="number"><?php echo number_format($totalOutstanding); ?></th>
+                  <th class="number"><?php echo number_format($totalQtyOutstanding); ?></th>
+                  <th class="number"><?php echo number_format($totalAmtOutstanding, 2); ?></th>
+                  <th class="number"><?php echo number_format($totalDOQty); ?></th>
                   <th></th>
                   <th></th>
-                  <th class="number"><?php echo number_format($totalAmtBase, 2); ?></th>
                   <th></th>
                 </tr>
               </tbody>
@@ -242,12 +269,5 @@
         <div class="so-client-no-results">No results</div>
       <?php endif ?>
     </div>
-    <script>
-      function onOutstandingOnlyChanged(event) {
-        var showMode = event.target.checked ? "outstanding_only" : "show_all";
-        document.querySelector("#input-show-mode").value = showMode;
-        event.target.form.submit();
-      }
-    </script>
   </body>
 </html>

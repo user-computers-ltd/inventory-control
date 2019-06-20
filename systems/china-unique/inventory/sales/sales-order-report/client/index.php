@@ -24,7 +24,7 @@
   $soHeaders = query("
     SELECT
       a.debtor_code                                                                           AS `debtor_code`,
-      CONCAT(a.debtor_code, ' - ', IFNULL(c.english_name, 'Unknown'))                         AS `debtor`,
+      CONCAT(a.debtor_code, \" - \", IFNULL(c.english_name, \"Unknown\"))                     AS `debtor`,
       COUNT(*)                                                                                AS `count`,
       SUM(IFNULL(b.total_qty, 0))                                                             AS `qty`,
       SUM(IFNULL(b.total_qty_outstanding, 0))                                                 AS `qty_outstanding`,
@@ -56,15 +56,25 @@
 
   $debtors = query("
     SELECT DISTINCT
-      a.debtor_code                       AS `code`,
-      IFNULL(b.english_name, 'Unknown')   AS `name`
+      a.debtor_code                           AS `code`,
+      IFNULL(c.english_name, \"Unknown\")     AS `name`
     FROM
       `so_header` AS a
     LEFT JOIN
-      `debtor` AS b
-    ON a.debtor_code=b.code
+      (SELECT
+        so_no                         AS `so_no`,
+        SUM(qty_outstanding)          AS `total_qty_outstanding`
+      FROM
+        `so_model`
+      GROUP BY
+        so_no) AS b
+    ON a.so_no=b.so_no
+    LEFT JOIN
+      `debtor` AS c
+    ON a.debtor_code=c.code
     WHERE
       a.status=\"CONFIRMED\"
+      " . ($showMode === "outstanding_only" ? "AND IFNULL(b.total_qty_outstanding, 0) > 0" : "") . "
     ORDER BY
       a.debtor_code ASC
   ");

@@ -21,6 +21,7 @@
   define("SALES_REPORT_BRAND_DETAIL_URL", SALES_REPORT_BRAND_SUMMARY_URL . "detail/");
   define("SALES_REPORT_MODEL_SUMMARY_URL", SALES_SO_REPORT_URL . "model/");
   define("SALES_REPORT_MODEL_DETAIL_URL", SALES_REPORT_MODEL_SUMMARY_URL . "detail/");
+  define("SALES_REPORT_OUTSTANDING_URL", SALES_SO_REPORT_URL . "outstanding/");
 
   define("SALES_PL_REPORT_URL", SALES_URL . "pl-report/");
   define("SALES_PL_REPORT_MODEL_SUMMARY_URL", SALES_PL_REPORT_URL . "model/");
@@ -76,6 +77,7 @@
   define("SALES_REPORT_BRAND_DETAIL_TITLE", "(F2d) Confirmed Sales Order Detail By Brand By Date");
   define("SALES_REPORT_MODEL_SUMMARY_TITLE", "(F2e) Confirmed Sales Order Summary By Model");
   define("SALES_REPORT_MODEL_DETAIL_TITLE", "(F2f) Confirmed Sales Order Detail By Model By Date");
+  define("SALES_REPORT_OUTSTANDING_TITLE", "(F2g) Outstanding Order Report");
 
   define("SALES_PL_REPORT_TITLE", "(F3) P/L Analysis Report");
   define("SALES_PL_REPORT_MODEL_SUMMARY_TITLE", "(F3c) Sales P/L Summary By Model");
@@ -123,7 +125,8 @@
       SALES_REPORT_BRAND_SUMMARY_TITLE                    => SALES_REPORT_BRAND_SUMMARY_URL,
       SALES_REPORT_BRAND_DETAIL_TITLE                     => SALES_REPORT_BRAND_DETAIL_URL,
       SALES_REPORT_MODEL_SUMMARY_TITLE                    => SALES_REPORT_MODEL_SUMMARY_URL,
-      SALES_REPORT_MODEL_DETAIL_TITLE                     => SALES_REPORT_MODEL_DETAIL_URL
+      SALES_REPORT_MODEL_DETAIL_TITLE                     => SALES_REPORT_MODEL_DETAIL_URL,
+      SALES_REPORT_OUTSTANDING_TITLE                      => SALES_REPORT_OUTSTANDING_URL
     ),
     SALES_PL_REPORT_TITLE => array(
       SALES_PL_REPORT_MODEL_SUMMARY_TITLE                 => SALES_PL_REPORT_MODEL_SUMMARY_URL,
