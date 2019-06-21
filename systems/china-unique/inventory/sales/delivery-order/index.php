@@ -46,8 +46,17 @@
               <td><textarea name="address"><?php echo $address; ?></textarea></td>
               <td>Discount:</td>
               <td>
-                <?php echo $discount; ?>%
-                <input type="hidden" name="discount" value="<?php echo $discount; ?>" />
+                <input
+                  id="discount"
+                  name="discount"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  max="100"
+                  value="<?php echo $discount; ?>"
+                  onchange="onDiscountChange()"
+                  required
+                /><span>%</span>
               </td>
             </tr>
             <tr>
@@ -205,14 +214,15 @@
           var doModels = <?php echo json_encode($doModels); ?>;
           var brands = <?php echo json_encode($brands); ?>;
           var iaNos = <?php echo json_encode($debtorIaNos); ?>;
-          var discount = <?php echo $discount; ?>;
 
           var focusedRow = null;
           var focusedFieldName = null;
 
+          var discountElement = document.querySelector("#discount");
           var tableBodyElement = document.querySelector("#do-models tbody");
           var discountRowElements = document.querySelectorAll(".discount-row");
           var subTotalAmountElement = document.querySelector("#sub-total-amount");
+          var discountPercentageElement = document.querySelector("#discount-percentage");
           var discountAmountElement = document.querySelector("#discount-amount");
           var totalQtyElement = document.querySelector("#total-qty");
           var totalAmountElement = document.querySelector("#total-amount");
@@ -255,6 +265,7 @@
 
             tableBodyElement.innerHTML = "";
 
+            var discount = discountElement.value;
             var totalQty = 0;
             var totalAmount = 0;
 
@@ -412,6 +423,7 @@
 
             subTotalAmountElement.innerHTML = totalAmount.toFixed(2);
 
+            discountPercentageElement.innerHTML = discount + "%";
             discountAmountElement.innerHTML = (totalAmount * (discount) / 100).toFixed(2);
 
             totalQtyElement.innerHTML = totalQty;
@@ -499,6 +511,10 @@
           function onFieldBlurred() {
             focusedRow = null;
             focusedFieldName = null;
+          }
+
+          function onDiscountChange() {
+            render();
           }
 
           function onSourceChange(event, index) {
