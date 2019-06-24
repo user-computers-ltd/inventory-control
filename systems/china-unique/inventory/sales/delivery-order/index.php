@@ -592,7 +592,6 @@
             if (
               index === doModels.length - 1 &&
               (event.which || event.keyCode) === 9 &&
-              doModel["ia_no"] &&
               doModel["model_no"] &&
               doModel["brand_code"] &&
               doModel["so_no"] &&
