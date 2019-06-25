@@ -416,7 +416,7 @@
             invoiceVoucher["do_no"] = voucher["do_no"] || "";
             invoiceVoucher["stock_out_no"] = voucher["stock_out_no"] || "";
             invoiceVoucher["stock_in_no"] = voucher["stock_in_no"] || "";
-            invoiceVoucher["source"] = voucher["stock_in_no"] ? "si" : voucher["so"] ? "so" : "do";
+            invoiceVoucher["source"] = voucher["stock_in_no"] ? "si" : voucher["stock_out_no"] ? "so" : "do";
             invoiceVoucher["amount_payable"] = parseFloat(voucher["amount"]) || 0;
             invoiceVoucher["amount"] = parseFloat(voucher["amount"]) || 0;
             invoiceVoucher["settlement"] = voucher["settlement"] || "FULL";
