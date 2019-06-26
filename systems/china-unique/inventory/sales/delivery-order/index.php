@@ -605,6 +605,8 @@
           window.addEventListener("load", function () {
             document.querySelector("#delivery-form").reset();
 
+            var newDoModels = [];
+
             for (var i = 0; i < doModels.length; i++) {
               var doModel = doModels[i];
               var matchedModel = getModels(doModel["ia_no"], doModel["model_no"], doModel["brand_code"])[0];
@@ -613,8 +615,12 @@
                 matchedModel["ia_no"] = doModel["ia_no"];
                 matchedModel["so_no"] = doModel["so_no"];
                 updateModel(i, matchedModel);
+
+                newDoModels.push(doModels[i]);
               }
             }
+
+            doModels = newDoModels;
 
             render();
           });
