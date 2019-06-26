@@ -83,7 +83,7 @@
                   $totalAmtBase = $stockInHeader["total_amt_base"];
                   $transactionCode = $stockInHeader["transaction_code"];
                   $transactionName = $TRANSACTION_CODES[$transactionCode];
-                  $miscellaneous = $stockInHeader["transaction_code"] != "R1" && $stockInHeader["transaction_code"] != "R3";
+                  $miscellaneous = $stockInHeader["transaction_code"] !== "R1" && $stockInHeader["transaction_code"] !== "R3";
 
                   $totalQty += $qty;
                   $totalAmtBaseSum += $totalAmtBase;
@@ -94,7 +94,7 @@
                       <td title=\"$date\">$date</td>
                       <td title=\"$count\" class=\"number\">$count</td>
                       <td title=\"$stockInNo\"><a class=\"link\" href=\"" . STOCK_IN_PRINTOUT_URL . "?id[]=$id\">$stockInNo</a></td>
-                      " . ($miscellaneous ? "<td></td>" : "<td title=\"$creditorName\">$creditorName</td>") . "
+                      " . ($miscellaneous && $stockInHeader["transaction_code"] !== "R7" ? "<td></td>" : "<td title=\"$creditorName\">$creditorName</td>") . "
                       <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
                       " . ($miscellaneous ? "<td></td>" : "<td title=\"$discount\" class=\"number\">" . number_format($discount, 2) . "%</td>") . "
                       " . ($miscellaneous ? "<td></td>" : "<td title=\"$currency\" class=\"number\">$currency</td>") . "
