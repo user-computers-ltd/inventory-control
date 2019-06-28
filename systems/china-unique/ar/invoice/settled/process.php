@@ -1,6 +1,4 @@
 <?php
-  $InBaseCurrency = "(" . COMPANY_CURRENCY . ")";
-
   $from = $_GET["from"];
   $to = $_GET["to"];
   $action = $_POST["action"];
@@ -12,7 +10,7 @@
     $printoutParams = join("&", array_map(function ($i) { return "id[]=$i"; }, $invoiceIds));
 
     if ($action === "print") {
-      header("Location: " . OUT_INVOICE_PRINTOUT_URL . "?$printoutParams");
+      header("Location: " . AR_INVOICE_PRINTOUT_URL . "?$printoutParams");
       exit(0);
     }
   }
@@ -38,17 +36,16 @@
       IFNULL(c.english_name, \"Unknown\")         AS `debtor_name`,
       a.currency_code                             AS `currency_code`,
       DATE_FORMAT(a.maturity_date, \"%d-%m-%Y\")  AS `maturity_date`,
-      IFNULL(b.amount, 0)                         AS `amount`,
-      IFNULL(b.amount, 0) * a.exchange_rate       AS `amount_base`
+      IFNULL(b.amount, 0)                         AS `amount`
     FROM
-      `out_inv_header` AS a
+      `ar_inv_header` AS a
     LEFT JOIN
       (SELECT
         COUNT(*)                                  AS `count`,
         invoice_no                                AS `invoice_no`,
         SUM(amount)                               AS `amount`
       FROM
-        `out_inv_model`
+        `ar_inv_item`
       GROUP BY
         invoice_no) AS b
     ON a.invoice_no=b.invoice_no

@@ -64,7 +64,6 @@
                 </select>
                 <input
                   id="exchange-rate"
-                  class="option-field"
                   name="exchange_rate"
                   type="number"
                   step="0.00000001"
@@ -111,14 +110,12 @@
             </tr>
           </table>
           <?php if ($status === "DRAFT" || $status === "SAVED") : ?>
-            <button name="status" type="submit" value="SAVED">Save</button>
+            <button name="action" type="submit" value="<?php echo $status === "DRAFT" ? "create" : "update"; ?>">Save</button>
           <?php endif ?>
+          <button name="status" type="submit" value="<?php echo $status; ?>" formaction="<?php echo AR_INVOICE_PRINTOUT_URL; ?>">Print</button>
           <?php if ($status === "SAVED") : ?>
-            <button name="status" type="submit" value="SETTLED">Settle</button>
-          <?php endif ?>
-          <button name="status" type="submit" value="<?php echo $status; ?>" formaction="<?php echo OUT_INVOICE_PRINTOUT_URL; ?>">Print</button>
-          <?php if ($status === "SAVED") : ?>
-            <button name="status" type="submit" value="DELETED">Delete</button>
+            <button name="action" type="submit" value="delete">Delete</button>
+            <button name="action" type="submit" value="cancel">Cancel</button>
           <?php endif ?>
         </form>
         <script>
@@ -152,14 +149,15 @@
 
               var invoiceVoucher = invoiceVouchers[i];
               var newRowElement = document.createElement("tr");
-              var description = (invoiceVoucher["stock_in_no"]
+              var editable = !invoiceVoucher["stock_in_no"] && !invoiceVoucher["stock_out_no"] && !invoiceVoucher["do_no"];
+              var description = invoiceVoucher["stock_in_no"]
               ? invoiceVoucher["stock_in_no"]
               : invoiceVoucher["stock_out_no"]
               ? invoiceVoucher["stock_out_no"]
               : invoiceVoucher["do_no"]
               ? invoiceVoucher["do_no"]
-              : "") + (invoiceVoucher["settle_remarks"] ? " " + invoiceVoucher["settle_remarks"] : "");
-              var editable = !invoiceVoucher["stock_in_no"] && !invoiceVoucher["stock_out_no"] && !invoiceVoucher["do_no"];
+              : "";
+              description += description && invoiceVoucher["settle_remarks"] && (" - " + invoiceVoucher["settle_remarks"]);
 
               var rowInnerHTML =
                 "<td>"
@@ -170,13 +168,14 @@
                     + "onblur=\"onFieldBlurred()\" "
                     + "onchange=\"onSettleRemarksChange(event, " + i + ")\" "
                     + "onkeydown=\"onSettleRemarksKeyDown(event, " + i + ")\" "
-                  + "/>" + description + "</textarea>" : description)
+                  + "/>" + invoiceVoucher["settle_remarks"] + "</textarea>" : description + "<input type=\"hidden\" name=\"settle_remarks[]\" value=\"" + invoiceVoucher["settle_remarks"] + "\" />")
                 + "</td>"
                 + "<td>"
                   + "<input type=\"hidden\" name=\"settlement[]\" value=\"" + invoiceVoucher["settlement"] + "\" />"
                   + "<input type=\"hidden\" name=\"do_no[]\" value=\"" + invoiceVoucher["do_no"] + "\" />"
                   + "<input type=\"hidden\" name=\"stock_out_no[]\" value=\"" + invoiceVoucher["stock_out_no"] + "\" />"
                   + "<input type=\"hidden\" name=\"stock_in_no[]\" value=\"" + invoiceVoucher["stock_in_no"] + "\" />"
+                  + "<input type=\"hidden\" name=\"amount[]\" value=\"" + invoiceVoucher["amount"] + "\" />"
                   + (editable ? "<input "
                     + "class=\"amount number\" "
                     + "type=\"number\" "
@@ -186,6 +185,7 @@
                     + "onchange=\"onAmountChange(event, " + i + ")\" "
                     + "onfocus=\"onFieldFocused(" + i + ", 'amount[]')\" "
                     + "onblur=\"onFieldBlurred()\" "
+                    + "onkeydown=\"onAmountKeyDown(event, " + i + ")\" "
                     + "required "
                   + "/>" : "<span class=\"number\">" + invoiceVoucher["amount"].toFixed(2) + "</span>")
                 + "</td>"
@@ -287,7 +287,7 @@
             render();
           }
 
-          function onSettleRemarksKeyDown(event, index) {
+          function onAmountKeyDown(event, index) {
             var invoiceVoucher = invoiceVouchers[index];
 
             if (

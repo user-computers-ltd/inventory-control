@@ -20,7 +20,7 @@
         <?php foreach($invoiceHeaders as &$invoiceHeader) : ?>
           <div class="page">
             <?php include SYSTEM_PATH . "includes/components/header/index.php"; ?>
-            <div class="headline"><?php echo OUT_INVOICE_PRINTOUT_TITLE ?></div>
+            <div class="headline"><?php echo AR_INVOICE_PRINTOUT_TITLE ?></div>
             <table class="invoice-header sortable">
               <tr>
                 <td>Invoice No.:</td>
@@ -64,7 +64,9 @@
                       $amount = $voucher["amount"];
                       $description = assigned($stockInNo) ? $stockInNo :
                         (assigned($stockOutNo) ? $stockOutNo :
-                        (assigned($doNo) ? $doNo : $settleRemarks));
+                        (assigned($doNo) ? $doNo : ""));
+
+                      $description = $description . (assigned($description) && assigned($settleRemarks) ? (" - " . $settleRemarks) : $settleRemarks);
 
                       $totalAmount += $amount;
 

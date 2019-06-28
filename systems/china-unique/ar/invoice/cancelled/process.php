@@ -1,6 +1,4 @@
 <?php
-  $InBaseCurrency = "(" . COMPANY_CURRENCY . ")";
-
   $from = $_GET["from"];
   $to = $_GET["to"];
   $action = $_POST["action"];
@@ -10,16 +8,12 @@
     $queries = array();
 
     $headerWhereClause = join(" OR ", array_map(function ($i) { return "id=\"$i\""; }, $invoiceIds));
-    $modelWhereClause = join(" OR ", array_map(function ($i) { return "b.id=\"$i\""; }, $invoiceIds));
     $printoutParams = join("&", array_map(function ($i) { return "id[]=$i"; }, $invoiceIds));
 
-    if ($action === "delete") {
-      array_push($queries, "DELETE a FROM `out_inv_model` AS a LEFT JOIN `out_inv_header` AS b ON a.invoice_no=b.invoice_no WHERE $modelWhereClause");
-      array_push($queries, "DELETE FROM `out_inv_header` WHERE $headerWhereClause");
-    } else if ($action === "recover") {
-      array_push($queries, "UPDATE `out_inv_header` SET status=\"SAVED\" WHERE $headerWhereClause");
+    if ($action === "reissue") {
+      array_push($queries, "UPDATE `ar_inv_header` SET status=\"SAVED\" WHERE $headerWhereClause");
     } else if ($action === "print") {
-      header("Location: " . OUT_INVOICE_PRINTOUT_URL . "?$printoutParams");
+      header("Location: " . AR_INVOICE_PRINTOUT_URL . "?$printoutParams");
       exit(0);
     }
 
@@ -50,14 +44,14 @@
       IFNULL(b.amount, 0)                         AS `amount`,
       IFNULL(b.amount, 0) * a.exchange_rate       AS `amount_base`
     FROM
-      `out_inv_header` AS a
+      `ar_inv_header` AS a
     LEFT JOIN
       (SELECT
         COUNT(*)                                  AS `count`,
         invoice_no                                AS `invoice_no`,
         SUM(amount)                               AS `amount`
       FROM
-        `out_inv_model`
+        `ar_inv_item`
       GROUP BY
         invoice_no) AS b
     ON a.invoice_no=b.invoice_no
@@ -65,7 +59,7 @@
       `debtor` AS c
     ON a.debtor_code=c.code
     WHERE
-      a.status=\"VOIDED\"
+      a.status=\"CANCELLED\"
       $whereClause
     ORDER BY
       a.invoice_date DESC

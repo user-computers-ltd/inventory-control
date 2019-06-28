@@ -1,0 +1,36 @@
+#credit-note-header {
+  font-size: 13px;
+}
+
+#credit-note-header {
+  width: 100%;
+}
+
+#credit-note-header .option-row.hide {
+  display: none;
+}
+
+#credit-note-header td {
+  border: none;
+}
+
+#credit-note-header td:nth-child(2n + 1) {
+  font-weight: bold;
+}
+
+#credit-note-header #remarks {
+  padding: 5px;
+  width: 100%;
+  height: 80px;
+  font-family: inherit;
+  font-size: 13px;
+  box-sizing: border-box;
+}
+
+#credit-note-entry-not-found {
+  text-align: center;
+  font-size: 40px;
+  font-weight: bold;
+  line-height: 200px;
+  opacity: 0.3;
+}

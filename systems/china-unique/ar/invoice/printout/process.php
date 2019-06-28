@@ -8,8 +8,10 @@
   $maturityDate = $_POST["maturity_date"];
   $remarks = $_POST["remarks"];
   $status = $_POST["status"];
-  $stockOutNos = $_POST["stock_out_no"];
   $doNos = $_POST["do_no"];
+  $stockOutNos = $_POST["stock_out_no"];
+  $stockInNos = $_POST["stock_in_no"];
+  $settleRemarks = $_POST["settle_remarks"];
   $amounts = $_POST["amount"];
 
   $invoiceHeaders = array();
@@ -32,7 +34,7 @@
         remarks                                 AS `remarks`,
         status                                  AS `status`
       FROM
-        `out_inv_header`
+        `ar_inv_header`
       WHERE
         $headerWhereClause
     ");
@@ -46,9 +48,9 @@
         a.settle_remarks                        AS `settle_remarks`,
         a.amount                                AS `amount`
       FROM
-        `out_inv_model` AS a
+        `ar_inv_item` AS a
       LEFT JOIN
-        `out_inv_header` AS b
+        `ar_inv_header` AS b
       ON a.invoice_no=b.invoice_no
       WHERE
         $modelWhereClause
@@ -86,6 +88,7 @@
         "do_no"             => $doNos[$i],
         "stock_out_no"      => $stockOutNos[$i],
         "stock_in_no"       => $stockInNos[$i],
+        "settle_remarks"    => $settleRemarks[$i],
         "amount"            => $amounts[$i]
       ));
     }

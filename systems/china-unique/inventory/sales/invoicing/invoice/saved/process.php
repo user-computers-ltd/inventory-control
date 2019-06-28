@@ -14,10 +14,8 @@
     $printoutParams = join("&", array_map(function ($i) { return "id[]=$i"; }, $invoiceIds));
 
     if ($action === "delete") {
-      array_push($queries, "DELETE a FROM `out_inv_model` AS a LEFT JOIN `out_inv_header` AS b ON a.invoice_no=b.invoice_no WHERE $modelWhereClause");
-      array_push($queries, "DELETE FROM `out_inv_header` WHERE $headerWhereClause");
-    } else if ($action === "settle") {
-      array_push($queries, "UPDATE `out_inv_header` SET status=\"SETTLED\" WHERE $headerWhereClause");
+      array_push($queries, "DELETE a FROM `ar_inv_item` AS a LEFT JOIN `ar_inv_header` AS b ON a.invoice_no=b.invoice_no WHERE $modelWhereClause");
+      array_push($queries, "DELETE FROM `ar_inv_header` WHERE $headerWhereClause");
     } else if ($action === "print") {
       header("Location: " . SALES_INVOICE_PRINTOUT_URL . "?$printoutParams");
       exit(0);
@@ -49,14 +47,14 @@
       IFNULL(b.amount, 0)                       AS `amount`,
       IFNULL(b.amount, 0) * a.exchange_rate     AS `amount_base`
     FROM
-      `out_inv_header` AS a
+      `ar_inv_header` AS a
     LEFT JOIN
       (SELECT
         COUNT(*)                      AS `count`,
         invoice_no                    AS `invoice_no`,
         SUM(amount)                   AS `amount`
       FROM
-        `out_inv_model`
+        `ar_inv_item`
       WHERE
         do_no!=\"\" OR stock_out_no!=\"\" OR stock_in_no!=\"\"
       GROUP BY

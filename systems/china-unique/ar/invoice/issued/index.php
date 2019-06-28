@@ -18,7 +18,7 @@
     <?php include_once SYSTEM_PATH . "includes/components/menu/index.php"; ?>
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
-      <div class="headline"><?php echo OUT_INVOICE_VOIDED_TITLE; ?></div>
+      <div class="headline"><?php echo AR_INVOICE_ISSUED_TITLE; ?></div>
       <form>
         <table id="invoice-input" class="web-only">
           <tr>
@@ -37,8 +37,8 @@
           <button type="submit" name="action" value="print" class="web-only">Print</button>
           <button type="submit" name="action" value="delete" style="display: none;"></button>
           <button type="button" onclick="confirmDelete(event)" class="web-only">Delete</button>
-          <button type="submit" name="action" value="recover" style="display: none;"></button>
-          <button type="button" onclick="confirmRecover(event)" class="web-only">Recover</button>
+          <button type="submit" name="action" value="cancel" style="display: none;"></button>
+          <button type="button" onclick="confirmCancel(event)" class="web-only">Cancel</button>
           <table id="invoice-results">
             <colgroup>
               <col class="web-only" style="width: 30px">
@@ -47,6 +47,8 @@
               <col>
               <col>
               <col style="width: 80px">
+              <col style="width: 80px">
+              <col style="width: 70px">
               <col style="width: 70px">
             </colgroup>
             <thead>
@@ -58,12 +60,15 @@
                 <th>Invoice No.</th>
                 <th>Client</th>
                 <th class="number">Amount</th>
+                <th class="number">Outstanding</th>
                 <th>Maturity Date</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
               <?php
-                $totalAmountBase = 0;
+                $totalAmount = 0;
+                $totalOutstanding = 0;
 
                 for ($i = 0; $i < count($invoiceHeaders); $i++) {
                   $invoiceHeader = $invoiceHeaders[$i];
@@ -73,10 +78,12 @@
                   $invoiceNo = $invoiceHeader["invoice_no"];
                   $debtorName = $invoiceHeader["debtor_name"];
                   $currencyCode = $invoiceHeader["currency_code"];
-                  $amountBase = $invoiceHeader["amount_base"];
+                  $amount = $invoiceHeader["amount"];
+                  $outstanding = $invoiceHeader["outstanding"];
                   $maturityDate = $invoiceHeader["maturity_date"];
 
-                  $totalAmountBase += $amountBase;
+                  $totalAmount += $amount;
+                  $totalOutstanding += $outstanding;
 
                   echo "
                     <tr>
@@ -85,10 +92,12 @@
                       </td>
                       <td title=\"$date\">$date</td>
                       <td title=\"$count\" class=\"number\">$count</td>
-                      <td title=\"$invoiceNo\"><a class=\"link\" href=\"" . OUT_INVOICE_URL . "?id=$id\">$invoiceNo</a></td>
+                      <td title=\"$invoiceNo\"><a class=\"link\" href=\"" . AR_INVOICE_URL . "?id=$id\">$invoiceNo</a></td>
                       <td title=\"$debtorName\">$debtorName</td>
-                      <td title=\"$amountBase\" class=\"number\">" . number_format($amountBase, 2) . "</td>
+                      <td title=\"$amount\" class=\"number\">" . number_format($amount, 2) . "</td>
+                      <td title=\"$outstanding\" class=\"number\">" . number_format($outstanding, 2) . "</td>
                       <td title=\"$maturityDate\">$maturityDate</td>
+                      <td><a class=\"link\" href=\"" . AR_INVOICE_SETTLEMENT_URL . "?id=$id\">Settlement</a></td>
                     </tr>
                   ";
                 }
@@ -99,7 +108,9 @@
                 <th class="number"></th>
                 <th></th>
                 <th class="number">Total:</th>
-                <th class="number"><?php echo number_format($totalAmountBase, 2); ?></th>
+                <th class="number"><?php echo number_format($totalAmount, 2); ?></th>
+                <th class="number"><?php echo number_format($totalOutstanding, 2); ?></th>
+                <th></th>
                 <th></th>
               </tr>
             </tbody>
@@ -108,7 +119,7 @@
         <script>
           var invoiceFormElement = document.querySelector("#invoice-form");
           var deleteButtonElement = invoiceFormElement.querySelector("button[value=\"delete\"]");
-          var recoverButtonElement = invoiceFormElement.querySelector("button[value=\"recover\"]");
+          var cancelButtonElement = invoiceFormElement.querySelector("button[value=\"cancel\"]");
 
           function confirmDelete(event) {
             var checkedItems = invoiceFormElement.querySelectorAll("input[name=\"invoice_id[]\"]:checked");
@@ -130,7 +141,7 @@
             }
           }
 
-          function confirmRecover(event) {
+          function confirmCancel(event) {
             var checkedItems = invoiceFormElement.querySelectorAll("input[name=\"invoice_id[]\"]:checked");
 
             if (checkedItems.length > 0) {
@@ -142,9 +153,9 @@
 
               listElement += "</ul>";
 
-              showConfirmDialog("<b>Are you sure you want to recover the following?</b><br/><br/>" + listElement, function () {
-                recoverButtonElement.click();
-                setLoadingMessage("Recovering...")
+              showConfirmDialog("<b>Are you sure you want to cancel the following?</b><br/><br/>" + listElement, function () {
+                cancelButtonElement.click();
+                setLoadingMessage("Cancelling...")
                 toggleLoadingScreen(true);
               });
             }

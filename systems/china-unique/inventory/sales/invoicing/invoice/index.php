@@ -97,7 +97,7 @@
                 <th id="total-amount" class="number"></th>
                 <th></th>
                 <th></th>
-              <tr>
+              </tr>
             </tfoot>
             <tbody>
             </tbody>

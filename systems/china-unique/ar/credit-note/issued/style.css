@@ -1,0 +1,36 @@
+#credit-note-input td {
+  border: none;
+  font-size: 13px;
+}
+
+#credit-note-input input,
+#credit-note-input select {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#credit-note-results td {
+  min-width: 0px;
+  max-width: 0px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#credit-note-results .number {
+  text-align: right;
+}
+
+#credit-note-results input[type="checkbox"] {
+  margin: 0px;
+  height: 10px;
+}
+
+.credit-note-client-no-results {
+  margin: 100px 0px;
+  text-align: center;
+  font-size: 40px;
+  font-weight: bold;
+  line-height: 48px;
+  opacity: 0.3;
+}

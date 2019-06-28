@@ -18,7 +18,7 @@
     <?php include_once SYSTEM_PATH . "includes/components/menu/index.php"; ?>
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
-      <div class="headline"><?php echo AR_INVOICE_SETTLED_TITLE; ?></div>
+      <div class="headline"><?php echo AR_INVOICE_CANCELLED_TITLE; ?></div>
       <form>
         <table id="invoice-input" class="web-only">
           <tr>
@@ -35,6 +35,10 @@
       <?php if (count($invoiceHeaders) > 0) : ?>
         <form id="invoice-form" method="post">
           <button type="submit" name="action" value="print" class="web-only">Print</button>
+          <button type="submit" name="action" value="delete" style="display: none;"></button>
+          <button type="button" onclick="confirmDelete(event)" class="web-only">Delete</button>
+          <button type="submit" name="action" value="reissue" style="display: none;"></button>
+          <button type="button" onclick="confirmCancel(event)" class="web-only">Re-issue</button>
           <table id="invoice-results">
             <colgroup>
               <col class="web-only" style="width: 30px">
@@ -59,7 +63,7 @@
             </thead>
             <tbody>
               <?php
-                $totalAmount = 0;
+                $totalAmountBase = 0;
 
                 for ($i = 0; $i < count($invoiceHeaders); $i++) {
                   $invoiceHeader = $invoiceHeaders[$i];
@@ -68,10 +72,11 @@
                   $date = $invoiceHeader["date"];
                   $invoiceNo = $invoiceHeader["invoice_no"];
                   $debtorName = $invoiceHeader["debtor_name"];
-                  $amount = $invoiceHeader["amount"];
+                  $currencyCode = $invoiceHeader["currency_code"];
+                  $amountBase = $invoiceHeader["amount_base"];
                   $maturityDate = $invoiceHeader["maturity_date"];
 
-                  $totalAmount += $amount;
+                  $totalAmountBase += $amountBase;
 
                   echo "
                     <tr>
@@ -82,7 +87,7 @@
                       <td title=\"$count\" class=\"number\">$count</td>
                       <td title=\"$invoiceNo\"><a class=\"link\" href=\"" . AR_INVOICE_URL . "?id=$id\">$invoiceNo</a></td>
                       <td title=\"$debtorName\">$debtorName</td>
-                      <td title=\"$amount\" class=\"number\">" . number_format($amount, 2) . "</td>
+                      <td title=\"$amountBase\" class=\"number\">" . number_format($amountBase, 2) . "</td>
                       <td title=\"$maturityDate\">$maturityDate</td>
                     </tr>
                   ";
@@ -94,12 +99,57 @@
                 <th class="number"></th>
                 <th></th>
                 <th class="number">Total:</th>
-                <th class="number"><?php echo number_format($totalAmount, 2); ?></th>
+                <th class="number"><?php echo number_format($totalAmountBase, 2); ?></th>
                 <th></th>
               </tr>
             </tbody>
           </table>
         </form>
+        <script>
+          var invoiceFormElement = document.querySelector("#invoice-form");
+          var deleteButtonElement = invoiceFormElement.querySelector("button[value=\"delete\"]");
+          var reissueButtonElement = invoiceFormElement.querySelector("button[value=\"reissue\"]");
+
+          function confirmDelete(event) {
+            var checkedItems = invoiceFormElement.querySelectorAll("input[name=\"invoice_id[]\"]:checked");
+
+            if (checkedItems.length > 0) {
+              var listElement = "<ul>";
+
+              for (var i = 0; i < checkedItems.length; i++) {
+                listElement += "<li>" + checkedItems[i].dataset["invoice_no"] + "</li>";
+              }
+
+              listElement += "</ul>";
+
+              showConfirmDialog("<b>Are you sure you want to delete the following?</b><br/><br/>" + listElement, function () {
+                deleteButtonElement.click();
+                setLoadingMessage("Deleting...")
+                toggleLoadingScreen(true);
+              });
+            }
+          }
+
+          function confirmCancel(event) {
+            var checkedItems = invoiceFormElement.querySelectorAll("input[name=\"invoice_id[]\"]:checked");
+
+            if (checkedItems.length > 0) {
+              var listElement = "<ul>";
+
+              for (var i = 0; i < checkedItems.length; i++) {
+                listElement += "<li>" + checkedItems[i].dataset["invoice_no"] + "</li>";
+              }
+
+              listElement += "</ul>";
+
+              showConfirmDialog("<b>Are you sure you want to re-issue the following?</b><br/><br/>" + listElement, function () {
+                reissueButtonElement.click();
+                setLoadingMessage("Re-issuing...")
+                toggleLoadingScreen(true);
+              });
+            }
+          }
+        </script>
       <?php else : ?>
         <div class="invoice-client-no-results">No results</div>
       <?php endif ?>

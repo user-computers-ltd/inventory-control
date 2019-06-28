@@ -60,9 +60,9 @@
           GROUP_CONCAT(x.amount)                                  AS `invoice_amounts`,
           SUM(IF(x.settlement=\"FULL\",1, 0))                     AS `invoice_settlement`
         FROM
-          `out_inv_model` AS x
+          `ar_inv_item` AS x
         LEFT JOIN
-          `out_inv_header` AS y
+          `ar_inv_header` AS y
         ON x.invoice_no=y.invoice_no
         GROUP BY
           x.$columnName) AS $as
@@ -78,9 +78,9 @@
           SUM(x.amount)                       AS `invoice_sum`,
           SUM(IF(x.settlement=\"FULL\",1, 0)) AS `invoice_settlement`
         FROM
-          `out_inv_model` AS x
+          `ar_inv_item` AS x
         LEFT JOIN
-          `out_inv_header` AS y
+          `ar_inv_header` AS y
         ON x.invoice_no=y.invoice_no
         GROUP BY
           x.$columnName) AS $as

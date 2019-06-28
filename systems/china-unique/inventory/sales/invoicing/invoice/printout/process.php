@@ -31,7 +31,7 @@
         remarks                                 AS `remarks`,
         status                                  AS `status`
       FROM
-        `out_inv_header`
+        `ar_inv_header`
       WHERE
         $headerWhereClause
     ");
@@ -45,9 +45,9 @@
         a.settle_remarks                        AS `settle_remarks`,
         a.amount                                AS `amount`
       FROM
-        `out_inv_model` AS a
+        `ar_inv_item` AS a
       LEFT JOIN
-        `out_inv_header` AS b
+        `ar_inv_header` AS b
       ON a.invoice_no=b.invoice_no
       WHERE
         $modelWhereClause

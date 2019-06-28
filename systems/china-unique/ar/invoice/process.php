@@ -7,7 +7,7 @@
   $exchangeRate = $_POST["exchange_rate"];
   $maturityDate = $_POST["maturity_date"];
   $remarks = $_POST["remarks"];
-  $status = $_POST["status"];
+  $action = $_POST["action"];
   $doNos = $_POST["do_no"];
   $stockOutNos = $_POST["stock_out_no"];
   $stockInNos = $_POST["stock_in_no"];
@@ -22,7 +22,7 @@
     assigned($debtorCode) &&
     assigned($currencyCode) &&
     assigned($exchangeRate) &&
-    assigned($status) &&
+    assigned($action) &&
     assigned($doNos) &&
     assigned($stockOutNos) &&
     assigned($stockInNos) &&
@@ -30,51 +30,86 @@
     assigned($settlements) &&
     assigned($settleRemarkss)
   ) {
-    $queries = array();
+    $values = array();
 
-    /* If an id is given, remove the previous outbound invoice first. */
-    if (assigned($id)) {
-      array_push($queries, "DELETE a FROM `out_inv_model` AS a LEFT JOIN `out_inv_header` AS b ON a.invoice_no=b.invoice_no WHERE b.id=\"$id\"");
-      array_push($queries, "DELETE FROM `out_inv_header` WHERE id=\"$id\"");
+    for ($i = 0; $i < count($stockOutNos); $i++) {
+      $doNo = $doNos[$i];
+      $stockOutNo = $stockOutNos[$i];
+      $stockInNo = $stockInNos[$i];
+      $amount = $amounts[$i];
+      $settlement = $settlements[$i];
+      $settleRemarks = $settleRemarkss[$i];
+
+      array_push($values, "(\"$invoiceNo\", \"$i\", \"$doNo\", \"$stockOutNo\", \"$stockInNo\", \"$amount\", \"$settlement\", \"$settleRemarks\")");
     }
 
-    /* If the status is not delete, insert a new outbound invoice. */
-    if ($status !== "DELETED") {
+    $queries = array();
 
-      $values = array();
-
-      for ($i = 0; $i < count($stockOutNos); $i++) {
-        $doNo = $doNos[$i];
-        $stockOutNo = $stockOutNos[$i];
-        $stockInNo = $stockInNos[$i];
-        $amount = $amounts[$i];
-        $settlement = $settlements[$i];
-        $settleRemarks = $settleRemarkss[$i];
-
-        array_push($values, "(\"$invoiceNo\", \"$i\", \"$doNo\", \"$stockOutNo\", \"$stockInNo\", \"$amount\", \"$settlement\", \"$settleRemarks\")");
-      }
+    if ($action === "delete" && assigned($id)) {
+      array_push($queries, "DELETE a FROM `ar_settlement` AS a LEFT JOIN `ar_inv_header` AS b ON a.invoice_no=b.invoice_no WHERE b.id=\"$id\"");
+      array_push($queries, "DELETE a, c FROM `ar_credit_note` AS a LEFT JOIN `ar_inv_header` AS b ON a.invoice_no=b.invoice_no LEFT JOIN `ar_settlement` AS c ON a.credit_note_no=c.credit_note_no WHERE b.id=\"$id\"");
+      array_push($queries, "DELETE a FROM `ar_inv_item` AS a LEFT JOIN `ar_inv_header` AS b ON a.invoice_no=b.invoice_no WHERE b.id=\"$id\"");
+      array_push($queries, "DELETE FROM `ar_inv_header` WHERE id=\"$id\"");
+    } else if ($action === "cancel" && assigned($id)) {
+      array_push($queries, "DELETE a FROM `ar_settlement` AS a LEFT JOIN `ar_inv_header` AS b ON a.invoice_no=b.invoice_no WHERE b.id=\"$id\"");
+      array_push($queries, "DELETE a, c FROM `ar_credit_note` AS a LEFT JOIN `ar_inv_header` AS b ON a.invoice_no=b.invoice_no LEFT JOIN `ar_settlement` AS c ON a.credit_note_no=c.credit_note_no WHERE b.id=\"$id\"");
+      array_push($queries, "UPDATE `ar_inv_header` SET status=\"CANCELLED\" WHERE id=\"$id\"");
+    } else if ($action === "create") {
+      array_push($queries, "
+        INSERT INTO
+          `ar_inv_header`
+            (invoice_no, invoice_date, debtor_code, currency_code, exchange_rate, maturity_date, remarks, status)
+          VALUES
+            (\"$invoiceNo\", \"$invoiceDate\", \"$debtorCode\", \"$currencyCode\", \"$exchangeRate\", \"$maturityDate\", \"$remarks\", \"SAVED\")
+      ");
 
       if (count($values) > 0) {
         array_push($queries, "
           INSERT INTO
-            `out_inv_model`
+            `ar_inv_item`
               (invoice_no, invoice_index, do_no, stock_out_no, stock_in_no, amount, settlement, settle_remarks)
             VALUES
         " . join(", ", $values));
       }
+    } else if ($action === "update" && assigned($id)) {
+      $oldInvoice = query("SELECT * FROM `ar_inv_item` AS a LEFT JOIN `ar_inv_header` AS b ON a.invoice_no=b.invoice_no WHERE b.id=\"$id\"")[0];
+
+      if ($oldInvoice["debtor_code"] !== $debtorCode || $oldInvoice["currency_code"] !== $currencyCode) {
+        array_push($queries, "DELETE a FROM `ar_settlement` AS a LEFT JOIN `ar_inv_header` AS b ON a.invoice_no=b.invoice_no WHERE b.id=\"$id\"");
+        array_push($queries, "DELETE a, c FROM `ar_credit_note` AS a LEFT JOIN `ar_inv_header` AS b ON a.invoice_no=b.invoice_no LEFT JOIN `ar_settlement` AS c ON a.credit_note_no=c.credit_note_no WHERE b.id=\"$id\"");
+      }
 
       array_push($queries, "
-        INSERT INTO
-          `out_inv_header`
-            (invoice_no, invoice_date, debtor_code, currency_code, exchange_rate, maturity_date, remarks, status)
-          VALUES
-            (\"$invoiceNo\", \"$invoiceDate\", \"$debtorCode\", \"$currencyCode\", \"$exchangeRate\", \"$maturityDate\", \"$remarks\", \"$status\")
+        UPDATE
+          `ar_inv_header`
+        SET
+          invoice_no=\"$invoiceNo\",
+          invoice_date=\"$invoiceDate\",
+          debtor_code=\"$debtorCode\",
+          currency_code=\"$currencyCode\",
+          exchange_rate=\"$exchangeRate\",
+          maturity_date=\"$maturityDate\",
+          remarks=\"$remarks\",
+          status=\"SAVED\"
+        WHERE
+          id=\"$id\"
       ");
+
+      array_push($queries, "DELETE a FROM `ar_inv_item` AS a LEFT JOIN `ar_inv_header` AS b ON a.invoice_no=b.invoice_no WHERE b.id=\"$id\"");
+
+      if (count($values) > 0) {
+        array_push($queries, "
+          INSERT INTO
+            `ar_inv_item`
+              (invoice_no, invoice_index, do_no, stock_out_no, stock_in_no, amount, settlement, settle_remarks)
+            VALUES
+        " . join(", ", $values));
+      }
     }
 
     execute($queries);
 
-    header("Location: " . OUT_INVOICE_SAVED_URL);
+    header("Location: " . AR_INVOICE_ISSUED_URL);
   }
 
   $results = query("SELECT code, english_name AS name, credit_term FROM `debtor`");
@@ -91,7 +126,7 @@
 
   /* If an id is given, attempt to retrieve an existing outbound invoice. */
   if (assigned($id)) {
-    $headline = OUT_INVOICE_PRINTOUT_TITLE;
+    $headline = AR_INVOICE_PRINTOUT_TITLE;
 
     $invoiceHeader = query("
       SELECT
@@ -99,7 +134,7 @@
         DATE_FORMAT(invoice_date, \"%Y-%m-%d\")   AS `invoice_date`,
         DATE_FORMAT(maturity_date, \"%Y-%m-%d\")  AS `maturity_date`
       FROM
-        `out_inv_header`
+        `ar_inv_header`
       WHERE id=\"$id\"
     ")[0];
 
@@ -121,7 +156,7 @@
           settlement,
           IFNULL(settle_remarks, \"\") AS `settle_remarks`
         FROM
-          `out_inv_model`
+          `ar_inv_item`
         WHERE
           invoice_no=\"$invoiceNo\"
         ORDER BY
@@ -132,7 +167,7 @@
 
   /* Else, initialize values for a new outbound invoice. */
   else {
-    $headline = OUT_INVOICE_CREATE_TITLE;
+    $headline = AR_INVOICE_CREATE_TITLE;
     $invoiceNo = "INV" . date("YmdHis");
     $invoiceDate = date("Y-m-d");
     $debtorCode = "";

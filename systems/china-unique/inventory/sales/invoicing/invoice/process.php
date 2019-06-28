@@ -33,8 +33,8 @@
 
     /* If an id is given, remove the previous outbound invoice first. */
     if (assigned($id)) {
-      array_push($queries, "DELETE a FROM `out_inv_model` AS a LEFT JOIN `out_inv_header` AS b ON a.invoice_no=b.invoice_no WHERE b.id=\"$id\"");
-      array_push($queries, "DELETE FROM `out_inv_header` WHERE id=\"$id\"");
+      array_push($queries, "DELETE a FROM `ar_inv_item` AS a LEFT JOIN `ar_inv_header` AS b ON a.invoice_no=b.invoice_no WHERE b.id=\"$id\"");
+      array_push($queries, "DELETE FROM `ar_inv_header` WHERE id=\"$id\"");
     }
 
     /* If the status is not delete, insert a new outbound invoice. */
@@ -56,7 +56,7 @@
       if (count($values) > 0) {
         array_push($queries, "
           INSERT INTO
-            `out_inv_model`
+            `ar_inv_item`
               (invoice_no, invoice_index, do_no, stock_out_no, stock_in_no, amount, settlement, settle_remarks)
             VALUES
         " . join(", ", $values));
@@ -64,7 +64,7 @@
 
       array_push($queries, "
         INSERT INTO
-          `out_inv_header`
+          `ar_inv_header`
             (invoice_no, invoice_date, debtor_code, currency_code, exchange_rate, maturity_date, remarks, status)
           SELECT
             \"$invoiceNo\"                                        AS `invoice_no`,
@@ -117,9 +117,9 @@
         SUM(m.amount)                         AS `paid_amount`,
         SUM(IF(m.settlement=\"FULL\", 1, 0))  AS `settled`
       FROM
-        `out_inv_model` AS m
+        `ar_inv_item` AS m
       LEFT JOIN
-        `out_inv_header` AS h
+        `ar_inv_header` AS h
       ON
         m.invoice_no=h.invoice_no WHERE h.id!=\"$id\"
       GROUP BY
@@ -154,9 +154,9 @@
         SUM(m.amount)                       AS `paid_amount`,
         SUM(IF(m.settlement=\"FULL\",1, 0)) AS `settled`
       FROM
-        `out_inv_model` AS m
+        `ar_inv_item` AS m
       LEFT JOIN
-        `out_inv_header` AS h
+        `ar_inv_header` AS h
       ON
         m.invoice_no=h.invoice_no WHERE h.id!=\"$id\"
       GROUP BY
@@ -191,9 +191,9 @@
         SUM(m.amount)                       AS `paid_amount`,
         SUM(IF(m.settlement=\"FULL\",1, 0)) AS `settled`
       FROM
-        `out_inv_model` AS m
+        `ar_inv_item` AS m
       LEFT JOIN
-        `out_inv_header` AS h
+        `ar_inv_header` AS h
       ON
         m.invoice_no=h.invoice_no WHERE h.id!=\"$id\"
       GROUP BY
@@ -276,7 +276,7 @@
         *,
         DATE_FORMAT(invoice_date, '%Y-%m-%d') AS `invoice_date`
       FROM
-        `out_inv_header`
+        `ar_inv_header`
       WHERE id=\"$id\"
     ")[0];
 
@@ -297,7 +297,7 @@
           settlement,
           IFNULL(settle_remarks, \"\") AS `settle_remarks`
         FROM
-          `out_inv_model`
+          `ar_inv_item`
         WHERE
           invoice_no=\"$invoiceNo\"
         ORDER BY

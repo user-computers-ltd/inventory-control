@@ -103,10 +103,10 @@
   define("SALES_INVOICE_CREATE_TITLE", "(F7a) Create Sales Invoice");
   define("SALES_INVOICE_SAVED_TITLE", "(F7b) Saved Sales Invoices");
 
-  define("SALES_INVOICE_REPORT_TITLE", "(F8) Monthly Stock Out Report");
+  define("SALES_INVOICE_REPORT_TITLE", "(F8) Sales Invoice Report");
   define("SALES_INVOICE_REPORT_DATE_TITLE", "(F8a) Monthly Stock Out By Date");
   define("SALES_INVOICE_REPORT_CUSTOMER_TITLE", "(F8b) Monthly Stock Out By Client");
-  define("SALES_ISSUE_INVOICE_REPORT_TITLE", "(F8c) Issue Invoice Report");
+  define("SALES_ISSUE_INVOICE_REPORT_TITLE", "(F8c) Issue Invoice By Client");
 
   $SALES_MODULE = array(
     SALES_ENQUIRY_TITLE => array(
