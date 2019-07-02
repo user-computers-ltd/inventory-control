@@ -110,6 +110,20 @@
     return $locations[count($locations) - 2];
   }
 
+  function generateRedirectURL($url) {
+    if (count($_GET) > 0) {
+      $url = $url . (strpos($url, "?") !== false ? "&" : "?") . join("&", objectMap(function ($key, $value) {
+        if (is_array($value)) {
+          return join("&", array_map(function ($v) use ($key) { return $key . "[]=$v"; }, $value));
+        } else {
+          return "$key=$value";
+        }
+      }, $_GET));
+    }
+
+    return $url;
+  }
+
   function generateRedirectButton($url, $buttonLabel) {
     if (count($_POST) > 0) {
       if (count($_GET) > 0) {

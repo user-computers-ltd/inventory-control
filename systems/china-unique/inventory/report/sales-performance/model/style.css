@@ -1,0 +1,36 @@
+#client-input td {
+  border: none;
+  font-size: 13px;
+  padding: 0px 5px;
+}
+
+#client-input input,
+#client-input select {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#client-results th,
+#client-results td {
+  min-width: 0px;
+  max-width: 0px;
+}
+
+#client-results td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#client-results .number {
+  text-align: right;
+}
+
+.client-client-no-results {
+  margin: 100px 0px;
+  text-align: center;
+  font-size: 40px;
+  font-weight: bold;
+  line-height: 48px;
+  opacity: 0.3;
+}

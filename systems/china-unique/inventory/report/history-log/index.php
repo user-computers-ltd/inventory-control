@@ -52,10 +52,10 @@
   if ($hasFilter) {
     $transactions = query("
       SELECT
-        DATE_FORMAT(a.transaction_date, '%d-%m-%Y')                                         AS `date`,
+        DATE_FORMAT(a.transaction_date, \"%d-%m-%Y\")                                       AS `date`,
         a.header_no                                                                         AS `header_no`,
         a.client_code                                                                       AS `client_code`,
-        IFNULL(b.english_name, IFNULL(c.creditor_name_eng, ''))                                  AS `client_name`,
+        IFNULL(b.english_name, IFNULL(c.creditor_name_eng, \"\"))                           AS `client_name`,
         a.transaction_code                                                                  AS `transaction_code`,
         a.warehouse_code                                                                    AS `warehouse_code`,
         a.discount                                                                          AS `discount`,
@@ -90,9 +90,9 @@
   }
 
   $clients = query("
-    SELECT code, IFNULL(english_name, 'Unknown') AS `name` FROM `debtor`
+    SELECT code, IFNULL(english_name, \"Unknown\") AS `name` FROM `debtor`
     UNION
-    SELECT creditor_code AS `code`, IFNULL(creditor_name_eng, 'Unknown') AS `name` FROM `cu_ap`.`creditor`
+    SELECT creditor_code AS `code`, IFNULL(creditor_name_eng, \"Unknown\") AS `name` FROM `cu_ap`.`creditor`
     ORDER BY code ASC
   ");
 
@@ -124,7 +124,7 @@
   </head>
   <body>
     <?php include_once SYSTEM_PATH . "includes/components/menu/index.php"; ?>
-    <div class="page-wrapper">
+    <div class="page-wrapper landscape">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo REPORT_HISTORY_LOG_TITLE; ?></div>
       <form>
@@ -217,23 +217,25 @@
         <table id="trans-results" class="sortable">
           <colgroup>
             <col style="width: 70px">
-            <col style="width: 90px">
+            <col>
             <col style="width: 60px">
+            <col>
             <col style="width: 60px">
-            <col style="width: 120px">
-            <col style="width: 35px">
-            <col style="width: 50px">
-            <col style="width: 50px">
             <col>
-            <col>
-            <col>
-            <col style="width: 35px">
+            <col style="width: 45px">
+            <col style="width: 80px">
+            <col style="width: 80px">
+            <col style="width: 80px">
+            <col style="width: 80px">
+            <col style="width: 80px">
+            <col style="width: 45px">
           </colgroup>
           <thead>
             <tr></tr>
             <tr>
               <th>Date</th>
               <th>Order No.</th>
+              <th>Code</th>
               <th>Client</th>
               <th>Brand</th>
               <th>Model No.</th>
@@ -257,7 +259,8 @@
                 $transaction = $transactions[$i];
                 $date = $transaction["date"];
                 $headerNo = $transaction["header_no"];
-                $client = $transaction["client_name"];
+                $clientCode = $transaction["client_code"];
+                $clientName = $transaction["client_name"];
                 $exchangeRate = $transaction["exchange_rate"];
                 $discount = $transaction["discount"];
                 $tax = $transaction["tax"];
@@ -282,7 +285,8 @@
                   <tr>
                     <td title=\"$date\">$date</td>
                     <td title=\"$headerNo\">$headerNo</td>
-                    <td title=\"$client\">$client</td>
+                    <td title=\"$clientCode\">$clientCode</td>
+                    <td title=\"$clientName\">$clientName</td>
                     <td title=\"$brandName\">$brandName</td>
                     <td title=\"$modelNo\">$modelNo</td>
                     <td title=\"$transactionCode - $transactionName\">$transactionCode</td>
@@ -299,7 +303,7 @@
           </tbody>
           <tbody>
             <tr>
-              <th colspan="6" class="number">Total:</th>
+              <th colspan="7" class="number">Total:</th>
               <th class="number"><?php echo number_format($totalQtyIn); ?></th>
               <th class="number"><?php echo number_format($totalQtyOut); ?></th>
               <th></th>
@@ -312,7 +316,7 @@
       <?php elseif ($hasFilter) : ?>
         <div class="trans-client-no-results">No results</div>
       <?php else : ?>
-        <div class="trans-client-no-results">Please select a date range</div>
+        <div class="trans-client-no-results">Please select any filter</div>
       <?php endif ?>
     </div>
   </body>
