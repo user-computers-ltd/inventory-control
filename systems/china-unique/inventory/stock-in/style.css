@@ -1,3 +1,7 @@
+.hide {
+  display: none;
+}
+
 #discount + span {
   margin-left: -30px;
 }
@@ -9,10 +13,6 @@
 
 #stock-in-header {
   width: 100%;
-}
-
-#stock-in-header .hide {
-  display: none;
 }
 
 #stock-in-header td,
@@ -29,7 +29,8 @@
   text-align: right;
 }
 
-#stock-in-models .option-column.hide {
+#stock-in-models thead .trans-code-el.hide {
+  display: table-cell;
   width: 0px;
   white-space: nowrap;
 }
@@ -65,14 +66,6 @@
 
 #stock-in-models tfoot th {
   border-top: 1px solid;
-}
-
-#stock-in-models .discount-row {
-  display: none;
-}
-
-#stock-in-models .discount-row.show {
-  display: table-row;
 }
 
 #stock-in-models td > .remove {

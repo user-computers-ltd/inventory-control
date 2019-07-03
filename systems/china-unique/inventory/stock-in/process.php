@@ -10,8 +10,9 @@
   $netAmount = isset($_POST["net_amount"]) ? $_POST["net_amount"] : 0;
   $discount = isset($_POST["discount"]) ? $_POST["discount"] : 0;
   $tax = $_POST["tax"];
+  $returnVoucherNo = $_POST["return_voucher_no"];
   $remarks = $_POST["remarks"];
-  $status = $_POST["status"];
+  $action = $_POST["action"];
   $brandCodes = $_POST["brand_code"];
   $modelNos = $_POST["model_no"];
   $prices = isset($_POST["price"]) ? $_POST["price"] : array();
@@ -25,42 +26,30 @@
     assigned($warehouseCode) &&
     assigned($creditorCode) &&
     assigned($tax) &&
-    assigned($status) &&
+    assigned($action) &&
     assigned($brandCodes) &&
     assigned($modelNos) &&
     assigned($qtys)
   ) {
-    $queries = array();
+    $values = array();
 
-    /* If an id is given, remove the previous stock in voucher first. */
-    if (assigned($id)) {
-      array_push($queries, "DELETE a FROM `stock_in_model` AS a LEFT JOIN `stock_in_header` AS b ON a.stock_in_no=b.stock_in_no WHERE b.id=\"$id\"");
-      array_push($queries, "DELETE FROM `stock_in_header` WHERE id=\"$id\"");
-    }
+    for ($i = 0; $i < count($brandCodes); $i++) {
+      $brandCode = $brandCodes[$i];
+      $modelNo = $modelNos[$i];
+      $price = isset($prices[$i]) ? $prices[$i] : 0;
+      $qty = $qtys[$i];
 
-    /* If the status is not delete, insert a new stock in voucher. */
-    if ($status !== "DELETED") {
-
-      $values = array();
-
-      for ($i = 0; $i < count($brandCodes); $i++) {
-        $brandCode = $brandCodes[$i];
-        $modelNo = $modelNos[$i];
-        $price = isset($prices[$i]) ? $prices[$i] : 0;
-        $qty = $qtys[$i];
-
+      if ($qty > 0) {
         array_push($values, "(\"$stockInNo\", \"$i\", \"$brandCode\", \"$modelNo\", \"$price\", \"$qty\")");
       }
+    }
 
-      if (count($values) > 0) {
-        array_push($queries, "
-          INSERT INTO
-            `stock_in_model`
-              (stock_in_no, stock_in_index, brand_code, model_no, price, qty)
-            VALUES
-        " . join(", ", $values));
-      }
+    $queries = array();
 
+    if ($action === "delete" && assigned($id)) {
+      array_push($queries, "DELETE a FROM `stock_in_model` AS a LEFT JOIN `stock_in_header` AS b ON a.stock_in_no=b.stock_in_no WHERE b.id=\"$id\"");
+      array_push($queries, "DELETE FROM `stock_in_header` WHERE id=\"$id\"");
+    } else if ($action === "create") {
       array_push($queries, "
         INSERT INTO
           `stock_in_header`
@@ -75,6 +64,7 @@
               net_amount,
               discount,
               tax,
+              return_voucher_no,
               remarks,
               status
             )
@@ -90,16 +80,61 @@
               \"$netAmount\",
               \"$discount\",
               \"$tax\",
+              \"$returnVoucherNo\",
               \"$remarks\",
-              \"$status\"
+              \"SAVED\"
             )
       ");
 
-      execute($queries);
-
-      if ($status === "POSTED") {
-        execute(onPostStockInVoucher($stockInNo));
+      if (count($values) > 0) {
+        array_push($queries, "
+          INSERT INTO
+            `stock_in_model`
+              (stock_in_no, stock_in_index, brand_code, model_no, price, qty)
+            VALUES
+        " . join(", ", $values));
       }
+    } else if ($action === "update" || $action === "post" && assigned($id)) {
+      array_push($queries, "
+        UPDATE
+          `stock_in_header`
+        SET
+          stock_in_no=\"$stockInNo\",
+          stock_in_date=\"$stockInDate\",
+          transaction_code=\"$transactionCode\",
+          warehouse_code=\"$warehouseCode\",
+          creditor_code=\"$creditorCode\",
+          currency_code=\"$currencyCode\",
+          exchange_rate=\"$exchangeRate\",
+          net_amount=\"$netAmount\",
+          discount=\"$discount\",
+          tax=\"$tax\",
+          return_voucher_no=\"$returnVoucherNo\",
+          remarks=\"$remarks\",
+          status=\"SAVED\"
+        WHERE
+          id=\"$id\"
+      ");
+
+      array_push($queries, "DELETE a FROM `stock_in_model` AS a LEFT JOIN `stock_in_header` AS b ON a.stock_in_no=b.stock_in_no WHERE b.id=\"$id\"");
+
+      if (count($values) > 0) {
+        array_push($queries, "
+          INSERT INTO
+            `stock_in_model`
+              (stock_in_no, stock_in_index, brand_code, model_no, price, qty)
+            VALUES
+        " . join(", ", $values));
+      }
+    }
+
+    execute($queries);
+
+    if ($action === "post" && assigned($id) && assigned($stockInNo)) {
+      $queries = array("UPDATE `stock_in_header` SET status=\"POSTED\" WHERE id=\"$id\"");
+      concat($queries, onPostStockInVoucher($stockInNo));
+
+      execute($queries);
     }
 
     header("Location: " . STOCK_IN_SAVED_URL);
@@ -155,6 +190,62 @@
     return strpos($code, "R") === 0 && $code != "R2";
   }, ARRAY_FILTER_USE_KEY);
 
+  $voucherResults = query("
+    SELECT
+      b.debtor_code AS `debtor_code`,
+      b.do_no       AS `voucher_no`,
+      a.brand_code  AS `brand_code`,
+      a.model_no    AS `model_no`,
+      a.qty         AS `qty`,
+      a.price       AS `price`,
+      b.discount    AS `discount`
+    FROM
+      `sdo_model` AS a
+    LEFT JOIN
+      `sdo_header` AS b
+    ON a.do_no=b.do_no
+    WHERE
+      b.status=\"POSTED\"
+    UNION
+    SELECT
+      b.debtor_code   AS `debtor_code`,
+      b.stock_out_no  AS `voucher_no`,
+      a.brand_code    AS `brand_code`,
+      a.model_no      AS `model_no`,
+      a.qty           AS `qty`,
+      a.price         AS `price`,
+      b.discount      AS `discount`
+    FROM
+      `stock_out_model` AS a
+    LEFT JOIN
+      `stock_out_header` AS b
+    ON a.stock_out_no=b.stock_out_no
+    WHERE
+      b.transaction_code=\"S1\" AND
+      b.status=\"POSTED\"
+  ");
+
+  $R3Vouchers = array();
+
+  foreach ($voucherResults as $voucherResult) {
+    $dCode = $voucherResult["debtor_code"];
+    $vNo = $voucherResult["voucher_no"];
+
+    $pointer = &$R3Vouchers;
+
+    if (!isset($pointer[$dCode])) {
+      $pointer[$dCode] = array();
+    }
+    $pointer = &$pointer[$dCode];
+
+    if (!isset($pointer[$vNo])) {
+      $pointer[$vNo] = array();
+    }
+    $pointer = &$pointer[$vNo];
+
+    array_push($pointer, $voucherResult);
+  }
+
   /* If an id is given, attempt to retrieve an existing stock in voucher. */
   if (assigned($id)) {
     $headline = STOCK_IN_PRINTOUT_TITLE;
@@ -179,6 +270,7 @@
       $netAmount = $stockInHeader["net_amount"];
       $discount = $stockInHeader["discount"];
       $tax = $stockInHeader["tax"];
+      $returnVoucherNo = $stockInHeader["return_voucher_no"];
       $remarks = $stockInHeader["remarks"];
       $status = $stockInHeader["status"];
       $stockInModels = query("
@@ -210,6 +302,7 @@
     $netAmount = 0;
     $discount = 0;
     $tax = COMPANY_TAX;
+    $returnVoucherNo = "";
     $status = "DRAFT";
     $stockInModels = array();
   }

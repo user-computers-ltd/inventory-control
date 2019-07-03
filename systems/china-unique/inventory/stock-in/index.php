@@ -55,9 +55,9 @@
               </td>
             </tr>
             <tr>
-              <td class="r7-cell">Client:</td>
-              <td class="r7-cell">
-                <select id="creditor-code" class="option-field" name="creditor_code" required <?php echo $useDebtor ? "disabled hidden" : ""; ?>>
+              <td class="trans-code-el R1-el R3-el R7-el R8-el">Client:</td>
+              <td class="trans-code-el R1-el R3-el R7-el R8-el">
+                <select id="creditor-code" class="trans-code-el R1-el R7-el" name="creditor_code" onchange="onCreditorCodeChange()" required>
                   <?php
                     foreach ($creditors as $creditor) {
                       $code = $creditor["code"];
@@ -67,7 +67,7 @@
                     }
                   ?>
                 </select>
-                <select id="debtor-code" class="option-field" name="creditor_code" required <?php echo $useDebtor ? "" : "disabled hidden"; ?>>
+                <select id="debtor-code" class="trans-code-el R3-el R8-el hide" name="creditor_code" onchange="onCreditorCodeChange()" required>
                   <?php
                     foreach ($debtors as $debtor) {
                       $code = $debtor["code"];
@@ -78,9 +78,15 @@
                   ?>
                 </select>
               </td>
-              <td class="misc-cell">Currency:</td>
-              <td class="misc-cell">
-                <select id="currency-code" class="option-field" name="currency_code" onchange="onCurrencyCodeChange()" required>
+              <td class="trans-code-el R3-el hide">Return Voucher No.:</td>
+              <td class="trans-code-el R3-el hide">
+                <select id="return-voucher-no" class="trans-code-el R3-el" name="return_voucher_no" onchange="onVoucherNoChange()" required>
+                  <?php echo "<option value=\"$returnVoucherNo\" selected>$returnVoucherNo</option>"; ?>
+                </select>
+              </td>
+              <td class="trans-code-el R1-el">Currency:</td>
+              <td class="trans-code-el R1-el">
+                <select id="currency-code" class="trans-code-el R1-el" name="currency_code" onchange="onCurrencyCodeChange()" required>
                   <?php
                     foreach ($currencies as $code => $rate) {
                       $selected = $currencyCode == $code ? "selected" : "";
@@ -90,52 +96,52 @@
                 </select>
                 <input
                   id="exchange-rate"
-                  class="option-field"
+                  class="trans-code-el R1-el"
                   name="exchange_rate"
                   type="number"
                   step="0.00000001"
                   min="0.00000001"
                   value="<?php echo $exchangeRate; ?>"
-                  onchange="onExchangeRateChange()"
+                  onchange="render()"
                   required
                   <?php echo $currencyCode === COMPANY_CURRENCY ? "readonly" : ""; ?>
                 />
               </td>
             </tr>
             <tr>
-              <td class="misc-cell">Discount:</td>
-              <td class="misc-cell">
+              <td class="trans-code-el R1-el">Discount:</td>
+              <td class="trans-code-el R1-el">
                 <input
                   id="discount"
-                  class="option-field"
+                  class="trans-code-el R1-el"
                   name="discount"
                   type="number"
                   step="0.01"
                   min="0"
                   max="100"
                   value="<?php echo $discount; ?>"
-                  onchange="onDiscountChange()"
+                  onchange="render()"
                   required
                 /><span>%</span>
                 <input id="tax" name="tax" type="number" value="<?php echo $tax; ?>" hidden required />
               </td>
-              <td class="misc-cell">Net Amount:</td>
-              <td class="misc-cell">
+              <td class="trans-code-el R1-el">Net Amount:</td>
+              <td class="trans-code-el R1-el">
                 <input
                   id="net-amount"
-                  class="option-field"
+                  class="trans-code-el R1-el"
                   name="net_amount"
                   type="number"
                   min="0"
                   step="0.01"
                   value="<?php echo $netAmount; ?>"
-                  onchange="onNetAmountChange()"
+                  onchange="render()"
                   required
                 />
               </td>
             </tr>
             <tr>
-              <td colspan="2" class="misc-cell">
+              <td colspan="2" class="trans-code-el R1-el">
                 <input
                   id="normal-price"
                   name="price_standard"
@@ -171,19 +177,19 @@
                 <th>Model no.</th>
                 <th>Brand code</th>
                 <th class="number">Quantity</th>
-                <th class="option-column number">Price</th>
-                <th class="option-column number">Subtotal</th>
-                <th></th>
+                <th class="trans-code-el R1-el R3-el number">Price</th>
+                <th class="trans-code-el R1-el R3-el number">Subtotal</th>
+                <th class="trans-code-el R1-el R6-el R7-el R8-el R9-el"></th>
               </tr>
             </thead>
             <tfoot>
-              <tr class="discount-row">
+              <tr class="trans-code-el R1-el discount-row hide">
                 <td colspan="3"></td>
                 <th></th>
                 <th id="sub-total-amount" class="number"></th>
                 <td></td>
               </tr>
-              <tr class="discount-row">
+              <tr class="trans-code-el R1-el discount-row hide">
                 <td colspan="3"></td>
                 <td id="discount-percentage" class="number"></td>
                 <td id="discount-amount" class="number"></td>
@@ -201,8 +207,8 @@
                 <td></td>
                 <td></td>
                 <td></td>
-                <th class="number">Variance:</th>
-                <th id="variance" class="number"></th>
+                <th class="trans-code-el R1-el number">Variance:</th>
+                <th id="variance" class="trans-code-el R1-el number"></th>
                 <td></td>
               </tr>
             </tfoot>
@@ -215,13 +221,13 @@
               <td><textarea id="remarks" name="remarks"><?php echo $remarks; ?></textarea></td>
             </tr>
           </table>
-          <?php if ($status == "DRAFT" || $status == "SAVED") : ?>
-            <button name="status" type="submit" value="SAVED">Save</button>
+          <?php if ($status === "DRAFT" || $status === "SAVED") : ?>
+            <button name="action" type="submit" value="<?php echo $status === "DRAFT" ? "create" : "update"; ?>">Save</button>
           <?php endif ?>
           <button name="status" type="submit" value="<?php echo $status; ?>" formaction="<?php echo STOCK_IN_PRINTOUT_URL; ?>">Print</button>
-          <?php if ($status == "SAVED") : ?>
-            <button name="status" type="submit" value="POSTED">Post</button>
-            <button name="status" type="submit" value="DELETED">Delete</button>
+          <?php if ($status === "SAVED") : ?>
+            <button name="action" type="submit" value="post">Post</button>
+            <button name="action" type="submit" value="delete">Delete</button>
           <?php endif ?>
         </form>
         <datalist id="model-list">
@@ -236,7 +242,25 @@
             }
           ?>
         </datalist>
+        <?php
+          foreach ($R3Vouchers as $dCode => $dVouchers) {
+            foreach ($dVouchers as $vNo => $voucher) {
+              echo "<datalist id=\"r3-voucher-list-$dCode-$vNo\">";
+              foreach ($voucher as $model) {
+                echo "<option value=\"" . $model["model_no"]
+                 . "\" data-model_no=\"" . $model["model_no"]
+                 . "\" data-brand_code=\"" . $model["brand_code"]
+                 . "\" data-normal_price=\"" . $model["price"]
+                 . "\" data-special_price=\"" . $model["price"]
+                 . "\" data-max_qty=\"" . $model["qty"]
+                 . "\">" . $model["model_no"] . "</option>";
+              }
+              echo "</datalist>";
+            }
+          }
+        ?>
         <script>
+          var R3Vouchers = <?php echo json_encode($R3Vouchers); ?>;
           var stockInModels = <?php echo json_encode($stockInModels); ?>;
           var currencies = <?php echo json_encode($currencies); ?>;
           var brands = <?php echo json_encode($brands); ?>;
@@ -251,6 +275,7 @@
           var debtorCodeElement = document.querySelector("#debtor-code");
           var currencyCodeElement = document.querySelector("#currency-code");
           var exchangeRateElement = document.querySelector("#exchange-rate");
+          var returnVoucherNoElement = document.querySelector("#return-voucher-no");
           var tableBodyElement = document.querySelector("#stock-in-models tbody");
           var discountRowElements = document.querySelectorAll(".discount-row");
           var subTotalAmountElement = document.querySelector("#sub-total-amount");
@@ -262,12 +287,26 @@
           var modelListElement = document.querySelector("#model-list");
 
           function getModels(modelNo, brandCode) {
-            var brandCodeSearch = brandCode ? "[data-brand_code=\"" + brandCode + "\"]" : "";
-            var matchedModelElements = modelListElement.querySelectorAll("option[value=\"" + modelNo + "\"]" + brandCodeSearch);
+            var transactionCode = transactionCodeElement.value;
+
+            var listElement = modelListElement;
+
+            if (transactionCode === "R3") {
+              var debtorCode = debtorCodeElement.value;
+              var voucherNo = returnVoucherNoElement.value;
+
+              listElement = document.querySelector("#r3-voucher-list-" + debtorCode + "-" + voucherNo);
+            }
+
             var models = [];
 
-            for (var i = 0; i < matchedModelElements.length; i++) {
-              models.push(matchedModelElements[i].dataset);
+            if (listElement) {
+              var brandCodeSearch = brandCode ? "[data-brand_code=\"" + brandCode + "\"]" : "";
+              var matchedModelElements = listElement.querySelectorAll("option[value=\"" + modelNo + "\"]" + brandCodeSearch);
+
+              for (var i = 0; i < matchedModelElements.length; i++) {
+                models.push(matchedModelElements[i].dataset);
+              }
             }
 
             return models;
@@ -279,11 +318,19 @@
             tableBodyElement.innerHTML = "";
 
             var transactionCode = transactionCodeElement.value;
-            var miscellaneous = transactionCode !== "R1" && transactionCode !== "R3";
             var netAmount = netAmountElement.value;
             var discount = discountElement.value;
             var totalQty = 0;
             var totalAmount = 0;
+
+            var listElement = "model-list";
+
+            if (transactionCode === "R3") {
+              var debtorCode = debtorCodeElement.value;
+              var voucherNo = returnVoucherNoElement.value;
+
+              listElement = "r3-voucher-list-" + debtorCode + "-" + voucherNo;
+            }
 
             for (var i = 0; i < stockInModels.length; i++) {
               var stockInModel = stockInModels[i];
@@ -297,7 +344,7 @@
                     + "class=\"model-no\" "
                     + "type=\"text\" "
                     + "name=\"model_no[]\" "
-                    + "list=\"model-list\" "
+                    + "list=\"" + listElement + "\" "
                     + "value=\"" + stockInModel["model_no"] + "\" "
                     + "onfocus=\"onFieldFocused(" + i + ", 'model_no[]')\" "
                     + "onblur=\"onModelNoChange(event, " + i + ")\" "
@@ -313,7 +360,7 @@
                     + "onchange=\"onBrandCodeChange(event, " + i + ")\" "
                     + "onfocus=\"onFieldFocused(" + i + ", 'brand_code[]')\" "
                     + "onblur=\"onFieldBlurred()\" "
-                    + "required"
+                    + "required "
                   + ">";
 
               for (var j = 0; j < brands.length; j++) {
@@ -334,6 +381,7 @@
                     + "class=\"qty number\" "
                     + "type=\"number\" "
                     + "min=\"0\" "
+                    + (stockInModel["max_qty"] ? "max=\"" + stockInModel["max_qty"] + "\" " : "")
                     + "name=\"qty[]\" "
                     + "value=\"" + stockInModel["qty"] + "\" "
                     + "onchange=\"onQuantityChange(event, " + i + ")\" "
@@ -345,7 +393,7 @@
                 + "</td>"
                 + "<td>"
                   + "<input "
-                    + "class=\"price option-field number\" "
+                    + "class=\"price trans-code-el R1-el number\" "
                     + "type=\"number\" "
                     + "step=\"0.000001\" "
                     + "min=\"0\" "
@@ -356,12 +404,14 @@
                     + "onblur=\"onFieldBlurred()\" "
                     + "onkeydown=\"onPriceKeyDown(event, " + i + ")\" "
                     + "required "
-                    + (miscellaneous ? "disabled" : "")
+                    + (transactionCode === "R3" ? "readonly" : "")
                   + "/>"
                 + "</td>"
                 + "<td class=\"total-amount number\">" + stockInModel["total_amount"].toFixed(2) + "</td>"
-                + "<td><div class=\"remove\" onclick=\"removeStockInModel(" + i + ")\">×</div></td>"
-                + "</tr>";
+                + "<td>"
+                  + "<div class=\"remove\" onclick=\"removeStockInModel(" + i + ")\">×</div>"
+                + "</td>"
+              + "</tr>";
 
               newRowElement.innerHTML = rowInnerHTML;
 
@@ -382,7 +432,7 @@
             }
 
             for (var k = 0; k < discountRowElements.length; k++) {
-              toggleClass(discountRowElements[k], "show", stockInModels.length > 0 && discount > 0);
+              toggleClass(discountRowElements[k], "hide", stockInModels.length === 0 || parseFloat(discount) === 0);
             }
 
             subTotalAmountElement.innerHTML = totalAmount.toFixed(2);
@@ -414,6 +464,10 @@
             stockInModel["total_amount"] = (stockInModel["qty"] || 0) * stockInModel["price"];
             stockInModel["qty_on_hand"] = parseFloat(model["qty_on_hand"]) || 0;
             stockInModel["qty_on_order"] = parseFloat(model["qty_on_order"]) || 0;
+
+            if (model["max_qty"]) {
+              stockInModel["max_qty"] = parseFloat(model["max_qty"]);
+            }
           }
 
           function updateQuantity (index, qty = 0) {
@@ -459,36 +513,56 @@
           }
 
           function onTransactionCodeChange() {
-            var miscCells = document.querySelectorAll(".misc-cell");
-            var r7Cells = document.querySelectorAll(".r7-cell");
-            var optionFields = document.querySelectorAll(".option-field");
-            var optionColumns = document.querySelectorAll(".option-column");
+            var allTransCodeElements = document.querySelectorAll(".trans-code-el");
+
+            for (var i = 0; i < allTransCodeElements.length; i++) {
+              toggleClass(allTransCodeElements[i], "hide", true);
+              allTransCodeElements[i].disabled = true;
+            }
+
             var transactionCode = transactionCodeElement.value;
-            var miscellaneous = transactionCode !== "R1" && transactionCode !== "R3";
+            var selectedTransCodeElements = document.querySelectorAll("." + transactionCode + "-el");
 
-            for (var i = 0; i < miscCells.length; i++) {
-              toggleClass(miscCells[i], "hide", miscellaneous);
+            for (var i = 0; i < selectedTransCodeElements.length; i++) {
+              toggleClass(selectedTransCodeElements[i], "hide", false);
+              selectedTransCodeElements[i].disabled = false;
             }
 
-            for (var i = 0; i < r7Cells.length; i++) {
-              toggleClass(r7Cells[i], "hide", miscellaneous && transactionCode !== "R7");
+            if (transactionCode === "R3") {
+              onCreditorCodeChange();
             }
 
-            for (var i = 0; i < optionFields.length; i++) {
-              optionFields[i].disabled = miscellaneous;
-            }
-
-            for (var i = 0; i < optionColumns.length; i++) {
-              toggleClass(optionColumns[i], "hide", miscellaneous);
-            }
-
-            creditorCodeElement.disabled = transactionCode === "R3";
-            creditorCodeElement.hidden = transactionCode === "R3";
-            debtorCodeElement.disabled = transactionCode === "R1" || transactionCode === "R7";
-            debtorCodeElement.hidden = transactionCode === "R1" || transactionCode === "R7";
+            render();
           }
 
-          function onNetAmountChange() {
+          function onCreditorCodeChange() {
+            var transactionCode = transactionCodeElement.value;
+
+            if (transactionCode === "R3") {
+              var debtorCode = debtorCodeElement.value;
+              var vouchers = Object.keys(R3Vouchers[debtorCode] || {});
+              var options = "";
+
+              for (var i = 0; i < vouchers.length; i++) {
+                options += "<option value=\"" + vouchers[i] + "\">" + vouchers[i] + "</option>";
+              }
+
+              returnVoucherNoElement.innerHTML = options;
+            }
+
+            if (transactionCode === "R3") {
+              onVoucherNoChange();
+            }
+          }
+
+          function onVoucherNoChange() {
+            var debtorCode = debtorCodeElement.value;
+            var voucherNo = returnVoucherNoElement.value;
+
+            var vouchers = R3Vouchers[debtorCode] && R3Vouchers[debtorCode][voucherNo];
+
+            stockInModels = [];
+
             render();
           }
 
@@ -501,12 +575,6 @@
             } else {
               exchangeRateElement.removeAttribute("readonly");
             }
-          }
-
-          function onExchangeRateChange() {
-          }
-
-          function onDiscountChange() {
           }
 
           function onPriceStandardChange() {
@@ -611,9 +679,26 @@
               updatePrice(i, price);
             }
 
-            render();
+            var initialStockInModels = stockInModels;
 
+            var returnVoucherNo = returnVoucherNoElement.value;
             onTransactionCodeChange();
+
+            returnVoucherNoElement.value = returnVoucherNo;
+
+            stockInModels = initialStockInModels;
+
+            for (var i = 0; i < stockInModels.length; i++) {
+              var stockInModel = stockInModels[i];
+              var brandCode = stockInModel["brand_code"];
+              var modelNo = stockInModel["model_no"];
+              var price = stockInModel["price"];
+
+              updateModel(i, getModels(modelNo, brandCode)[0]);
+              updatePrice(i, price);
+            }
+
+            render();
           });
         </script>
       <?php else : ?>
