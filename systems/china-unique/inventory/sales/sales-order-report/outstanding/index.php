@@ -22,7 +22,7 @@
       a.brand_code                                                          AS `brand_code`,
       a.model_no                                                            AS `model_no`,
       a.so_no                                                               AS `so_no`,
-      a.id                                                                  AS `so_id`,
+      b.id                                                                  AS `so_id`,
       a.qty                                                                 AS `qty`,
       a.qty_outstanding                                                     AS `qty_outstanding`,
       a.qty_outstanding * a.price * (100 - b.discount) / 100                AS `amt_outstanding`,
