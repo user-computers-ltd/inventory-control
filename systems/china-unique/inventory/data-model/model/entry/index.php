@@ -62,7 +62,7 @@
                 <td><textarea name="description"><?php echo $description; ?></textarea></td>
               </tr>
               <tr>
-                <td>Normal Cost (正價):</td>
+                <td>Cost Price List (正價):</td>
                 <td><input type="number" name="cost_pri" step="0.00000001" min="0" value="<?php echo $costPri; ?>" required /></td>
                 <td>
                   <select name="cost_pri_currency_code" required>
@@ -74,10 +74,13 @@
                     ?>
                   </select>
                 </td>
+                <td>
+                  <input type="number" name="cost_pri_original" step="0.00000001" min="0" value="<?php echo $costPriOriginal; ?>" required />
+                </td>
               </tr>
             </tr>
             <tr>
-              <td>Special Cost (特價):</td>
+              <td>Cost Price Special (特價):</td>
               <td><input type="number" name="cost_sec" step="0.00000001" min="0" value="<?php echo $costSec; ?>" required /></td>
               <td>
                 <select name="cost_sec_currency_code" required>
@@ -89,27 +92,28 @@
                   ?>
                 </select>
               </td>
+              <td>
+                <input type="number" name="cost_sec_original" step="0.00000001" min="0" value="<?php echo $costSecOriginal; ?>" required />
+              </td>
             </tr>
             <tr>
-              <td>Normal Price (正價):</td>
+              <td>Sales Price List (正價):</td>
               <td><input type="number" name="retail_normal" step="0.00000001" min="0" value="<?php echo $retailNormal; ?>" required /></td>
             </tr>
             <tr>
-              <td>Special Price (特價):</td>
+              <td>Sales Price Special (特價):</td>
               <td><input type="number" name="retail_special" step="0.00000001" min="0" value="<?php echo $retailSpecial; ?>" required /></td>
             </tr>
-            <tr>
-              <td>End User Price (廠價):</td>
-              <td><input type="number" name="wholesale_special" step="0.00000001" min="0" value="<?php echo $wholesaleSpecial; ?>" required /></td>
-            </tr>
-            <tr>
-              <td>Wholesale Price (批發價):</td>
-              <td><input type="number" name="wholesale_normal" step="0.00000001" min="0" value="<?php echo $wholesaleNormal; ?>" required /></td>
-            </tr>
-            <tr>
-              <td>Average Cost:</td>
-              <td><input type="number" name="cost_average" step="0.00000001" min="0" value="<?php echo $averageCost; ?>" required /></td>
-            </tr>
+            <?php if ($editMode) : ?>
+              <tr>
+                <td>Sales Price End User (廠價):</td>
+                <td><input type="number" name="wholesale_special" step="0.00000001" min="0" value="<?php echo $wholesaleSpecial; ?>" required /></td>
+              </tr>
+              <tr>
+                <td>Average Cost:</td>
+                <td><input type="number" name="cost_average" step="0.00000001" min="0" value="<?php echo $averageCost; ?>" required /></td>
+              </tr>
+            <?php endif ?>
           </table>
           <button type="submit"><?php echo $editMode ? "Edit" : "Create"; ?></button>
         </form>

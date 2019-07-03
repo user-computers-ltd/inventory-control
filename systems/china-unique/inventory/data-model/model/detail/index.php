@@ -41,36 +41,32 @@
             <td class="number multi-line"><?php echo $model["description"]; ?></td>
           </tr>
           <tr>
-            <th>Normal Cost (正價):</th>
+            <th>Cost Price List (正價):</th>
             <td class="number"><?php echo $model["cost_pri"]; ?></td>
-            <?php if ($model["cost_pri_currency_code"] != COMPANY_CURRENCY) : ?>
+            <?php if ($model["cost_pri_currency_code"] !== COMPANY_CURRENCY) : ?>
               <th><?php echo $InBaseCurrency; ?>:</th>
               <td class="number"><?php echo number_format($model["cost_pri_base"], 6); ?></td>
             <?php endif ?>
           </tr>
           <tr>
-            <th>Special Cost (特價):</th>
+            <th>Cost Price Special (特價):</th>
             <td class="number"><?php echo $model["cost_sec"]; ?></td>
-            <?php if ($model["cost_sec_currency_code"] != COMPANY_CURRENCY) : ?>
+            <?php if ($model["cost_sec_currency_code"] !== COMPANY_CURRENCY) : ?>
               <th><?php echo $InBaseCurrency; ?>:</th>
               <td class="number"><?php echo number_format($model["cost_sec_base"], 6); ?></td>
             <?php endif ?>
           </tr>
           <tr>
-            <th>Retail Normal Price (正價):</th>
+            <th>Sales Price List (正價):</th>
             <td class="number"><?php echo number_format($model["retail_normal"], 6); ?></td>
           </tr>
           <tr>
-            <th>Retail Special Price (特價):</th>
+            <th>Sales Price Special (特價):</th>
             <td class="number"><?php echo number_format($model["retail_special"], 6); ?></td>
           </tr>
           <tr>
-            <th>End User Price (廠價):</th>
+            <th>Sales Price End User (廠價):</th>
             <td class="number"><?php echo number_format($model["wholesale_special"], 6); ?></td>
-          </tr>
-          <tr>
-            <th>Wholesale Price (批發價):</th>
-            <td class="number"><?php echo number_format($model["wholesale_normal"], 6); ?></td>
           </tr>
           <tr>
             <th>Average Cost:</th>

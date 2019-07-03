@@ -6,12 +6,13 @@
   $description = $_POST["description"];
   $costPri = $_POST["cost_pri"];
   $costPriCurrencyCode = $_POST["cost_pri_currency_code"];
+  $costPriOriginal = $_POST["cost_pri_original"];
   $costSec = $_POST["cost_sec"];
   $costSecCurrencyCode = $_POST["cost_sec_currency_code"];
+  $costSecOriginal = $_POST["cost_sec_original"];
   $averageCost = $_POST["cost_average"];
   $retailNormal = $_POST["retail_normal"];
   $retailSpecial = $_POST["retail_special"];
-  $wholesaleNormal = $_POST["wholesale_normal"];
   $wholesaleSpecial = $_POST["wholesale_special"];
 
   /* If a form is submitted, update or insert the model. */
@@ -21,12 +22,13 @@
     assigned($productType) &&
     assigned($costPri) &&
     assigned($costPriCurrencyCode) &&
+    assigned($costPriOriginal) &&
     assigned($costSec) &&
     assigned($costSecCurrencyCode) &&
+    assigned($costSecOriginal) &&
     assigned($averageCost) &&
     assigned($retailNormal) &&
     assigned($retailSpecial) &&
-    assigned($wholesaleNormal) &&
     assigned($wholesaleSpecial)
   ) {
     $queries = array();
@@ -43,12 +45,13 @@
           description=\"$description\",
           cost_pri=\"$costPri\",
           cost_pri_currency_code=\"$costPriCurrencyCode\",
+          cost_pri_original=\"$costPriOriginal\",
           cost_sec=\"$costSec\",
           cost_sec_currency_code=\"$costSecCurrencyCode\",
+          cost_sec_original=\"$costSecOriginal\",
           cost_average=\"$averageCost\",
           retail_normal=\"$retailNormal\",
           retail_special=\"$retailSpecial\",
-          wholesale_normal=\"$wholesaleNormal\",
           wholesale_special=\"$wholesaleSpecial\"
         WHERE
           id=\"$id\"
@@ -64,12 +67,13 @@
             description,
             cost_pri,
             cost_pri_currency_code,
+            cost_pri_original,
             cost_sec,
             cost_sec_currency_code,
+            cost_sec_original,
             cost_average,
             retail_normal,
             retail_special,
-            wholesale_normal,
             wholesale_special
           )
         VALUES
@@ -80,12 +84,13 @@
             \"$description\",
             \"$costPri\",
             \"$costPriCurrencyCode\",
+            \"$costPriOriginal\",
             \"$costSec\",
             \"$costSecCurrencyCode\",
+            \"$costSecOriginal\",
             \"$averageCost\",
             \"$retailNormal\",
             \"$retailSpecial\",
-            \"$wholesaleNormal\",
             \"$wholesaleSpecial\"
           )
       ");
@@ -116,12 +121,13 @@
         description               AS `description`,
         cost_pri                  AS `cost_pri`,
         cost_pri_currency_code    AS `cost_pri_currency_code`,
+        cost_pri_original         AS `cost_pri_original`,
         cost_sec                  AS `cost_sec`,
         cost_sec_currency_code    AS `cost_sec_currency_code`,
+        cost_sec_original         AS `cost_sec_original`,
         cost_average              AS `cost_average`,
         retail_normal             AS `retail_normal`,
         retail_special            AS `retail_special`,
-        wholesale_normal          AS `wholesale_normal`,
         wholesale_special         AS `wholesale_special`
       FROM
         `model`
@@ -135,12 +141,13 @@
       $description = $model["description"];
       $costPri = $model["cost_pri"];
       $costPriCurrencyCode = $model["cost_pri_currency_code"];
+      $costPriOriginal = $model["cost_pri_original"];
       $costSec = $model["cost_sec"];
       $costSecCurrencyCode = $model["cost_sec_currency_code"];
+      $costSecOriginal = $model["cost_sec_original"];
       $averageCost = $model["cost_average"];
       $retailNormal = $model["retail_normal"];
       $retailSpecial = $model["retail_special"];
-      $wholesaleNormal = $model["wholesale_normal"];
       $wholesaleSpecial = $model["wholesale_special"];
     }
   }
@@ -151,12 +158,13 @@
 
     $costPri = 0;
     $costPriCurrencyCode = COMPANY_CURRENCY;
+    $costPriOrignal = 0;
     $costSec = 0;
     $costSecCurrencyCode = COMPANY_CURRENCY;
+    $costSecOrignal = 0;
     $averageCost = 0;
     $retailNormal = 0;
     $retailSpecial = 0;
-    $wholesaleNormal = 0;
     $wholesaleSpecial = 0;
   }
 ?>

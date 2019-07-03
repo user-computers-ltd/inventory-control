@@ -237,20 +237,18 @@
             <col style="width: 80px;">
             <col style="width: 80px;">
             <col style="width: 80px;">
-            <col style="width: 80px;">
           </colgroup>
           <thead>
             <tr></tr>
             <tr>
               <th>Brand</th>
               <th>Model No.</th>
-              <th class="number">Average<br/>Cost</th>
-              <th class="number">Normal<br/>Cost</th>
-              <th class="number">Special<br/>Cost</th>
-              <th class="number">Normal<br/>Price</th>
-              <th class="number">Special<br/>Price</th>
-              <th class="number">End User<br/>Price</th>
-              <th class="number">Wholesale<br/>Price</th>
+              <th class="number">Average Cost</th>
+              <th class="number">Cost Price List</th>
+              <th class="number">Cost Price Special</th>
+              <th class="number">Sales Price List</th>
+              <th class="number">Sales Price Special</th>
+              <th class="number">Sales Price End User</th>
             </tr>
           </thead>
           <tbody>
@@ -267,7 +265,6 @@
                 $priceNormal = $model["price_normal"];
                 $priceSpecial = $model["price_special"];
                 $priceEndUser = $model["price_end_user"];
-                $priceWholesale = $model["price_wholesale"];
 
                 echo "
                   <tr>
@@ -279,7 +276,6 @@
                     <td class=\"number\" title=\"$priceNormal\">" . number_format($priceNormal, 2) . "</td>
                     <td class=\"number\" title=\"$priceSpecial\">" . number_format($priceSpecial, 2) . "</td>
                     <td class=\"number\" title=\"$priceEndUser\">" . number_format($priceEndUser, 2) . "</td>
-                    <td class=\"number\" title=\"$priceWholesale\">" . number_format($priceWholesale, 2) . "</td>
                   </tr>
                 ";
               }
