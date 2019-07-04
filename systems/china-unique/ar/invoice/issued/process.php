@@ -46,6 +46,7 @@
       DATE_FORMAT(a.invoice_date, \"%d-%m-%Y\")                                         AS `date`,
       b.count                                                                           AS `count`,
       a.invoice_no                                                                      AS `invoice_no`,
+      a.debtor_code                                                                     AS `debtor_code`,
       IFNULL(c.english_name, \"Unknown\")                                               AS `debtor_name`,
       a.currency_code                                                                   AS `currency_code`,
       DATE_FORMAT(a.maturity_date, \"%d-%m-%Y\")                                        AS `maturity_date`,

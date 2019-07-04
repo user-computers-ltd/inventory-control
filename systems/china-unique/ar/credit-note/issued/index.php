@@ -16,7 +16,7 @@
   </head>
   <body>
     <?php include_once SYSTEM_PATH . "includes/components/menu/index.php"; ?>
-    <div class="page-wrapper">
+    <div class="page-wrapper landscape">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo AR_CREDIT_NOTE_ISSUED_TITLE; ?></div>
       <form>
@@ -37,13 +37,12 @@
           <button type="submit" name="action" value="print" class="web-only">Print</button>
           <button type="submit" name="action" value="delete" style="display: none;"></button>
           <button type="button" onclick="confirmDelete(event)" class="web-only">Delete</button>
-          <button type="submit" name="action" value="settle" style="display: none;"></button>
-          <button type="button" onclick="confirmSettle(event)" class="web-only">Settle</button>
           <table id="credit-note-results">
             <colgroup>
               <col class="web-only" style="width: 30px">
               <col style="width: 70px">
               <col>
+              <col style="width: 80px">
               <col>
               <col style="width: 150px">
             </colgroup>
@@ -53,6 +52,7 @@
                 <th class="web-only"></th>
                 <th>Date</th>
                 <th>Credit Note No.</th>
+                <th>Code</th>
                 <th>Client</th>
                 <th class="number">Amount</th>
               </tr>
@@ -66,6 +66,7 @@
                   $id = $creditNoteHeader["id"];
                   $date = $creditNoteHeader["date"];
                   $creditNoteNo = $creditNoteHeader["credit_note_no"];
+                  $debtorCode = $creditNoteHeader["debtor_code"];
                   $debtorName = $creditNoteHeader["debtor_name"];
                   $amount = $creditNoteHeader["amount"];
 
@@ -78,6 +79,7 @@
                       </td>
                       <td title=\"$date\">$date</td>
                       <td title=\"$creditNoteNo\"><a class=\"link\" href=\"" . AR_CREDIT_NOTE_URL . "?id=$id\">$creditNoteNo</a></td>
+                      <td title=\"$debtorCode\">$debtorCode</td>
                       <td title=\"$debtorName\">$debtorName</td>
                       <td title=\"$amount\" class=\"number\">" . number_format($amount, 2) . "</td>
                     </tr>
@@ -86,6 +88,7 @@
               ?>
               <tr>
                 <th class="web-only"></th>
+                <th></th>
                 <th></th>
                 <th></th>
                 <th class="number">Total:</th>

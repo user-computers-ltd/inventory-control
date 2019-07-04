@@ -15,7 +15,7 @@
   </head>
   <body>
     <?php include_once SYSTEM_PATH . "includes/components/menu/index.php"; ?>
-    <div class="page-wrapper">
+    <div class="page-wrapper landscape">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo STOCK_IN_POSTED_TITLE; ?></div>
       <form>
@@ -40,6 +40,7 @@
               <col style="width: 70px">
               <col style="width: 30px">
               <col>
+              <col style="width: 80px">
               <col>
               <col style="width: 80px">
               <col style="width: 60px">
@@ -55,6 +56,7 @@
                 <th>Date</th>
                 <th class="number">#</th>
                 <th>Voucher No.</th>
+                <th>Code</th>
                 <th>Client</th>
                 <th class="number">Total Qty</th>
                 <th class="number">Discount</th>
@@ -75,15 +77,15 @@
                   $count = $stockInHeader["count"];
                   $date = $stockInHeader["date"];
                   $stockInNo = $stockInHeader["stock_in_no"];
+                  $creditorCode = $stockInHeader["creditor_code"];
                   $creditorName = $stockInHeader["creditor_name"];
                   $qty = $stockInHeader["qty"];
                   $discount = $stockInHeader["discount"];
                   $currency = $stockInHeader["currency"];
                   $totalAmt = $stockInHeader["total_amt"];
                   $totalAmtBase = $stockInHeader["total_amt_base"];
-                  $transactionCode = $stockInHeader["transaction_code"];
-                  $transactionName = $TRANSACTION_CODES[$transactionCode];
-                  $miscellaneous = $stockInHeader["transaction_code"] !== "R1" && $stockInHeader["transaction_code"] !== "R3";
+                  $transCode = $stockInHeader["transaction_code"];
+                  $transactionName = $TRANSACTION_CODES[$transCode];
 
                   $totalQty += $qty;
                   $totalAmtBaseSum += $totalAmtBase;
@@ -94,13 +96,14 @@
                       <td title=\"$date\">$date</td>
                       <td title=\"$count\" class=\"number\">$count</td>
                       <td title=\"$stockInNo\"><a class=\"link\" href=\"" . STOCK_IN_PRINTOUT_URL . "?id[]=$id\">$stockInNo</a></td>
-                      " . ($miscellaneous && $stockInHeader["transaction_code"] !== "R7" ? "<td></td>" : "<td title=\"$creditorName\">$creditorName</td>") . "
+                      " . ($transCode === "R1" || $transCode === "R3" || $transCode === "R7" || $transCode === "R8" ? "<td title=\"$creditorCode\">$creditorCode</td>" : "<td></td>") . "
+                      " . ($transCode === "R1" || $transCode === "R3" || $transCode === "R7" || $transCode === "R8" ? "<td title=\"$creditorName\">$creditorName</td>" : "<td></td>") . "
                       <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
-                      " . ($miscellaneous ? "<td></td>" : "<td title=\"$discount\" class=\"number\">" . number_format($discount, 2) . "%</td>") . "
-                      " . ($miscellaneous ? "<td></td>" : "<td title=\"$currency\" class=\"number\">$currency</td>") . "
-                      " . ($miscellaneous ? "<td></td>" : "<td title=\"$totalAmt\" class=\"number\">" . number_format($totalAmt, 2) . "</td>") . "
-                      " . ($miscellaneous ? "<td></td>" : "<td title=\"$totalAmtBase\" class=\"number\">" . number_format($totalAmtBase, 2) . "</td>") . "
-                      <td title=\"$transactionCode - $transactionName\">$transactionCode</td>
+                      " . ($transCode === "R1" ? "<td title=\"$discount\" class=\"number\">" . number_format($discount, 2) . "%</td>" : "<td></td>") . "
+                      " . ($transCode === "R1" ? "<td title=\"$currency\" class=\"number\">$currency</td>" : "<td></td>") . "
+                      " . ($transCode === "R1" || $transCode === "R3" ? "<td title=\"$totalAmt\" class=\"number\">" . number_format($totalAmt, 2) . "</td>" : "<td></td>") . "
+                      " . ($transCode === "R1" || $transCode === "R3" ? "<td title=\"$totalAmtBase\" class=\"number\">" . number_format($totalAmtBase, 2) . "</td>" : "<td></td>") . "
+                      <td title=\"$transCode - $transactionName\">$transCode</td>
                     </tr>
                   ";
                 }

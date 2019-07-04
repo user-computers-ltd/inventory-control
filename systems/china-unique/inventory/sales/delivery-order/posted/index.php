@@ -67,6 +67,7 @@
             <col class="web-only" style="width: 30px">
             <col style="width: 100px">
             <col style="width: 160px">
+            <col style="width: 80px">
             <col>
             <col style="width: 60px">
             <col style="width: 80px">
@@ -81,6 +82,7 @@
               <th class="web-only"></th>
               <th>Date</th>
               <th>Order No.</th>
+              <th>Code</th>
               <th>Client</th>
               <th>Price Category</th>
               <th class="number">Total Qty</th>
@@ -99,7 +101,8 @@
                 $doHeader = $doHeaders[$i];
                 $doId = $doHeader["do_id"];
                 $date = $doHeader["date"];
-                $debtor = $doHeader["debtor"];
+                $debtorCode = $doHeader["debtor_code"];
+                $debtorName = $doHeader["debtor_name"];
                 $doNo = $doHeader["do_no"];
                 $priceCategory = $doHeader["price_category"];
                 $qty = $doHeader["qty"];
@@ -116,7 +119,8 @@
                     <td class=\"web-only\"><input type=\"checkbox\" name=\"do_id[]\" value=\"$doId\" /></td>
                     <td title=\"$date\">$date</td>
                     <td title=\"$doNo\"><a class=\"link\" href=\"" . SALES_DELIVERY_ORDER_PRINTOUT_URL . "?id[]=$doId\">$doNo</a></td>
-                    <td title=\"$debtor\">$debtor</td>
+                    <td title=\"$debtorCode\">$debtorCode</td>
+                    <td title=\"$debtorName\">$debtorName</td>
                     <td title=\"$priceCategory\">$priceCategory</td>
                     <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
                     <td title=\"$discount\" class=\"number\">" . number_format($discount, 2) . "%</td>
@@ -131,6 +135,7 @@
           <tbody>
             <tr>
               <th class="web-only"></th>
+              <th></th>
               <th></th>
               <th></th>
               <th></th>

@@ -15,7 +15,7 @@
   </head>
   <body>
     <?php include_once SYSTEM_PATH . "includes/components/menu/index.php"; ?>
-    <div class="page-wrapper">
+    <div class="page-wrapper landscape">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo STOCK_OUT_POSTED_TITLE; ?></div>
       <form>
@@ -40,6 +40,7 @@
               <col style="width: 70px">
               <col style="width: 30px">
               <col>
+              <col style="width: 80px">
               <col>
               <col style="width: 80px">
               <col style="width: 60px">
@@ -55,6 +56,7 @@
                 <th>Date</th>
                 <th class="number">#</th>
                 <th>Voucher No.</th>
+                <th>Code</th>
                 <th>Client</th>
                 <th class="number">Total Qty</th>
                 <th class="number">Discount</th>
@@ -75,15 +77,15 @@
                   $count = $stockOutHeader["count"];
                   $date = $stockOutHeader["date"];
                   $stockOutNo = $stockOutHeader["stock_out_no"];
+                  $debtorCode = $stockOutHeader["debtor_code"];
                   $debtorName = $stockOutHeader["debtor_name"];
                   $qty = $stockOutHeader["qty"];
                   $discount = $stockOutHeader["discount"];
                   $currency = $stockOutHeader["currency"];
                   $totalAmt = $stockOutHeader["total_amt"];
                   $totalAmtBase = $stockOutHeader["total_amt_base"];
-                  $transactionCode = $stockOutHeader["transaction_code"];
-                  $transactionName = $TRANSACTION_CODES[$transactionCode];
-                  $miscellaneous = $stockOutHeader["transaction_code"] != "S1" && $stockOutHeader["transaction_code"] != "S3";
+                  $transCode = $stockOutHeader["transaction_code"];
+                  $transactionName = $TRANSACTION_CODES[$transCode];
 
                   $totalQty += $qty;
                   $totalAmtBaseSum += $totalAmtBase;
@@ -94,13 +96,14 @@
                       <td title=\"$date\">$date</td>
                       <td title=\"$count\" class=\"number\">$count</td>
                       <td title=\"$stockOutNo\"><a class=\"link\" href=\"" . STOCK_OUT_PRINTOUT_URL . "?id[]=$id\">$stockOutNo</a></td>
-                      " . ($miscellaneous ? "<td></td>" : "<td title=\"$debtorName\">$debtorName</td>") . "
+                      " . ($transCode === "S1" || $transCode === "S3" || $transCode === "S7" || $transCode === "S8" ? "<td title=\"$debtorCode\">$debtorCode</td>" : "<td></td>") . "
+                      " . ($transCode === "S1" || $transCode === "S3" || $transCode === "S7" || $transCode === "S8" ? "<td title=\"$debtorName\">$debtorName</td>" : "<td></td>") . "
                       <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
-                      " . ($miscellaneous ? "<td></td>" : "<td title=\"$discount\" class=\"number\">" . number_format($discount, 2) . "%</td>") . "
-                      " . ($miscellaneous ? "<td></td>" : "<td title=\"$currency\" class=\"number\">$currency</td>") . "
-                      " . ($miscellaneous ? "<td></td>" : "<td title=\"$totalAmt\" class=\"number\">" . number_format($totalAmt, 2) . "</td>") . "
-                      " . ($miscellaneous ? "<td></td>" : "<td title=\"$totalAmtBase\" class=\"number\">" . number_format($totalAmtBase, 2) . "</td>") . "
-                      <td title=\"$transactionCode - $transactionName\">$transactionCode</td>
+                      " . ($transCode === "S1" ? "<td title=\"$discount\" class=\"number\">" . number_format($discount, 2) . "%</td>" : "<td></td>") . "
+                      " . ($transCode === "S1" ? "<td title=\"$currency\" class=\"number\">$currency</td>" : "<td></td>") . "
+                      " . ($transCode === "S1" || $transCode === "S3" ? "<td title=\"$totalAmt\" class=\"number\">" . number_format($totalAmt, 2) . "</td>" : "<td></td>") . "
+                      " . ($transCode === "S1" || $transCode === "S3" ? "<td title=\"$totalAmtBase\" class=\"number\">" . number_format($totalAmtBase, 2) . "</td>" : "<td></td>") . "
+                      <td title=\"$transCode - $transactionName\">$transCode</td>
                     </tr>
                   ";
                 }

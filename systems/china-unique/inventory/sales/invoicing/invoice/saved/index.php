@@ -16,7 +16,7 @@
   </head>
   <body>
     <?php include_once SYSTEM_PATH . "includes/components/menu/index.php"; ?>
-    <div class="page-wrapper">
+    <div class="page-wrapper landscape">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo SALES_INVOICE_SAVED_TITLE; ?></div>
       <form>
@@ -43,6 +43,7 @@
               <col style="width: 70px">
               <col style="width: 30px">
               <col>
+              <col style="width: 80px">
               <col>
               <col style="width: 60px">
               <col style="width: 80px">
@@ -55,6 +56,7 @@
                 <th>Date</th>
                 <th class="number">#</th>
                 <th>Invoice No.</th>
+                <th>Code</th>
                 <th>Client</th>
                 <th>Currency</th>
                 <th class="number">Amount</th>
@@ -71,6 +73,7 @@
                   $count = $invoiceHeader["count"];
                   $date = $invoiceHeader["date"];
                   $invoiceNo = $invoiceHeader["invoice_no"];
+                  $debtorCode = $invoiceHeader["debtor_code"];
                   $debtorName = $invoiceHeader["debtor_name"];
                   $currencyCode = $invoiceHeader["currency_code"];
                   $amount = $invoiceHeader["amount"];
@@ -86,6 +89,7 @@
                       <td title=\"$date\">$date</td>
                       <td title=\"$count\" class=\"number\">$count</td>
                       <td title=\"$invoiceNo\"><a class=\"link\" href=\"" . SALES_INVOICE_URL . "?id=$id\">$invoiceNo</a></td>
+                      <td title=\"$debtorCode\">$debtorCode</td>
                       <td title=\"$debtorName\">$debtorName</td>
                       <td title=\"$currencyCode\">$currencyCode</td>
                       <td title=\"$amount\" class=\"number\">" . number_format($amount, 2) . "</td>
@@ -98,6 +102,7 @@
                 <th class="web-only"></th>
                 <th></th>
                 <th class="number"></th>
+                <th></th>
                 <th></th>
                 <th></th>
                 <th></th>

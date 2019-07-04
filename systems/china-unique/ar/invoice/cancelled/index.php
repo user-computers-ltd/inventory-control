@@ -16,7 +16,7 @@
   </head>
   <body>
     <?php include_once SYSTEM_PATH . "includes/components/menu/index.php"; ?>
-    <div class="page-wrapper">
+    <div class="page-wrapper landscape">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo AR_INVOICE_CANCELLED_TITLE; ?></div>
       <form>
@@ -45,6 +45,7 @@
               <col style="width: 70px">
               <col style="width: 30px">
               <col>
+              <col style="width: 80px">
               <col>
               <col style="width: 80px">
               <col style="width: 70px">
@@ -56,6 +57,7 @@
                 <th>Date</th>
                 <th class="number">#</th>
                 <th>Invoice No.</th>
+                <th>Code</th>
                 <th>Client</th>
                 <th class="number">Amount</th>
                 <th>Maturity Date</th>
@@ -71,6 +73,7 @@
                   $count = $invoiceHeader["count"];
                   $date = $invoiceHeader["date"];
                   $invoiceNo = $invoiceHeader["invoice_no"];
+                  $debtorCode = $invoiceHeader["debtor_code"];
                   $debtorName = $invoiceHeader["debtor_name"];
                   $currencyCode = $invoiceHeader["currency_code"];
                   $amountBase = $invoiceHeader["amount_base"];
@@ -86,6 +89,7 @@
                       <td title=\"$date\">$date</td>
                       <td title=\"$count\" class=\"number\">$count</td>
                       <td title=\"$invoiceNo\"><a class=\"link\" href=\"" . AR_INVOICE_URL . "?id=$id\">$invoiceNo</a></td>
+                      <td title=\"$debtorCode\">$debtorCode</td>
                       <td title=\"$debtorName\">$debtorName</td>
                       <td title=\"$amountBase\" class=\"number\">" . number_format($amountBase, 2) . "</td>
                       <td title=\"$maturityDate\">$maturityDate</td>
@@ -97,6 +101,7 @@
                 <th class="web-only"></th>
                 <th></th>
                 <th class="number"></th>
+                <th></th>
                 <th></th>
                 <th class="number">Total:</th>
                 <th class="number"><?php echo number_format($totalAmountBase, 2); ?></th>

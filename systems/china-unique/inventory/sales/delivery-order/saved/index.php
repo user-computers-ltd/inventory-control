@@ -16,7 +16,7 @@
   </head>
   <body>
     <?php include_once SYSTEM_PATH . "includes/components/menu/index.php"; ?>
-    <div class="page-wrapper">
+    <div class="page-wrapper landscape">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo SALES_DELIVERY_ORDER_SAVED_TITLE; ?></div>
       <form>
@@ -74,6 +74,7 @@
               <col class="web-only" style="width: 30px">
               <col style="width: 80px">
               <col>
+              <col style="width: 80px">
               <col>
               <col style="width: 80px">
               <col style="width: 80px">
@@ -87,6 +88,7 @@
                 <th class="web-only"></th>
                 <th>Date</th>
                 <th>Order No.</th>
+                <th>Code</th>
                 <th>Client</th>
                 <th>Item Status</th>
                 <th>Price Category</th>
@@ -104,7 +106,8 @@
                   $doHeader = $doHeaders[$i];
                   $doId = $doHeader["do_id"];
                   $date = $doHeader["date"];
-                  $debtor = $doHeader["debtor"];
+                  $debtorCode = $doHeader["debtor_code"];
+                  $debtorName = $doHeader["debtor_name"];
                   $doNo = $doHeader["do_no"];
                   $itemStatus = $doHeader["item_status"];
                   $priceCategory = $doHeader["price_category"];
@@ -122,7 +125,8 @@
                       </td>
                       <td title=\"$date\">$date</td>
                       <td title=\"$doNo\"><a class=\"link\" href=\"" . SALES_DELIVERY_ORDER_URL . "?id=$doId\">$doNo</a></td>
-                      <td title=\"$debtor\">$debtor</td>
+                      <td title=\"$debtorCode\">$debtorCode</td>
+                      <td title=\"$debtorName\">$debtorName</td>
                       <td title=\"$itemStatus\">$itemStatus</td>
                       <td title=\"$priceCategory\">$priceCategory</td>
                       <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
@@ -134,6 +138,7 @@
               ?>
               <tr>
                 <th class="web-only"></th>
+                <th></th>
                 <th></th>
                 <th></th>
                 <th></th>

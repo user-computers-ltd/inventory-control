@@ -51,6 +51,7 @@
       DATE_FORMAT(a.stock_in_date, \"%d-%m-%Y\")                                AS `date`,
       b.count                                                                   AS `count`,
       a.stock_in_no                                                             AS `stock_in_no`,
+      a.creditor_code                                                           AS `creditor_code`,
       IFNULL(IF($useDebtor, d.english_name, c.creditor_name_eng), \"Unknown\")  AS `creditor_name`,
       IFNULL(b.total_qty, 0)                                                    AS `qty`,
       a.discount                                                                AS `discount`,

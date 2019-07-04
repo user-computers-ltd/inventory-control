@@ -36,9 +36,10 @@
   $doHeaders = query("
     SELECT
       a.id                                                                    AS `do_id`,
-      DATE_FORMAT(a.do_date, '%d-%m-%Y')                                      AS `date`,
+      DATE_FORMAT(a.do_date, \"%d-%m-%Y\")                                    AS `date`,
       a.do_no                                                                 AS `do_no`,
-      CONCAT(a.debtor_code, ' - ', IFNULL(c.english_name, 'Unknown'))         AS `debtor`,
+      a.debtor_code                                                           AS `debtor_code`,
+      IFNULL(c.english_name, \"Unknown\")                                     AS `debtor_name`,
       IFNULL(b.total_qty, 0)                                                  AS `qty`,
       (CASE
         WHEN b.normal_count=b.count   THEN \"N\"
@@ -83,7 +84,7 @@
   $debtors = query("
     SELECT DISTINCT
       a.debtor_code                       AS `code`,
-      IFNULL(c.english_name, 'Unknown')   AS `name`
+      IFNULL(c.english_name, \"Unknown\") AS `name`
     FROM
       `sdo_header` AS a
     LEFT JOIN

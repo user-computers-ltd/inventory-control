@@ -41,6 +41,7 @@
       a.id                                            AS `id`,
       DATE_FORMAT(a.credit_note_date, \"%d-%m-%Y\")   AS `date`,
       a.credit_note_no                                AS `credit_note_no`,
+      a.debtor_code                                   AS `debtor_code`,
       IFNULL(c.english_name, \"Unknown\")             AS `debtor_name`,
       a.currency_code                                 AS `currency_code`,
       a.amount                                        AS `amount`

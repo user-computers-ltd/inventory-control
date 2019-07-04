@@ -39,10 +39,11 @@
   $invoiceHeaders = query("
     SELECT
       a.id                                      AS `id`,
-      DATE_FORMAT(a.invoice_date, '%d-%m-%Y')   AS `date`,
+      DATE_FORMAT(a.invoice_date, \"%d-%m-%Y\") AS `date`,
       b.count                                   AS `count`,
       a.invoice_no                              AS `invoice_no`,
-      IFNULL(c.english_name, 'Unknown')         AS `debtor_name`,
+      a.debtor_code                             AS `debtor_code`,
+      IFNULL(c.english_name, \"Unknown\")       AS `debtor_name`,
       a.currency_code                           AS `currency_code`,
       IFNULL(b.amount, 0)                       AS `amount`,
       IFNULL(b.amount, 0) * a.exchange_rate     AS `amount_base`
