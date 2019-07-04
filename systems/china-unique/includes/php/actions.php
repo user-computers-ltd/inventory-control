@@ -65,6 +65,32 @@
           ON DUPLICATE KEY UPDATE qty=qty + $stockChange;
         ");
 
+        $costAverageQuery = "
+          SELECT
+            cost_average
+          FROM
+            `model`
+          WHERE
+            brand_code=\"$brandCode\" AND
+            model_no=\"$modelNo\"
+        ";
+
+        if ($transactionCode === "R3") {
+          $costAverageQuery = "
+            SELECT
+              a.cost_average
+            FROM
+              `transaction` AS a
+            LEFT JOIN
+              `stock_in_header` AS b
+            ON a.header_no=b.return_voucher_no
+            WHERE
+              b.stock_in_no=\"$headerNo\" AND
+              a.brand_code=\"$brandCode\" AND
+              a.model_no=\"$modelNo\"
+          ";
+        }
+
         /* Collect transaction values for insertion. */
         array_push($transactionValues, "
           (
@@ -76,7 +102,7 @@
             \"$exchangeRate\",
             \"$brandCode\",
             \"$modelNo\",
-            (SELECT cost_average FROM `model` WHERE brand_code=\"$brandCode\" AND model_no=\"$modelNo\"),
+            ($costAverageQuery),
             \"$price\",
             \"$qty\",
             \"$discount\",

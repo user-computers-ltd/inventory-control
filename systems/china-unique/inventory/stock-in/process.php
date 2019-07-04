@@ -131,8 +131,10 @@
     execute($queries);
 
     if ($action === "post" && assigned($id) && assigned($stockInNo)) {
-      $queries = array("UPDATE `stock_in_header` SET status=\"POSTED\" WHERE id=\"$id\"");
-      concat($queries, onPostStockInVoucher($stockInNo));
+      $queries = concat(
+        array("UPDATE `stock_in_header` SET status=\"POSTED\" WHERE id=\"$id\""),
+        onPostStockInVoucher($stockInNo)
+      );
 
       execute($queries);
     }
