@@ -18,6 +18,7 @@
     <div class="page-wrapper">
       <?php if (count($stockOutHeaders) > 0) : ?>
         <?php foreach($stockOutHeaders as &$stockOutHeader) : ?>
+          <?php $transCode = $stockOutHeader["transaction_code"]; ?>
           <div class="page">
             <?php include SYSTEM_PATH . "includes/components/header/index.php"; ?>
             <div class="headline"><?php echo STOCK_OUT_PRINTOUT_TITLE ?></div>
@@ -35,16 +36,16 @@
                 <td><?php echo $stockOutHeader["warehouse"]; ?></td>
               </tr>
               <tr>
-                <?php if (!$stockInHeader["miscellaneous"] || $stockInHeader["transaction_code"] === "S7") : ?>
+                <?php if ($transCode === "S1" || $transCode === "S3" || $transCode === "S7" || $transCode === "S8") : ?>
                   <td>Client:</td>
                   <td><?php echo $stockOutHeader["debtor"]; ?></td>
                 <?php endif ?>
-                <?php if (!$stockOutHeader["miscellaneous"]) : ?>
+                <?php if ($transCode === "S1") : ?>
                   <td>Currency:</td>
                   <td><?php echo $stockOutHeader["currency"]; ?></td>
                 <?php endif ?>
               </tr>
-              <?php if (!$stockInHeader["miscellaneous"]) : ?>
+              <?php if ($transCode === "S1") : ?>
                 <tr>
                   <td>Discount:</td>
                   <td><?php echo $stockOutHeader["discount"]; ?>%</td>
@@ -58,16 +59,16 @@
               </tr>
             </table>
             <?php if (count($stockOutModels[$stockOutHeader["stock_out_no"]]) > 0) : ?>
-              <?php $miscellaneous = $stockOutHeader["miscellaneous"]; ?>
+              <?php $showPrice = $transCode === "S1" || $transCode === "S3"; ?>
               <table class="stock-out-models">
                 <thead>
                   <tr></tr>
                   <tr>
                     <th>Brand</th>
                     <th>Model No.</th>
-                    <?php if (!$miscellaneous) : ?><th class="number">Price</th><?php endif ?>
+                    <?php if ($showPrice) : ?><th class="number">Price</th><?php endif ?>
                     <th class="number">Qty</th>
-                    <?php if (!$miscellaneous) : ?><th class="number">Subtotal</th><?php endif ?>
+                    <?php if ($showPrice) : ?><th class="number">Subtotal</th><?php endif ?>
                   </tr>
                 </thead>
                 <tbody>
@@ -95,9 +96,9 @@
                         <tr>
                           <td>$brand</td>
                           <td>$modelNo</td>
-                          " . (!$miscellaneous ? "<td class=\"number\">" . rtrim(rtrim($price, "0"), ".") . "</td>" : "") . "
+                          " . ($showPrice ? "<td class=\"number\">" . rtrim(rtrim($price, "0"), ".") . "</td>" : "") . "
                           <td class=\"number\">" . number_format($qty) . "</td>
-                          " . (!$miscellaneous ? "<td class=\"number\">" . number_format($subtotal, 2) . "</td>" : "") . "
+                          " . ($showPrice ? "<td class=\"number\">" . number_format($subtotal, 2) . "</td>" : "") . "
                         </tr>
                       ";
                     }
@@ -105,45 +106,45 @@
                   <?php if ($discount > 0) : ?>
                     <tr>
                       <td></td>
-                      <?php if (!$miscellaneous) : ?><td></td><?php endif ?>
+                      <?php if ($showPrice) : ?><td></td><?php endif ?>
                       <td></td>
                       <th></th>
-                      <?php if (!$miscellaneous) : ?>
+                      <?php if ($showPrice) : ?>
                         <th class="number"><?php echo number_format($subtotalSum, 2); ?></th>
                       <?php endif ?>
                     </tr>
                     <tr>
                       <td></td>
-                      <?php if (!$miscellaneous) : ?><td></td><?php endif ?>
+                      <?php if ($showPrice) : ?><td></td><?php endif ?>
                       <td></td>
                       <td class="number">Discount <?php echo $discount; ?>%</td>
-                      <?php if (!$miscellaneous) : ?>
+                      <?php if ($showPrice) : ?>
                         <td class="number"><?php echo number_format($subtotalSum * $discount / 100, 2); ?></td>
                       <?php endif ?>
                     </tr>
                   <?php endif ?>
                   <tr>
                     <th></th>
-                    <?php if (!$miscellaneous) : ?><th></th><?php endif ?>
+                    <?php if ($showPrice) : ?><th></th><?php endif ?>
                     <th class="number">Total:</th>
                     <th class="number"><?php echo number_format($totalQty); ?></th>
-                    <?php if (!$miscellaneous) : ?>
+                    <?php if ($showPrice) : ?>
                       <th class="number"><?php echo number_format($subtotalSum * (100 - $discount) / 100, 2); ?></th>
                     <?php endif ?>
                   </tr>
+                  <?php if ($showPrice) : ?>
+                    <tr>
+                      <th></th>
+                      <?php if ($showPrice) : ?><th></th><?php endif ?>
+                      <th class="number">Total Cost:</th>
+                      <th></th>
+                      <?php if ($showPrice) : ?>
+                        <th class="number"><?php echo number_format($totalCost, 2); ?></th>
+                      <?php endif ?>
+                    </tr>
+                  <?php endif ?>
                 </tbody>
               </table>
-              <?php if (!$miscellaneous) : ?>
-                <table class="stock-out-models">
-                  <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td class="number">Total Cost: <?php echo number_format($totalCost, 2); ?></td>
-                  </tr>
-                </table>
-              <?php endif ?>
             <?php else : ?>
               <div class="stock-out-models-no-results">No models</div>
             <?php endif ?>

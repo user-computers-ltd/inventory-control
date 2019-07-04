@@ -90,17 +90,13 @@ table thead th {
   box-sizing: border-box;
 }
 
-.page-wrapper.wider {
-  width: 900px;
-}
-
 .page {
   page-break-after: always;
 }
 
 .headline {
   display: block;
-  margin: 20px;
+  margin: 0px 20px;
   text-align: center;
   font-size: 28px;
   font-weight: bold;

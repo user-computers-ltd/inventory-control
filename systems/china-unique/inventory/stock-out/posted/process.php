@@ -27,19 +27,21 @@
       AND a.stock_out_date <= \"$to\"";
   }
 
+  $useCreditor = "a.transaction_code=\"S3\" OR a.transaction_code=\"S8\"";
+
   $stockOutHeaders = query("
     SELECT
-      a.id                                                                                AS `id`,
-      DATE_FORMAT(a.stock_out_date, '%d-%m-%Y')                                           AS `date`,
-      b.count                                                                             AS `count`,
-      a.stock_out_no                                                                      AS `stock_out_no`,
-      IFNULL(IF(a.transaction_code=\"S3\", d.creditor_name_eng, c.english_name), \"Unknown\")  AS `debtor_name`,
-      IFNULL(b.total_qty, 0)                                                              AS `qty`,
-      a.discount                                                                          AS `discount`,
-      a.currency_code                                                                     AS `currency`,
-      IFNULL(b.total_amt, 0) * (100 - a.discount) / 100                                   AS `total_amt`,
-      IFNULL(b.total_amt, 0) * (100 - a.discount) / 100 * a.exchange_rate                 AS `total_amt_base`,
-      a.transaction_code                                                                  AS `transaction_code`
+      a.id                                                                        AS `id`,
+      DATE_FORMAT(a.stock_out_date, \"%d-%m-%Y\")                                 AS `date`,
+      b.count                                                                     AS `count`,
+      a.stock_out_no                                                              AS `stock_out_no`,
+      IFNULL(IF($useCreditor, d.creditor_name_eng, c.english_name), \"Unknown\")  AS `debtor_name`,
+      IFNULL(b.total_qty, 0)                                                      AS `qty`,
+      a.discount                                                                  AS `discount`,
+      a.currency_code                                                             AS `currency`,
+      IFNULL(b.total_amt, 0) * (100 - a.discount) / 100                           AS `total_amt`,
+      IFNULL(b.total_amt, 0) * (100 - a.discount) / 100 * a.exchange_rate         AS `total_amt_base`,
+      a.transaction_code                                                          AS `transaction_code`
     FROM
       `stock_out_header` AS a
     LEFT JOIN

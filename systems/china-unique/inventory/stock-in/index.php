@@ -408,9 +408,7 @@
                   + "/>"
                 + "</td>"
                 + "<td class=\"total-amount number\">" + stockInModel["total_amount"].toFixed(2) + "</td>"
-                + "<td>"
-                  + "<div class=\"remove\" onclick=\"removeStockInModel(" + i + ")\">×</div>"
-                + "</td>"
+                + "<td><div class=\"remove\" onclick=\"removeStockInModel(" + i + ")\">×</div></td>"
               + "</tr>";
 
               newRowElement.innerHTML = rowInnerHTML;
@@ -666,9 +664,7 @@
             }
           }
 
-          window.addEventListener("load", function () {
-            document.querySelector("#stock-in-form").reset();
-
+          function refreshStockInModels() {
             for (var i = 0; i < stockInModels.length; i++) {
               var stockInModel = stockInModels[i];
               var brandCode = stockInModel["brand_code"];
@@ -678,6 +674,12 @@
               updateModel(i, getModels(modelNo, brandCode)[0]);
               updatePrice(i, price);
             }
+          }
+
+          window.addEventListener("load", function () {
+            document.querySelector("#stock-in-form").reset();
+
+            refreshStockInModels();
 
             var initialStockInModels = stockInModels;
 
@@ -688,15 +690,7 @@
 
             stockInModels = initialStockInModels;
 
-            for (var i = 0; i < stockInModels.length; i++) {
-              var stockInModel = stockInModels[i];
-              var brandCode = stockInModel["brand_code"];
-              var modelNo = stockInModel["model_no"];
-              var price = stockInModel["price"];
-
-              updateModel(i, getModels(modelNo, brandCode)[0]);
-              updatePrice(i, price);
-            }
+            refreshStockInModels();
 
             render();
           });

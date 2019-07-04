@@ -32,7 +32,7 @@
         stock_out_no                              AS `stock_out_no`,
         transaction_code                          AS `transaction_code`,
         warehouse_code                            AS `warehouse_code`,
-        DATE_FORMAT(stock_out_date, '%d-%m-%Y')   AS `date`,
+        DATE_FORMAT(stock_out_date, \"%d-%m-%Y\") AS `date`,
         debtor_code                               AS `debtor_code`,
         currency_code                             AS `currency_code`,
         exchange_rate                             AS `exchange_rate`,
@@ -127,14 +127,13 @@
       $creditor = isset($creditor) ? $creditor["name"] : "Unknown";
       $debtor = query("SELECT english_name AS name FROM `debtor` WHERE code=\"" . $stockOutHeader["debtor_code"] . "\"")[0];
       $debtor = isset($debtor) ? $debtor["name"] : "Unknown";
-
       $warehouse = query("SELECT name FROM `warehouse` WHERE code=\"" . $stockOutHeader["warehouse_code"] . "\"")[0];
+      $useCreditor = $stockOutHeader["transaction_code"] === "S3" || $stockOutHeader["transaction_code"] === "S8";
 
       $stockOutHeader["transaction_type"] = $stockOutHeader["transaction_code"] . " - " . $TRANSACTION_CODES[$stockOutHeader["transaction_code"]];
       $stockOutHeader["warehouse"] = $stockOutHeader["warehouse_code"] . " - " . (isset($warehouse) ? $warehouse["name"] : "Unknown");
-      $stockOutHeader["debtor"] = $stockOutHeader["debtor_code"] . " - " . ($stockOutHeader["transaction_code"] === "S3" ? $creditor : $debtor);
+      $stockOutHeader["debtor"] = $stockOutHeader["debtor_code"] . " - " . ($useCreditor ? $creditor : $debtor);
       $stockOutHeader["currency"] = $stockOutHeader["currency_code"] . " @ " . $stockOutHeader["exchange_rate"];
-      $stockOutHeader["miscellaneous"] = $stockOutHeader["transaction_code"] !== "S1" && $stockOutHeader["transaction_code"] !== "S3";
     }
   }
 

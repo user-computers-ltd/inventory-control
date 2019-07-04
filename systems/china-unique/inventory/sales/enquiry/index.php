@@ -15,7 +15,7 @@
   </head>
   <body>
     <?php include_once SYSTEM_PATH . "includes/components/menu/index.php"; ?>
-    <div class="page-wrapper wider">
+    <div class="page-wrapper landscape">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo $headline; ?></div>
       <form id="enquiry-form" method="post">

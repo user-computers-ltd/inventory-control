@@ -55,9 +55,9 @@
               </td>
             </tr>
             <tr>
-              <td class="s7-cell">Client:</td>
-              <td class="s7-cell">
-                <select id="debtor-code" class="option-field" name="debtor_code" required <?php echo $useCreditor ? "disabled hidden" : ""; ?>>
+              <td class="trans-code-el S1-el S3-el S7-el S8-el">Client:</td>
+              <td class="trans-code-el S1-el S3-el S7-el S8-el">
+                <select id="debtor-code" class="trans-code-el S1-el S7-el" name="debtor_code" onchange="onDebtorCodeChange()" required>
                   <?php
                     foreach ($debtors as $debtor) {
                       $code = $debtor["code"];
@@ -67,7 +67,7 @@
                     }
                   ?>
                 </select>
-                <select id="creditor-code" class="option-field" name="debtor_code" required <?php echo $useCreditor ? "" : "disabled hidden"; ?>>
+                <select id="creditor-code" class="trans-code-el S3-el S8-el hide" name="debtor_code" onchange="onDebtorCodeChange()" required>
                   <?php
                     foreach ($creditors as $creditor) {
                       $code = $creditor["code"];
@@ -78,9 +78,9 @@
                   ?>
                 </select>
               </td>
-              <td class="misc-cell">Currency:</td>
-              <td class="misc-cell">
-                <select id="currency-code" class="option-field" name="currency_code" onchange="onCurrencyCodeChange()" required>
+              <td class="trans-code-el S1-el">Currency:</td>
+              <td class="trans-code-el S1-el">
+                <select id="currency-code" class="trans-code-el S1-el" name="currency_code" onchange="onCurrencyCodeChange()" required>
                   <?php
                     foreach ($currencies as $code => $rate) {
                       $selected = $currencyCode == $code ? "selected" : "";
@@ -90,52 +90,52 @@
                 </select>
                 <input
                   id="exchange-rate"
-                  class="option-field"
+                  class="trans-code-el S1-el"
                   name="exchange_rate"
                   type="number"
                   step="0.00000001"
                   min="0.00000001"
                   value="<?php echo $exchangeRate; ?>"
-                  onchange="onExchangeRateChange()"
+                  onchange="render()"
                   required
                   <?php echo $currencyCode === COMPANY_CURRENCY ? "readonly" : ""; ?>
                 />
               </td>
             </tr>
             <tr>
-              <td class="misc-cell">Discount:</td>
-              <td class="misc-cell">
+              <td class="trans-code-el S1-el">Discount:</td>
+              <td class="trans-code-el S1-el">
                 <input
                   id="discount"
-                  class="option-field"
+                  class="trans-code-el S1-el"
                   name="discount"
                   type="number"
                   step="0.01"
                   min="0"
                   max="100"
                   value="<?php echo $discount; ?>"
-                  onchange="onDiscountChange()"
+                  onchange="render()"
                   required
                 /><span>%</span>
                 <input id="tax" name="tax" type="number" value="<?php echo $tax; ?>" hidden required />
               </td>
-              <td class="misc-cell">Net Amount:</td>
-              <td class="misc-cell">
+              <td class="trans-code-el S1-el">Net Amount:</td>
+              <td class="trans-code-el S1-el">
                 <input
                   id="net-amount"
-                  class="option-field"
+                  class="trans-code-el S1-el"
                   name="net_amount"
                   type="number"
                   min="0"
                   step="0.01"
                   value="<?php echo $netAmount; ?>"
-                  onchange="onNetAmountChange()"
+                  onchange="render()"
                   required
                 />
               </td>
             </tr>
             <tr>
-              <td colspan="2" class="misc-cell">
+              <td colspan="2" class="trans-code-el S1-el">
                 <input
                   id="normal-price"
                   name="price_standard"
@@ -171,19 +171,19 @@
                 <th>Model no.</th>
                 <th>Brand code</th>
                 <th class="number">Quantity</th>
-                <th class="option-column number">Price</th>
-                <th class="option-column number">Subtotal</th>
-                <th></th>
+                <th class="trans-code-el S1-el S3-el number">Price</th>
+                <th class="trans-code-el S1-el S3-el number">Subtotal</th>
+                <th class="trans-code-el S1-el S6-el S7-el S8-el S9-el"></th>
               </tr>
             </thead>
             <tfoot>
-              <tr class="discount-row">
+              <tr class="trans-code-el S1-el discount-row hide">
                 <td colspan="3"></td>
                 <th></th>
                 <th id="sub-total-amount" class="number"></th>
                 <td></td>
               </tr>
-              <tr class="discount-row">
+              <tr class="trans-code-el S1-el discount-row hide">
                 <td colspan="3"></td>
                 <td id="discount-percentage" class="number"></td>
                 <td id="discount-amount" class="number"></td>
@@ -201,8 +201,8 @@
                 <td></td>
                 <td></td>
                 <td></td>
-                <th class="number">Variance:</th>
-                <th id="variance" class="number"></th>
+                <th class="trans-code-el S1-el number">Variance:</th>
+                <th id="variance" class="trans-code-el S1-el number"></th>
                 <td></td>
               </tr>
             </tfoot>
@@ -215,13 +215,13 @@
               <td><textarea id="remarks" name="remarks"><?php echo $remarks; ?></textarea></td>
             </tr>
           </table>
-          <?php if ($status == "DRAFT" || $status == "SAVED") : ?>
-            <button name="status" type="submit" value="SAVED">Save</button>
+          <?php if ($status === "DRAFT" || $status === "SAVED") : ?>
+            <button name="action" type="submit" value="<?php echo $status === "DRAFT" ? "create" : "update"; ?>">Save</button>
           <?php endif ?>
           <button name="status" type="submit" value="<?php echo $status; ?>" formaction="<?php echo STOCK_OUT_PRINTOUT_URL; ?>">Print</button>
-          <?php if ($status == "SAVED") : ?>
-            <button name="status" type="submit" value="POSTED">Post</button>
-            <button name="status" type="submit" value="DELETED">Delete</button>
+          <?php if ($status === "SAVED") : ?>
+            <button name="action" type="submit" value="post">Post</button>
+            <button name="action" type="submit" value="delete">Delete</button>
           <?php endif ?>
         </form>
         <?php
@@ -356,7 +356,7 @@
                 + "</td>"
                 + "<td>"
                   + "<input "
-                    + "class=\"price option-field number\" "
+                    + "class=\"price trans-code-el S1-el number\" "
                     + "type=\"number\" "
                     + "step=\"0.000001\" "
                     + "min=\"0\" "
@@ -393,7 +393,7 @@
             }
 
             for (var k = 0; k < discountRowElements.length; k++) {
-              toggleClass(discountRowElements[k], "show", stockOutModels.length > 0 && discount > 0);
+              toggleClass(discountRowElements[k], "hide", stockOutModels.length === 0 || parseFloat(discount) === 0);
             }
 
             subTotalAmountElement.innerHTML = totalAmount.toFixed(2);
@@ -471,33 +471,30 @@
           }
 
           function onTransactionCodeChange() {
-            var miscCells = document.querySelectorAll(".misc-cell");
-            var s7Cells = document.querySelectorAll(".s7-cell");
-            var optionFields = document.querySelectorAll(".option-field");
-            var optionColumns = document.querySelectorAll(".option-column");
+            var allTransCodeElements = document.querySelectorAll(".trans-code-el");
+
+            for (var i = 0; i < allTransCodeElements.length; i++) {
+              toggleClass(allTransCodeElements[i], "hide", true);
+              allTransCodeElements[i].disabled = true;
+            }
+
             var transactionCode = transactionCodeElement.value;
-            var miscellaneous = transactionCode !== "S1" && transactionCode !== "S3";
+            var selectedTransCodeElements = document.querySelectorAll("." + transactionCode + "-el");
 
-            for (var i = 0; i < miscCells.length; i++) {
-              toggleClass(miscCells[i], "hide", miscellaneous);
+            for (var i = 0; i < selectedTransCodeElements.length; i++) {
+              toggleClass(selectedTransCodeElements[i], "hide", false);
+              selectedTransCodeElements[i].disabled = false;
             }
 
-            for (var i = 0; i < s7Cells.length; i++) {
-              toggleClass(s7Cells[i], "hide", miscellaneous && transactionCode !== "S7");
+            if (transactionCode === "S3") {
+              onDebtorCodeChange();
             }
 
-            for (var i = 0; i < optionFields.length; i++) {
-              optionFields[i].disabled = miscellaneous;
-            }
+            render();
+          }
 
-            for (var i = 0; i < optionColumns.length; i++) {
-              toggleClass(optionColumns[i], "hide", miscellaneous);
-            }
+          function onDebtorCodeChange() {
 
-            debtorCodeElement.disabled = transactionCode === "S3";
-            debtorCodeElement.hidden = transactionCode === "S3";
-            creditorCodeElement.disabled = transactionCode === "S1" || transactionCode === "S7";
-            creditorCodeElement.hidden = transactionCode === "S1" || transactionCode === "S7";
           }
 
           function onWarehouseCodeChange() {
@@ -512,10 +509,6 @@
             render();
           }
 
-          function onNetAmountChange() {
-            render();
-          }
-
           function onCurrencyCodeChange() {
             var currencyCode = currencyCodeElement.value;
 
@@ -525,12 +518,6 @@
             } else {
               exchangeRateElement.removeAttribute("readonly");
             }
-          }
-
-          function onExchangeRateChange() {
-          }
-
-          function onDiscountChange() {
           }
 
           function onPriceStandardChange() {
@@ -622,9 +609,7 @@
             }
           }
 
-          window.addEventListener("load", function () {
-            document.querySelector("#stock-out-form").reset();
-
+          function refreshStockOutModels() {
             for (var i = 0; i < stockOutModels.length; i++) {
               var stockOutModel = stockOutModels[i];
               var brandCode = stockOutModel["brand_code"];
@@ -634,10 +619,16 @@
               updateModel(i, getModels(modelNo, brandCode)[0]);
               updatePrice(i, price);
             }
+          }
 
-            render();
+          window.addEventListener("load", function () {
+            document.querySelector("#stock-out-form").reset();
+
+            refreshStockOutModels();
 
             onTransactionCodeChange();
+
+            render();
           });
         </script>
       <?php else : ?>

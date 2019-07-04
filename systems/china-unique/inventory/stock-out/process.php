@@ -11,7 +11,7 @@
   $discount = isset($_POST["discount"]) ? $_POST["discount"] : 0;
   $tax = $_POST["tax"];
   $remarks = $_POST["remarks"];
-  $status = $_POST["status"];
+  $action = $_POST["action"];
   $brandCodes = $_POST["brand_code"];
   $modelNos = $_POST["model_no"];
   $prices = isset($_POST["price"]) ? $_POST["price"] : array();
@@ -25,42 +25,30 @@
     assigned($warehouseCode) &&
     assigned($debtorCode) &&
     assigned($tax) &&
-    assigned($status) &&
+    assigned($action) &&
     assigned($brandCodes) &&
     assigned($modelNos) &&
     assigned($qtys)
   ) {
-    $queries = array();
+    $values = array();
 
-    /* If an id is given, remove the previous stock out voucher first. */
-    if (assigned($id)) {
-      array_push($queries, "DELETE a FROM `stock_out_model` AS a LEFT JOIN `stock_out_header` AS b ON a.stock_out_no=b.stock_out_no WHERE b.id=\"$id\"");
-      array_push($queries, "DELETE FROM `stock_out_header` WHERE id=\"$id\"");
-    }
+    for ($i = 0; $i < count($brandCodes); $i++) {
+      $brandCode = $brandCodes[$i];
+      $modelNo = $modelNos[$i];
+      $price = isset($prices[$i]) ? $prices[$i] : 0;
+      $qty = $qtys[$i];
 
-    /* If the status is not delete, insert a new stock out voucher. */
-    if ($status !== "DELETED") {
-
-      $values = array();
-
-      for ($i = 0; $i < count($brandCodes); $i++) {
-        $brandCode = $brandCodes[$i];
-        $modelNo = $modelNos[$i];
-        $price = isset($prices[$i]) ? $prices[$i] : 0;
-        $qty = $qtys[$i];
-
+      if ($qty > 0) {
         array_push($values, "(\"$stockOutNo\", \"$i\", \"$brandCode\", \"$modelNo\", \"$price\", \"$qty\")");
       }
+    }
 
-      if (count($values) > 0) {
-        array_push($queries, "
-          INSERT INTO
-            `stock_out_model`
-              (stock_out_no, stock_out_index, brand_code, model_no, price, qty)
-            VALUES
-        " . join(", ", $values));
-      }
+    $queries = array();
 
+    if ($action === "delete" && assigned($id)) {
+      array_push($queries, "DELETE a FROM `stock_out_model` AS a LEFT JOIN `stock_out_header` AS b ON a.stock_out_no=b.stock_out_no WHERE b.id=\"$id\"");
+      array_push($queries, "DELETE FROM `stock_out_header` WHERE id=\"$id\"");
+    } else if ($action === "create") {
       array_push($queries, "
         INSERT INTO
           `stock_out_header`
@@ -91,15 +79,58 @@
               \"$discount\",
               \"$tax\",
               \"$remarks\",
-              \"$status\"
+              \"SAVED\"
             )
       ");
 
-      execute($queries);
-
-      if ($status === "POSTED") {
-        execute(onPostStockOutVoucher($stockOutNo));
+      if (count($values) > 0) {
+        array_push($queries, "
+          INSERT INTO
+            `stock_out_model`
+              (stock_out_no, stock_out_index, brand_code, model_no, price, qty)
+            VALUES
+        " . join(", ", $values));
       }
+    } else if ($action === "update" || $action === "post" && assigned($id)) {
+      array_push($queries, "
+        UPDATE
+          `stock_out_header`
+        SET
+          stock_out_no=\"$stockOutNo\",
+          stock_out_date=\"$stockOutDate\",
+          transaction_code=\"$transactionCode\",
+          warehouse_code=\"$warehouseCode\",
+          debtor_code=\"$debtorCode\",
+          currency_code=\"$currencyCode\",
+          exchange_rate=\"$exchangeRate\",
+          net_amount=\"$netAmount\",
+          discount=\"$discount\",
+          tax=\"$tax\",
+          remarks=\"$remarks\",
+          status=\"SAVED\"
+        WHERE
+          id=\"$id\"
+      ");
+
+      array_push($queries, "DELETE a FROM `stock_out_model` AS a LEFT JOIN `stock_out_header` AS b ON a.stock_out_no=b.stock_out_no WHERE b.id=\"$id\"");
+
+      if (count($values) > 0) {
+        array_push($queries, "
+          INSERT INTO
+            `stock_out_model`
+              (stock_out_no, stock_out_index, brand_code, model_no, price, qty)
+            VALUES
+        " . join(", ", $values));
+      }
+    }
+
+    execute($queries);
+
+    if ($action === "post" && assigned($id) && assigned($stockOutNo)) {
+      $queries = array("UPDATE `stock_out_header` SET status=\"POSTED\" WHERE id=\"$id\"");
+      concat($queries, onPostStockOutVoucher($stockOutNo));
+
+      execute($queries);
     }
 
     header("Location: " . STOCK_OUT_SAVED_URL);
@@ -159,7 +190,7 @@
     $currencies[$currency["code"]] = $currency["rate"];
   }
   $transactionCodes = array_filter($TRANSACTION_CODES, function ($code) {
-    return strpos($code, "S") === 0 && $code != "S2";
+    return strpos($code, "S") === 0 && $code !== "S2";
   }, ARRAY_FILTER_USE_KEY);
 
   /* If an id is given, attempt to retrieve an existing stock out voucher. */
@@ -169,7 +200,7 @@
     $stockOutHeader = query("
       SELECT
         *,
-        DATE_FORMAT(stock_out_date, '%Y-%m-%d') AS `stock_out_date`
+        DATE_FORMAT(stock_out_date, \"%Y-%m-%d\") AS `stock_out_date`
       FROM
         `stock_out_header`
       WHERE id=\"$id\"

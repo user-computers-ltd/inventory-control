@@ -10,7 +10,6 @@ CREATE TABLE `stock_out_header` (
   `net_amount`        DECIMAL(16,6)   NOT NULL,
   `discount`          DECIMAL(5,2)    DEFAULT 0,
   `tax`               DECIMAL(5,2)    NOT NULL,
-  `return_voucher_no` VARCHAR(30)     NOT NULL,
   `remarks`           TEXT,
   `status`            VARCHAR(30)     DEFAULT "SAVED",
   PRIMARY KEY (`id`),

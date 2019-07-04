@@ -173,7 +173,7 @@
         `po_header` AS h
       ON m.po_no=h.po_no
       WHERE
-        h.status='POSTED'
+        h.status=\"POSTED\"
       GROUP BY
         m.brand_code, m.model_no) AS c
     ON a.model_no=c.model_no AND a.brand_code=c.brand_code
@@ -253,7 +253,7 @@
     $stockInHeader = query("
       SELECT
         *,
-        DATE_FORMAT(stock_in_date, '%Y-%m-%d') AS `stock_in_date`
+        DATE_FORMAT(stock_in_date, \"%Y-%m-%d\") AS `stock_in_date`
       FROM
         `stock_in_header`
       WHERE id=\"$id\"

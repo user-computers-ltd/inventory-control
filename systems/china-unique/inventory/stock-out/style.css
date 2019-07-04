@@ -1,3 +1,7 @@
+.hide {
+  display: none;
+}
+
 #discount + span {
   margin-left: -30px;
 }
@@ -9,10 +13,6 @@
 
 #stock-out-header {
   width: 100%;
-}
-
-#stock-out-header .hide {
-  display: none;
 }
 
 #stock-out-header td,
@@ -29,7 +29,8 @@
   text-align: right;
 }
 
-#stock-out-models .option-column.hide {
+#stock-out-models thead .trans-code-el.hide {
+  display: table-cell;
   width: 0px;
   white-space: nowrap;
 }
@@ -65,14 +66,6 @@
 
 #stock-out-models tfoot th {
   border-top: 1px solid;
-}
-
-#stock-out-models .discount-row {
-  display: none;
-}
-
-#stock-out-models .discount-row.show {
-  display: table-row;
 }
 
 #stock-out-models td > .remove {
