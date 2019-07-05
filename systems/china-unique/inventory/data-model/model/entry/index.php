@@ -75,7 +75,7 @@
                   </select>
                 </td>
                 <td>
-                  <input type="number" name="cost_pri_original" step="0.00000001" min="0" value="<?php echo $costPriOriginal; ?>" required />
+                  <input type="number" name="cost_pri_original" step="0.00000001" min="0" value="<?php echo $costPriOriginal; ?>" />
                 </td>
               </tr>
             </tr>
@@ -93,7 +93,7 @@
                 </select>
               </td>
               <td>
-                <input type="number" name="cost_sec_original" step="0.00000001" min="0" value="<?php echo $costSecOriginal; ?>" required />
+                <input type="number" name="cost_sec_original" step="0.00000001" min="0" value="<?php echo $costSecOriginal; ?>" />
               </td>
             </tr>
             <tr>

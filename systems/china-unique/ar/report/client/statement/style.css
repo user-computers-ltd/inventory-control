@@ -1,0 +1,40 @@
+#inv-input td {
+  border: none;
+  font-size: 13px;
+  padding: 0px 5px;
+}
+
+#inv-input input,
+#inv-input select {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#inv-results th,
+#inv-results td {
+  min-width: 0px;
+  max-width: 0px;
+}
+
+#inv-results td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#inv-results .overdue {
+  color: #cc3333;
+}
+
+#inv-results .number {
+  text-align: right;
+}
+
+.inv-client-no-results {
+  margin: 100px 0px;
+  text-align: center;
+  font-size: 40px;
+  font-weight: bold;
+  line-height: 48px;
+  opacity: 0.3;
+}

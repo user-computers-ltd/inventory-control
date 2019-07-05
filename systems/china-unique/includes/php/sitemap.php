@@ -8,6 +8,7 @@
   include_once "modules/ar-invoice.php";
   include_once "modules/ar-payment.php";
   include_once "modules/ar-credit-note.php";
+  include_once "modules/ar-report.php";
 
   /* Sitemap configuration in terms of access level. */
   $SITEMAP = array(
@@ -50,17 +51,20 @@
       "admin" => array(
         AR_INVOICE_TITLE      => $AR_INVOICE_MODULE,
         AR_PAYMENT_TITLE      => $AR_PAYMENT_MODULE,
-        AR_CREDIT_NOTE_TITLE  => $AR_CREDIT_NOTE_MODULE
+        AR_CREDIT_NOTE_TITLE  => $AR_CREDIT_NOTE_MODULE,
+        AR_REPORT_TITLE       => $AR_REPORT_MODULE
       ),
       "manager" => array(
         AR_INVOICE_TITLE      => $AR_INVOICE_MODULE,
         AR_PAYMENT_TITLE      => $AR_PAYMENT_MODULE,
-        AR_CREDIT_NOTE_TITLE  => $AR_CREDIT_NOTE_MODULE
+        AR_CREDIT_NOTE_TITLE  => $AR_CREDIT_NOTE_MODULE,
+        AR_REPORT_TITLE       => $AR_REPORT_MODULE
       ),
       "supervisor" => array(
         AR_INVOICE_TITLE      => $AR_INVOICE_MODULE,
         AR_PAYMENT_TITLE      => $AR_PAYMENT_MODULE,
-        AR_CREDIT_NOTE_TITLE  => $AR_CREDIT_NOTE_MODULE
+        AR_CREDIT_NOTE_TITLE  => $AR_CREDIT_NOTE_MODULE,
+        AR_REPORT_TITLE       => $AR_REPORT_MODULE
       ),
       "operator" => array(
 

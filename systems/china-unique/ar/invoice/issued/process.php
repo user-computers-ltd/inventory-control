@@ -51,7 +51,7 @@
       a.currency_code                                                                   AS `currency_code`,
       DATE_FORMAT(a.maturity_date, \"%d-%m-%Y\")                                        AS `maturity_date`,
       IFNULL(b.amount, 0)                                                               AS `amount`,
-      IFNULL(b.amount, 0) - IFNULL(d.settled_amount, 0) + IFNULL(e.credited_amount, 0)  AS `outstanding`
+      IFNULL(b.amount, 0) - IFNULL(d.settled_amount, 0) + IFNULL(e.credited_amount, 0)  AS `balance`
     FROM
       `ar_inv_header` AS a
     LEFT JOIN

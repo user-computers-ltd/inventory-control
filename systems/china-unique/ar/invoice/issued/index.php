@@ -62,7 +62,7 @@
                 <th>Code</th>
                 <th>Client</th>
                 <th class="number">Amount</th>
-                <th class="number">Outstanding</th>
+                <th class="number">Balance</th>
                 <th>Maturity Date</th>
                 <th></th>
               </tr>
@@ -70,7 +70,7 @@
             <tbody>
               <?php
                 $totalAmount = 0;
-                $totalOutstanding = 0;
+                $totalBalance = 0;
 
                 for ($i = 0; $i < count($invoiceHeaders); $i++) {
                   $invoiceHeader = $invoiceHeaders[$i];
@@ -82,11 +82,11 @@
                   $debtorName = $invoiceHeader["debtor_name"];
                   $currencyCode = $invoiceHeader["currency_code"];
                   $amount = $invoiceHeader["amount"];
-                  $outstanding = $invoiceHeader["outstanding"];
+                  $balance = $invoiceHeader["balance"];
                   $maturityDate = $invoiceHeader["maturity_date"];
 
                   $totalAmount += $amount;
-                  $totalOutstanding += $outstanding;
+                  $totalBalance += $balance;
 
                   echo "
                     <tr>
@@ -99,7 +99,7 @@
                       <td title=\"$debtorCode\">$debtorCode</td>
                       <td title=\"$debtorName\">$debtorName</td>
                       <td title=\"$amount\" class=\"number\">" . number_format($amount, 2) . "</td>
-                      <td title=\"$outstanding\" class=\"number\">" . number_format($outstanding, 2) . "</td>
+                      <td title=\"$balance\" class=\"number\">" . number_format($balance, 2) . "</td>
                       <td title=\"$maturityDate\">$maturityDate</td>
                       <td><a class=\"link\" href=\"" . AR_INVOICE_SETTLEMENT_URL . "?id=$id\">Settlement</a></td>
                     </tr>
@@ -114,7 +114,7 @@
                 <th></th>
                 <th class="number">Total:</th>
                 <th class="number"><?php echo number_format($totalAmount, 2); ?></th>
-                <th class="number"><?php echo number_format($totalOutstanding, 2); ?></th>
+                <th class="number"><?php echo number_format($totalBalance, 2); ?></th>
                 <th></th>
                 <th></th>
               </tr>

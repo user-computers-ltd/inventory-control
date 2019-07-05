@@ -1,0 +1,58 @@
+.date-category {
+  margin-top: 20px;
+  margin-bottom: 0px;
+}
+
+.statement-footer {
+  page-break-inside: avoid;
+}
+
+.statement-header,
+.statement-footer {
+  font-size: 13px;
+}
+
+.statement-header td,
+.statement-footer td {
+  border: none;
+}
+
+.statement-footer th {
+  border-top: 1px solid;
+  border-bottom: 1px solid;
+}
+
+.statement-header td:nth-child(2n + 1) {
+  width: 150px;
+  font-weight: bold;
+  vertical-align: top;
+}
+
+.statement-invoices th,
+.statement-invoices td {
+  background-color: transparent;
+  border: none;
+  padding: 4px;
+  font-size: 13px;
+}
+
+.statement-footer .number,
+.statement-invoices .number {
+  text-align: right;
+}
+
+.statement-invoices thead th {
+  border-bottom: 1px solid;
+}
+
+.statement-invoices tbody tr:last-child th {
+  border-top: 1px solid;
+}
+
+.statement-invoices-no-results {
+  text-align: center;
+  font-size: 40px;
+  font-weight: bold;
+  line-height: 200px;
+  opacity: 0.3;
+}

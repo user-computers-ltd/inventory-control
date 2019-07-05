@@ -6,10 +6,10 @@
   $description = $_POST["description"];
   $costPri = $_POST["cost_pri"];
   $costPriCurrencyCode = $_POST["cost_pri_currency_code"];
-  $costPriOriginal = $_POST["cost_pri_original"];
+  $costPriOriginal = assigned($_POST["cost_pri_original"]) ? $_POST["cost_pri_original"] : 0;
   $costSec = $_POST["cost_sec"];
   $costSecCurrencyCode = $_POST["cost_sec_currency_code"];
-  $costSecOriginal = $_POST["cost_sec_original"];
+  $costSecOriginal = assigned($_POST["cost_sec_original"]) ? $_POST["cost_sec_original"] : 0;
   $averageCost = $_POST["cost_average"];
   $retailNormal = $_POST["retail_normal"];
   $retailSpecial = $_POST["retail_special"];

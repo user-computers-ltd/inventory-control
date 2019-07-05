@@ -39,6 +39,7 @@
                 ?>
               </select>
               <span class="print-only"><?php echo $period; ?></span>
+            </td>
             <td>
               <select name="filter_debtor_code[]" multiple class="web-only">
                 <?php
