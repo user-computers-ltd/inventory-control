@@ -10,11 +10,11 @@
   $costSec = $_POST["cost_sec"];
   $costSecCurrencyCode = $_POST["cost_sec_currency_code"];
   $costSecOriginal = assigned($_POST["cost_sec_original"]) ? $_POST["cost_sec_original"] : 0;
-  $averageCost = $_POST["cost_average"];
+  $averageCost = assigned($_POST["cost_average"]) ? $_POST["cost_average"] : 0;
   $retailNormal = $_POST["retail_normal"];
   $retailSpecial = $_POST["retail_special"];
-  $wholesaleSpecial = $_POST["wholesale_special"];
-
+  $wholesaleNormal = assigned($_POST["wholesale_normal"]) ? $_POST["wholesale_normal"] : 0;
+  $wholesaleSpecial = assigned($_POST["wholesale_special"]) ? $_POST["wholesale_special"] : 0;
   /* If a form is submitted, update or insert the model. */
   if (
     assigned($modelNo) &&
@@ -26,10 +26,8 @@
     assigned($costSec) &&
     assigned($costSecCurrencyCode) &&
     assigned($costSecOriginal) &&
-    assigned($averageCost) &&
     assigned($retailNormal) &&
-    assigned($retailSpecial) &&
-    assigned($wholesaleSpecial)
+    assigned($retailSpecial)
   ) {
     $queries = array();
 
@@ -52,6 +50,7 @@
           cost_average=\"$averageCost\",
           retail_normal=\"$retailNormal\",
           retail_special=\"$retailSpecial\",
+          wholesale_normal=\"$wholesaleNormal\",
           wholesale_special=\"$wholesaleSpecial\"
         WHERE
           id=\"$id\"
@@ -74,6 +73,7 @@
             cost_average,
             retail_normal,
             retail_special,
+            wholesale_normal,
             wholesale_special
           )
         VALUES
@@ -91,6 +91,7 @@
             \"$averageCost\",
             \"$retailNormal\",
             \"$retailSpecial\",
+            \"$wholesaleNormal\",
             \"$wholesaleSpecial\"
           )
       ");
