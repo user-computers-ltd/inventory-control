@@ -38,15 +38,25 @@
 
   $paymentHeaders = query("
     SELECT
-      a.id                                        AS `id`,
-      DATE_FORMAT(a.payment_date, \"%d-%m-%Y\")   AS `date`,
-      a.payment_no                                AS `payment_no`,
-      a.debtor_code                               AS `debtor_code`,
-      IFNULL(c.english_name, \"Unknown\")         AS `debtor_name`,
-      a.currency_code                             AS `currency_code`,
-      a.amount                                    AS `amount`
+      a.id                                              AS `id`,
+      DATE_FORMAT(a.payment_date, \"%d-%m-%Y\")         AS `date`,
+      a.payment_no                                      AS `payment_no`,
+      a.debtor_code                                     AS `debtor_code`,
+      IFNULL(c.english_name, \"Unknown\")               AS `debtor_name`,
+      a.currency_code                                   AS `currency_code`,
+      ROUND(a.amount, 2)                                AS `amount`,
+      ROUND(a.amount - IFNULL(b.settled_amount, 0), 2)  AS `remaining`
     FROM
       `ar_payment` AS a
+    LEFT JOIN
+      (SELECT
+        payment_no    AS `payment_no`,
+        SUM(amount)   AS `settled_amount`
+      FROM
+        `ar_settlement`
+      GROUP BY
+        payment_no) AS b
+    ON a.payment_no=b.payment_no
     LEFT JOIN
       `debtor` AS c
     ON a.debtor_code=c.code

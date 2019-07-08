@@ -37,13 +37,14 @@
           <button type="submit" name="action" value="print" class="web-only">Print</button>
           <button type="submit" name="action" value="delete" style="display: none;"></button>
           <button type="button" onclick="confirmDelete(event)" class="web-only">Delete</button>
-          <table id="payment-results">
+          <table id="payment-results" class="sortable">
             <colgroup>
               <col class="web-only" style="width: 30px">
               <col style="width: 70px">
               <col>
               <col style="width: 80px">
               <col>
+              <col style="width: 150px">
               <col style="width: 150px">
             </colgroup>
             <thead>
@@ -55,11 +56,13 @@
                 <th>Code</th>
                 <th>Client</th>
                 <th class="number">Amount</th>
+                <th class="number">Remaining</th>
               </tr>
             </thead>
             <tbody>
               <?php
                 $totalAmountBase = 0;
+                $totalRemaining = 0;
 
                 for ($i = 0; $i < count($paymentHeaders); $i++) {
                   $paymentHeader = $paymentHeaders[$i];
@@ -69,8 +72,10 @@
                   $debtorCode = $paymentHeader["debtor_code"];
                   $debtorName = $paymentHeader["debtor_name"];
                   $amount = $paymentHeader["amount"];
+                  $remaining = $paymentHeader["remaining"];
 
                   $totalAmount += $amount;
+                  $totalRemaining += $remaining;
 
                   echo "
                     <tr>
@@ -82,6 +87,7 @@
                       <td title=\"$debtorCode\">$debtorCode</td>
                       <td title=\"$debtorName\">$debtorName</td>
                       <td title=\"$amount\" class=\"number\">" . number_format($amount, 2) . "</td>
+                      <td title=\"$remaining\" class=\"number\">" . number_format($remaining, 2) . "</td>
                     </tr>
                   ";
                 }
@@ -93,6 +99,7 @@
                 <th></th>
                 <th class="number">Total:</th>
                 <th class="number"><?php echo number_format($totalAmount, 2); ?></th>
+                <th class="number"><?php echo number_format($totalRemaining, 2); ?></th>
               </tr>
             </tbody>
           </table>

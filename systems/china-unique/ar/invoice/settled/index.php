@@ -35,7 +35,7 @@
       <?php if (count($invoiceHeaders) > 0) : ?>
         <form id="invoice-form" method="post">
           <button type="submit" name="action" value="print" class="web-only">Print</button>
-          <table id="invoice-results">
+          <table id="invoice-results" class="sortable">
             <colgroup>
               <col class="web-only" style="width: 30px">
               <col style="width: 70px">

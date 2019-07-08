@@ -39,7 +39,7 @@
           <button type="button" onclick="confirmDelete(event)" class="web-only">Delete</button>
           <button type="submit" name="action" value="cancel" style="display: none;"></button>
           <button type="button" onclick="confirmCancel(event)" class="web-only">Cancel</button>
-          <table id="invoice-results">
+          <table id="invoice-results" class="sortable">
             <colgroup>
               <col class="web-only" style="width: 30px">
               <col style="width: 70px">

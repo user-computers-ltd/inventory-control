@@ -38,15 +38,25 @@
 
   $creditNoteHeaders = query("
     SELECT
-      a.id                                            AS `id`,
-      DATE_FORMAT(a.credit_note_date, \"%d-%m-%Y\")   AS `date`,
-      a.credit_note_no                                AS `credit_note_no`,
-      a.debtor_code                                   AS `debtor_code`,
-      IFNULL(c.english_name, \"Unknown\")             AS `debtor_name`,
-      a.currency_code                                 AS `currency_code`,
-      a.amount                                        AS `amount`
+      a.id                                              AS `id`,
+      DATE_FORMAT(a.credit_note_date, \"%d-%m-%Y\")     AS `date`,
+      a.credit_note_no                                  AS `credit_note_no`,
+      a.debtor_code                                     AS `debtor_code`,
+      IFNULL(c.english_name, \"Unknown\")               AS `debtor_name`,
+      a.currency_code                                   AS `currency_code`,
+      a.amount                                          AS `amount`,
+      ROUND(a.amount - IFNULL(b.settled_amount, 0), 2)  AS `remaining`
     FROM
       `ar_credit_note` AS a
+    LEFT JOIN
+      (SELECT
+        credit_note_no    AS `credit_note_no`,
+        SUM(amount)       AS `settled_amount`
+      FROM
+        `ar_settlement`
+      GROUP BY
+        credit_note_no) AS b
+    ON a.credit_note_no=b.credit_note_no
     LEFT JOIN
       `debtor` AS c
     ON a.debtor_code=c.code
