@@ -24,7 +24,7 @@
         <div class="company-name"><?php echo COMPANY_NAME_CHI; ?></div>
         <div class="company-detail"><?php echo COMPANY_ADDRESS; ?></div>
         <div class="company-detail">電話: <?php echo COMPANY_TEL; ?></div>
-        <div class="company-sector headline web-only"><?php echo $sector; ?></div>
+        <div class="company-sector headline"><?php echo $sector; ?></div>
       </div>
     </div>
   </body>
