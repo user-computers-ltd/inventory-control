@@ -126,7 +126,7 @@
                 <th></th>
                 <th class="number">Total:</th>
                 <th class="number"><?php echo number_format($totalAmount, 2); ?></th>
-                <th></th>
+                <th class="number"><?php echo number_format($totalVariance, 2); ?></th>
               </tr>
             </tbody>
           </table>
