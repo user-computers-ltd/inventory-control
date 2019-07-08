@@ -78,7 +78,8 @@
       a.invoice_no IS NOT NULL
       $whereClause
     ORDER BY
-      DATE_FORMAT(a.invoice_date, \"%d-%m-%Y\") DESC
+      DATE_FORMAT(a.invoice_date, \"%d-%m-%Y\") DESC,
+      a.invoice_no ASC
     ");
 
     $debtors = query("
@@ -152,7 +153,7 @@
       <?php if (count($results) > 0) : ?>
         <table id="inv-results" class="sortable">
           <colgroup>
-            <col style="width: 70px">
+            <col style="width: 80px">
             <col>
             <col style="width: 80px">
             <col>

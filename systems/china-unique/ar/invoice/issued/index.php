@@ -57,6 +57,8 @@
       <?php if (count($invoiceHeaders) > 0) : ?>
         <form id="invoice-form" method="post">
           <button type="submit" name="action" value="print" class="web-only">Print</button>
+          <button type="submit" name="action" value="settle" style="display: none;"></button>
+          <button type="button" onclick="confirmSettle(event)" class="web-only">Settle</button>
           <button type="submit" name="action" value="delete" style="display: none;"></button>
           <button type="button" onclick="confirmDelete(event)" class="web-only">Delete</button>
           <button type="submit" name="action" value="cancel" style="display: none;"></button>
@@ -64,15 +66,15 @@
           <table id="invoice-results" class="sortable">
             <colgroup>
               <col class="web-only" style="width: 30px">
-              <col style="width: 70px">
+              <col style="width: 80px">
               <col style="width: 30px">
               <col>
               <col style="width: 80px">
               <col>
               <col style="width: 80px">
               <col style="width: 80px">
-              <col style="width: 70px">
-              <col style="width: 70px">
+              <col style="width: 80px">
+              <col style="width: 80px">
             </colgroup>
             <thead>
               <tr></tr>
@@ -145,8 +147,29 @@
         </form>
         <script>
           var invoiceFormElement = document.querySelector("#invoice-form");
+          var settleButtonElement = invoiceFormElement.querySelector("button[value=\"settle\"]");
           var deleteButtonElement = invoiceFormElement.querySelector("button[value=\"delete\"]");
           var cancelButtonElement = invoiceFormElement.querySelector("button[value=\"cancel\"]");
+
+          function confirmSettle(event) {
+            var checkedItems = invoiceFormElement.querySelectorAll("input[name=\"invoice_id[]\"]:checked");
+
+            if (checkedItems.length > 0) {
+              var listElement = "<ul>";
+
+              for (var i = 0; i < checkedItems.length; i++) {
+                listElement += "<li>" + checkedItems[i].dataset["invoice_no"] + "</li>";
+              }
+
+              listElement += "</ul>";
+
+              showConfirmDialog("<b>Are you sure you want to settle the following?</b><br/><br/>" + listElement, function () {
+                settleButtonElement.click();
+                setLoadingMessage("Settling...")
+                toggleLoadingScreen(true);
+              });
+            }
+          }
 
           function confirmDelete(event) {
             var checkedItems = invoiceFormElement.querySelectorAll("input[name=\"invoice_id[]\"]:checked");

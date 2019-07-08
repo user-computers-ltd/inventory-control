@@ -57,16 +57,18 @@
       <?php if (count($invoiceHeaders) > 0) : ?>
         <form id="invoice-form" method="post">
           <button type="submit" name="action" value="print" class="web-only">Print</button>
+          <button type="submit" name="action" value="reverse" style="display: none;"></button>
+          <button type="button" onclick="confirmReverse(event)" class="web-only">Reverse</button>
           <table id="invoice-results" class="sortable">
             <colgroup>
               <col class="web-only" style="width: 30px">
-              <col style="width: 70px">
+              <col style="width: 80px">
               <col style="width: 30px">
               <col>
               <col style="width: 80px">
               <col>
               <col style="width: 80px">
-              <col style="width: 70px">
+              <col style="width: 80px">
             </colgroup>
             <thead>
               <tr></tr>
@@ -78,12 +80,13 @@
                 <th>Code</th>
                 <th>Client</th>
                 <th class="number">Amount</th>
-                <th>Maturity Date</th>
+                <th class="number">Variance</th>
               </tr>
             </thead>
             <tbody>
               <?php
                 $totalAmount = 0;
+                $totalVariance = 0;
 
                 for ($i = 0; $i < count($invoiceHeaders); $i++) {
                   $invoiceHeader = $invoiceHeaders[$i];
@@ -94,9 +97,10 @@
                   $debtorCode = $invoiceHeader["debtor_code"];
                   $debtorName = $invoiceHeader["debtor_name"];
                   $amount = $invoiceHeader["amount"];
-                  $maturityDate = $invoiceHeader["maturity_date"];
+                  $variance = $invoiceHeader["variance"];
 
                   $totalAmount += $amount;
+                  $totalVariance += $variance;
 
                   echo "
                     <tr>
@@ -109,7 +113,7 @@
                       <td title=\"$debtorCode\">$debtorCode</td>
                       <td title=\"$debtorName\">$debtorName</td>
                       <td title=\"$amount\" class=\"number\">" . number_format($amount, 2) . "</td>
-                      <td title=\"$maturityDate\">$maturityDate</td>
+                      <td title=\"$variance\" class=\"number\">" . number_format($variance, 2) . "</td>
                     </tr>
                   ";
                 }
@@ -127,6 +131,30 @@
             </tbody>
           </table>
         </form>
+        <script>
+          var invoiceFormElement = document.querySelector("#invoice-form");
+          var reverseButtonElement = invoiceFormElement.querySelector("button[value=\"reverse\"]");
+
+          function confirmReverse(event) {
+            var checkedItems = invoiceFormElement.querySelectorAll("input[name=\"invoice_id[]\"]:checked");
+
+            if (checkedItems.length > 0) {
+              var listElement = "<ul>";
+
+              for (var i = 0; i < checkedItems.length; i++) {
+                listElement += "<li>" + checkedItems[i].dataset["invoice_no"] + "</li>";
+              }
+
+              listElement += "</ul>";
+
+              showConfirmDialog("<b>Are you sure you want to reverse the following?</b><br/><br/>" + listElement, function () {
+                reverseButtonElement.click();
+                setLoadingMessage("Settling...")
+                toggleLoadingScreen(true);
+              });
+            }
+          }
+        </script>
       <?php else : ?>
         <div class="invoice-client-no-results">No results</div>
       <?php endif ?>

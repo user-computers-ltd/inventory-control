@@ -7,12 +7,17 @@
   if (assigned($action) && assigned($invoiceIds) && count($invoiceIds) > 0) {
     $queries = array();
 
+    $headerWhereClause = join(" OR ", array_map(function ($i) { return "id=\"$i\""; }, $invoiceIds));
     $printoutParams = join("&", array_map(function ($i) { return "id[]=$i"; }, $invoiceIds));
 
-    if ($action === "print") {
+    if ($action === "reverse") {
+      array_push($queries, "UPDATE `ar_inv_header` SET status=\"SAVED\" WHERE $headerWhereClause");
+    } else if ($action === "print") {
       header("Location: " . AR_INVOICE_PRINTOUT_URL . "?$printoutParams");
       exit(0);
     }
+
+    execute($queries);
   }
 
   $filterDebtorCodes = $_GET["filter_debtor_code"];
@@ -36,15 +41,16 @@
 
   $invoiceHeaders = query("
     SELECT
-      a.id                                        AS `id`,
-      DATE_FORMAT(a.invoice_date, \"%d-%m-%Y\")   AS `date`,
-      b.count                                     AS `count`,
-      a.invoice_no                                AS `invoice_no`,
-      a.debtor_code                               AS `debtor_code`,
-      IFNULL(c.english_name, \"Unknown\")         AS `debtor_name`,
-      a.currency_code                             AS `currency_code`,
-      DATE_FORMAT(a.maturity_date, \"%d-%m-%Y\")  AS `maturity_date`,
-      IFNULL(b.amount, 0)                         AS `amount`
+      a.id                                                                                        AS `id`,
+      DATE_FORMAT(a.invoice_date, \"%d-%m-%Y\")                                                   AS `date`,
+      b.count                                                                                     AS `count`,
+      a.invoice_no                                                                                AS `invoice_no`,
+      a.debtor_code                                                                               AS `debtor_code`,
+      IFNULL(c.english_name, \"Unknown\")                                                         AS `debtor_name`,
+      a.currency_code                                                                             AS `currency_code`,
+      DATE_FORMAT(a.maturity_date, \"%d-%m-%Y\")                                                  AS `maturity_date`,
+      ROUND(IFNULL(b.amount, 0), 2)                                                               AS `amount`,
+      ROUND(IFNULL(b.amount, 0) - IFNULL(d.settled_amount, 0) + IFNULL(e.credited_amount, 0), 2)  AS `variance`
     FROM
       `ar_inv_header` AS a
     LEFT JOIN
@@ -60,6 +66,24 @@
     LEFT JOIN
       `debtor` AS c
     ON a.debtor_code=c.code
+    LEFT JOIN
+      (SELECT
+        invoice_no    AS `invoice_no`,
+        SUM(amount)   AS `settled_amount`
+      FROM
+        `ar_settlement`
+      GROUP BY
+        invoice_no) AS d
+    ON a.invoice_no=d.invoice_no
+    LEFT JOIN
+      (SELECT
+        invoice_no    AS `invoice_no`,
+        SUM(amount)   AS `credited_amount`
+      FROM
+        `ar_credit_note`
+      GROUP BY
+        invoice_no) AS e
+    ON a.invoice_no=e.invoice_no
     WHERE
       a.status=\"SETTLED\"
       $whereClause

@@ -216,7 +216,7 @@
       <?php if (count($transactions) > 0) : ?>
         <table id="trans-results" class="sortable">
           <colgroup>
-            <col style="width: 70px">
+            <col style="width: 80px">
             <col>
             <col style="width: 60px">
             <col>

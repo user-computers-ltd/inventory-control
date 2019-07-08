@@ -64,13 +64,13 @@
           <table id="invoice-results" class="sortable">
             <colgroup>
               <col class="web-only" style="width: 30px">
-              <col style="width: 70px">
+              <col style="width: 80px">
               <col style="width: 30px">
               <col>
               <col style="width: 80px">
               <col>
               <col style="width: 80px">
-              <col style="width: 70px">
+              <col style="width: 80px">
             </colgroup>
             <thead>
               <tr></tr>

@@ -58,9 +58,11 @@
       `debtor` AS e
     ON a.debtor_code=e.code
     WHERE
-      a.status=\"SAVED\"
+      a.status=\"SAVED\" AND
+      ROUND(IFNULL(b.amount, 0) - IFNULL(c.settled_amount, 0) + IFNULL(d.credited_amount, 0), 2)
       $whereClause
     ORDER BY
+      a.debtor_code ASC,
       DATE_FORMAT(a.invoice_date, \"%d-%m-%Y\") DESC
     ");
 
@@ -88,6 +90,36 @@
       LEFT JOIN
         `debtor` AS b
       ON a.debtor_code=b.code
+      LEFT JOIN
+        (SELECT
+          COUNT(*)                                  AS `count`,
+          invoice_no                                AS `invoice_no`,
+          SUM(amount)                               AS `amount`
+        FROM
+          `ar_inv_item`
+        GROUP BY
+          invoice_no) AS c
+      ON a.invoice_no=c.invoice_no
+      LEFT JOIN
+        (SELECT
+          invoice_no                                  AS `invoice_no`,
+          SUM(amount)                                 AS `settled_amount`
+        FROM
+          `ar_settlement`
+        GROUP BY
+          invoice_no) AS d
+      ON a.invoice_no=d.invoice_no
+      LEFT JOIN
+        (SELECT
+          invoice_no    AS `invoice_no`,
+          SUM(amount)   AS `credited_amount`
+        FROM
+          `ar_credit_note`
+        GROUP BY
+          invoice_no) AS e
+      ON a.invoice_no=e.invoice_no
+      WHERE
+        ROUND(IFNULL(c.amount, 0) - IFNULL(d.settled_amount, 0) + IFNULL(e.credited_amount, 0), 2) > 0
       ORDER BY
         code ASC
     ");
@@ -136,12 +168,14 @@
         </table>
       </form>
       <?php if (count($debtorResults) > 0) : ?>
+        <?php $grandInvAmount = 0; ?>
+        <?php $grandTotalBalance = 0; ?>
         <?php foreach ($debtorResults as $debtorName => $results) : ?>
           <h4><?php echo $debtorName; ?></h4>
           <table id="inv-results" class="sortable">
             <colgroup>
-              <col style="width: 70px">
-              <col style="width: 70px">
+              <col style="width: 80px">
+              <col style="width: 80px">
               <col>
               <col style="width: 80px">
               <col style="width: 80px">
@@ -175,6 +209,8 @@
 
                   $totalInvAmount += $invoiceAmount;
                   $totalBalance += $balance;
+                  $grandInvAmount += $invoiceAmount;
+                  $grandTotalBalance += $balance;
 
                   echo "
                     <tr>
@@ -199,6 +235,24 @@
             </tbody>
           </table>
         <?php endforeach ?>
+        <table id="inv-results">
+          <colgroup>
+            <col style="width: 80px">
+            <col style="width: 80px">
+            <col>
+            <col style="width: 80px">
+            <col style="width: 80px">
+          </colgroup>
+          <tbody>
+            <tr>
+              <th></th>
+              <th></th>
+              <th class="number">Grand Total:</th>
+              <th class="number"><?php echo number_format($grandInvAmount, 2); ?></th>
+              <th class="number"><?php echo number_format($grandTotalBalance, 2); ?></th>
+            </tr>
+          </tbody>
+        </table>
       <?php else : ?>
         <div class="inv-client-no-results">No results</div>
       <?php endif ?>

@@ -20,6 +20,8 @@
       array_push($queries, "DELETE a FROM `ar_settlement` AS a LEFT JOIN `ar_inv_header` AS b ON a.invoice_no=b.invoice_no WHERE $modelWhereClause");
       array_push($queries, "DELETE a, c FROM `ar_credit_note` AS a LEFT JOIN `ar_inv_header` AS b ON a.invoice_no=b.invoice_no LEFT JOIN `ar_settlement` AS c ON a.credit_note_no=c.credit_note_no WHERE $modelWhereClause");
       array_push($queries, "UPDATE `ar_inv_header` SET status=\"CANCELLED\" WHERE $headerWhereClause");
+    } else if ($action === "settle") {
+      array_push($queries, "UPDATE `ar_inv_header` SET status=\"SETTLED\" WHERE $headerWhereClause");
     } else if ($action === "print") {
       header("Location: " . AR_INVOICE_PRINTOUT_URL . "?$printoutParams");
       exit(0);
@@ -49,16 +51,16 @@
 
   $invoiceHeaders = query("
     SELECT
-      a.id                                                                              AS `id`,
-      DATE_FORMAT(a.invoice_date, \"%d-%m-%Y\")                                         AS `date`,
-      b.count                                                                           AS `count`,
-      a.invoice_no                                                                      AS `invoice_no`,
-      a.debtor_code                                                                     AS `debtor_code`,
-      IFNULL(c.english_name, \"Unknown\")                                               AS `debtor_name`,
-      a.currency_code                                                                   AS `currency_code`,
-      DATE_FORMAT(a.maturity_date, \"%d-%m-%Y\")                                        AS `maturity_date`,
-      IFNULL(b.amount, 0)                                                               AS `amount`,
-      IFNULL(b.amount, 0) - IFNULL(d.settled_amount, 0) + IFNULL(e.credited_amount, 0)  AS `balance`
+      a.id                                                                                        AS `id`,
+      DATE_FORMAT(a.invoice_date, \"%d-%m-%Y\")                                                   AS `date`,
+      b.count                                                                                     AS `count`,
+      a.invoice_no                                                                                AS `invoice_no`,
+      a.debtor_code                                                                               AS `debtor_code`,
+      IFNULL(c.english_name, \"Unknown\")                                                         AS `debtor_name`,
+      a.currency_code                                                                             AS `currency_code`,
+      DATE_FORMAT(a.maturity_date, \"%d-%m-%Y\")                                                  AS `maturity_date`,
+      ROUND(IFNULL(b.amount, 0), 2)                                                               AS `amount`,
+      ROUND(IFNULL(b.amount, 0) - IFNULL(d.settled_amount, 0) + IFNULL(e.credited_amount, 0), 2)  AS `balance`
     FROM
       `ar_inv_header` AS a
     LEFT JOIN

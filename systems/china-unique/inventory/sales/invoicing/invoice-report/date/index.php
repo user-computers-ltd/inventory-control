@@ -81,17 +81,17 @@
           <h4><?php echo $currency; ?></h4>
           <table class="invoice-results sortable">
             <colgroup>
-              <col style="width: 70px">
+              <col style="width: 80px">
               <col style="width: 50px">
               <col>
               <col style="width: 120px">
               <col style="width: 120px">
-              <col style="width: 70px">
               <col style="width: 80px">
               <col style="width: 80px">
-              <col style="width: 70px">
               <col style="width: 80px">
-              <col style="width: 70px">
+              <col style="width: 80px">
+              <col style="width: 80px">
+              <col style="width: 80px">
               <col style="width: 80px">
               <col style="width: 100px">
               <col style="width: 60px">
