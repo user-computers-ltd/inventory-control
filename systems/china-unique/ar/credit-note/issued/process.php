@@ -24,7 +24,14 @@
     execute($queries);
   }
 
+  $filterDebtorCodes = $_GET["filter_debtor_code"];
+
   $whereClause = "";
+
+  if (assigned($filterDebtorCodes) && count($filterDebtorCodes) > 0) {
+    $whereClause = $whereClause . "
+      AND (" . join(" OR ", array_map(function ($d) { return "a.debtor_code=\"$d\""; }, $filterDebtorCodes)) . ")";
+  }
 
   if (assigned($from)) {
     $whereClause = $whereClause . "
@@ -65,5 +72,18 @@
       $whereClause
     ORDER BY
       a.credit_note_date DESC
+  ");
+
+  $debtors = query("
+    SELECT DISTINCT
+      a.debtor_code                         AS `code`,
+      IFNULL(b.english_name, \"Unknown\")   AS `name`
+    FROM
+      `ar_credit_note` AS a
+    LEFT JOIN
+      `debtor` AS b
+    ON a.debtor_code=b.code
+    ORDER BY
+      code ASC
   ");
 ?>

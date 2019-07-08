@@ -24,10 +24,32 @@
           <tr>
             <th>From:</th>
             <th>To:</th>
+            <th>Client:</th>
           </tr>
           <tr>
             <td><input type="date" name="from" value="<?php echo $from; ?>" max="<?php echo date("Y-m-d"); ?>" /></td>
             <td><input type="date" name="to" value="<?php echo $to; ?>" max="<?php echo date("Y-m-d"); ?>" /></td>
+            <td>
+              <select name="filter_debtor_code[]" multiple class="web-only">
+                <?php
+                  foreach ($debtors as $debtor) {
+                    $code = $debtor["code"];
+                    $name = $debtor["name"];
+                    $selected = assigned($filterDebtorCodes) && in_array($code, $filterDebtorCodes) ? "selected" : "";
+                    echo "<option value=\"$code\" $selected>$code - $name</option>";
+                  }
+                ?>
+              </select>
+              <span class="print-only">
+                <?php
+                  echo assigned($filterDebtorCodes) ? join(", ", array_map(function ($d) {
+                    return $d["code"] . " - " . $d["name"];
+                  }, array_filter($debtors, function ($i) use ($filterDebtorCodes) {
+                    return in_array($i["code"], $filterDebtorCodes);
+                  }))) : "ALL";
+                ?>
+              </span>
+            </td>
             <td><button type="submit">Go</button></td>
           </tr>
         </table>
