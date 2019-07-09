@@ -217,9 +217,8 @@
                     + "onchange=\"onPaymentNoChange(event, " + i + ")\" "
                     + "onfocus=\"onFieldFocused(" + i + ", 'payment_no[]')\" "
                     + "onblur=\"onFieldBlurred()\" "
-                    + (source === "payment" ? "required" : "")
                   + ">"
-                    + "<option value=\"\"></option>";
+                    + "<option value=\"\">- New payment -</option>";
 
               if (paymentListElement) {
                 for (var j = 0; j < paymentListElement.children.length; j++) {
@@ -236,7 +235,7 @@
                   + "<select "
                     + "class=\"credit-note-no " + (source === "credit"  ? "" : "hide") + "\" "
                     + "name=\"credit_note_no[]\" "
-                    + "onchange=\"onStockOutNoChange(event, " + i + ")\" "
+                    + "onchange=\"onCreditNoteNoChange(event, " + i + ")\" "
                     + "onfocus=\"onFieldFocused(" + i + ", 'credit_note_no[]')\" "
                     + "onblur=\"onFieldBlurred()\" "
                     + (source === "credit" ? "required" : "")
@@ -255,13 +254,17 @@
               rowInnerHTML += "</select>"
                 + "</td>"
                 + "<td>"
-                  + "<span class=\"number\">" + settlemntVoucher["amount_settlable"] + "</span>"
+                  + "<span class=\"number\">" + (settlemntVoucher["payment_no"] || settlemntVoucher["credit_note_no"] ? settlemntVoucher["amount_settlable"] : "-") + "</span>"
                 + "</td>"
                 + "<td>"
                   + "<input "
                     + "class=\"amount number\" "
                     + "type=\"number\" "
                     + "step=\"0.01\" "
+                    + "min=\"1\""
+                    + (settlemntVoucher["payment_no"] || settlemntVoucher["credit_note_no"]
+                      ? "max=\"" + Math.max(0, settlemntVoucher["amount_settlable"]) + "\""
+                      : "")
                     + "name=\"amount[]\" "
                     + "value=\"" + settlemntVoucher["amount"].toFixed(2) + "\" "
                     + "onchange=\"onAmountChange(event, " + i + ")\" "
@@ -370,7 +373,7 @@
             onFieldBlurred();
           }
 
-          function onStockOutNoChange(event, index) {
+          function onCreditNoteNoChange(event, index) {
             var newStockOutNo = event.target.value;
             var matchedVoucher = getCreditNoteVouchers(newStockOutNo)[0];
             var settlemntVoucher = settlemntVouchers[index];

@@ -15,7 +15,7 @@
   </head>
   <body>
     <div id="page-wrapper">
-      <h1>Inentory Control</h1>
+      <h1>Inventory Control</h1>
       <div id="system-list">
         <?php
           foreach ($systems as $system) {
