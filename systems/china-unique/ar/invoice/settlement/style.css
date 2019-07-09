@@ -44,6 +44,7 @@
 }
 
 #invoice-vouchers td > .payment-no.hide,
+#invoice-vouchers td > .new-payment-no.hide,
 #invoice-vouchers td > .credit-note-no.hide {
   display: none;
 }

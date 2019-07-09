@@ -37,7 +37,11 @@
     } else if ($action === "update" && assigned($id)) {
       $oldCreditNote = query("SELECT * FROM `ar_credit_note` WHERE id=\"$id\"")[0];
 
-      if ($oldCreditNote["debtor_code"] !== $debtorCode || $oldCreditNote["currency_code"] !== $currencyCode) {
+      if (
+        $oldCreditNote["credit_note_no"] !== $creditNoteNo ||
+        $oldCreditNote["debtor_code"] !== $debtorCode ||
+        $oldCreditNote["currency_code"] !== $currencyCode
+      ) {
         array_push($queries, "DELETE a FROM `ar_settlement` AS a LEFT JOIN `ar_credit_note` AS b ON a.credit_note_no=b.credit_note_no WHERE b.id=\"$id\"");
       }
 

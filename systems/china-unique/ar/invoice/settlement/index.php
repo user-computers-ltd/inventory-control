@@ -232,6 +232,15 @@
               }
 
               rowInnerHTML += "</select>"
+                  + "<input "
+                    + "name=\"new_payment_no[]\" "
+                    + "value=\"" + settlemntVoucher["new_payment_no"] + "\" "
+                    + "class=\"new-payment-no " + (source === "payment" && settlemntVoucher["payment_no"] === "" ? "" : "hide") + "\" "
+                    + "onchange=\"onNewPaymentNoChange(event, " + i + ")\" "
+                    + "onfocus=\"onFieldFocused(" + i + ", 'new_payment_no[]')\" "
+                    + "onblur=\"onFieldBlurred()\" "
+                    + (source === "payment" && settlemntVoucher["payment_no"] === "" ? "required" : "")
+                 + "/>"
                   + "<select "
                     + "class=\"credit-note-no " + (source === "credit"  ? "" : "hide") + "\" "
                     + "name=\"credit_note_no[]\" "
@@ -315,6 +324,7 @@
             var settlemntVoucher = settlemntVouchers[index];
 
             settlemntVoucher["payment_no"] = voucher["payment_no"] || "";
+            settlemntVoucher["new_payment_no"] = voucher["new_payment_no"] || "";
             settlemntVoucher["credit_note_no"] = voucher["credit_note_no"] || "";
             settlemntVoucher["source"] = voucher["credit_note_no"] ? "credit" : "payment";
             settlemntVoucher["amount_settlable"] = parseFloat(voucher["amount"]) || 0;
@@ -351,6 +361,12 @@
           function onSourceChange(source, index) {
             updateSource(index, source);
             render();
+          }
+
+          function onNewPaymentNoChange(event, index) {
+            updateVoucher(index, { "new_payment_no": event.target.value });
+            render();
+            onFieldBlurred();
           }
 
           function onPaymentNoChange(event, index) {
@@ -396,6 +412,7 @@
           function onAmountChange(event, index) {
             updateAmount(index, event.target.value);
             render();
+            onFieldBlurred();
           }
 
           function onAmountKeyDown(event, index) {

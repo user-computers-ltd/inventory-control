@@ -33,9 +33,13 @@
             (\"$paymentNo\", \"$paymentDate\", \"$debtorCode\", \"$currencyCode\", \"$exchangeRate\", \"$amount\", \"$remarks\", \"SAVED\")
       ");
     } else if ($action === "update" && assigned($id)) {
-      $oldPayment = query("SELECT * FROM `ar_credit_note` WHERE id=\"$id\"")[0];
+      $oldPayment = query("SELECT * FROM `ar_payment` WHERE id=\"$id\"")[0];
 
-      if ($oldPayment["debtor_code"] !== $debtorCode || $oldPayment["currency_code"] !== $currencyCode) {
+      if (
+        $oldPayment["payment_no"] !== $paymentNo ||
+        $oldPayment["debtor_code"] !== $debtorCode ||
+        $oldPayment["currency_code"] !== $currencyCode
+      ) {
         array_push($queries, "DELETE a FROM `ar_settlement` AS a LEFT JOIN `ar_payment` AS b ON a.payment_no=b.payment_no WHERE b.id=\"$id\"");
       }
 

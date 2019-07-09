@@ -1,6 +1,7 @@
 <?php
   $id = $_GET["id"];
   $paymentNos = $_POST["payment_no"];
+  $newPaymentNos = $_POST["new_payment_no"];
   $creditNoteNos = $_POST["credit_note_no"];
   $amounts = $_POST["amount"];
 
@@ -57,20 +58,19 @@
 
         for ($i = 0; $i < count($paymentNos); $i++) {
           $paymentNo = $paymentNos[$i];
+          $newPaymentNo = $newPaymentNos[$i];
           $creditNoteNo = $creditNoteNos[$i];
           $amount = $amounts[$i];
 
-          if (!assigned($creditNoteNo) && !assigned($paymentNo) && assigned($amount)) {
-            $paymentNo = "PY" . date("YmdHis");
-            $paymentDate = date("Y-m-d");
-            
+          if (!assigned($creditNoteNo) && !assigned($paymentNo) && assigned($newPaymentNo) && assigned($amount)) {
             array_push($queries, "
               INSERT INTO
                 `ar_payment`
                   (payment_no, payment_date, debtor_code, currency_code, exchange_rate, amount, remarks, status)
                 VALUES
-                  (\"$paymentNo\", \"$paymentDate\", \"$debtorCode\", \"$currencyCode\", \"$exchangeRate\", \"$amount\", \"$remarks\", \"SAVED\")
+                  (\"$newPaymentNo\", \"" . date("Y-m-d") . "\", \"$debtorCode\", \"$currencyCode\", \"$exchangeRate\", \"$amount\", \"$remarks\", \"SAVED\")
             ");
+            $paymentNo = $newPaymentNo;
           }
 
           array_push($values, "(\"$i\", \"$invoiceNo\", \"$paymentNo\", \"$creditNoteNo\", \"$amount\")");
