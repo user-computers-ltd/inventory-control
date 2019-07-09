@@ -78,7 +78,8 @@
       a.status=\"SAVED\"
       $whereClause
     ORDER BY
-      a.payment_date DESC
+      a.payment_date DESC,
+      a.payment_no ASC
   ");
 
   $debtors = query("
