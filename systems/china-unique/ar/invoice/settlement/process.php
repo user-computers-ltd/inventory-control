@@ -4,6 +4,7 @@
   $newPaymentNos = $_POST["new_payment_no"];
   $creditNoteNos = $_POST["credit_note_no"];
   $amounts = $_POST["amount"];
+  $action = $_POST["action"];
 
   if (assigned($id)) {
 
@@ -42,12 +43,7 @@
       $status = $invoice["status"];
       $settlemntVouchers = query("SELECT * FROM `ar_settlement` WHERE invoice_no=\"$invoiceNo\" ORDER BY settlement_index ASC");
 
-      /* If a form is submitted, update or insert the outbound invoice. */
-      if (
-        assigned($paymentNos) &&
-        assigned($creditNoteNos) &&
-        assigned($amounts)
-      ) {
+      if ($action === "save") {
         $queries = array();
 
         /* Remove the previous settlements. */

@@ -110,7 +110,7 @@
               </tr>
             </table>
           <?php endif ?>
-          <button type="submit">Save</button>
+          <button name="action" value="save" type="submit">Save</button>
         </form>
         <?php
           echo "<datalist id=\"payment-voucher-list\">";
