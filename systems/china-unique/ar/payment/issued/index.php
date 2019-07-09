@@ -52,6 +52,23 @@
             </td>
             <td><button type="submit">Go</button></td>
           </tr>
+          <tr>
+            <th colspan="3">
+              <input
+                id="deposit-only"
+                type="checkbox"
+                onchange="onDepositOnlyChanged(event)"
+                <?php echo $showMode == "deposit_only" ? "checked" : "" ?>
+              />
+              <label for="deposit-only">Deposits only</label>
+              <input
+                id="input-show-mode"
+                type="hidden"
+                name="show_mode"
+                value="<?php echo $showMode; ?>"
+              />
+            </th>
+          </tr>
         </table>
       </form>
       <?php if (count($paymentHeaders) > 0) : ?>
@@ -148,6 +165,12 @@
                 toggleLoadingScreen(true);
               });
             }
+          }
+
+          function onDepositOnlyChanged(event) {
+            var showMode = event.target.checked ? "deposit_only" : "show_all";
+            document.querySelector("#input-show-mode").value = showMode;
+            event.target.form.submit();
           }
         </script>
       <?php else : ?>

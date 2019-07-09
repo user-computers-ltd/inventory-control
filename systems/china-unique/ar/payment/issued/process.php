@@ -5,6 +5,7 @@
   $to = $_GET["to"];
   $action = $_POST["action"];
   $paymentIds = $_POST["payment_id"];
+  $showMode = assigned($_GET["show_mode"]) ? $_GET["show_mode"] : "live_only";
 
   if (assigned($action) && assigned($paymentIds) && count($paymentIds) > 0) {
     $queries = array();
@@ -41,6 +42,12 @@
   if (assigned($to)) {
     $whereClause = $whereClause . "
       AND a.payment_date <= \"$to\"";
+  }
+
+  if ($showMode === "deposit_only") {
+    $whereClause = $whereClause . "
+      AND ROUND(a.amount - IFNULL(b.settled_amount, 0), 2) > 0
+    ";
   }
 
   $paymentHeaders = query("

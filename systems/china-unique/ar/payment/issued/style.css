@@ -9,6 +9,11 @@
   box-sizing: border-box;
 }
 
+#payment-input #deposit-only {
+  width: auto;
+  margin: 0px;
+}
+
 #payment-results td {
   min-width: 0px;
   max-width: 0px;

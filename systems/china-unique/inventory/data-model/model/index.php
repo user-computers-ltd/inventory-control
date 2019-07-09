@@ -21,7 +21,7 @@
       AND (" . join(" OR ", array_map(function ($i) { return "a.model_no=\"$i\""; }, $filterModelNos)) . ")";
   }
 
-  if ($showMode == "live_only") {
+  if ($showMode === "live_only") {
     $whereClause = $whereClause . "
       AND (
         IFNULL(c.qty_on_hand, 0)>0 OR
