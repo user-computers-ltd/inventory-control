@@ -75,7 +75,7 @@
       `debtor` AS e
     ON a.debtor_code=e.code
     WHERE
-      a.invoice_no IS NOT NULL
+      a.status=\"SAVED\" OR a.status=\"SETTLED\"
       $whereClause
     ORDER BY
       DATE_FORMAT(a.invoice_date, \"%d-%m-%Y\") DESC,
@@ -91,6 +91,8 @@
       LEFT JOIN
         `debtor` AS b
       ON a.debtor_code=b.code
+      WHERE
+        a.status=\"SAVED\" OR a.status=\"SETTLED\"
       ORDER BY
         code ASC
     ");

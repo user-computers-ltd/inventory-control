@@ -8,7 +8,8 @@
   /* If an id is given, retrieve from an existing stock out voucher. */
   if (assigned($ids) && count($ids) > 0) {
     $headerWhereClause = join(" OR ", array_map(function ($i) { return "id=\"$i\""; }, $ids));
-    $modelWhereClause = join(" OR ", array_map(function ($i) { return "e.id=\"$i\""; }, $ids));
+    $modelWhereClause = "
+      AND (" . join(" OR ", array_map(function ($i) { return "e.id=\"$i\""; }, $ids)) . ")";
 
     $statementHeaders = query("
       SELECT
@@ -75,8 +76,8 @@
         `debtor` AS e
       ON a.debtor_code=e.code
       WHERE
-        a.status=\"SAVED\" AND
-        ($modelWhereClause)
+        a.status=\"SAVED\"
+        $modelWhereClause
       ORDER BY
         a.invoice_date ASC
       ");

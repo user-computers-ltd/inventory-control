@@ -64,7 +64,7 @@
       `debtor` AS e
     ON a.debtor_code=e.code
     WHERE
-      a.invoice_no IS NOT NULL
+      a.status=\"SAVED\" OR a.status=\"SETTLED\"
       $whereClause
     GROUP BY
       a.debtor_code
@@ -81,6 +81,8 @@
       LEFT JOIN
         `debtor` AS b
       ON a.debtor_code=b.code
+      WHERE
+        a.status=\"SAVED\" OR a.status=\"SETTLED\"
       ORDER BY
         code ASC
     ");
