@@ -68,6 +68,7 @@
       a.status=\"SAVED\" AND b.count > 0
       $whereClause
     ORDER BY
-      a.invoice_date DESC
+      a.invoice_date DESC,
+      a.invoice_no ASC
   ");
 ?>
