@@ -5,6 +5,7 @@ CREATE TABLE `ar_settlement` (
   `payment_no`        VARCHAR(30)   NOT NULL,
   `credit_note_no`    VARCHAR(30)   NOT NULL,
   `amount`            DECIMAL(16,6) NOT NULL,
+  `settle_remarks`    TEXT,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_index` (`invoice_no`, `payment_no`, `credit_note_no`)
 );

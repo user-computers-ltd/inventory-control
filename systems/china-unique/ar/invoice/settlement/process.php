@@ -4,6 +4,7 @@
   $newPaymentNos = $_POST["new_payment_no"];
   $creditNoteNos = $_POST["credit_note_no"];
   $amounts = $_POST["amount"];
+  $settleRemarkss = $_POST["settle_remarks"];
   $action = $_POST["action"];
 
   if (assigned($id)) {
@@ -43,7 +44,7 @@
       $status = $invoice["status"];
       $settlemntVouchers = query("SELECT * FROM `ar_settlement` WHERE invoice_no=\"$invoiceNo\" ORDER BY settlement_index ASC");
 
-      if ($action === "save") {
+      if ($action === "save" || $action === "settle") {
         $queries = array();
 
         /* Remove the previous settlements. */
@@ -57,6 +58,7 @@
           $newPaymentNo = $newPaymentNos[$i];
           $creditNoteNo = $creditNoteNos[$i];
           $amount = $amounts[$i];
+          $settleRemarks = $settleRemarkss[$i];
 
           if (!assigned($creditNoteNo) && !assigned($paymentNo) && assigned($newPaymentNo) && assigned($amount)) {
             array_push($queries, "
@@ -69,16 +71,20 @@
             $paymentNo = $newPaymentNo;
           }
 
-          array_push($values, "(\"$i\", \"$invoiceNo\", \"$paymentNo\", \"$creditNoteNo\", \"$amount\")");
+          array_push($values, "(\"$i\", \"$invoiceNo\", \"$paymentNo\", \"$creditNoteNo\", \"$amount\", \"$settleRemarks\")");
         }
 
         if (count($values) > 0) {
           array_push($queries, "
             INSERT INTO
               `ar_settlement`
-                (settlement_index, invoice_no, payment_no, credit_note_no, amount)
+                (settlement_index, invoice_no, payment_no, credit_note_no, amount, settle_remarks)
               VALUES
           " . join(", ", $values));
+        }
+
+        if ($action === "settle") {
+          array_push($queries, "UPDATE `ar_inv_header` SET status=\"SETTLED\" WHERE id=\"$id\"");
         }
 
         execute($queries);

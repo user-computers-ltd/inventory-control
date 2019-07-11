@@ -46,6 +46,7 @@
               <col>
               <col>
               <col>
+              <col>
               <col style="width: 30px">
             </colgroup>
             <thead>
@@ -54,6 +55,7 @@
                 <th>Voucher No.</th>
                 <th class="number">Amount</th>
                 <th class="number">Settle Amount</th>
+                <th>Settle Remarks</th>
                 <th></th>
               </tr>
             </thead>
@@ -64,12 +66,14 @@
                 <th class="number">Total:</th>
                 <th id="total-amount" class="number"></th>
                 <th></th>
+                <th></th>
               </tr>
               <tr>
                 <th></th>
                 <th></th>
                 <th class="number">Invoice Amount:</th>
                 <th class="number"><?php echo round($invoiceAmount, 2); ?></th>
+                <th></th>
                 <th></th>
               </tr>
               <?php if (count($ownCreditNoteVouchers) > 0) : ?>
@@ -79,15 +83,18 @@
                   <th></th>
                   <th></th>
                   <th></th>
+                  <th></th>
                 </tr>
                 <?php foreach ($ownCreditNoteVouchers as &$voucher) : ?>
                   <tr>
                     <td><?php echo $voucher["credit_note_date"]; ?></td>
-                    <td><a href="<?php echo AR_CREDIT_NOTE_URL . "?id=" . $voucher["id"]; ?>">
-                      <?php echo $voucher["credit_note_no"]; ?>
-                    </td></a>
+                    <td>
+                      <a href="<?php echo AR_CREDIT_NOTE_URL . "?id=" . $voucher["id"]; ?>"><?php echo $voucher["credit_note_no"]; ?></a>
+                    </td>
                     <td></td>
                     <td class="number credit-amount"><?php echo round($voucher["amount"], 2); ?></td>
+                    <td></td>
+                    <td></td>
                   </tr>
                 <?php endforeach ?>
               <?php endif ?>
@@ -96,6 +103,7 @@
                 <th></th>
                 <th class="number">Outstanding:</th>
                 <th id="outstanding-amount" class="number"></th>
+                <th></th>
                 <th></th>
               </tr>
             </tfoot>
@@ -111,6 +119,7 @@
             </table>
           <?php endif ?>
           <button name="action" value="save" type="submit">Save</button>
+          <button name="action" value="settle" type="submit">Settle</button>
         </form>
         <?php
           echo "<datalist id=\"payment-voucher-list\">";
@@ -279,9 +288,18 @@
                     + "onchange=\"onAmountChange(event, " + i + ")\" "
                     + "onfocus=\"onFieldFocused(" + i + ", 'amount[]')\" "
                     + "onblur=\"onFieldBlurred()\" "
-                    + "onkeydown=\"onAmountKeyDown(event, " + i + ")\" "
                     + "required "
                   + "/>"
+                + "</td>"
+                + "<td>"
+                  + "<textarea "
+                    + "class=\"settle-remarks\" "
+                    + "name=\"settle_remarks[]\" "
+                    + "onfocus=\"onFieldFocused(" + i + ", 'settle_remarks[]')\" "
+                    + "onblur=\"onFieldBlurred()\" "
+                    + "onchange=\"onSettleRemarksChange(event, " + i + ")\" "
+                    + "onkeydown=\"onSettleRemarksKeyDown(event, " + i + ")\" "
+                  + "/>" + settlemntVoucher["settle_remarks"] + "</textarea>"
                 + "</td>"
                 + "<td><div class=\"remove\" onclick=\"removeItem(" + i + ")\">×</div></td>";
 
@@ -329,11 +347,17 @@
             settlemntVoucher["source"] = voucher["credit_note_no"] ? "credit" : "payment";
             settlemntVoucher["amount_settlable"] = parseFloat(voucher["amount"]) || 0;
             settlemntVoucher["amount"] = parseFloat(voucher["amount"]) || 0;
+            settlemntVoucher["settle_remarks"] = voucher["settle_remarks"] || "";
           }
 
           function updateAmount(index, amount = 0) {
             var settlemntVoucher = settlemntVouchers[index];
             settlemntVoucher["amount"] = parseFloat(amount);
+          }
+
+          function updateSettleRemarks(index, remarks = "") {
+            var settlemntVoucher = settlemntVouchers[index];
+            settlemntVoucher["settle_remarks"] = remarks;
           }
 
           function addItem() {
@@ -366,7 +390,6 @@
           function onNewPaymentNoChange(event, index) {
             updateVoucher(index, { "new_payment_no": event.target.value });
             render();
-            onFieldBlurred();
           }
 
           function onPaymentNoChange(event, index) {
@@ -385,8 +408,6 @@
 
               render();
             }
-
-            onFieldBlurred();
           }
 
           function onCreditNoteNoChange(event, index) {
@@ -405,18 +426,21 @@
 
               render();
             }
-
-            onFieldBlurred();
           }
 
           function onAmountChange(event, index) {
             updateAmount(index, event.target.value);
             render();
-            onFieldBlurred();
           }
 
-          function onAmountKeyDown(event, index) {
+          function onSettleRemarksChange(event, index) {
+            updateSettleRemarks(index, event.target.value);
+            render();
+          }
+
+          function onSettleRemarksKeyDown(event, index) {
             var settlemntVoucher = settlemntVouchers[index];
+            updateSettleRemarks(index, event.target.value);
 
             if (
               index === settlemntVouchers.length - 1 &&
@@ -436,6 +460,7 @@
               var paymentNo = settlemntVoucher["payment_no"];
               var creditNoteNo = settlemntVoucher["credit_note_no"];
               var amount = settlemntVoucher["amount"];
+              var settleRemarks = settlemntVoucher["settle_remarks"];
 
               if (paymentNo) {
                 updateVoucher(i, getPaymentVouchers(paymentNo)[0]);
@@ -444,6 +469,7 @@
               }
 
               updateAmount(i, amount);
+              updateSettleRemarks(i, settleRemarks);
             }
 
             render();
