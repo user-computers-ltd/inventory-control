@@ -8,7 +8,7 @@
   if (!isset($_SESSION["user"])) {
     $_SESSION["previous_url"] = CURRENT_URL;
     header("Location: " . SYSTEM_URL . "login.php");
-    exit;
+    exit();
   }
 
   function getAccessLevel() {

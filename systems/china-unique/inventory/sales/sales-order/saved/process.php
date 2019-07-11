@@ -43,12 +43,12 @@
 
       if ($action === "confirm") {
         header("Location: " . SALES_ORDER_CONFIRMED_URL);
-        exit(0);
+        exit();
       }
     } else if ($action === "print") {
       $soIdParams = join("&", array_map(function ($i) { return "id[]=$i"; }, $soIds));
       header("Location: " . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?$soIdParams");
-      exit(0);
+      exit();
     }
   }
 

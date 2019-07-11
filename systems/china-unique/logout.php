@@ -7,5 +7,5 @@
 
   unset($_SESSION["user"]);
   header("Location: " . SYSTEM_URL . "login.php");
-  exit;
+  exit();
 ?>

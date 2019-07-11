@@ -19,7 +19,7 @@
       array_push($queries, "DELETE FROM `ar_payment` WHERE $headerWhereClause");
     } else if ($action === "print") {
       header("Location: " . AR_PAYMENT_PRINTOUT_URL . "?$printoutParams");
-      exit(0);
+      exit();
     }
 
     execute($queries);

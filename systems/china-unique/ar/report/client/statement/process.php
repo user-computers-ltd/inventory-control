@@ -6,7 +6,7 @@
     if ($action === "print") {
       $debtorIdParams = join("&", array_map(function ($i) { return "id[]=$i"; }, $debtorIds));
       header("Location: " . AR_REPORT_CLIENT_STATEMENT_PRINTOUT_URL . "?$debtorIdParams");
-      exit(0);
+      exit();
     }
   }
 

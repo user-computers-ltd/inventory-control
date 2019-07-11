@@ -18,7 +18,7 @@
       array_push($queries, "DELETE FROM `ar_inv_header` WHERE $headerWhereClause");
     } else if ($action === "print") {
       header("Location: " . SALES_INVOICE_PRINTOUT_URL . "?$printoutParams");
-      exit(0);
+      exit();
     }
 
     execute($queries);

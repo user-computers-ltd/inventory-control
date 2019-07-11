@@ -156,5 +156,5 @@
     throwError("missing action");
   }
 
-  exit;
+  exit();
 ?>

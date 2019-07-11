@@ -84,12 +84,12 @@
 
       if ($action === "reverse") {
         header("Location: " . SALES_ORDER_SAVED_URL);
-        exit(0);
+        exit();
       }
     } else if ($action === "print") {
       $idParams = join("&", array_map(function ($i) { return "id[]=$i"; }, $soIds));
       header("Location: " . SALES_ORDER_INTERNAL_PRINTOUT_URL . "?$idParams");
-      exit(0);
+      exit();
     }
   }
 

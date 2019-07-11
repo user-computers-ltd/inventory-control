@@ -7,7 +7,7 @@
 
   if (!isset($database)) {
     header("Location: " . BASE_URL . "admin");
-    exit(1);
+    exit();
   }
 
   $tables = listTables($database);

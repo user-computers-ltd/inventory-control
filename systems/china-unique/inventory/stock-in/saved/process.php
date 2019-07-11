@@ -25,7 +25,7 @@
       }
     } else if ($action === "print") {
       header("Location: " . STOCK_IN_PRINTOUT_URL . "?$printoutParams");
-      exit(0);
+      exit();
     }
 
     execute($queries);

@@ -16,7 +16,7 @@
     } else {
       header("Location: " . BASE_URL . "admin/db/?db=" . $database);
     }
-    exit(1);
+    exit();
   }
 
   try {

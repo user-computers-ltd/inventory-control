@@ -14,7 +14,7 @@
       array_push($queries, "UPDATE `ar_inv_header` SET status=\"SAVED\" WHERE $headerWhereClause");
     } else if ($action === "print") {
       header("Location: " . AR_INVOICE_PRINTOUT_URL . "?$printoutParams");
-      exit(0);
+      exit();
     }
 
     execute($queries);

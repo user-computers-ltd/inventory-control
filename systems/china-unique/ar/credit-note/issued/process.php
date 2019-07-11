@@ -18,7 +18,7 @@
       array_push($queries, "DELETE FROM `ar_credit_note` WHERE $headerWhereClause");
     } else if ($action === "print") {
       header("Location: " . AR_CREDIT_NOTE_PRINTOUT_URL . "?$printoutParams");
-      exit(0);
+      exit();
     }
 
     execute($queries);

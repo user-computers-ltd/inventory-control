@@ -19,7 +19,7 @@
       array_push($queries, "DELETE FROM `enquiry_header` WHERE $headerWhereClause");
     } else if ($action === "print") {
       header("Location: " . SALES_ENQUIRY_PRINTOUT_URL . "?$printoutParams");
-      exit(0);
+      exit();
     }
 
     execute($queries);

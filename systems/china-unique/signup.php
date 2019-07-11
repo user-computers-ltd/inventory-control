@@ -28,7 +28,7 @@
         $_SESSION["user"] = $username;
 
         header("location: index.php");
-        exit;
+        exit();
       }
     }
   }

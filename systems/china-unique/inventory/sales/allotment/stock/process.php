@@ -48,7 +48,7 @@
     execute($queries);
 
     header("Location: " . SALES_ALLOTMENT_REPORT_CUSTOMER_URL);
-    exit(0);
+    exit();
   }
 
   $filterWarehouseCodes = $_GET["filter_warehouse_code"];

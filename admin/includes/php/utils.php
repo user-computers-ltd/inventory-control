@@ -77,7 +77,7 @@
     header("Content-Length: " . filesize($path));
     readfile($path);
     unlink($path);
-    exit(1);
+    exit();
   }
 
   function restartDatabase($system, $overwrite) {
@@ -104,7 +104,7 @@
 
       fclose($handle);
     }
-    
+
     execute($queries);
   }
 
@@ -284,6 +284,6 @@
     header("Content-Length: " . filesize($path));
     readfile($path);
     unlink($path);
-    exit(1);
+    exit();
   }
 ?>

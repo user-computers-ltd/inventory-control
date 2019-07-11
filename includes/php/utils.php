@@ -60,7 +60,7 @@
   function throwError($message) {
     http_response_code(500);
     die($message);
-    exit(0);
+    exit();
   }
 
   function sendErrorPage($error) {
@@ -70,7 +70,7 @@
     $_SESSION["error"] = $error;
     $_SESSION["error"]["url"] = CURRENT_URL;
     header("Location: " . BASE_URL . "error.php");
-    exit(0);
+    exit();
   }
 
   function listDirectory($directory) {

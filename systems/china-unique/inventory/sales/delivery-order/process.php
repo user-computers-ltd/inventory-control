@@ -153,7 +153,7 @@
       }
 
       header("Location: " . SALES_DELIVERY_ORDER_SAVED_URL);
-      exit(0);
+      exit();
     }
   }
 

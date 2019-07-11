@@ -12,7 +12,7 @@
 
     if ($action == "print") {
       header("Location: " . SALES_DELIVERY_ORDER_PRINTOUT_URL . "?$printoutParams");
-      exit(0);
+      exit();
     }
   }
 
