@@ -76,7 +76,8 @@
         `debtor` AS e
       ON a.debtor_code=e.code
       WHERE
-        a.status=\"SAVED\"
+        a.status=\"SAVED\" AND
+        ROUND(IFNULL(b.amount, 0) - IFNULL(c.settled_amount, 0) + IFNULL(d.credited_amount, 0), 2) > 0
         $modelWhereClause
       ORDER BY
         a.invoice_date ASC
