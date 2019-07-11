@@ -32,6 +32,7 @@
     SELECT
       a.id                                                                                        AS `id`,
       DATE_FORMAT(a.invoice_date, \"%d-%m-%Y\")                                                   AS `date`,
+      DATE_FORMAT(a.maturity_date, \"%d-%m-%Y\")                                                  AS `maturity_date`,
       a.invoice_no                                                                                AS `invoice_no`,
       a.debtor_code                                                                               AS `debtor_code`,
       IFNULL(e.english_name, \"Unknown\")                                                         AS `debtor_name`,
@@ -75,7 +76,7 @@
       `debtor` AS e
     ON a.debtor_code=e.code
     WHERE
-      a.status=\"SAVED\" OR a.status=\"SETTLED\"
+      (a.status=\"SAVED\" OR a.status=\"SETTLED\")
       $whereClause
     ORDER BY
       DATE_FORMAT(a.invoice_date, \"%d-%m-%Y\") DESC,
@@ -156,6 +157,7 @@
         <table id="inv-results" class="sortable">
           <colgroup>
             <col style="width: 80px">
+            <col style="width: 80px">
             <col>
             <col style="width: 80px">
             <col>
@@ -167,7 +169,8 @@
           <thead>
             <tr></tr>
             <tr>
-              <th>Date</th>
+              <th>Invoice Date</th>
+              <th>Maturity Date</th>
               <th>Invoice No.</th>
               <th>Code</th>
               <th>Client</th>
@@ -188,6 +191,7 @@
                 $result = $results[$i];
                 $id = $result["id"];
                 $date = $result["date"];
+                $maturityDate = $result["maturity_date"];
                 $invoiceNo = $result["invoice_no"];
                 $debtorCode = $result["debtor_code"];
                 $debtorName = $result["debtor_name"];
@@ -204,6 +208,7 @@
                 echo "
                   <tr>
                     <td title=\"$date\">$date</td>
+                    <td title=\"$maturityDate\">$maturityDate</td>
                     <td title=\"$invoiceNo\"><a class=\"link\" href=\"" . AR_INVOICE_URL . "?id=$id\">$invoiceNo</a></td>
                     <td title=\"$debtorCode\">$debtorCode</td>
                     <td title=\"$debtorName\">$debtorName</td>
@@ -218,6 +223,7 @@
           </tbody>
           <tbody>
             <tr>
+              <th></th>
               <th></th>
               <th></th>
               <th></th>

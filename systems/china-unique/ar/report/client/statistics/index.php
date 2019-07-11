@@ -64,7 +64,7 @@
       `debtor` AS e
     ON a.debtor_code=e.code
     WHERE
-      a.status=\"SAVED\" OR a.status=\"SETTLED\"
+      (a.status=\"SAVED\" OR a.status=\"SETTLED\")
       $whereClause
     GROUP BY
       a.debtor_code

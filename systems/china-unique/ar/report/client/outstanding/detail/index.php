@@ -1,5 +1,5 @@
 <?php
-  define("SYSTEM_PATH", "../../../../");
+  define("SYSTEM_PATH", "../../../../../");
   include_once SYSTEM_PATH . "includes/php/config.php";
   include_once ROOT_PATH . "includes/php/utils.php";
   include_once ROOT_PATH . "includes/php/database.php";
@@ -13,13 +13,17 @@
       AND (" . join(" OR ", array_map(function ($d) { return "a.debtor_code=\"$d\""; }, $filterDebtorCodes)) . ")";
   }
 
-  $debtorResults = query("
+  $results = query("
     SELECT
-      a.debtor_code                                                                                     AS `debtor_code`,
-      IFNULL(e.english_name, \"Unknown\")                                                               AS `debtor_name`,
-      COUNT(*)                                                                                          AS `count`,
-      ROUND(SUM(IFNULL(b.amount, 0)), 2)                                                                AS `amount`,
-      ROUND(SUM(IFNULL(b.amount, 0) - IFNULL(c.settled_amount, 0) + IFNULL(d.credited_amount, 0)), 2)   AS `balance`
+      a.id                                                                                        AS `id`,
+      DATE_FORMAT(a.invoice_date, \"%d-%m-%Y\")                                                   AS `date`,
+      DATE_FORMAT(a.maturity_date, \"%d-%m-%Y\")                                                  AS `maturity_date`,
+      IF(a.maturity_date < NOW(), \"overdue\", \"\")                                              AS `due_status`,
+      a.invoice_no                                                                                AS `invoice_no`,
+      a.debtor_code                                                                               AS `debtor_code`,
+      IFNULL(e.english_name, \"Unknown\")                                                         AS `debtor_name`,
+      ROUND(IFNULL(b.amount, 0), 2)                                                               AS `amount`,
+      ROUND(IFNULL(b.amount, 0) - IFNULL(c.settled_amount, 0) + IFNULL(d.credited_amount, 0), 2)  AS `balance`
     FROM
       `ar_inv_header` AS a
     LEFT JOIN
@@ -55,13 +59,27 @@
     ON a.debtor_code=e.code
     WHERE
       a.status=\"SAVED\" AND
-      IFNULL(b.amount, 0) - IFNULL(c.settled_amount, 0) + IFNULL(d.credited_amount, 0) > 0
+      ROUND(IFNULL(b.amount, 0) - IFNULL(c.settled_amount, 0) + IFNULL(d.credited_amount, 0), 2) > 0
       $whereClause
-    GROUP BY
-      a.debtor_code
     ORDER BY
-      a.debtor_code ASC
+      a.debtor_code ASC,
+      DATE_FORMAT(a.invoice_date, \"%d-%m-%Y\") DESC
   ");
+
+  $debtorResults = array();
+
+  foreach ($results as $result) {
+    $debtor = $result["debtor_code"] . " - " . $result["debtor_name"];
+
+    $arrayPointer = &$debtorResults;
+
+    if (!isset($arrayPointer[$debtor])) {
+      $arrayPointer[$debtor] = array();
+    }
+    $arrayPointer = &$arrayPointer[$debtor];
+
+    array_push($arrayPointer, $result);
+  }
 
   $debtors = query("
     SELECT DISTINCT
@@ -118,7 +136,7 @@
     <?php include_once SYSTEM_PATH . "includes/components/menu/index.php"; ?>
     <div class="page-wrapper landscape">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
-      <div class="headline"><?php echo AR_REPORT_CLIENT_OUTSTANDING_SUMMARY_TITLE; ?></div>
+      <div class="headline"><?php echo AR_REPORT_CLIENT_OUTSTANDING_DETAIL_TITLE; ?></div>
       <form>
         <table id="inv-input">
           <tr>
@@ -151,63 +169,88 @@
         </table>
       </form>
       <?php if (count($debtorResults) > 0) : ?>
-        <table id="inv-results" class="sortable">
+        <?php $grandInvAmount = 0; ?>
+        <?php $grandTotalBalance = 0; ?>
+        <?php foreach ($debtorResults as $debtorName => $results) : ?>
+          <h4><?php echo $debtorName; ?></h4>
+          <table id="inv-results" class="sortable">
+            <colgroup>
+              <col style="width: 80px">
+              <col style="width: 80px">
+              <col>
+              <col style="width: 80px">
+              <col style="width: 80px">
+            </colgroup>
+            <thead>
+              <tr></tr>
+              <tr>
+                <th>Maturity Date</th>
+                <th>Invoice Date</th>
+                <th>Invoice No</th>
+                <th class="number">Amount</th>
+                <th class="number">Balance</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php
+                $totalInvAmount = 0;
+                $totalBalance = 0;
+
+                for ($i = 0; $i < count($results); $i++) {
+                  $result = $results[$i];
+                  $id = $result["id"];
+                  $date = $result["date"];
+                  $maturityDate = $result["maturity_date"];
+                  $dueStatus = $result["due_status"];
+                  $invoiceNo = $result["invoice_no"];
+                  $debtorCode = $result["debtor_code"];
+                  $debtorName = $result["debtor_name"];
+                  $invoiceAmount = $result["amount"];
+                  $balance = $result["balance"];
+
+                  $totalInvAmount += $invoiceAmount;
+                  $totalBalance += $balance;
+                  $grandInvAmount += $invoiceAmount;
+                  $grandTotalBalance += $balance;
+
+                  echo "
+                    <tr>
+                      <td title=\"$maturityDate\" class=\"$dueStatus\">$maturityDate</td>
+                      <td title=\"$date\">$date</td>
+                      <td title=\"$invoiceNo\"><a class=\"link\" href=\"" . AR_INVOICE_URL . "?id=$id\">$invoiceNo</a></td>
+                      <td class=\"number\" title=\"$invoiceAmount\">". number_format($invoiceAmount, 2) . "</td>
+                      <td class=\"number\" title=\"$balance\">". number_format($balance, 2) . "</td>
+                    </tr>
+                  ";
+                }
+              ?>
+            </tbody>
+            <tbody>
+              <tr>
+                <th></th>
+                <th></th>
+                <th class="number">Total:</th>
+                <th class="number"><?php echo number_format($totalInvAmount, 2); ?></th>
+                <th class="number"><?php echo number_format($totalBalance, 2); ?></th>
+              </tr>
+            </tbody>
+          </table>
+        <?php endforeach ?>
+        <table id="inv-results">
           <colgroup>
+            <col style="width: 80px">
             <col style="width: 80px">
             <col>
             <col style="width: 80px">
             <col style="width: 80px">
-            <col style="width: 80px">
           </colgroup>
-          <thead>
-            <tr></tr>
-            <tr>
-              <th>Code</th>
-              <th>Client</th>
-              <th class="number">#</th>
-              <th class="number">Amount</th>
-              <th class="number">Balance</th>
-            </tr>
-          </thead>
-          <tbody>
-            <?php
-              $totalCount = 0;
-              $totalAmount = 0;
-              $totalBalance = 0;
-
-              for ($i = 0; $i < count($debtorResults); $i++) {
-                $result = $debtorResults[$i];
-                $debtorCode = $result["debtor_code"];
-                $debtorName = $result["debtor_name"];
-                $count = $result["count"];
-                $amount = $result["amount"];
-                $balance = $result["balance"];
-
-                $totalCount += $count;
-                $totalAmount += $amount;
-                $totalBalance += $balance;
-
-                echo "
-                  <tr>
-                    <td title=\"$debtorCode\">$debtorCode</td>
-                    <td title=\"$debtorName\">
-                      <a href=\"" . AR_REPORT_CLIENT_OUTSTANDING_DETAIL_URL . "?filter_debtor_code[]=$debtorCode\">$debtorName</a>
-                    </td>
-                    <td class=\"number\" title=\"$count\">". number_format($count) . "</td>
-                    <td class=\"number\" title=\"$amount\">". number_format($amount, 2) . "</td>
-                    <td class=\"number\" title=\"$balance\">". number_format($balance, 2) . "</td>
-                  </tr>
-                ";
-              }
-            ?>
-          </tbody>
           <tbody>
             <tr>
               <th></th>
-              <th class="number">Total:</th>
-              <th class="number"><?php echo number_format($totalCount); ?></th>
-              <th class="number"><?php echo number_format($totalAmount, 2); ?></th>
-              <th class="number"><?php echo number_format($totalBalance, 2); ?></th>
+              <th></th>
+              <th class="number">Grand Total:</th>
+              <th class="number"><?php echo number_format($grandInvAmount, 2); ?></th>
+              <th class="number"><?php echo number_format($grandTotalBalance, 2); ?></th>
             </tr>
           </tbody>
         </table>

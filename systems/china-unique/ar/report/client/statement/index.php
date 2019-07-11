@@ -18,7 +18,7 @@
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
       <div class="headline"><?php echo AR_REPORT_CLIENT_STATEMENT_TITLE; ?></div>
       <form>
-        <table id="inv-input">
+        <table id="invoice-input">
           <tr>
             <th>Client:</th>
           </tr>
@@ -51,7 +51,7 @@
       <?php if (count($results) > 0) : ?>
         <form id="client-statements-form" method="post">
           <button type="submit" name="action" value="print" class="web-only">Print</button>
-          <table id="inv-results" class="sortable">
+          <table id="invoice-results" class="sortable">
             <colgroup>
               <col class="web-only" style="width: 30px">
               <col style="width: 80px">
@@ -127,7 +127,7 @@
           </table>
         </form>
       <?php else : ?>
-        <div class="inv-client-no-results">No results</div>
+        <div class="invoice-client-no-results">No results</div>
       <?php endif ?>
     </div>
   </body>

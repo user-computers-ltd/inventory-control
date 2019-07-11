@@ -1,41 +1,36 @@
-#invoice-input td {
+#inv-input td {
   border: none;
   font-size: 13px;
   padding: 0px 5px;
 }
 
-#invoice-input input,
-#invoice-input select {
+#inv-input input,
+#inv-input select {
   width: 100%;
   box-sizing: border-box;
 }
 
-#invoice-results th,
-#invoice-results td {
+#inv-results th,
+#inv-results td {
   min-width: 0px;
   max-width: 0px;
 }
 
-#invoice-results td {
+#inv-results td {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-#invoice-results input[type="checkbox"] {
-  margin: 0px;
-  height: 10px;
-}
-
-#invoice-results .overdue {
+#inv-results .overdue {
   color: #cc3333;
 }
 
-#invoice-results .number {
+#inv-results .number {
   text-align: right;
 }
 
-.invoice-client-no-results {
+.inv-client-no-results {
   margin: 100px 0px;
   text-align: center;
   font-size: 40px;

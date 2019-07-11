@@ -207,8 +207,18 @@ table thead th {
     padding-right: 5px;
   }
 
+  .sortable .sort-column.sorted-asc,
+  .sortable .sort-column.sorted-desc {
+    padding-right: 15px;
+  }
+
   .sortable .sort-column::before,
   .sortable .sort-column::after {
     display: none;
+  }
+
+  .sortable .sort-column.sorted-asc::before,
+  .sortable .sort-column.sorted-desc::after {
+    display: inline-block;
   }
 }
