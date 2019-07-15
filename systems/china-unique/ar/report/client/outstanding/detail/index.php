@@ -279,5 +279,15 @@
         <div class="inv-client-no-results">No results</div>
       <?php endif ?>
     </div>
+    <script>
+      var showModeElement = document.querySelector("#input-show-mode");
+
+      function onOutstandingOnlyChanged(event) {
+        var checkbox = event.target;
+
+        showModeElement.value = checkbox.checked ? "outstanding_only" : "show_all";
+        checkbox.form.submit();
+      }
+    </script>
   </body>
 </html>
