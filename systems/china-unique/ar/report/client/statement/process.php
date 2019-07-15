@@ -65,7 +65,7 @@
     ON a.debtor_code=e.code
     WHERE
       a.status=\"SAVED\" AND
-      IFNULL(b.amount, 0) - IFNULL(c.settled_amount, 0) + IFNULL(d.credited_amount, 0) !== 0
+      IFNULL(b.amount, 0) - IFNULL(c.settled_amount, 0) + IFNULL(d.credited_amount, 0) != 0
       $whereClause
     GROUP BY
       a.debtor_code
