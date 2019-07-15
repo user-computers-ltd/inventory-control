@@ -10,6 +10,11 @@
   box-sizing: border-box;
 }
 
+#inv-input #input-outstanding-only {
+  margin: 0px;
+  width: auto;
+}
+
 #inv-results th,
 #inv-results td {
   min-width: 0px;

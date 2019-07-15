@@ -5,6 +5,7 @@
   include_once ROOT_PATH . "includes/php/database.php";
 
   $filterDebtorCodes = $_GET["filter_debtor_code"];
+  $showMode = assigned($_GET["show_mode"]) ? $_GET["show_mode"] : "outstanding_only";
 
   $whereClause = "";
 
@@ -54,11 +55,14 @@
       `debtor` AS e
     ON a.debtor_code=e.code
     WHERE
-      a.status=\"SAVED\" AND
-      IFNULL(b.amount, 0) - IFNULL(c.settled_amount, 0) + IFNULL(d.credited_amount, 0) != 0
+      a.status=\"SAVED\"
       $whereClause
     GROUP BY
       a.debtor_code
+    " . ($showMode === "outstanding_only" ? "
+      HAVING
+        ROUND(SUM(IFNULL(b.amount, 0) - IFNULL(c.settled_amount, 0) + IFNULL(d.credited_amount, 0)), 2) != 0
+      " : "") . "
     ORDER BY
       a.debtor_code ASC
   ");
@@ -148,6 +152,23 @@
             </td>
             <td><button type="submit" class="web-only">Go</button></td>
           </tr>
+          <tr>
+            <th>
+              <input
+                id="input-outstanding-only"
+                type="checkbox"
+                onchange="onOutstandingOnlyChanged(event)"
+                <?php echo $showMode == "outstanding_only" ? "checked" : "" ?>
+              />
+              <label for="input-outstanding-only">Outstanding only</label>
+              <input
+                id="input-show-mode"
+                type="hidden"
+                name="show_mode"
+                value="<?php echo $showMode; ?>"
+              />
+            </th>
+          </tr>
         </table>
       </form>
       <?php if (count($debtorResults) > 0) : ?>
@@ -191,7 +212,7 @@
                   <tr>
                     <td title=\"$debtorCode\">$debtorCode</td>
                     <td title=\"$debtorName\">
-                      <a href=\"" . AR_REPORT_CLIENT_OUTSTANDING_DETAIL_URL . "?filter_debtor_code[]=$debtorCode\">$debtorName</a>
+                      <a href=\"" . AR_REPORT_CLIENT_OUTSTANDING_DETAIL_URL . "?filter_debtor_code[]=$debtorCode&show_mode=$showMode\">$debtorName</a>
                     </td>
                     <td class=\"number\" title=\"$count\">". number_format($count) . "</td>
                     <td class=\"number\" title=\"$amount\">". number_format($amount, 2) . "</td>
@@ -215,5 +236,15 @@
         <div class="inv-client-no-results">No results</div>
       <?php endif ?>
     </div>
+    <script>
+      var showModeElement = document.querySelector("#input-show-mode");
+
+      function onOutstandingOnlyChanged(event) {
+        var checkbox = event.target;
+
+        showModeElement.value = checkbox.checked ? "outstanding_only" : "show_all";
+        checkbox.form.submit();
+      }
+    </script>
   </body>
 </html>

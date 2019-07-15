@@ -5,12 +5,18 @@
   include_once ROOT_PATH . "includes/php/database.php";
 
   $filterDebtorCodes = $_GET["filter_debtor_code"];
+  $showMode = assigned($_GET["show_mode"]) ? $_GET["show_mode"] : "outstanding_only";
 
   $whereClause = "";
 
   if (assigned($filterDebtorCodes) && count($filterDebtorCodes) > 0) {
     $whereClause = $whereClause . "
       AND (" . join(" OR ", array_map(function ($d) { return "a.debtor_code=\"$d\""; }, $filterDebtorCodes)) . ")";
+  }
+
+  if ($showMode === "outstanding_only") {
+    $whereClause = $whereClause . "
+      AND ROUND(IFNULL(b.amount, 0) - IFNULL(c.settled_amount, 0) + IFNULL(d.credited_amount, 0), 2) != 0";
   }
 
   $results = query("
@@ -58,8 +64,7 @@
       `debtor` AS e
     ON a.debtor_code=e.code
     WHERE
-      a.status=\"SAVED\" AND
-      ROUND(IFNULL(b.amount, 0) - IFNULL(c.settled_amount, 0) + IFNULL(d.credited_amount, 0), 2) != 0
+      a.status=\"SAVED\"
       $whereClause
     ORDER BY
       a.debtor_code ASC,
@@ -119,8 +124,7 @@
         invoice_no) AS e
     ON a.invoice_no=e.invoice_no
     WHERE
-      a.status=\"SAVED\" AND
-      ROUND(IFNULL(c.amount, 0) - IFNULL(d.settled_amount, 0) + IFNULL(e.credited_amount, 0), 2) != 0
+      a.status=\"SAVED\"
     ORDER BY
       code ASC
   ");
@@ -165,6 +169,23 @@
               </span>
             </td>
             <td><button type="submit" class="web-only">Go</button></td>
+          </tr>
+          <tr>
+            <th>
+              <input
+                id="input-outstanding-only"
+                type="checkbox"
+                onchange="onOutstandingOnlyChanged(event)"
+                <?php echo $showMode == "outstanding_only" ? "checked" : "" ?>
+              />
+              <label for="input-outstanding-only">Outstanding only</label>
+              <input
+                id="input-show-mode"
+                type="hidden"
+                name="show_mode"
+                value="<?php echo $showMode; ?>"
+              />
+            </th>
           </tr>
         </table>
       </form>
