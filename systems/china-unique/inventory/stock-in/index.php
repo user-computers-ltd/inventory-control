@@ -245,8 +245,11 @@
         <?php
           foreach ($R3Vouchers as $dCode => $dVouchers) {
             foreach ($dVouchers as $vNo => $voucher) {
-              echo "<datalist id=\"r3-voucher-list-$dCode-$vNo\">";
-              foreach ($voucher as $model) {
+              $vTax = $voucher["tax"];
+              $vModels = $voucher["tax"];
+
+              echo "<datalist id=\"r3-voucher-list-$dCode-$vNo\" data-tax=\"$vTax\">";
+              foreach ($vModels as $model) {
                 echo "<option value=\"" . $model["model_no"]
                  . "\" data-model_no=\"" . $model["model_no"]
                  . "\" data-brand_code=\"" . $model["brand_code"]
@@ -556,9 +559,9 @@
           function onVoucherNoChange() {
             var debtorCode = debtorCodeElement.value;
             var voucherNo = returnVoucherNoElement.value;
+            var tax = R3Vouchers[debtorCode][voucherNo]["tax"];
 
-            var vouchers = R3Vouchers[debtorCode] && R3Vouchers[debtorCode][voucherNo];
-
+            taxElement.value = tax;
             stockInModels = [];
 
             render();

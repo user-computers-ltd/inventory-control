@@ -196,6 +196,7 @@
     SELECT
       b.debtor_code AS `debtor_code`,
       b.do_no       AS `voucher_no`,
+      b.tax         AS `tax`,
       a.brand_code  AS `brand_code`,
       a.model_no    AS `model_no`,
       a.qty         AS `qty`,
@@ -232,6 +233,7 @@
   foreach ($voucherResults as $voucherResult) {
     $dCode = $voucherResult["debtor_code"];
     $vNo = $voucherResult["voucher_no"];
+    $vTax = $voucherResult["tax"];
 
     $pointer = &$R3Vouchers;
 
@@ -241,9 +243,9 @@
     $pointer = &$pointer[$dCode];
 
     if (!isset($pointer[$vNo])) {
-      $pointer[$vNo] = array();
+      $pointer[$vNo] = array("tax" => $vTax, "models" => array());
     }
-    $pointer = &$pointer[$vNo];
+    $pointer = &$pointer[$vNo]["models"];
 
     array_push($pointer, $voucherResult);
   }
