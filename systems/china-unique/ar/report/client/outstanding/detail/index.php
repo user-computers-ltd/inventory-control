@@ -59,7 +59,7 @@
     ON a.debtor_code=e.code
     WHERE
       a.status=\"SAVED\" AND
-      ROUND(IFNULL(b.amount, 0) - IFNULL(c.settled_amount, 0) + IFNULL(d.credited_amount, 0), 2) > 0
+      ROUND(IFNULL(b.amount, 0) - IFNULL(c.settled_amount, 0) + IFNULL(d.credited_amount, 0), 2) !== 0
       $whereClause
     ORDER BY
       a.debtor_code ASC,
@@ -120,7 +120,7 @@
     ON a.invoice_no=e.invoice_no
     WHERE
       a.status=\"SAVED\" AND
-      ROUND(IFNULL(c.amount, 0) - IFNULL(d.settled_amount, 0) + IFNULL(e.credited_amount, 0), 2) > 0
+      ROUND(IFNULL(c.amount, 0) - IFNULL(d.settled_amount, 0) + IFNULL(e.credited_amount, 0), 2) !== 0
     ORDER BY
       code ASC
   ");

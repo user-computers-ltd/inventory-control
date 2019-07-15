@@ -102,7 +102,7 @@
     ON a.invoice_no=e.invoice_no
     WHERE
       a.status=\"SAVED\" AND
-      ROUND(IFNULL(c.amount, 0) - IFNULL(d.settled_amount, 0) + IFNULL(e.credited_amount, 0), 2) > 0
+      ROUND(IFNULL(c.amount, 0) - IFNULL(d.settled_amount, 0) + IFNULL(e.credited_amount, 0), 2) !== 0
     ORDER BY
       code ASC
   ");
