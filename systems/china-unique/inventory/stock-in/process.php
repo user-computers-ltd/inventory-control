@@ -213,6 +213,7 @@
     SELECT
       b.debtor_code   AS `debtor_code`,
       b.stock_out_no  AS `voucher_no`,
+      b.tax           AS `tax`,
       a.brand_code    AS `brand_code`,
       a.model_no      AS `model_no`,
       a.qty           AS `qty`,
