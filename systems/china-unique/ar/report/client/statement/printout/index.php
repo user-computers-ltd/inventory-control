@@ -29,8 +29,8 @@
                 <tr>
                   <td>Client Name (客戶名稱):</td>
                   <td><?php echo $statementHeader["debtor_name"]; ?></td>
-                  <td>Time of generation: </td>
-                  <td><?php echo date("H:i:s d-m-Y"); ?></td>
+                  <td>Date: </td>
+                  <td><?php echo date("d-m-Y"); ?></td>
                 </tr>
                 <tr>
                   <td>Address (地址):</td>
