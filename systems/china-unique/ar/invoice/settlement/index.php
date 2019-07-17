@@ -128,7 +128,7 @@
             echo "<option value=\"" . $voucher["payment_no"]
               . "\" data-payment_no=\"" . $voucher["payment_no"]
               . "\" data-amount=\"" . round($voucher["amount"], 2)
-              . "\">" . $voucher["payment_no"] . "</option>";
+              . "\">" . $voucher["payment_no"] . " (" . round($voucher["amount"], 2) . ")</option>";
           }
 
           echo "</datalist>";
@@ -139,7 +139,7 @@
             echo "<option value=\"" . $voucher["credit_note_no"]
               . "\" data-credit_note_no=\"" . $voucher["credit_note_no"]
               . "\" data-amount=\"" . round($voucher["amount"], 2)
-              . "\">" . $voucher["credit_note_no"] . "</option>";
+              . "\">" . $voucher["credit_note_no"] . " (" . round($voucher["amount"], 2) . ")</option>";
           }
 
           echo "</datalist>";
@@ -232,11 +232,12 @@
               if (paymentListElement) {
                 for (var j = 0; j < paymentListElement.children.length; j++) {
                   var paymentNo = paymentListElement.children[j].value;
+                  var label = paymentListElement.children[j].innerHTML;
                   var selected = settlemntVoucher["payment_no"] === paymentNo ? " selected" : "";
                   var disabled = settlemntVouchers.filter(function (m, mi) {
                     return mi !== i && m["payment_no"] === paymentNo;
                   }).length > 0 ? " disabled" : "";
-                  rowInnerHTML += "<option value=\"" + paymentNo + "\"" + selected + disabled + ">" + paymentNo + "</option>";
+                  rowInnerHTML += "<option value=\"" + paymentNo + "\"" + selected + disabled + ">" + label + "</option>";
                 }
               }
 
@@ -263,9 +264,9 @@
               if (creditNoteListElement) {
                 for (var j = 0; j < creditNoteListElement.children.length; j++) {
                   var creditNoteNo = creditNoteListElement.children[j].value;
+                  var label = creditNoteListElement.children[j].innerHTML;
                   var selected = settlemntVoucher["credit_note_no"] === creditNoteNo ? " selected" : "";
-
-                  rowInnerHTML += "<option value=\"" + creditNoteNo + "\"" + selected + ">" + creditNoteNo + "</option>";
+                  rowInnerHTML += "<option value=\"" + creditNoteNo + "\"" + selected + ">" + label + "</option>";
                 }
               }
 
