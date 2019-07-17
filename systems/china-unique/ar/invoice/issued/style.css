@@ -17,7 +17,7 @@
   text-overflow: ellipsis;
 }
 
-#invoice-results .number {
+.number {
   text-align: right;
 }
 

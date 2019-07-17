@@ -24,11 +24,27 @@
           <tr>
             <th>From:</th>
             <th>To:</th>
+            <th>From Balance:</th>
+            <th>To Balance:</th>
             <th>Client:</th>
           </tr>
           <tr>
-            <td><input type="date" name="from" value="<?php echo $from; ?>" max="<?php echo date("Y-m-d"); ?>" /></td>
-            <td><input type="date" name="to" value="<?php echo $to; ?>" max="<?php echo date("Y-m-d"); ?>" /></td>
+            <td>
+              <input type="date" name="from" value="<?php echo $from; ?>" max="<?php echo date("Y-m-d"); ?>" />
+              <span class="print-only"><?php echo assigned($from) ? $from : "ANY"; ?></span>
+            </td>
+            <td>
+              <input type="date" name="to" value="<?php echo $to; ?>" max="<?php echo date("Y-m-d"); ?>" />
+              <span class="print-only"><?php echo assigned($to) ? $to : "ANY"; ?></span>
+            </td>
+            <td>
+              <input type="number" class="number" name="from_balance" value="<?php echo $fromBalance; ?>" />
+              <span class="print-only"><?php echo assigned($fromBalance) ? $fromBalance : "ANY"; ?></span>
+            </td>
+            <td>
+              <input type="number" class="number" name="to_balance" value="<?php echo $toBalance; ?>" />
+              <span class="print-only"><?php echo assigned($toBalance) ? $toBalance : "ANY"; ?></span>
+            </td>
             <td>
               <select name="filter_debtor_code[]" multiple class="web-only">
                 <?php
@@ -67,6 +83,7 @@
             <colgroup>
               <col class="web-only" style="width: 30px">
               <col style="width: 80px">
+              <col style="width: 80px">
               <col style="width: 30px">
               <col>
               <col style="width: 80px">
@@ -74,19 +91,18 @@
               <col style="width: 80px">
               <col style="width: 80px">
               <col style="width: 80px">
-              <col style="width: 80px">
             </colgroup>
             <thead>
               <tr></tr>
               <tr>
-                <th class="web-only"></th>
+                <th class="web-only"><input type="checkbox" onchange="handleHeaderCheckbox(event)"/></th>
                 <th>Date</th>
+                <th class="number">Balance</th>
                 <th class="number">#</th>
                 <th>Invoice No.</th>
                 <th>Code</th>
                 <th>Client</th>
                 <th class="number">Amount</th>
-                <th class="number">Balance</th>
                 <th>Maturity Date</th>
                 <th></th>
               </tr>
@@ -118,12 +134,12 @@
                         <input type=\"checkbox\" name=\"invoice_id[]\" data-invoice_no=\"$invoiceNo\" value=\"$id\" />
                       </td>
                       <td title=\"$date\">$date</td>
+                      <td title=\"$balance\" class=\"number\">" . number_format($balance, 2) . "</td>
                       <td title=\"$count\" class=\"number\">$count</td>
                       <td title=\"$invoiceNo\"><a class=\"link\" href=\"" . AR_INVOICE_URL . "?id=$id\">$invoiceNo</a></td>
                       <td title=\"$debtorCode\">$debtorCode</td>
                       <td title=\"$debtorName\">$debtorName</td>
                       <td title=\"$amount\" class=\"number\">" . number_format($amount, 2) . "</td>
-                      <td title=\"$balance\" class=\"number\">" . number_format($balance, 2) . "</td>
                       <td title=\"$maturityDate\">$maturityDate</td>
                       <td><a class=\"link\" href=\"" . AR_INVOICE_SETTLEMENT_URL . "?id=$id\">Settlement</a></td>
                     </tr>
@@ -132,13 +148,13 @@
               ?>
               <tr>
                 <th class="web-only"></th>
-                <th></th>
+                <th class="number">Total:</th>
+                <th class="number"><?php echo number_format($totalBalance, 2); ?></th>
                 <th class="number"></th>
                 <th></th>
                 <th></th>
-                <th class="number">Total:</th>
+                <th></th>
                 <th class="number"><?php echo number_format($totalAmount, 2); ?></th>
-                <th class="number"><?php echo number_format($totalBalance, 2); ?></th>
                 <th></th>
                 <th></th>
               </tr>
@@ -208,6 +224,14 @@
                 setLoadingMessage("Cancelling...")
                 toggleLoadingScreen(true);
               });
+            }
+          }
+
+          function handleHeaderCheckbox(event) {
+            var checkboxes = invoiceFormElement.querySelectorAll("input[name=\"invoice_id[]\"]");
+
+            for (var i = 0; i < checkboxes.length; i++) {
+              checkboxes[i].checked = event.target.checked;
             }
           }
         </script>

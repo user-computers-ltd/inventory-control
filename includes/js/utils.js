@@ -293,8 +293,10 @@ if (!utilsLoaded) {
       toggleClass(headerColumns[i], "sort-column", true);
 
       var s = function(index) {
-        return function() {
-          sortTable(table, index);
+        return function(event) {
+          if (this === event.target) {
+            sortTable(table, index);
+          }
         };
       };
       headerColumns[i].addEventListener("click", s(i));

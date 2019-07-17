@@ -1,6 +1,8 @@
 <?php
   $from = $_GET["from"];
   $to = $_GET["to"];
+  $fromBalance = $_GET["from_balance"];
+  $toBalance = $_GET["to_balance"];
   $action = $_POST["action"];
   $invoiceIds = $_POST["invoice_id"];
 
@@ -47,6 +49,16 @@
   if (assigned($to)) {
     $whereClause = $whereClause . "
       AND a.invoice_date <= \"$to\"";
+  }
+
+  if (assigned($fromBalance)) {
+    $whereClause = $whereClause . "
+      AND ROUND(IFNULL(b.amount, 0) - IFNULL(d.settled_amount, 0) + IFNULL(e.credited_amount, 0), 2) >= $fromBalance";
+  }
+
+  if (assigned($toBalance)) {
+    $whereClause = $whereClause . "
+      AND ROUND(IFNULL(b.amount, 0) - IFNULL(d.settled_amount, 0) + IFNULL(e.credited_amount, 0), 2) <= $toBalance";
   }
 
   $invoiceHeaders = query("
