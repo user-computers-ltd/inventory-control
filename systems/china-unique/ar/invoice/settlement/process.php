@@ -89,6 +89,8 @@
 
         execute($queries);
 
+        query(recordInvoiceAction($action . ($action === "settle" ? "_invoice" : "_settlement"), $invoiceNo));
+
         header("Location: " . AR_INVOICE_ISSUED_URL);
       }
 

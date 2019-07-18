@@ -99,8 +99,10 @@
 
     if (empty($error)) {
       mysqli_commit($connection);
+      mysqli_autocommit($connection, true);
     } else {
       mysqli_rollback($connection);
+      mysqli_autocommit($connection, true);
 
       if ($failSafe === false) {
         throwError($error);

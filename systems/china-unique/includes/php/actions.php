@@ -1,5 +1,6 @@
 <?php
   include_once "config.php";
+  include_once "authentication.php";
   include_once ROOT_PATH . "includes/php/utils.php";
   include_once ROOT_PATH . "includes/php/database.php";
 
@@ -635,5 +636,69 @@
     array_push($queries, "DELETE FROM `sdo_model` WHERE so_no=\"$soNo\"");
 
     return $queries;
+  }
+
+  function recordInvoiceAction($action, $invoiceNo) {
+    $invoice = query("
+      SELECT
+        a.invoice_no                                                                                AS `invoice_no`,
+        DATE_FORMAT(a.invoice_date, \"%d-%m-%Y\")                                                   AS `invoice_date`,
+        a.debtor_code                                                                               AS `debtor_code`,
+        a.currency_code                                                                             AS `currency_code`,
+        a.exchange_rate                                                                             AS `exchange_rate`,
+        DATE_FORMAT(a.maturity_date, \"%d-%m-%Y\")                                                  AS `maturity_date`,
+        ROUND(IFNULL(b.amount, 0), 2)                                                               AS `amount`,
+        ROUND(IFNULL(b.amount, 0) - IFNULL(d.settled_amount, 0) + IFNULL(e.credited_amount, 0), 2)  AS `balance`
+      FROM
+        `ar_inv_header` AS a
+      LEFT JOIN
+        (SELECT
+          COUNT(*)                                  AS `count`,
+          invoice_no                                AS `invoice_no`,
+          SUM(amount)                               AS `amount`
+        FROM
+          `ar_inv_item`
+        GROUP BY
+          invoice_no) AS b
+      ON a.invoice_no=b.invoice_no
+      LEFT JOIN
+        (SELECT
+          invoice_no    AS `invoice_no`,
+          SUM(amount)   AS `settled_amount`
+        FROM
+          `ar_settlement`
+        GROUP BY
+          invoice_no) AS d
+      ON a.invoice_no=d.invoice_no
+      LEFT JOIN
+        (SELECT
+          invoice_no    AS `invoice_no`,
+          SUM(amount)   AS `credited_amount`
+        FROM
+          `ar_credit_note`
+        GROUP BY
+          invoice_no) AS e
+      ON a.invoice_no=e.invoice_no
+      WHERE
+        a.invoice_no=\"$invoiceNo\"
+    ")[0];
+
+    $invoiceDate = assigned($invoice) ? $invoice["invoice_date"] : "";
+    $debtorCode = assigned($invoice) ? $invoice["debtor_code"] : "";
+    $currencyCode = assigned($invoice) ? $invoice["currency_code"] : "";
+    $exchangeRate = assigned($invoice) ? $invoice["exchange_rate"] : "";
+    $maturityDate = assigned($invoice) ? $invoice["maturity_date"] : "";
+    $remarks = assigned($invoice) ? $invoice["remarks"] : "";
+    $amount = assigned($invoice) ? $invoice["amount"] : "";
+    $balance = assigned($invoice) ? $invoice["balance"] : "";
+    $username = $_SESSION["user"];
+
+    return "
+      INSERT INTO
+        `ar_audit_trail`
+          (action, datetime, invoice_no, invoice_date, debtor_code, currency_code, exchange_rate, maturity_date, remarks, amount, balance, username)
+        VALUES
+          (\"$action\", NOW(), \"$invoiceNo\", \"$invoiceDate\", \"$debtorCode\", \"$currencyCode\", \"$exchangeRate\", \"$maturityDate\", \"$remarks\", \"$amount\", \"$balance\", \"$username\")
+    ";
   }
 ?>
