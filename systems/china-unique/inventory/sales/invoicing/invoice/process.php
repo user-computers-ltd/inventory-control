@@ -83,6 +83,10 @@
 
     execute($queries);
 
+    $action = $status === "DELETED" ? "delete" : "saved";
+
+    query(recordInvoiceAction($action . "_invoice", $invoiceNo));
+
     header("Location: " . SALES_INVOICE_SAVED_URL);
   }
 

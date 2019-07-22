@@ -70,6 +70,7 @@
 
   foreach ($results as $result) {
     $date = substr($result["datetime"], 0, strpos($result["datetime"], " "));
+    $action = $result["action"];
 
     $arrayPointer = &$dailyResults;
 
@@ -77,6 +78,11 @@
       $arrayPointer[$date] = array();
     }
     $arrayPointer = &$arrayPointer[$date];
+
+    if (!isset($arrayPointer[$action])) {
+      $arrayPointer[$action] = array();
+    }
+    $arrayPointer = &$arrayPointer[$action];
 
     array_push($arrayPointer, $result);
   }
@@ -110,8 +116,8 @@
         <table id="inv-input">
           <tr>
             <th>Action:</th>
-            <th>From:</th>
-            <th>To:</th>
+            <th>From Input Date:</th>
+            <th>To Input Date:</th>
           </tr>
           <tr>
             <td>
@@ -162,92 +168,88 @@
           </tr>
         </table>
       </form>
-      <?php foreach ($dailyResults as $date => $results) : ?>
+      <?php foreach ($dailyResults as $date => $actionResults) : ?>
         <h4><?php echo $date; ?></h4>
-        <?php if (count($results) > 0) : ?>
-          <table id="inv-results" class="sortable">
-            <colgroup>
-              <col style="width: 80px">
-              <col style="width: 100px">
-              <col>
-              <col style="width: 80px">
-              <col style="width: 80px">
-              <col style="width: 80px">
-              <col>
-              <col style="width: 80px">
-              <col style="width: 80px">
-              <col style="width: 80px">
-              <col style="width: 80px">
-              <col>
-            </colgroup>
-            <thead>
-              <tr></tr>
-              <tr>
-                <th>Time</th>
-                <th>Action</th>
-                <th>Invoice No.</th>
-                <th>Invoice Date</th>
-                <th>Maturity Date</th>
-                <th>Code</th>
-                <th>Client</th>
-                <th class="number">Invoice Amount</th>
-                <th class="number">Balance</th>
-                <th>Invoice Remarks</th>
-                <th>User</th>
-              </tr>
-            </thead>
-            <tbody>
-              <?php
-                for ($i = 0; $i < count($results); $i++) {
-                  $result = $results[$i];
-                  $id = $result["id"];
-                  $time = $result["time"];
-                  $action = $result["action"];
-                  $invoiceNo = $result["invoice_no"];
-                  $invoiceDate = $result["invoice_date"];
-                  $maturityDate = $result["maturity_date"];
-                  $debtorCode = $result["debtor_code"];
-                  $debtorName = $result["debtor_name"];
-                  $invoiceAmount = $result["amount"];
-                  $balance = $result["balance"];
-                  $remarks = $result["remarks"];
-                  $user = $result["username"];
+        <?php foreach ($actionResults as $action => $results) : ?>
+          <h4><?php echo $action; ?></h4>
+          <?php if (count($results) > 0) : ?>
+            <table id="inv-results" class="sortable">
+              <colgroup>
+                <col style="width: 80px">
+                <col>
+                <col style="width: 80px">
+                <col>
+                <col style="width: 80px">
+                <col style="width: 80px">
+                <col style="width: 80px">
+                <col style="width: 80px">
+                <col style="width: 80px">
+                <col>
+              </colgroup>
+              <thead>
+                <tr></tr>
+                <tr>
+                  <th>Invoice Date</th>
+                  <th>Invoice No.</th>
+                  <th>Code</th>
+                  <th>Client</th>
+                  <th class="number">Invoice Amount</th>
+                  <th class="number">Balance</th>
+                  <th>Description</th>
+                  <th>User</th>
+                  <th>Time</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php
+                  for ($i = 0; $i < count($results); $i++) {
+                    $result = $results[$i];
+                    $id = $result["id"];
+                    $time = $result["time"];
+                    $invoiceNo = $result["invoice_no"];
+                    $invoiceDate = $result["invoice_date"];
+                    $maturityDate = $result["maturity_date"];
+                    $debtorCode = $result["debtor_code"];
+                    $debtorName = $result["debtor_name"];
+                    $invoiceAmount = $result["amount"];
+                    $balance = $result["balance"];
+                    $remarks = $result["remarks"];
+                    $user = $result["username"];
 
-                  echo "
-                    <tr>
-                      <td title=\"$time\">$time</td>
-                      <td title=\"$action\">$action</td>
-                      <td title=\"$invoiceNo\"><a class=\"link\" href=\"" . AR_INVOICE_URL . "?id=$id\">$invoiceNo</a></td>
-                      <td title=\"$invoiceDate\">$invoiceDate</td>
-                      <td title=\"$maturityDate\">$maturityDate</td>
-                      <td title=\"$debtorCode\">$debtorCode</td>
-                      <td title=\"$debtorName\">$debtorName</td>
-                      <td class=\"number\" title=\"$invoiceAmount\">". number_format($invoiceAmount, 2) . "</td>
-                      <td class=\"number\" title=\"$balance\">". number_format($balance, 2) . "</td>
-                      <td title=\"$remarks\">$remarks</td>
-                      <td title=\"$user\">$user</td>
-                    </tr>
-                  ";
-                }
-              ?>
-            </tbody>
-            <tbody>
-              <tr>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-              </tr>
-            </tbody>
-          </table>
-        <?php else : ?>
-          <div class="inv-client-no-results">No results</div>
-        <?php endif ?>
+                    echo "
+                      <tr>
+                        <td title=\"$invoiceDate\">$invoiceDate</td>
+                        <td title=\"$invoiceNo\"><a class=\"link\" href=\"" . AR_INVOICE_URL . "?id=$id\">$invoiceNo</a></td>
+                        <td title=\"$debtorCode\">$debtorCode</td>
+                        <td title=\"$debtorName\">$debtorName</td>
+                        <td class=\"number\" title=\"$invoiceAmount\">". number_format($invoiceAmount, 2) . "</td>
+                        <td class=\"number\" title=\"$balance\">". number_format($balance, 2) . "</td>
+                        <td title=\"$remarks\">$remarks</td>
+                        <td title=\"$user\">$user</td>
+                        <td title=\"$time\">$time</td>
+                      </tr>
+                    ";
+                  }
+                ?>
+              </tbody>
+              <tbody>
+                <tr>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                </tr>
+              </tbody>
+            </table>
+          <?php else : ?>
+            <div class="inv-client-no-results">No results</div>
+          <?php endif ?>
+        <?php endforeach ?>
       <?php endforeach ?>
     </div>
   </body>
