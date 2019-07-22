@@ -28,11 +28,11 @@
           </tr>
           <tr>
             <td>
-              <input type="date" name="from" value="<?php echo $from; ?>" max="<?php echo date("Y-m-d"); ?>" />
+              <input type="date" class="web-only" name="from" value="<?php echo $from; ?>" max="<?php echo date("Y-m-d"); ?>" />
               <span class="print-only"><?php echo assigned($from) ? $from : "ANY"; ?></span>
             </td>
             <td>
-              <input type="date" name="to" value="<?php echo $to; ?>" max="<?php echo date("Y-m-d"); ?>" />
+              <input type="date" class="web-only" name="to" value="<?php echo $to; ?>" max="<?php echo date("Y-m-d"); ?>" />
               <span class="print-only"><?php echo assigned($to) ? $to : "ANY"; ?></span>
             </td>
             <td>
