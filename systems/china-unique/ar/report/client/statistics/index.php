@@ -70,22 +70,22 @@
       a.debtor_code
     ORDER BY
       a.debtor_code ASC
-    ");
+  ");
 
-    $debtors = query("
-      SELECT DISTINCT
-        a.debtor_code                         AS `code`,
-        IFNULL(b.english_name, \"Unknown\")   AS `name`
-      FROM
-        `ar_inv_header` AS a
-      LEFT JOIN
-        `debtor` AS b
-      ON a.debtor_code=b.code
-      WHERE
-        a.status=\"SAVED\" OR a.status=\"SETTLED\"
-      ORDER BY
-        code ASC
-    ");
+  $debtors = query("
+    SELECT DISTINCT
+      a.debtor_code                         AS `code`,
+      IFNULL(b.english_name, \"Unknown\")   AS `name`
+    FROM
+      `ar_inv_header` AS a
+    LEFT JOIN
+      `debtor` AS b
+    ON a.debtor_code=b.code
+    WHERE
+      a.status=\"SAVED\" OR a.status=\"SETTLED\"
+    ORDER BY
+      code ASC
+  ");
 ?>
 
 <!DOCTYPE html>

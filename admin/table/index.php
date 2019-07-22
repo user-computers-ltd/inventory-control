@@ -100,13 +100,7 @@
                 <tbody>
                   <?php
                     for ($i = $offset; $i < count($results) && $i < $offset + $count; $i++) {
-                      echo "<tr>";
-
-                      foreach ($results[$i] as $key => $value) {
-                        echo "<td>$value</td>";
-                      }
-
-                      echo "</tr>";
+                      echo "<tr>" . implode(array_map(function ($v) { return "<td>$v</td>"; }, $results[$i])) . "</tr>";
                     }
                   ?>
                 </tbody>
