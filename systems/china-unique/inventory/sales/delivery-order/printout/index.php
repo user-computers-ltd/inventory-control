@@ -69,8 +69,6 @@
                     $discount = $doHeader["discount"];
                     $models = $doModels[$doHeader["do_no"]];
 
-                    $occurrenceMap = array();
-
                     for ($i = 0; $i < count($models); $i++) {
                       $model = $models[$i];
                       $soNo = $model["so_no"];
@@ -78,43 +76,27 @@
                       $modelNo = $model["model_no"];
                       $qty = $model["qty"];
                       $price = $model["price"];
+                      $subtotal = $price * $qty;
 
                       $totalQty += $qty;
-                      $tempQty = $qty;
+                      $totalAmount += $subtotal;
 
-                      if (!isset($occurrenceMap["$soNo - $brand - $modelNo"])) {
-                        $occurrenceMap["$soNo - $brand - $modelNo"] = explode(",", $model["occurrence"]);
+                      echo "
+                        <tr>
+                          <td>$soNo</td>
+                          <td>$brand</td>
+                          <td>$modelNo</td>
+                          <td class=\"number\">" . number_format($qty) . "</td>
+                      ";
+
+                      if (!$hidePrice) {
+                        echo "
+                          <td class=\"number\">" . rtrim(rtrim($price, "0"), ".") . "</td>
+                          <td class=\"number\">" . number_format($subtotal, 2) . "</td>
+                        ";
                       }
 
-                      $occurrences = &$occurrenceMap["$soNo - $brand - $modelNo"];
-
-                      for ($j = 0; $j < count($occurrences); $j++) {
-                        if ($tempQty > 0 && $occurrences[$j] > 0) {
-                          $showQty = min($tempQty, $occurrences[$j]);
-                          $subtotal = $price * $showQty;
-
-                          $tempQty -= $showQty;
-                          $occurrences[$j] -= $showQty;
-                          $totalAmount += $subtotal;
-
-                          echo "
-                            <tr>
-                              <td>$soNo</td>
-                              <td>$brand</td>
-                              <td>$modelNo</td>
-                              <td class=\"number\">" . number_format($showQty) . "</td>
-                          ";
-
-                          if (!$hidePrice) {
-                            echo "
-                              <td class=\"number\">" . rtrim(rtrim($price, "0"), ".") . "</td>
-                              <td class=\"number\">" . number_format($subtotal, 2) . "</td>
-                            ";
-                          }
-
-                          echo "</tr>";
-                        }
-                      }
+                      echo "</tr>";
                     }
                   ?>
                 </tbody>

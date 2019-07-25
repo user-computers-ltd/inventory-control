@@ -63,8 +63,7 @@
         b.name            AS `brand`,
         a.model_no        AS `model_no`,
         a.price           AS `price`,
-        SUM(a.qty)        AS `qty`,
-        d.occurrence      AS `occurrence`
+        SUM(a.qty)        AS `qty`
       FROM
         `sdo_model` AS a
       LEFT JOIN
@@ -79,7 +78,7 @@
       WHERE
         $modelWhereClause
       GROUP BY
-        a.do_no, a.brand_code, a.model_no, a.so_no, a.price, d.occurrence
+        a.do_no, a.brand_code, a.model_no, a.so_no, a.price
       ORDER BY
         a.do_no ASC,
         a.brand_code ASC,
@@ -153,8 +152,7 @@
           "brand"             => $brands[$brandCodes[$i]],
           "model_no"          => $modelNos[$i],
           "price"             => $prices[$i],
-          "qty"               => $qtys[$i],
-          "occurrence"        => $qtys[$i]
+          "qty"               => $qtys[$i]
         ));
       } else {
         $doModelList[$indexMap[$key]]["qty"] += $qtys[$i];
