@@ -281,7 +281,7 @@ if (!utilsLoaded) {
               .reverse()
               .join("");
           } else if (hasClass(headerColumns[j], "number")) {
-            value = parseFloat(value.replace(",", "")) || 0;
+            value = parseFloat(value.replace(/,/g, "")) || 0;
           }
 
           cell.dataset.sortvalue = value;

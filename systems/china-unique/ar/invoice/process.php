@@ -30,6 +30,8 @@
     assigned($settlements) &&
     assigned($settleRemarkss)
   ) {
+    query(recordInvoiceAction($action . "_invoice", $invoiceNo));
+
     $values = array();
 
     for ($i = 0; $i < count($stockOutNos); $i++) {
@@ -108,8 +110,6 @@
     }
 
     execute($queries);
-
-    query(recordInvoiceAction($action . "_invoice", $invoiceNo));
 
     header("Location: " . AR_INVOICE_ISSUED_URL);
   }

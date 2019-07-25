@@ -9,9 +9,19 @@
   if (assigned($action) && assigned($invoiceIds) && count($invoiceIds) > 0) {
     $queries = array();
 
+    foreach ($invoiceIds as $invoiceId) {
+      $invoice = query("SELECT invoice_no FROM `ar_inv_header` WHERE id=\"$invoiceId\"")[0];
+      $invoiceNo = assigned($invoice) ? $invoice["invoice_no"] : "";
+      array_push($queries, recordInvoiceAction($action . "_invoice", $invoiceNo));
+    }
+
+    execute($queries);
+
     $headerWhereClause = join(" OR ", array_map(function ($i) { return "id=\"$i\""; }, $invoiceIds));
     $modelWhereClause = join(" OR ", array_map(function ($i) { return "b.id=\"$i\""; }, $invoiceIds));
     $printoutParams = join("&", array_map(function ($i) { return "id[]=$i"; }, $invoiceIds));
+
+    $queries = array();
 
     if ($action === "delete") {
       array_push($queries, "DELETE a FROM `ar_inv_item` AS a LEFT JOIN `ar_inv_header` AS b ON a.invoice_no=b.invoice_no WHERE $modelWhereClause");
@@ -27,16 +37,6 @@
     } else if ($action === "print") {
       header("Location: " . AR_INVOICE_PRINTOUT_URL . "?$printoutParams");
       exit();
-    }
-
-    execute($queries);
-
-    $queries = array();
-
-    foreach ($invoiceIds as $invoiceId) {
-      $invoice = query("SELECT invoice_no FROM `ar_inv_header` WHERE id=\"$invoiceId\"")[0];
-      $invoiceNo = assigned($invoice) ? $invoice["invoice_no"] : "";
-      array_push($queries, recordInvoiceAction($action . "_invoice", $invoiceNo));
     }
 
     execute($queries);
