@@ -412,7 +412,8 @@
 
           function updateModel(index, model = {}) {
             var priceStandard = document.querySelector("input[name='price_standard']:checked").value;
-
+            var transactionCode = transactionCodeElement.value;
+            var showPrice = transactionCode === "S1" || transactionCode === "S3";
             var stockOutModel = stockOutModels[index];
 
             stockOutModel["model_no"] = model["model_no"] || "";
@@ -420,7 +421,7 @@
             stockOutModel["cost_average"] = parseFloat(model["cost_average"]) || 0;
             stockOutModel["normal_price"] = parseFloat(model["normal_price"]) || 0;
             stockOutModel["special_price"] = parseFloat(model["special_price"]) || 0;
-            stockOutModel["price"] = parseFloat(model[priceStandard]) || 0;
+            stockOutModel["price"] = showPrice && parseFloat(model[priceStandard]) || 0;
             stockOutModel["qty"] = stockOutModel["qty"] || 0;
             stockOutModel["total_amount"] = (stockOutModel["qty"] || 0) * stockOutModel["price"];
             stockOutModel["qty_on_hand"] = parseFloat(model["qty_on_hand"]) || 0;
