@@ -143,7 +143,7 @@
   }
 
   $creditors = query("SELECT creditor_code AS code, creditor_name_eng AS name FROM `cu_ap`.`creditor`");
-  $debtors = query("SELECT code, english_name AS name FROM `debtor`");
+  $debtors = query("SELECT code, english_name AS name FROM `debtor` ORDER BY code");
   $brands = query("SELECT code, name FROM `brand`");
   $models = query("
     SELECT
