@@ -65,6 +65,8 @@
 
     execute($queries);
 
+    query(recordCreditNoteAction($action . "_credit_note", $creditNoteNo));
+
     header("Location: " . AR_CREDIT_NOTE_ISSUED_URL);
   }
 

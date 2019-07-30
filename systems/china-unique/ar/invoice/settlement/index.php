@@ -110,14 +110,18 @@
             <tbody>
             </tbody>
           </table>
-          <?php if (assigned($remarks)) : ?>
-            <table id="invoice-footer">
+          <table id="invoice-footer">
+            <?php if (assigned($remarks)) : ?>
               <tr>
                 <td>Remarks:</td>
                 <td><?php echo $remarks; ?></td>
               </tr>
-            </table>
-          <?php endif ?>
+            <?php endif ?>
+            <tr>
+              <td>Settlement Remarks:</td>
+              <td><textarea name="settlement_remarks"><?php echo $settlementRemarks; ?></textarea></td>
+            </tr>
+          </table>
           <button name="action" value="save" type="submit">Save</button>
           <button name="action" value="settle" type="submit">Settle</button>
         </form>

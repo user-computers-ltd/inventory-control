@@ -62,6 +62,8 @@
 
     execute($queries);
 
+    query(recordPaymentAction($action . "_payment", $paymentNo));
+
     header("Location: " . AR_PAYMENT_ISSUED_URL);
   }
 

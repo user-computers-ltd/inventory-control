@@ -638,7 +638,30 @@
     return $queries;
   }
 
-  function recordInvoiceAction($action, $invoiceNo) {
+  function recordAuditTrailAction(
+    $action,
+    $voucherNo,
+    $invoiceDate,
+    $debtorCode,
+    $currencyCode,
+    $exchangeRate,
+    $maturityDate,
+    $remarks,
+    $amount,
+    $balance
+  ) {
+    $username = $_SESSION["user"];
+
+    return "
+      INSERT INTO
+        `ar_audit_trail`
+          (action, datetime, invoice_no, invoice_date, debtor_code, currency_code, exchange_rate, maturity_date, remarks, amount, balance, username)
+        VALUES
+          (\"$action\", NOW(), \"$voucherNo\", \"$invoiceDate\", \"$debtorCode\", \"$currencyCode\", \"$exchangeRate\", \"$maturityDate\", \"$remarks\", \"$amount\", \"$balance\", \"$username\")
+    ";
+  }
+
+  function recordInvoiceAction($action, $invoiceNo, $settlementRemarks = "") {
     $invoice = query("
       SELECT
         a.invoice_no                                                                                AS `invoice_no`,
@@ -648,7 +671,8 @@
         a.exchange_rate                                                                             AS `exchange_rate`,
         DATE_FORMAT(a.maturity_date, \"%d-%m-%Y\")                                                  AS `maturity_date`,
         ROUND(IFNULL(b.amount, 0), 2)                                                               AS `amount`,
-        ROUND(IFNULL(b.amount, 0) - IFNULL(d.settled_amount, 0) + IFNULL(e.credited_amount, 0), 2)  AS `balance`
+        ROUND(IFNULL(b.amount, 0) - IFNULL(d.settled_amount, 0) + IFNULL(e.credited_amount, 0), 2)  AS `balance`,
+        a.remarks                                                                                   AS `remarks`
       FROM
         `ar_inv_header` AS a
       LEFT JOIN
@@ -683,22 +707,100 @@
         a.invoice_no=\"$invoiceNo\"
     ")[0];
 
-    $invoiceDate = assigned($invoice) ? $invoice["invoice_date"] : "";
+    $voucherDate = assigned($invoice) ? $invoice["invoice_date"] : "";
     $debtorCode = assigned($invoice) ? $invoice["debtor_code"] : "";
     $currencyCode = assigned($invoice) ? $invoice["currency_code"] : "";
     $exchangeRate = assigned($invoice) ? $invoice["exchange_rate"] : "";
     $maturityDate = assigned($invoice) ? $invoice["maturity_date"] : "";
-    $remarks = assigned($invoice) ? $invoice["remarks"] : "";
     $amount = assigned($invoice) ? $invoice["amount"] : "";
     $balance = assigned($invoice) ? $invoice["balance"] : "";
-    $username = $_SESSION["user"];
+    $remarks = assigned($invoice) ? (strpos($action, "_settlement") === false ? $invoice["remarks"] :  $settlementRemarks) : "";
 
-    return "
-      INSERT INTO
-        `ar_audit_trail`
-          (action, datetime, invoice_no, invoice_date, debtor_code, currency_code, exchange_rate, maturity_date, remarks, amount, balance, username)
-        VALUES
-          (\"$action\", NOW(), \"$invoiceNo\", \"$invoiceDate\", \"$debtorCode\", \"$currencyCode\", \"$exchangeRate\", \"$maturityDate\", \"$remarks\", \"$amount\", \"$balance\", \"$username\")
-    ";
+    return recordAuditTrailAction(
+      $action,
+      $invoiceNo,
+      $voucherDate,
+      $debtorCode,
+      $currencyCode,
+      $exchangeRate,
+      $maturityDate,
+      $remarks,
+      $amount,
+      $balance
+    );
+  }
+
+  function recordPaymentAction($action, $paymentNo) {
+    $payment = query("
+      SELECT
+        a.payment_no                                AS `payment_no`,
+        DATE_FORMAT(a.payment_date, \"%d-%m-%Y\")   AS `payment_date`,
+        a.debtor_code                               AS `debtor_code`,
+        a.currency_code                             AS `currency_code`,
+        a.exchange_rate                             AS `exchange_rate`,
+        a.amount                                    AS `amount`,
+        a.remarks                                   AS `remarks`
+      FROM
+        `ar_payment` AS a
+      WHERE
+        a.payment_no=\"$paymentNo\"
+    ")[0];
+
+    $voucherDate = assigned($payment) ? $payment["payment_date"] : "";
+    $debtorCode = assigned($payment) ? $payment["debtor_code"] : "";
+    $currencyCode = assigned($payment) ? $payment["currency_code"] : "";
+    $exchangeRate = assigned($payment) ? $payment["exchange_rate"] : "";
+    $amount = assigned($payment) ? $payment["amount"] : "";
+    $remarks = assigned($payment) ? $payment["remarks"] : "";
+
+    return recordAuditTrailAction(
+      $action,
+      $paymentNo,
+      $voucherDate,
+      $debtorCode,
+      $currencyCode,
+      $exchangeRate,
+      "",
+      $remarks,
+      $amount,
+      ""
+    );
+  }
+
+  function recordCreditNoteAction($action, $creditNoteNo) {
+    $creditNote = query("
+      SELECT
+        a.credit_note_no                                AS `credit_note_no`,
+        DATE_FORMAT(a.credit_note_date, \"%d-%m-%Y\")   AS `credit_note_date`,
+        a.debtor_code                                   AS `debtor_code`,
+        a.currency_code                                 AS `currency_code`,
+        a.exchange_rate                                 AS `exchange_rate`,
+        a.amount                                        AS `amount`,
+        a.remarks                                       AS `remarks`
+      FROM
+        `ar_credit_note` AS a
+      WHERE
+        a.credit_note_no=\"$creditNoteNo\"
+    ")[0];
+
+    $voucherDate = assigned($creditNote) ? $creditNote["credit_note_date"] : "";
+    $debtorCode = assigned($creditNote) ? $creditNote["debtor_code"] : "";
+    $currencyCode = assigned($creditNote) ? $creditNote["currency_code"] : "";
+    $exchangeRate = assigned($creditNote) ? $creditNote["exchange_rate"] : "";
+    $amount = assigned($creditNote) ? $creditNote["amount"] : "";
+    $remarks = assigned($creditNote) ? $creditNote["remarks"] : "";
+
+    return recordAuditTrailAction(
+      $action,
+      $creditNoteNo,
+      $voucherDate,
+      $debtorCode,
+      $currencyCode,
+      $exchangeRate,
+      "",
+      $remarks,
+      $amount,
+      ""
+    );
   }
 ?>

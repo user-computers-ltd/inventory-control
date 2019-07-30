@@ -5,6 +5,7 @@
   $creditNoteNos = $_POST["credit_note_no"];
   $amounts = $_POST["amount"];
   $settleRemarkss = $_POST["settle_remarks"];
+  $settlementRemarks = $_POST["settlement_remarks"];
   $action = $_POST["action"];
 
   if (assigned($id)) {
@@ -40,7 +41,6 @@
       $currencyCode = $invoice["currency_code"];
       $exchangeRate = $invoice["exchange_rate"];
       $invoiceAmount = $invoice["invoice_amount"];
-      $remarks = $invoice["remarks"];
       $status = $invoice["status"];
       $settlemntVouchers = query("SELECT * FROM `ar_settlement` WHERE invoice_no=\"$invoiceNo\" ORDER BY settlement_index ASC");
 
@@ -66,7 +66,7 @@
                 `ar_payment`
                   (payment_no, payment_date, debtor_code, currency_code, exchange_rate, amount, remarks, status)
                 VALUES
-                  (\"$newPaymentNo\", \"" . date("Y-m-d") . "\", \"$debtorCode\", \"$currencyCode\", \"$exchangeRate\", \"$amount\", \"$remarks\", \"SAVED\")
+                  (\"$newPaymentNo\", \"" . date("Y-m-d") . "\", \"$debtorCode\", \"$currencyCode\", \"$exchangeRate\", \"$amount\", \"$settleRemarks\", \"SAVED\")
             ");
             $paymentNo = $newPaymentNo;
           }
@@ -89,7 +89,7 @@
 
         execute($queries);
 
-        query(recordInvoiceAction($action . ($action === "settle" ? "_invoice" : "_settlement"), $invoiceNo));
+        query(recordInvoiceAction($action . ($action === "settle" ? "_invoice" : "_settlement"), $invoiceNo, $settlementRemarks));
 
         header("Location: " . AR_INVOICE_ISSUED_URL);
       }

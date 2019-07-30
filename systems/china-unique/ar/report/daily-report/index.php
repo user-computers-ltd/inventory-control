@@ -43,7 +43,7 @@
       a.action,
       a.datetime,
       DATE_FORMAT(a.datetime, \"%H:%i:%s\") AS `time`,
-      a.invoice_no,
+      a.invoice_no                                AS  `voucher_no`,
       a.invoice_date,
       a.maturity_date,
       a.debtor_code                               AS `debtor_code`,
@@ -52,12 +52,22 @@
       a.balance,
       a.remarks,
       a.username,
-      b.id
+      CASE
+        WHEN a.action LIKE \"%_payment\" THEN b2.id
+        WHEN a.action LIKE \"%_credit_note\" THEN b3.id
+        ELSE b.id
+      END                                         AS  `id`
     FROM
       `ar_audit_trail` AS a
     LEFT JOIN
       `ar_inv_header` AS b
     ON a.invoice_no=b.invoice_no
+    LEFT JOIN
+      `ar_payment` AS b2
+    ON a.invoice_no=b2.payment_no
+    LEFT JOIN
+      `ar_credit_note` AS b3
+    ON a.invoice_no=b3.credit_note_no
     LEFT JOIN
       `debtor` AS c
     ON a.debtor_code=c.code
@@ -172,6 +182,14 @@
         <h4><?php echo $date; ?></h4>
         <?php foreach ($actionResults as $action => $results) : ?>
           <h4><?php echo $action; ?></h4>
+          <?php
+            $voucher = "";
+
+            if (strpos($action, "_invoice") !== false) { $voucher = "Invoice"; }
+            else if (strpos($action, "_settlement") !== false) { $voucher = "Settlement"; }
+            else if (strpos($action, "_payment") !== false) { $voucher = "Payment"; }
+            else if (strpos($action, "_credit_note") !== false) { $voucher = "Credit Note"; }
+          ?>
           <?php if (count($results) > 0) : ?>
             <table id="inv-results" class="sortable">
               <colgroup>
@@ -181,7 +199,7 @@
                 <col>
                 <col style="width: 80px">
                 <col style="width: 80px">
-                <col style="width: 80px">
+                <col>
                 <col style="width: 80px">
                 <col style="width: 80px">
                 <col>
@@ -189,11 +207,11 @@
               <thead>
                 <tr></tr>
                 <tr>
-                  <th>Invoice Date</th>
-                  <th>Invoice No.</th>
+                  <th><?php echo $voucher; ?> Date</th>
+                  <th><?php echo $voucher; ?> No.</th>
                   <th>Code</th>
                   <th>Client</th>
-                  <th class="number">Invoice Amount</th>
+                  <th class="number"><?php echo $voucher; ?> Amount</th>
                   <th class="number">Balance</th>
                   <th>Description</th>
                   <th>User</th>
@@ -206,7 +224,7 @@
                     $result = $results[$i];
                     $id = $result["id"];
                     $time = $result["time"];
-                    $invoiceNo = $result["invoice_no"];
+                    $voucherNo = $result["voucher_no"];
                     $invoiceDate = $result["invoice_date"];
                     $maturityDate = $result["maturity_date"];
                     $debtorCode = $result["debtor_code"];
@@ -216,10 +234,23 @@
                     $remarks = $result["remarks"];
                     $user = $result["username"];
 
+                    $link = $voucherNo;
+                    if (assigned($id)) {
+                      if ($voucher === "Invoice") {
+                        $link = "<a class=\"link\" href=\"" . AR_INVOICE_URL . "?id=$id\">$voucherNo</a>";
+                      } else if ($voucher === "Settlement") {
+                        $link = "<a class=\"link\" href=\"" . AR_INVOICE_SETTLEMENT_URL . "?id=$id\">$voucherNo</a>";
+                      } else if ($voucher === "Payment") {
+                        $link = "<a class=\"link\" href=\"" . AR_PAYMENT_URL . "?id=$id\">$voucherNo</a>";
+                      } else if ($voucher === "Credit Note") {
+                        $link = "<a class=\"link\" href=\"" . AR_CREDIT_NOTE_URL . "?id=$id\">$voucherNo</a>";
+                      }
+                    }
+
                     echo "
                       <tr>
                         <td title=\"$invoiceDate\">$invoiceDate</td>
-                        <td title=\"$invoiceNo\"><a class=\"link\" href=\"" . AR_INVOICE_URL . "?id=$id\">$invoiceNo</a></td>
+                        <td title=\"$voucherNo\">$link</td>
                         <td title=\"$debtorCode\">$debtorCode</td>
                         <td title=\"$debtorName\">$debtorName</td>
                         <td class=\"number\" title=\"$invoiceAmount\">". number_format($invoiceAmount, 2) . "</td>
