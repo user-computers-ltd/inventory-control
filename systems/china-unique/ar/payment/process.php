@@ -67,7 +67,7 @@
     header("Location: " . AR_PAYMENT_ISSUED_URL);
   }
 
-  $results = query("SELECT code, english_name AS name, credit_term FROM `debtor`");
+  $results = query("SELECT code, english_name AS name, credit_term FROM `debtor` ORDER BY code ASC");
   $debtors = array();
   foreach ($results as $debtor) {
     $debtors[$debtor["code"]] = $debtor;
