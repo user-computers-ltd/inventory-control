@@ -110,7 +110,7 @@
       AND (" . join(" OR ", array_map(function ($d) { return "c.code=\"$d\""; }, $filterDebtorCodes)) . ")";
   }
 
-  if ($showMode == "outstanding_only") {
+  if ($showMode === "outstanding_only") {
     $whereClause = $whereClause . "
       AND IFNULL(b.total_qty_outstanding, 0) > 0";
   }

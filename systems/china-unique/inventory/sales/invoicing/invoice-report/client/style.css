@@ -9,6 +9,11 @@
   box-sizing: border-box;
 }
 
+#invoice-input #input-issued-only {
+  margin: 0px;
+  width: auto;
+}
+
 .invoice-results td {
   min-width: 0px;
   max-width: 0px;
@@ -54,4 +59,13 @@
 .invoice-results-total th,
 .invoice-results-total td {
   border: none;
+}
+
+.invoice-model-no-results {
+  margin: 100px 0px;
+  text-align: center;
+  font-size: 40px;
+  font-weight: bold;
+  line-height: 48px;
+  opacity: 0.3;
 }

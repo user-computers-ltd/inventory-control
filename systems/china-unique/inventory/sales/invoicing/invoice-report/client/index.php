@@ -63,6 +63,23 @@
             </td>
             <td><button type="submit" class="web-only">Go</button></td>
           </tr>
+          <tr>
+            <th>
+              <input
+                id="input-issued-only"
+                type="checkbox"
+                onchange="onIssuedOnlyChanged(event)"
+                <?php echo $showMode === "issued_only" ? "checked" : "" ?>
+              />
+              <label for="input-issued-only">Issued invoice only</label>
+              <input
+                id="input-show-mode"
+                type="hidden"
+                name="show_mode"
+                value="<?php echo $showMode; ?>"
+              />
+            </th>
+          </tr>
         </table>
       </form>
       <?php if (count($incomeHeaders) > 0) : ?>
@@ -71,7 +88,7 @@
           <table class="invoice-results sortable">
             <colgroup>
               <col style="width: 80px">
-              <col style="width: 50px">
+              <col style="width: 60px">
               <col>
               <col style="width: 120px">
               <col style="width: 120px">
@@ -272,6 +289,13 @@
             </tr>
           </table>
         <?php endforeach ?>
+        <script>
+          function onIssuedOnlyChanged(event) {
+            var showMode = event.target.checked ? "issued_only" : "show_all";
+            document.querySelector("#input-show-mode").value = showMode;
+            event.target.form.submit();
+          }
+        </script>
       <?php else : ?>
         <div class="invoice-model-no-results">No results</div>
       <?php endif ?>

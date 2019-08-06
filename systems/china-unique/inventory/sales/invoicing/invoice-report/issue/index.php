@@ -26,7 +26,9 @@
         <?php foreach ($incomeHeaders as $currency => &$debtorHeaders) : ?>
           <table class="invoice-results sortable">
             <colgroup>
+              <col style="width: 60px">
               <col>
+              <col style="width: 100px">
               <col style="width: 100px">
               <col style="width: 100px">
               <col style="width: 100px">
@@ -38,9 +40,11 @@
             <thead>
               <tr></tr>
               <tr>
+                <th>Code</th>
                 <th>Client</th>
                 <th class="number">Qty</th>
                 <th class="number">Total Qty</th>
+                <th class="number">Actual Cost (Exc. Tax)</th>
                 <th class="number">Sales Amt (Inc. Tax)</th>
                 <th class="number">Total Sales Amt</th>
                 <th>Date</th>
@@ -52,11 +56,13 @@
               <?php
                 $totalQty = 0;
                 $totalSales = 0;
+                $totalCost = 0;
                 $totalTax = 0;
 
                 foreach ($debtorHeaders as $debtorName => &$headers) {
                   $qtyColumn = "";
                   $amountColumn = "";
+                  $costColumn = "";
                   $taxAmountColumn = "";
                   $dateColumn = "";
                   $voucherNoColumn = "";
@@ -66,6 +72,7 @@
 
                   for ($i = 0; $i < count($headers); $i++) {
                     $incomeHeader = $headers[$i];
+                    $debtorCode = $incomeHeader["debtor_code"];
                     $date = $incomeHeader["date"];
                     $doId = $incomeHeader["do_id"];
                     $doNo = $incomeHeader["do_no"];
@@ -74,12 +81,14 @@
                     $stockInId = $incomeHeader["stock_in_id"];
                     $stockInNo = $incomeHeader["stock_in_no"];
                     $qty = $incomeHeader["qty"];
+                    $cost = $incomeHeader["cost"];
                     $amount = $incomeHeader["pending"];
                     $tax = $incomeHeader["tax"];
                     $taxAmount = $amount - $amount / $tax;
 
                     $debtorTotalQty += $qty;
                     $debtorTotalSales += $amount;
+                    $totalCost += $cost;
                     $debtorTotalTax += $taxAmount;
 
                     $voucherColumn = assigned($doId) ? "
@@ -92,6 +101,7 @@
 
                     $qtyColumn = $qtyColumn . "<div title=\"$qty\">" . number_format($qty) . "</div>";
                     $amountColumn = $amountColumn . "<div title=\"$amount\">" . number_format($amount, 2) . "</div>";
+                    $costColumn = $costColumn . "<div title=\"$cost\">" . number_format($cost, 2) . "</div>";
                     $taxAmountColumn = $taxAmountColumn . "<div title=\"$taxAmount\">" . number_format($taxAmount, 2) . "</div>";
                     $dateColumn = $dateColumn . "<div title=\"$date\">$date</div>";
                     $voucherNoColumn = $voucherNoColumn . "<div>" . $voucherColumn . "</div>";
@@ -103,9 +113,11 @@
 
                   echo "
                     <tr>
+                      <td title=\"$debtorCode\">$debtorCode</td>
                       <td title=\"$debtorName\">$debtorName</td>
                       <td class=\"number\">$qtyColumn</td>
                       <td class=\"number\">" . number_format($debtorTotalQty) . "</td>
+                      <td class=\"number\">$costColumn</td>
                       <td class=\"number\">$amountColumn</td>
                       <td class=\"number\">" . number_format($debtorTotalSales, 2) . "</td>
                       <td>$dateColumn</td>
@@ -120,7 +132,9 @@
               <tr>
                 <th class="number">Total:</th>
                 <th></th>
+                <th></th>
                 <th class="number"><?php echo number_format($totalQty); ?></th>
+                <th class="number"><?php echo number_format($totalCost); ?></th>
                 <th></th>
                 <th class="number"><?php echo number_format($totalSales, 2); ?></th>
                 <th></th>

@@ -82,7 +82,7 @@
           <table class="invoice-results sortable">
             <colgroup>
               <col style="width: 80px">
-              <col style="width: 50px">
+              <col style="width: 60px">
               <col>
               <col style="width: 120px">
               <col style="width: 120px">

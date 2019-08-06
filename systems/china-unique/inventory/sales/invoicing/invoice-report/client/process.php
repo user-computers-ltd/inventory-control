@@ -21,6 +21,7 @@
 
   $period = assigned($_GET["period"]) ? $_GET["period"] : (count($periods) > 0 ? $periods[0] : "");
   $filterDebtorCodes = $_GET["filter_debtor_code"];
+  $showMode = assigned($_GET["show_mode"]) ? $_GET["show_mode"] : "all";
 
   $doWhereClause = "";
   $stockOutWhereClause = "";
@@ -51,6 +52,15 @@
       AND (" . join(" OR ", array_map(function ($d) { return "a.debtor_code=\"$d\""; }, $filterDebtorCodes)) . ")";
     $stockInReturnWhereClause = $stockInReturnWhereClause . "
       AND (" . join(" OR ", array_map(function ($d) { return "a.creditor_code=\"$d\""; }, $filterDebtorCodes)) . ")";
+  }
+
+  if ($showMode === "issued_only") {
+    $doWhereClause = $doWhereClause . "
+      AND d.invoice_amounts IS NOT NULL";
+    $stockOutWhereClause = $stockOutWhereClause . "
+      AND d.invoice_amounts IS NOT NULL";
+    $stockInReturnWhereClause = $stockInReturnWhereClause . "
+      AND d.invoice_amounts IS NOT NULL";
   }
 
   $incomeHeaders = array();

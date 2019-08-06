@@ -63,7 +63,7 @@
                 id="input-outstanding-only"
                 type="checkbox"
                 onchange="onOutstandingOnlyChanged(event)"
-                <?php echo $showMode == "outstanding_only" ? "checked" : "" ?>
+                <?php echo $showMode === "outstanding_only" ? "checked" : "" ?>
               />
               <label for="input-outstanding-only">Outstanding only</label>
               <input

@@ -18,6 +18,7 @@
       IFNULL(b.qty, 0)                                                                    AS `qty`,
       a.currency_code                                                                     AS `currency`,
       ROUND(IFNULL(b.amount, 0) * (100 - a.discount) / 100 - IFNULL(e.invoice_sum, 0), 2) AS `pending`,
+      ROUND(IFNULL(b.cost, 0), 2)                                                         AS `cost`,
       (100 + a.tax) / 100                                                                 AS `tax`,
       CASE
         WHEN d.invoice_settlement>0 THEN \"FULL\"
