@@ -26,7 +26,7 @@
         <?php foreach ($incomeHeaders as $currency => &$debtorHeaders) : ?>
           <table class="invoice-results sortable">
             <colgroup>
-              <col style="width: 60px">
+              <col style="width: 80px">
               <col>
               <col style="width: 100px">
               <col style="width: 100px">
