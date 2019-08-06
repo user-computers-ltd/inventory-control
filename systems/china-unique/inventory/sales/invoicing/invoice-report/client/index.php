@@ -253,41 +253,43 @@
               </tr>
             </tbody>
           </table>
-          <table class="invoice-results-total">
-            <?php if (assigned($previousPeriod)) : ?>
+          <?php if ($showMode !== "issued_only") : ?>
+            <table class="invoice-results-total">
+              <?php if (assigned($previousPeriod)) : ?>
+                <tr>
+                  <th colspan="2">Previous Stock Out </th>
+                </tr>
+                <tr>
+                  <td>Invoice Issued:</td>
+                  <td class="number"><?php echo number_format($previousIssued, 2); ?></td>
+                </tr>
+                <tr>
+                  <td>Invoice Pending:</td>
+                  <td class="number"><?php echo number_format($previousPending, 2); ?></td>
+                </tr>
+              <?php endif ?>
               <tr>
-                <th colspan="2">Previous Stock Out </th>
+                <th colspan="2">Current Stock Out (<?php echo $period; ?>)</th>
               </tr>
               <tr>
                 <td>Invoice Issued:</td>
-                <td class="number"><?php echo number_format($previousIssued, 2); ?></td>
+                <td class="number"><?php echo number_format($currentIssued, 2); ?></td>
               </tr>
               <tr>
                 <td>Invoice Pending:</td>
-                <td class="number"><?php echo number_format($previousPending, 2); ?></td>
+                <td class="number"><?php echo number_format($currentPending, 2); ?></td>
               </tr>
-            <?php endif ?>
-            <tr>
-              <th colspan="2">Current Stock Out (<?php echo $period; ?>)</th>
-            </tr>
-            <tr>
-              <td>Invoice Issued:</td>
-              <td class="number"><?php echo number_format($currentIssued, 2); ?></td>
-            </tr>
-            <tr>
-              <td>Invoice Pending:</td>
-              <td class="number"><?php echo number_format($currentPending, 2); ?></td>
-            </tr>
-            <tr><td></td><td></td></tr>
-            <tr>
-              <th>Total Invoice Issued:</th>
-              <th class="number"><?php echo number_format($totalIssuedAmount, 2); ?></th>
-            </tr>
-            <tr>
-              <th>Total Invoice Pending:</th>
-              <th class="number"><?php echo number_format($totalPendingAmount, 2); ?></th>
-            </tr>
-          </table>
+              <tr><td></td><td></td></tr>
+              <tr>
+                <th>Total Invoice Issued:</th>
+                <th class="number"><?php echo number_format($totalIssuedAmount, 2); ?></th>
+              </tr>
+              <tr>
+                <th>Total Invoice Pending:</th>
+                <th class="number"><?php echo number_format($totalPendingAmount, 2); ?></th>
+              </tr>
+            </table>
+          <?php endif ?>
         <?php endforeach ?>
         <script>
           function onIssuedOnlyChanged(event) {
