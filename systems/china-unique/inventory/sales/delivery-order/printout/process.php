@@ -143,8 +143,6 @@
       $key = $soNos[$i] . $brandCodes[$i] . $modelNos[$i];
 
       if (!isset($indexMap[$key])) {
-        $indexMap[$key] = $i;
-
         array_push($doModelList, array(
           "do_no"             => $doNo,
           "ia_no"             => $iaNos[$i],
@@ -154,6 +152,8 @@
           "price"             => $prices[$i],
           "qty"               => $qtys[$i]
         ));
+
+        $indexMap[$key] = count($doModelList) - 1;
       } else {
         $doModelList[$indexMap[$key]]["qty"] += $qtys[$i];
       }
