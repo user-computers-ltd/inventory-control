@@ -392,7 +392,8 @@
           `so_allotment` AS x
         LEFT JOIN
           `so_header` AS y
-        ON x.so_no=y.so_no
+        ON x.so_no=y.so_no "
+        . ($creating ? "" : "
         LEFT JOIN
           (
             SELECT
@@ -414,6 +415,7 @@
           x.model_no=z.model_no AND
           x.so_no=z.so_no AND
           x.ia_no=z.ia_no
+        ") . "
         WHERE
           x.warehouse_code!=\"\" AND
           (y.debtor_code!=\"$debtorCode\" "
