@@ -15,6 +15,8 @@
 
   $filterActions = $_GET["filter_action"];
   $filterDebtorCodes = $_GET["filter_debtor_code"];
+  $from = $_GET["from"];
+  $to = $_GET["to"];
 
   $whereClause = "";
 
@@ -25,12 +27,12 @@
 
   if (assigned($from)) {
     $whereClause = $whereClause . "
-      AND DATE_FORMAT(a.datetime, \"%d-%m-%Y\") >= \"$from\"";
+      AND DATE_FORMAT(a.datetime, \"%Y-%m-%d\") >= \"$from\"";
   }
 
   if (assigned($to)) {
     $whereClause = $whereClause . "
-      AND DATE_FORMAT(a.datetime, \"%d-%m-%Y\") <= \"$from\"";
+      AND DATE_FORMAT(a.datetime, \"%Y-%m-%d\") <= \"$to\"";
   }
 
   if (assigned($filterDebtorCodes) && count($filterDebtorCodes) > 0) {
@@ -42,7 +44,7 @@
     SELECT
       a.action,
       a.datetime,
-      DATE_FORMAT(a.datetime, \"%H:%i:%s\") AS `time`,
+      DATE_FORMAT(a.datetime, \"%H:%i:%s\")       AS `time`,
       a.invoice_no                                AS  `voucher_no`,
       a.invoice_date,
       a.maturity_date,
@@ -74,6 +76,8 @@
     WHERE
       a.action IS NOT NULL
       $whereClause
+    ORDER BY
+      a.datetime DESC
   ");
 
   $dailyResults = array();
