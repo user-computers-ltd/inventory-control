@@ -12,6 +12,8 @@
       c.name                          AS `brand_name`,
       SUM(a.qty)                      AS `qty`,
       SUM(e.qty_on_reserve)           AS `qty_on_reserve`,
+      SUM(f.qty_on_loan)              AS `qty_on_loan`,
+      SUM(f.qty_on_borrow)            AS `qty_on_borrow`,
       SUM(a.qty * d.cost_average)     AS `subtotal`
     FROM
       `stock` AS a
@@ -41,6 +43,17 @@
       GROUP BY
         h.warehouse_code, m.brand_code, m.model_no) AS e
     ON a.warehouse_code=e.warehouse_code AND a.brand_code=e.brand_code AND a.model_no=e.model_no
+    LEFT JOIN
+      (SELECT
+        brand_code,
+        model_no,
+        SUM(IF(transaction_code=\"S7\", qty, 0)) - SUM(IF(transaction_code=\"R8\", qty, 0)) AS `qty_on_loan`,
+        SUM(IF(transaction_code=\"R7\", qty, 0)) - SUM(IF(transaction_code=\"S8\", qty, 0)) AS `qty_on_borrow`
+      FROM
+        `transaction`
+      GROUP BY
+        brand_code, model_no) AS f
+    ON a.brand_code=f.brand_code AND a.model_no=f.model_no
     WHERE
       a.qty > 0
     GROUP BY
@@ -88,12 +101,16 @@
                 <col style="width: 80px;">
                 <col style="width: 80px;">
                 <col style="width: 80px;">
+                <col style="width: 80px;">
+                <col style="width: 80px;">
               </colgroup>
               <thead>
                 <tr></tr>
                 <tr>
                   <th>Brand</th>
                   <th class="number">Qty</th>
+                  <th class="number">Loaned</th>
+                  <th class="number">Borrowed</th>
                   <th class="number">Reserved</th>
                   <th class="number">Available</th>
                   <th class="number">Subtotal</th>
@@ -102,6 +119,8 @@
               <tbody>
                 <?php
                   $totalQty = 0;
+                  $totalQtyOnLoan = 0;
+                  $totalQtyOnBorrow = 0;
                   $totalQtyOnReserve = 0;
                   $totalQtyAvailable = 0;
                   $totalAmt = 0;
@@ -112,11 +131,15 @@
                     $brandCode = $warehouseStock["brand_code"];
                     $brandName = $warehouseStock["brand_name"];
                     $qty = $warehouseStock["qty"];
+                    $qtyOnLoan = $warehouseStock["qty_on_loan"];
+                    $qtyOnBorrow = $warehouseStock["qty_on_borrow"];
                     $qtyOnReserve = $warehouseStock["qty_on_reserve"];
                     $qtyAvailable = $qty - $qtyOnReserve;
                     $subtotal = $warehouseStock["subtotal"];
 
                     $totalQty += $qty;
+                    $totalQtyOnLoan += $qtyOnLoan;
+                    $totalQtyOnBorrow += $qtyOnBorrow;
                     $totalQtyOnReserve += $qtyOnReserve;
                     $totalQtyAvailable += $qtyAvailable;
                     $totalAmt += $subtotal;
@@ -127,6 +150,8 @@
                           <a href=\"" . REPORT_STOCK_TAKE_WAREHOUSE_DETAIL_URL . "?id[]=$warehouseId&filter_brand_code[]=$brandCode\">$brandCode - $brandName</a>
                         </td>
                         <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
+                        <td title=\"$qtyOnLoan\" class=\"number\">" . number_format($qtyOnLoan) . "</td>
+                        <td title=\"$qtyOnBorrow\" class=\"number\">" . number_format($qtyOnBorrow) . "</td>
                         <td title=\"$qtyOnReserve\" class=\"number\">" . number_format($qtyOnReserve) . "</td>
                         <td title=\"$qtyAvailable\" class=\"number\">" . number_format($qtyAvailable) . "</td>
                         <td title=\"$subtotal\" class=\"number\">" . number_format($subtotal, 2) . "</td>
@@ -137,6 +162,8 @@
                 <tr>
                   <th class="number">Total:</th>
                   <th class="number"><?php echo number_format($totalQty); ?></th>
+                  <th class="number"><?php echo number_format($totalQtyOnLoan); ?></th>
+                  <th class="number"><?php echo number_format($totalQtyOnBorrow); ?></th>
                   <th class="number"><?php echo number_format($totalQtyOnReserve); ?></th>
                   <th class="number"><?php echo number_format($totalQtyAvailable); ?></th>
                   <th class="number"><?php echo number_format($totalAmt, 2); ?></th>
