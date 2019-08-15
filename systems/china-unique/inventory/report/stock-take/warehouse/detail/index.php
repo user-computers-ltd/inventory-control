@@ -36,8 +36,8 @@
       b.id                                        AS `model_id`,
       a.model_no                                  AS `model_no`,
       a.qty                                       AS `qty`,
-      ROUND(f.qty_on_loan * b.cost_average, 2)    AS `subtotal_loaned`,
-      ROUND(f.qty_on_borrow * b.cost_average, 2)  AS `subtotal_borrowed`,
+      f.qty_on_loan                               AS `qty_on_loan`,
+      f.qty_on_borrow                             AS `qty_on_borrow`,
       e.qty_on_reserve                            AS `qty_on_reserve`,
       b.cost_average                              AS `cost_average`,
       ROUND(a.qty * b.cost_average, 2)            AS `subtotal`
@@ -251,8 +251,8 @@
                 <tr>
                   <th>Brand</th>
                   <th>Model No.</th>
-                  <th class="number">Total Value on Loan</th>
-                  <th class="number">Total Value on Borrow</th>
+                  <th class="number">Loaned</th>
+                  <th class="number">Borrowed</th>
                   <th class="number">Qty</th>
                   <th class="number">Reserved</th>
                   <th class="number">Available</th>
@@ -264,8 +264,8 @@
                 <?php
                   $warehouseStocks = $warehouse["stocks"];
 
-                  $totalValueOnLoan = 0;
-                  $totalValueOnBorrow = 0;
+                  $totalQtyOnLoan = 0;
+                  $totalQtyOnBorrow = 0;
                   $totalQty = 0;
                   $totalQtyOnReserve = 0;
                   $totalQtyAvailable = 0;
@@ -282,16 +282,16 @@
 
                       for ($i = 0; $i < $stockCount; $i++) {
                         $modelStock = $modelStocks[$i];
-                        $valueOnLoan = $modelStock["subtotal_loaned"];
-                        $valueOnBorrow = $modelStock["subtotal_borrowed"];
+                        $qtyOnLoan = $modelStock["qty_on_loan"];
+                        $qtyOnBorrow = $modelStock["qty_on_borrow"];
                         $qty = $modelStock["qty"];
                         $qtyOnReserve = $modelStock["qty_on_reserve"];
                         $qtyAvailable = $qty - $qtyOnReserve;
                         $costAverage = $modelStock["cost_average"];
                         $subtotal = $modelStock["subtotal"];
 
-                        $totalValueOnLoan += $valueOnLoan;
-                        $totalValueOnBorrow += $valueOnBorrow;
+                        $totalQtyOnLoan += $qtyOnLoan;
+                        $totalQtyOnBorrow += $qtyOnBorrow;
                         $totalQty += $qty;
                         $totalQtyOnReserve += $qtyOnReserve;
                         $totalQtyAvailable += $qtyAvailable;
@@ -301,8 +301,8 @@
                           <tr>
                             <td title=\"$brandName\">$brandCode - $brandName</td>
                             <td title=\"$modelNo\"><a class=\"link\" href=\"" . DATA_MODEL_MODEL_DETAIL_URL . "?id=$modelId\">$modelNo</a></td>
-                            <td title=\"$valueOnLoan\" class=\"number\">" . number_format($valueOnLoan) . "</td>
-                            <td title=\"$valueOnBorrow\" class=\"number\">" . number_format($valueOnBorrow) . "</td>
+                            <td title=\"$qtyOnLoan\" class=\"number\">" . number_format($qtyOnLoan) . "</td>
+                            <td title=\"$qtyOnBorrow\" class=\"number\">" . number_format($qtyOnBorrow) . "</td>
                             <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
                             <td title=\"$qtyOnReserve\" class=\"number\">" . number_format($qtyOnReserve) . "</td>
                             <td title=\"$qtyAvailable\" class=\"number\">" . number_format($qtyAvailable) . "</td>
@@ -317,8 +317,8 @@
                 <tr>
                   <th></th>
                   <th class="number">Total:</th>
-                  <th class="number"><?php echo number_format($totalValueOnLoan); ?></th>
-                  <th class="number"><?php echo number_format($totalValueOnBorrow); ?></th>
+                  <th class="number"><?php echo number_format($totalQtyOnLoan); ?></th>
+                  <th class="number"><?php echo number_format($totalQtyOnBorrow); ?></th>
                   <th class="number"><?php echo number_format($totalQty); ?></th>
                   <th class="number"><?php echo number_format($totalQtyOnReserve); ?></th>
                   <th class="number"><?php echo number_format($totalQtyAvailable); ?></th>
