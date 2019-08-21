@@ -8,13 +8,15 @@
     $queries = array();
 
     foreach ($invoiceIds as $invoiceId) {
-      $invoice = query("SELECT invoice_no FROM `ar_inv_header` WHERE id=\"$invoiceId\"")[0];
-      $invoiceNo = assigned($invoice) ? $invoice["invoice_no"] : "";
-      array_push($queries, recordInvoiceAction($action . "_invoice", $invoiceNo));
+      if ($action !== "print") {
+        $invoice = query("SELECT invoice_no FROM `ar_inv_header` WHERE id=\"$invoiceId\"")[0];
+        $invoiceNo = assigned($invoice) ? $invoice["invoice_no"] : "";
+        array_push($queries, recordInvoiceAction($action . "_invoice", $invoiceNo));
+      }
     }
 
     execute($queries);
-    
+
     $queries = array();
 
     $headerWhereClause = join(" OR ", array_map(function ($i) { return "id=\"$i\""; }, $invoiceIds));

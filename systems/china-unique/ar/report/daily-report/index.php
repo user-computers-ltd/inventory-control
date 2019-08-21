@@ -224,6 +224,8 @@
               </thead>
               <tbody>
                 <?php
+                  $amountMap = array();
+
                   for ($i = 0; $i < count($results); $i++) {
                     $result = $results[$i];
                     $id = $result["id"];
@@ -237,6 +239,8 @@
                     $balance = $result["balance"];
                     $remarks = $result["remarks"];
                     $user = $result["username"];
+
+                    $amountMap[$voucherNo] = $invoiceAmount;
 
                     $link = $voucherNo;
                     if (assigned($id)) {
@@ -272,8 +276,18 @@
                   <th></th>
                   <th></th>
                   <th></th>
-                  <th></th>
-                  <th></th>
+                  <?php if (
+                    strpos($action, "create") === 0 ||
+                    strpos($action, "settle") === 0 ||
+                    strpos($action, "delete") === 0 ||
+                    strpos($action, "settlement") === strlen($action) - 10
+                  ) : ?>
+                    <th class="number">Total:</th>
+                    <th class="number"><?php echo number_format(array_sum($amountMap), 2); ?></th>
+                  <?php else : ?>
+                    <th></th>
+                    <th></th>
+                  <?php endif ?>
                   <th></th>
                   <th></th>
                   <th></th>

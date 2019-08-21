@@ -11,9 +11,11 @@
     $queries = array();
 
     foreach ($paymentIds as $paymentId) {
-      $payment = query("SELECT payment_no FROM `ar_payment` WHERE id=\"$paymentId\"")[0];
-      $paymentNo = assigned($payment) ? $payment["payment_no"] : "";
-      array_push($queries, recordPaymentAction($action . "_payment", $paymentNo));
+      if ($action !== "print") {
+        $payment = query("SELECT payment_no FROM `ar_payment` WHERE id=\"$paymentId\"")[0];
+        $paymentNo = assigned($payment) ? $payment["payment_no"] : "";
+        array_push($queries, recordPaymentAction($action . "_payment", $paymentNo));
+      }
     }
 
     execute($queries);

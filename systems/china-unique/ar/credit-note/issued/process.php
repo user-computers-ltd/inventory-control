@@ -10,9 +10,11 @@
     $queries = array();
 
     foreach ($creditNoteIds as $creditNoteId) {
-      $creditNote = query("SELECT credit_note_no FROM `ar_credit_note` WHERE id=\"$creditNoteId\"")[0];
-      $creditNoteNo = assigned($creditNote) ? $creditNote["credit_note_no"] : "";
-      array_push($queries, recordCreditNoteAction($action . "_credit_note", $creditNoteNo));
+      if ($action !== "print") {
+        $creditNote = query("SELECT credit_note_no FROM `ar_credit_note` WHERE id=\"$creditNoteId\"")[0];
+        $creditNoteNo = assigned($creditNote) ? $creditNote["credit_note_no"] : "";
+        array_push($queries, recordCreditNoteAction($action . "_credit_note", $creditNoteNo));
+      }
     }
 
     execute($queries);
