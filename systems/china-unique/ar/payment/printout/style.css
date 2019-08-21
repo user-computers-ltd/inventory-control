@@ -1,0 +1,48 @@
+.payment-footer {
+  page-break-inside: avoid;
+}
+
+.payment-header,
+.payment-footer {
+  font-size: 13px;
+}
+
+.payment-header td,
+.payment-footer td {
+  border: none;
+}
+
+.payment-header td:nth-child(2n + 1),
+.payment-footer td:nth-child(2n + 1) {
+  width: 150px;
+  font-weight: bold;
+}
+
+.payment-models th,
+.payment-models td {
+  background-color: transparent;
+  border: none;
+  padding: 4px;
+  font-size: 13px;
+}
+
+.payment-models .number {
+  text-align: right;
+}
+
+.payment-models thead th {
+  border-bottom: 1px solid;
+}
+
+.payment-models tbody tr:last-child th {
+  border-top: 1px solid;
+}
+
+.payment-models-no-results,
+#payment-not-found {
+  text-align: center;
+  font-size: 40px;
+  font-weight: bold;
+  line-height: 200px;
+  opacity: 0.3;
+}

@@ -21,7 +21,7 @@
           <div class="page">
             <?php include SYSTEM_PATH . "includes/components/header/index.php"; ?>
             <div class="headline"><?php echo AR_INVOICE_PRINTOUT_TITLE ?></div>
-            <table class="invoice-header sortable">
+            <table class="invoice-header">
               <tr>
                 <td>Invoice No.:</td>
                 <td><?php echo $invoiceHeader["invoice_no"]; ?></td>
@@ -42,7 +42,7 @@
               </tr>
             </table>
             <?php if (count($invoiceModels[$invoiceHeader["invoice_no"]]) > 0) : ?>
-              <table class="invoice-models">
+              <table class="invoice-models sortable">
                 <thead>
                   <tr></tr>
                   <tr>
