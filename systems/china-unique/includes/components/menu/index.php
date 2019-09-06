@@ -17,7 +17,7 @@
     $menu = "";
 
     foreach ($sitemap as $name => $site) {
-      $initial = substr($name, strpos($name, "(") + 1, strrpos($name, ")") - 1);
+      $initial = substr($name, strpos($name, "(") + 1, strpos($name, ")") - 1);
       $label = substr($name, strpos($name, ")") + 1);
       $menuLabel = "<span class=\"initial\">$initial</span><span class=\"label\">$label</span>";
       if (is_array($site)) {
