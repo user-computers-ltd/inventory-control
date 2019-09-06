@@ -30,8 +30,8 @@
   define("REPORT_SALES_PERFORMANCE_MODEL_TITLE", "(G4b) Sales Performance By Model");
 
   define("REPORT_STOCK_TAKE_TITLE", "(G5) Stock Take");
-  define("REPORT_STOCK_TAKE_WAREHOUSE_TITLE", "(G5a) Stock Take Summary By Location");
-  define("REPORT_STOCK_TAKE_WAREHOUSE_DETAIL_TITLE", "(G5b) Stock Take Detail By Location");
+  define("REPORT_STOCK_TAKE_WAREHOUSE_TITLE", "(G5a) Stock Take Summary By Location By Brand");
+  define("REPORT_STOCK_TAKE_WAREHOUSE_DETAIL_TITLE", "(G5b) Stock Take Detail By Location By Brand");
   define("REPORT_STOCK_TAKE_BRAND_TITLE", "(G5c) Brand Exposure Summary");
   define("REPORT_STOCK_TAKE_BRAND_DETAIL_TITLE", "(G5d) Brand Exposure Details");
   define("REPORT_MULTIPLE_WAREHOUSE_TITLE", "(G5e) Multiple Warehouse Items");
