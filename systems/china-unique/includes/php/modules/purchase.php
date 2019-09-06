@@ -32,11 +32,11 @@
   define("PURCHASE_HISTORY_LOG_TITLE", "(E2b) P.O. Receipt History");
 
   define("PURCHASE_REPORT_TITLE", "(E3) Outstanding P.O. Analysis Report");
-  define("PURCHASE_REPORT_BRAND_TITLE", "(E3a) All Brand");
-  define("PURCHASE_REPORT_BRAND_SUMMARY_TITLE", "(E3b) All Brand By Model - Summary");
-  define("PURCHASE_REPORT_BRAND_DETAIL_TITLE", "(E3c) All Brand By Model - Detail");
-  define("PURCHASE_REPORT_BRAND_SELECTIVE_TITLE", "(E3d) All Brand By Model - Selective");
-  define("PURCHASE_REPORT_BRAND_SUBCLASS_TITLE", "(E3e) All Brand By Model - Inc. subclass");
+  define("PURCHASE_REPORT_BRAND_TITLE", "(E3a) Outstanding PO. Brand Summary");
+  define("PURCHASE_REPORT_BRAND_SUMMARY_TITLE", "(E3b) Outstanding PO By Brand By Model");
+  define("PURCHASE_REPORT_BRAND_DETAIL_TITLE", "(E3c) Outstanding PO By Brand By Model (Detail)");
+  define("PURCHASE_REPORT_BRAND_SELECTIVE_TITLE", "(E3d) By Selective PO# By Model Range");
+  define("PURCHASE_REPORT_BRAND_SUBCLASS_TITLE", "(E3e) Outstanding PO By Model (Inc Sub Class)");
   define("PURCHASE_SHORTAGE_RPORT_TITLE", "(E3f) Shortage Report");
 
   define("PURCHASE_INCOMING_ADVICE_TITLE", "(E4) Incoming Advice");
