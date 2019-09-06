@@ -47,13 +47,14 @@
       (SELECT
         brand_code,
         model_no,
+        warehouse_code,
         SUM(IF(transaction_code=\"S7\", qty, 0)) - SUM(IF(transaction_code=\"R8\", qty, 0)) AS `qty_on_loan`,
         SUM(IF(transaction_code=\"R7\", qty, 0)) - SUM(IF(transaction_code=\"S8\", qty, 0)) AS `qty_on_borrow`
       FROM
         `transaction`
       GROUP BY
-        brand_code, model_no) AS f
-    ON a.brand_code=f.brand_code AND a.model_no=f.model_no
+        brand_code, model_no, warehouse_code) AS f
+    ON a.brand_code=f.brand_code AND a.model_no=f.model_no AND a.warehouse_code=f.warehouse_code
     WHERE
       (a.qty > 0 OR
       f.qty_on_loan > 0 OR
