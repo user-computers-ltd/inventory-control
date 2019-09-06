@@ -1,5 +1,5 @@
 <?php
-  define("SYSTEM_PATH", "../../../../../");
+  define("SYSTEM_PATH", "../../../../");
   include_once SYSTEM_PATH . "includes/php/config.php";
   include_once ROOT_PATH . "includes/php/utils.php";
   include_once ROOT_PATH . "includes/php/database.php";
@@ -7,19 +7,19 @@
   $InBaseCurrency = "(" . COMPANY_CURRENCY . ")";
 
   $ids = $_GET["id"];
-  $filterBrandCodes = $_GET["filter_brand_code"];
+  $filterWarehouseCodes = $_GET["filter_warehouse_code"];
   $filterModelNos = $_GET["filter_model_no"];
 
   $whereClause = "";
 
   if (assigned($ids) && count($ids) > 0) {
     $whereClause = $whereClause . "
-      AND (" . join(" OR ", array_map(function ($id) { return "d.id=\"$id\""; }, $ids)) . ")";
+      AND (" . join(" OR ", array_map(function ($i) { return "c.id=\"$i\""; }, $ids)) . ")";
   }
 
-  if (assigned($filterBrandCodes) && count($filterBrandCodes) > 0) {
+  if (assigned($filterWarehouseCodes) && count($filterWarehouseCodes) > 0) {
     $whereClause = $whereClause . "
-      AND (" . join(" OR ", array_map(function ($i) { return "a.brand_code=\"$i\""; }, $filterBrandCodes)) . ")";
+      AND (" . join(" OR ", array_map(function ($i) { return "a.warehouse_code=\"$i\""; }, $filterWarehouseCodes)) . ")";
   }
 
   if (assigned($filterModelNos) && count($filterModelNos) > 0) {
@@ -29,16 +29,15 @@
 
   $results = query("
     SELECT
-      a.warehouse_code                            AS `warehouse_code`,
-      d.name                                      AS `warehouse_name`,
       a.brand_code                                AS `brand_code`,
       c.name                                      AS `brand_name`,
       b.id                                        AS `model_id`,
       a.model_no                                  AS `model_no`,
+      a.warehouse_code                            AS `warehouse_code`,
       a.qty                                       AS `qty`,
       f.qty_on_loan                               AS `qty_on_loan`,
       f.qty_on_borrow                             AS `qty_on_borrow`,
-      e.qty_on_reserve                            AS `qty_on_reserve`,
+      d.qty_on_reserve                            AS `qty_on_reserve`,
       b.cost_average                              AS `cost_average`,
       ROUND(a.qty * b.cost_average, 2)            AS `subtotal`
     FROM
@@ -49,9 +48,6 @@
     LEFT JOIN
       `brand` AS c
     ON a.brand_code=c.code
-    LEFT JOIN
-      `warehouse` AS d
-    ON a.warehouse_code=d.code
     LEFT JOIN
       (SELECT
         h.warehouse_code  AS `warehouse_code`,
@@ -67,8 +63,8 @@
         h.status=\"SAVED\" AND
         m.ia_no=\"\"
       GROUP BY
-        h.warehouse_code, m.brand_code, m.model_no) AS e
-    ON a.warehouse_code=e.warehouse_code AND a.brand_code=e.brand_code AND a.model_no=e.model_no
+        h.warehouse_code, m.brand_code, m.model_no) AS d
+    ON a.warehouse_code=d.warehouse_code AND a.brand_code=d.brand_code AND a.model_no=d.model_no
     LEFT JOIN
       (SELECT
         brand_code,
@@ -81,34 +77,23 @@
         brand_code, model_no) AS f
     ON a.brand_code=f.brand_code AND a.model_no=f.model_no
     WHERE
-      (a.qty > 0 OR
-      f.qty_on_loan > 0 OR
-      f.qty_on_borrow > 0)
+      a.qty > 0
       $whereClause
     ORDER BY
-      a.warehouse_code ASC,
       a.brand_code ASC,
-      a.model_no ASC
+      a.model_no ASC,
+      a.warehouse_code ASC
   ");
 
   $stocks = array();
 
   foreach ($results as $stock) {
-    $warehouseCode = $stock["warehouse_code"];
-    $warehouseName = $stock["warehouse_name"];
     $brandCode = $stock["brand_code"];
     $brandName = $stock["brand_name"];
     $modelNo = $stock["model_no"];
     $modelId = $stock["model_id"];
 
     $arrayPointer = &$stocks;
-
-    if (!isset($arrayPointer[$warehouseCode])) {
-      $arrayPointer[$warehouseCode] = array();
-      $arrayPointer[$warehouseCode]["name"] = $warehouseName;
-      $arrayPointer[$warehouseCode]["stocks"] = array();
-    }
-    $arrayPointer = &$arrayPointer[$warehouseCode]["stocks"];
 
     if (!isset($arrayPointer[$brandCode])) {
       $arrayPointer[$brandCode] = array();
@@ -127,36 +112,49 @@
     array_push($arrayPointer, $stock);
   }
 
-  $brandWhereClause = "";
+  foreach ($stocks as $bCode => &$b) {
+    foreach ($b["stocks"] as $mCode => &$m) {
+      if (count($m["stocks"]) == 1) {
+        unset($stocks[$bCode]["stocks"][$mCode]);
+      }
+    }
+
+    if (count($b["stocks"]) === 0) {
+      unset($stocks[$bCode]);
+    }
+  }
+
+
+  $warehouseWhereClause = "";
   $modelWhereClause = "";
 
   if (assigned($ids) && count($ids) > 0) {
-    $brandWhereClause = $brandWhereClause . "
-      AND (" . join(" OR ", array_map(function ($id) { return "c.id=\"$id\""; }, $ids)) . ")";
+    $warehouseWhereClause = $warehouseWhereClause . "
+      AND (" . join(" OR ", array_map(function ($i) { return "c.id=\"$i\""; }, $ids)) . ")";
     $modelWhereClause = $modelWhereClause . "
-      AND (" . join(" OR ", array_map(function ($id) { return "c.id=\"$id\""; }, $ids)) . ")";
+      AND (" . join(" OR ", array_map(function ($i) { return "c.id=\"$i\""; }, $ids)) . ")";
   }
 
-  if (assigned($filterBrandCodes) && count($filterBrandCodes) > 0) {
+  if (assigned($filterWarehouseCodes) && count($filterWarehouseCodes) > 0) {
     $modelWhereClause = $modelWhereClause . "
-      AND (" . join(" OR ", array_map(function ($i) { return "a.brand_code=\"$i\""; }, $filterBrandCodes)) . ")";
+      AND (" . join(" OR ", array_map(function ($i) { return "a.warehouse_code=\"$i\""; }, $filterWarehouseCodes)) . ")";
   }
 
-  $brands = query("
+  $warehouses = query("
     SELECT DISTINCT
-      b.code AS `code`,
-      b.name AS `name`
+      b.code AS `warehouse_code`,
+      b.name AS `warehouse_name`
     FROM
       `stock` AS a
     LEFT JOIN
-      `brand` AS b
-    ON a.brand_code=b.code
+      `warehouse` AS b
+    ON a.warehouse_code=b.code
     LEFT JOIN
-      `warehouse` AS c
-    ON a.warehouse_code=c.code
+      `brand` AS c
+    ON a.brand_code=c.code
     WHERE
-      a.qty IS NOT NULL
-      $brandWhereClause
+      a.qty > 0
+      $warehouseWhereClause
     ORDER BY
       b.code ASC
   ");
@@ -170,10 +168,13 @@
       `model` AS b
     ON a.brand_code=b.brand_code AND a.model_no=b.model_no
     LEFT JOIN
-      `warehouse` AS c
-    ON a.warehouse_code=c.code
+      `brand` AS c
+    ON a.brand_code=c.code
+    LEFT JOIN
+      `warehouse` AS d
+    ON a.warehouse_code=d.code
     WHERE
-      a.qty IS NOT NULL
+      a.qty > 0
       $modelWhereClause
     ORDER BY
       b.model_no ASC
@@ -190,7 +191,7 @@
     <?php include_once SYSTEM_PATH . "includes/components/menu/index.php"; ?>
     <div class="page-wrapper">
       <?php include_once SYSTEM_PATH . "includes/components/header/index.php"; ?>
-      <div class="headline"><?php echo REPORT_STOCK_TAKE_WAREHOUSE_DETAIL_TITLE; ?></div>
+      <div class="headline"><?php echo REPORT_MULTIPLE_WAREHOUSE_TITLE; ?></div>
       <form>
         <?php
           if (assigned($ids) && count($ids) > 0) {
@@ -199,20 +200,20 @@
             }, $ids));
           }
         ?>
-        <table id="warehouse-input" class="web-only">
+        <table id="brand-input" class="web-only">
           <tr>
-            <th>Brand:</th>
+            <th>Warehouse:</th>
             <th>Model No.:</th>
           </tr>
           <tr>
             <td>
-              <select name="filter_brand_code[]" multiple>
+              <select name="filter_warehouse_code[]" multiple>
                 <?php
-                  foreach ($brands as $brand) {
-                    $code = $brand["code"];
-                    $name = $brand["name"];
-                    $selected = assigned($filterBrandCodes) && in_array($code, $filterBrandCodes) ? "selected" : "";
-                    echo "<option value=\"$code\" $selected>$code - $name</option>";
+                  foreach ($warehouses as $warehouse) {
+                    $warehouseCode = $warehouse["warehouse_code"];
+                    $warehouseName = $warehouse["warehouse_name"];
+                    $selected = assigned($filterWarehouseCodes) && in_array($warehouseCode, $filterWarehouseCodes) ? "selected" : "";
+                    echo "<option value=\"$warehouseCode\" $selected>$warehouseCode - $warehouseName</option>";
                   }
                 ?>
               </select>
@@ -233,98 +234,97 @@
         </table>
       </form>
       <?php if (count($stocks) > 0) : ?>
-        <?php foreach ($stocks as $warehouseCode => &$warehouse) : ?>
-          <div class="warehouse-client">
-            <h4><?php echo $warehouseCode . " - " . $warehouse["name"]; ?></h4>
-            <table class="warehouse-results">
+        <?php foreach ($stocks as $brandCode => &$brand) : ?>
+          <div class="brand-client">
+            <h4><?php echo $brandCode . " - " . $brand["name"]; ?></h4>
+            <table class="brand-results">
               <colgroup>
                 <col>
-                <col>
+                <col style="width: 80px;">
+                <col style="width: 50px;">
                 <col style="width: 80px;">
                 <col style="width: 80px;">
                 <col style="width: 80px;">
                 <col style="width: 80px;">
-                <col style="width: 80px;">
-                <col style="width: 110px;">
                 <col style="width: 80px;">
               </colgroup>
               <thead>
                 <tr></tr>
                 <tr>
-                  <th>Brand</th>
                   <th>Model No.</th>
-                  <th class="number">Loaned</th>
-                  <th class="number">Borrowed</th>
+                  <th class="number">Avg. Cost</th>
+                  <th class="number">W.C.</th>
                   <th class="number">Qty</th>
                   <th class="number">Reserved</th>
                   <th class="number">Available</th>
-                  <th class="number">Average Cost</th>
                   <th class="number">Subtotal</th>
+                  <th class="number">Total</th>
                 </tr>
               </thead>
               <tbody>
                 <?php
-                  $warehouseStocks = $warehouse["stocks"];
+                  $brandStocks = $brand["stocks"];
 
-                  $totalQtyOnLoan = 0;
-                  $totalQtyOnBorrow = 0;
                   $totalQty = 0;
                   $totalQtyOnReserve = 0;
                   $totalQtyAvailable = 0;
                   $totalAmt = 0;
 
-                  foreach ($warehouseStocks as $brandCode => $brand) {
-                    $brandName = $brand["name"];
-                    $brandStocks = $brand["stocks"];
+                  foreach ($brandStocks as $modelNo => &$model) {
+                    $modelId = $model["id"];
+                    $modelStocks = $model["stocks"];
+                    $stockCount = count($modelStocks);
 
-                    foreach ($brandStocks as $modelNo => $model) {
-                      $modelId = $model["id"];
-                      $modelStocks = $model["stocks"];
-                      $stockCount = count($modelStocks);
+                    for ($i = 0; $i < $stockCount; $i++) {
+                      $modelStock = $modelStocks[$i];
+                      $qty = $modelStock["qty"];
+                      $qtyOnReserve = $modelStock["qty_on_reserve"];
+                      $qtyAvailable = $qty - $qtyOnReserve;
+                      $warehouseCode = $modelStock["warehouse_code"];
+                      $costAverage = $modelStock["cost_average"];
+                      $subtotal = $modelStock["subtotal"];
 
-                      for ($i = 0; $i < $stockCount; $i++) {
-                        $modelStock = $modelStocks[$i];
-                        $qtyOnLoan = $modelStock["qty_on_loan"];
-                        $qtyOnBorrow = $modelStock["qty_on_borrow"];
-                        $qty = $modelStock["qty"];
-                        $qtyOnReserve = $modelStock["qty_on_reserve"];
-                        $qtyAvailable = $qty - $qtyOnReserve;
-                        $costAverage = $modelStock["cost_average"];
-                        $subtotal = $modelStock["subtotal"];
+                      $totalQty += $qty;
+                      $totalQtyOnReserve += $qtyOnReserve;
+                      $totalQtyAvailable += $qtyAvailable;
+                      $totalAmt += $subtotal;
+                      $total = array_sum(array_map(function ($md) { return $md["subtotal"]; }, $modelStocks));
 
-                        $totalQtyOnLoan += $qtyOnLoan;
-                        $totalQtyOnBorrow += $qtyOnBorrow;
-                        $totalQty += $qty;
-                        $totalQtyOnReserve += $qtyOnReserve;
-                        $totalQtyAvailable += $qtyAvailable;
-                        $totalAmt += $subtotal;
+                      $modelColumns = $i === 0 ? "
+                        <td rowspan=\"" . $stockCount . "\" title=\"$modelNo\">
+                          <a class=\"link\" href=\"" . DATA_MODEL_MODEL_DETAIL_URL . "?id=$modelId\">$modelNo</a>
+                        </td>
+                        <td rowspan=\"" . $stockCount . "\" title=\"$costAverage\" class=\"number\">
+                        " . number_format($costAverage, 2) . "
+                        </td>
+                      " : "";
 
-                        echo "
-                          <tr>
-                            <td title=\"$brandName\">$brandCode - $brandName</td>
-                            <td title=\"$modelNo\"><a class=\"link\" href=\"" . DATA_MODEL_MODEL_DETAIL_URL . "?id=$modelId\">$modelNo</a></td>
-                            <td title=\"$qtyOnLoan\" class=\"number\">" . number_format($qtyOnLoan) . "</td>
-                            <td title=\"$qtyOnBorrow\" class=\"number\">" . number_format($qtyOnBorrow) . "</td>
-                            <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
-                            <td title=\"$qtyOnReserve\" class=\"number\">" . number_format($qtyOnReserve) . "</td>
-                            <td title=\"$qtyAvailable\" class=\"number\">" . number_format($qtyAvailable) . "</td>
-                            <td title=\"$costAverage\" class=\"number\">" . number_format($costAverage, 6) . "</td>
-                            <td title=\"$subtotal\" class=\"number\">" . number_format($subtotal, 2) . "</td>
-                          </tr>
-                        ";
-                      }
+                      $qtyColumns = $i === 0 ? "
+                        <td rowspan=\"" . $stockCount . "\" title=\"$total\" class=\"number\">" . number_format($total, 2) . "</td>
+                      " : "";
+
+                      echo "
+                        <tr>
+                          $modelColumns
+                          <td title=\"$warehouseCode\" class=\"number\">$warehouseCode</td>
+                          <td title=\"$qty\" class=\"number\">" . number_format($qty) . "</td>
+                          <td title=\"$qtyOnReserve\" class=\"number\">" . number_format($qtyOnReserve) . "</td>
+                          <td title=\"$qtyAvailable\" class=\"number\">" . number_format($qtyAvailable) . "</td>
+                          <td title=\"$subtotal\" class=\"number\">" . number_format($subtotal, 2) . "</td>
+                          $qtyColumns
+                        </tr>
+                      ";
                     }
                   }
                 ?>
                 <tr>
                   <th></th>
+                  <th></th>
                   <th class="number">Total:</th>
-                  <th class="number"><?php echo number_format($totalQtyOnLoan); ?></th>
-                  <th class="number"><?php echo number_format($totalQtyOnBorrow); ?></th>
                   <th class="number"><?php echo number_format($totalQty); ?></th>
                   <th class="number"><?php echo number_format($totalQtyOnReserve); ?></th>
                   <th class="number"><?php echo number_format($totalQtyAvailable); ?></th>
-                  <th></th>
+                  <th class="number"></th>
                   <th class="number"><?php echo number_format($totalAmt, 2); ?></th>
                 </tr>
               </tbody>
@@ -332,7 +332,7 @@
           </div>
         <?php endforeach ?>
       <?php else : ?>
-        <div class="warehouse-no-results">No results</div>
+        <div class="brand-client-no-results">No results</div>
       <?php endif ?>
     </div>
   </body>

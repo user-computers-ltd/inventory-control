@@ -55,7 +55,9 @@
         brand_code, model_no) AS f
     ON a.brand_code=f.brand_code AND a.model_no=f.model_no
     WHERE
-      a.qty > 0
+      (a.qty > 0 OR
+      f.qty_on_loan > 0 OR
+      f.qty_on_borrow > 0)
     GROUP BY
       a.warehouse_code, a.brand_code
     ORDER BY
@@ -64,18 +66,38 @@
   ");
 
   $stocks = array();
+  $all = array();
 
   foreach ($results as $stock) {
     $warehouse = $stock["warehouse"];
+    $bCode = $stock["brand_code"];
 
     $arrayPointer = &$stocks;
 
     if (!isset($arrayPointer[$warehouse])) {
       $arrayPointer[$warehouse] = array();
     }
+
     $arrayPointer = &$arrayPointer[$warehouse];
 
     array_push($arrayPointer, $stock);
+
+    if (!isset($all[$bCode])) {
+      $all[$bCode] = $stock;
+      unset($all[$bCode]["warehouse_id"]);
+    } else {
+      $all[$bCode]["qty"] += $stock["qty"];
+      $all[$bCode]["qty_on_reserve"] += $stock["qty_on_reserve"];
+      $all[$bCode]["subtotal_loaned"] += $stock["subtotal_loaned"];
+      $all[$bCode]["subtotal_borrowed"] += $stock["subtotal_borrowed"];
+      $all[$bCode]["subtotal"] += $stock["subtotal"];
+    }
+  }
+
+  $stocks["ALL"] = array();
+
+  foreach ($all as $bCode => $stock) {
+    array_push($stocks["ALL"], $stock);
   }
 ?>
 
@@ -147,7 +169,7 @@
                     echo "
                       <tr>
                         <td title=\"$brandCode\">
-                          <a href=\"" . REPORT_STOCK_TAKE_WAREHOUSE_DETAIL_URL . "?id[]=$warehouseId&filter_brand_code[]=$brandCode\">$brandCode - $brandName</a>
+                          <a href=\"" . REPORT_STOCK_TAKE_WAREHOUSE_DETAIL_URL . "?" . (isset($warehouseId) ? "id[]=$warehouseId&" : "") . "filter_brand_code[]=$brandCode\">$brandCode - $brandName</a>
                         </td>
                         <td title=\"$valueOnLoan\" class=\"number\">" . number_format($valueOnLoan) . "</td>
                         <td title=\"$valueOnBorrow\" class=\"number\">" . number_format($valueOnBorrow) . "</td>

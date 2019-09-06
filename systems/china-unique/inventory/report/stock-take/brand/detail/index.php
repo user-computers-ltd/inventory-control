@@ -77,7 +77,9 @@
         brand_code, model_no) AS f
     ON a.brand_code=f.brand_code AND a.model_no=f.model_no
     WHERE
-      a.qty > 0
+      (a.qty > 0 OR
+      f.qty_on_loan > 0 OR
+      f.qty_on_borrow > 0)
       $whereClause
     ORDER BY
       a.brand_code ASC,
@@ -140,7 +142,7 @@
       `brand` AS c
     ON a.brand_code=c.code
     WHERE
-      a.qty > 0
+      a.qty IS NOT NULL
       $warehouseWhereClause
     ORDER BY
       b.code ASC
@@ -161,7 +163,7 @@
       `warehouse` AS d
     ON a.warehouse_code=d.code
     WHERE
-      a.qty > 0
+      a.qty IS NOT NULL
       $modelWhereClause
     ORDER BY
       b.model_no ASC
@@ -242,8 +244,8 @@
                   <th>Model No.</th>
                   <th class="number">Avg. Cost</th>
                   <th class="number">W.C.</th>
-                  <th class="number">Loaned</th>
-                  <th class="number">Borrowed</th>
+                  <th class="number">On Loan</th>
+                  <th class="number">On Borrow</th>
                   <th class="number">Qty</th>
                   <th class="number">Reserved</th>
                   <th class="number">Available</th>

@@ -50,7 +50,6 @@
   <body>
     <?php if (isset($sitemap)) : ?>
       <div id="menu-sidebar" class="web-only">
-        <button class="toggle-button" onclick="toggleNav()"></button>
         <a class="menu-item link" href="<?php echo SYSTEM_URL; ?>">
           <span class="initial">←</span><span class="label">Main Menu</span>
         </a>
@@ -68,16 +67,7 @@
       <?php endif ?>
       <script src="<?php echo BASE_URL; ?>includes/js/utils.js"></script>
       <script>
-        var sidebar = document.getElementById("menu-sidebar");
         var toggles = document.querySelectorAll(".toggle");
-
-        function toggleNav() {
-          if (sidebar.className.indexOf(" show") !== -1) {
-            sidebar.className = sidebar.className.replace(" show", "");
-          } else {
-            sidebar.className += " show";
-          }
-        }
 
         function toggleMenu(menuName) {
           for (var i = 0; i < toggles.length; i++) {

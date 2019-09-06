@@ -1,6 +1,6 @@
 #menu-sidebar {
   position: fixed;
-  padding-top: 60px;
+  padding-top: 10px;
   top: 0px;
   left: 0px;
   height: 100%;
@@ -9,49 +9,14 @@
   background-color: rgba(0, 0, 0, 1);
   transition: 0.3s;
   overflow-x: hidden;
-  overflow-y: auto;
+  overflow-y: hidden;
   z-index: 2;
 }
 
-#menu-sidebar.show {
+#menu-sidebar:hover {
   width: 350px;
   background-color: rgba(0, 0, 0, 0.9);
-}
-
-#menu-sidebar .toggle-button {
-  position: absolute;
-  border: none;
-  margin: 0px;
-  padding: 0px;
-  top: 0;
-  right: 0px;
-  width: 60px;
-  height: 40px;
-  line-height: 40px;
-  font-size: 36px;
-  text-align: center;
-  color: #b4b4b4;
-  background: none;
-  box-shadow: none;
-  cursor: pointer;
-}
-
-#menu-sidebar .toggle-button::after {
-  content: "☰";
-  position: absolute;
-  top: 0px;
-  right: 0px;
-  width: 100%;
-  font-size: 30px;
-}
-
-#menu-sidebar.show .toggle-button::after {
-  content: "×";
-  font-size: 40px;
-}
-
-#menu-sidebar .toggle-button:hover {
-  color: #ffffff;
+  overflow-y: auto;
 }
 
 #menu-sidebar .menu-item {
@@ -71,7 +36,7 @@
   margin-top: 50px;
 }
 
-#menu-sidebar.show .menu-item {
+#menu-sidebar:hover .menu-item {
   max-height: 200px;
 }
 
@@ -108,15 +73,15 @@
   transition: 0.3s;
 }
 
-#menu-sidebar.show .sub-menu .menu-item .initial {
+#menu-sidebar:hover .sub-menu .menu-item .initial {
   padding-left: 15px;
 }
 
-#menu-sidebar.show .sub-menu .sub-menu .menu-item .initial {
+#menu-sidebar:hover .sub-menu .sub-menu .menu-item .initial {
   padding-left: 25px;
 }
 
-#menu-sidebar.show .sub-menu .sub-menu .sub-menu .menu-item .initial {
+#menu-sidebar:hover .sub-menu .sub-menu .sub-menu .menu-item .initial {
   padding-left: 35px;
 }
 
