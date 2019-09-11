@@ -101,6 +101,23 @@
     array_push($arrayPointer, $result);
   }
 
+  foreach ($dailyResults as $date => &$actionResults) {
+    if (isset($actionResults["save_settlement"]) && isset($actionResults["settle_invoice"])) {
+      $settledInvoices = array_map(function ($a) { return $a["voucher_no"]; }, $actionResults["settle_invoice"]);
+      foreach ($actionResults["save_settlement"] as $key => &$b) {
+        $index = array_search($b["voucher_no"], $settledInvoices);
+        if ($index !== false) {
+          $actionResults["settle_invoice"][$index]["remarks"] = $actionResults["save_settlement"][$key]["remarks"];
+          unset($actionResults["save_settlement"][$key]);
+        }
+      }
+
+      if (count($actionResults["save_settlement"]) === 0) {
+        unset($actionResults["save_settlement"]);
+      }
+    }
+  }
+
   $debtors = query("
     SELECT DISTINCT
       a.debtor_code                         AS `code`,
@@ -185,12 +202,12 @@
       <?php foreach ($dailyResults as $date => $actionResults) : ?>
         <h4><?php echo $date; ?></h4>
         <?php foreach ($actionResults as $action => $results) : ?>
-          <h4><?php echo $action; ?></h4>
+          <h4><?php echo $action === "save_settlement" ? "settle_partial" : $action; ?></h4>
           <?php
             $voucher = "";
 
             if (strpos($action, "_invoice") !== false) { $voucher = "Invoice"; }
-            else if (strpos($action, "_settlement") !== false) { $voucher = "Settlement"; }
+            else if (strpos($action, "_settlement") !== false) { $voucher = "Invoice"; }
             else if (strpos($action, "_payment") !== false) { $voucher = "Payment"; }
             else if (strpos($action, "_credit_note") !== false) { $voucher = "Credit Note"; }
           ?>
