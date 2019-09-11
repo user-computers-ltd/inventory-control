@@ -3,10 +3,12 @@
   define("AR_PAYMENT_URL", AR_URL . "payment/");
   define("AR_PAYMENT_PRINTOUT_URL", AR_PAYMENT_URL . "printout/");
   define("AR_PAYMENT_ISSUED_URL", AR_PAYMENT_URL . "issued/");
+  define("AR_PAYMENT_SETTLEMENT_URL", AR_PAYMENT_URL . "settlement/");
 
   /* Title configurations. */
   define("AR_PAYMENT_TITLE", "(C) Payment");
   define("AR_PAYMENT_PRINTOUT_TITLE", "Payment");
+  define("AR_PAYMENT_SETTLEMENT_TITLE", "Payment Settlement");
   define("AR_PAYMENT_CREATE_TITLE", "(C1) Create Payment");
   define("AR_PAYMENT_ISSUED_TITLE", "(C2) Issued Payments");
 

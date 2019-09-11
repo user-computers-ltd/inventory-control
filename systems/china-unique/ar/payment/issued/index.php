@@ -91,6 +91,7 @@
               <col>
               <col style="width: 150px">
               <col style="width: 150px">
+              <col style="width: 80px">
             </colgroup>
             <thead>
               <tr></tr>
@@ -102,6 +103,7 @@
                 <th>Client</th>
                 <th class="number">Amount</th>
                 <th class="number">Remaining</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
@@ -133,6 +135,7 @@
                       <td title=\"$debtorName\">$debtorName</td>
                       <td title=\"$amount\" class=\"number\">" . number_format($amount, 2) . "</td>
                       <td title=\"$remaining\" class=\"number\">" . number_format($remaining, 2) . "</td>
+                      <td><a class=\"link\" href=\"" . AR_PAYMENT_SETTLEMENT_URL . "?id=$id\">Settlement</a></td>
                     </tr>
                   ";
                 }
