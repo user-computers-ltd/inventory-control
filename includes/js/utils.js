@@ -273,7 +273,7 @@ if (!utilsLoaded) {
 
         if (cell) {
           var value = cell.innerText.toLowerCase();
-          var dateMatches = value.match(/([0-9]+)\-([0-9]+)\-([0-9]+)/g) || [];
+          var dateMatches = value.match(/([0-9]{2})\-([0-9]{2})\-([0-9]{4})/g) || [];
 
           if (dateMatches.length > 0) {
             value = dateMatches[0]
@@ -312,9 +312,7 @@ if (!utilsLoaded) {
 
     var parseValue = hasClass(headerColumns[columnIndex], "number")
       ? parseFloat
-      : function(v) {
-          return v;
-        };
+      : function(v) { return v; };
 
     for (var i = 0; i < rowElements.length; i++) {
       rows.push(rowElements[i]);
@@ -337,10 +335,10 @@ if (!utilsLoaded) {
       if (x && y) {
         var xValue = parseValue(x.dataset.sortvalue);
         var yValue = parseValue(y.dataset.sortvalue);
+        var v1 = sortedAsc ? yValue : xValue;
+        var v2 = sortedAsc ? xValue : yValue;
 
-        return (
-          (!sortedAsc && xValue > yValue) || (sortedAsc && xValue < yValue)
-        );
+        return v1 > v2 ? 1 : v1 < v2 ? -1 : 0;
       }
     });
 
