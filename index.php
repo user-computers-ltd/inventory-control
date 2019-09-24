@@ -9,13 +9,13 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Inventory Control</title>
+    <title>ERP</title>
     <?php include_once ROOT_PATH . "includes/php/head.php"; ?>
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
     <div id="page-wrapper">
-      <h1>Inventory Control</h1>
+      <h1>Company List</h1>
       <div id="system-list">
         <?php
           foreach ($systems as $system) {
