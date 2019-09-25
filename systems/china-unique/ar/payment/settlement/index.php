@@ -154,7 +154,9 @@
                     + "onchange=\"onInvoiceNoChange(event, " + i + ")\" "
                     + "onfocus=\"onFieldFocused(" + i + ", 'invoice_no[]')\" "
                     + "onblur=\"onFieldBlurred()\" "
-                  + ">";
+                    + "required "
+                  + ">"
+                    + "<option value=\"\">- Select invoice -</option>";
 
               if (invoiceListElement) {
                 for (var j = 0; j < invoiceListElement.children.length; j++) {
@@ -171,7 +173,7 @@
               rowInnerHTML += "</select>"
                 + "</td>"
                 + "<td>"
-                  + "<span class=\"number\">" + settlemntVoucher["amount_settlable"] + "</span>"
+                  + "<span class=\"number\">" + (settlemntVoucher["invoice_no"] ? settlemntVoucher["amount_settlable"] : "-") + "</span>"
                 + "</td>"
                 + "<td>"
                   + "<input "
@@ -227,8 +229,7 @@
 
           function updateVoucher(index, voucher = {}) {
             var settlemntVoucher = settlemntVouchers[index];
-            var settledAmount = settlemntVouchers.filter(function (s, i) { return i !== index; }).reduce(function (a, b) { return a + b; }, 0);
-
+            var settledAmount = settlemntVouchers.filter(function (s, i) { return i !== index; }).reduce(function (a, b) { return a + b["amount"]; }, 0);
             settlemntVoucher["invoice_no"] = voucher["invoice_no"] || "";
             settlemntVoucher["amount"] = Math.min(parseFloat(voucher["amount"]) || 0, paymentAmount - settledAmount);
             settlemntVoucher["amount_settlable"] = parseFloat(voucher["amount"]) || 0;
@@ -237,7 +238,7 @@
 
           function updateAmount(index, amount = 0) {
             var settlemntVoucher = settlemntVouchers[index];
-            var settledAmount = settlemntVouchers.filter(function (s, i) { return i !== index; }).reduce(function (a, b) { return a + b; }, 0);
+            var settledAmount = settlemntVouchers.filter(function (s, i) { return i !== index; }).reduce(function (a, b) { return a + b["amount"]; }, 0);
 
             settlemntVoucher["amount"] = Math.min(amount, paymentAmount - settledAmount);
           }
