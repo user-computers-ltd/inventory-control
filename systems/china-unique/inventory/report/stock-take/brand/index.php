@@ -57,8 +57,8 @@
     ON a.brand_code=f.brand_code AND a.model_no=f.model_no AND a.warehouse_code=f.warehouse_code
     WHERE
       a.qty > 0 OR
-      f.qty_on_loan > 0 OR
-      f.qty_on_borrow > 0
+      f.qty_on_loan != 0 OR
+      f.qty_on_borrow != 0
     GROUP BY
       a.warehouse_code, a.brand_code
     ORDER BY

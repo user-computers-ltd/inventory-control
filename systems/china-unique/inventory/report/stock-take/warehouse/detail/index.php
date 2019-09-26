@@ -29,29 +29,32 @@
 
   $results = query("
     SELECT
-      a.warehouse_code                            AS `warehouse_code`,
+      z.warehouse_code                            AS `warehouse_code`,
       d.name                                      AS `warehouse_name`,
-      a.brand_code                                AS `brand_code`,
+      z.brand_code                                AS `brand_code`,
       c.name                                      AS `brand_name`,
       b.id                                        AS `model_id`,
-      a.model_no                                  AS `model_no`,
-      a.qty                                       AS `qty`,
+      z.model_no                                  AS `model_no`,
+      IFNULL(a.qty, 0)                            AS `qty`,
       f.qty_on_loan                               AS `qty_on_loan`,
       f.qty_on_borrow                             AS `qty_on_borrow`,
       e.qty_on_reserve                            AS `qty_on_reserve`,
       b.cost_average                              AS `cost_average`,
       ROUND(a.qty * b.cost_average, 2)            AS `subtotal`
     FROM
+      (SELECT x.brand_code, x.model_no, y.code AS `warehouse_code` FROM `model` AS x CROSS JOIN `warehouse` AS y) AS z
+    LEFT JOIN
       `stock` AS a
+    ON z.warehouse_code=a.warehouse_code AND z.brand_code=a.brand_code AND z.model_no=a.model_no
     LEFT JOIN
       `model` AS b
-    ON a.brand_code=b.brand_code AND a.model_no=b.model_no
+    ON z.brand_code=b.brand_code AND z.model_no=b.model_no
     LEFT JOIN
       `brand` AS c
-    ON a.brand_code=c.code
+    ON z.brand_code=c.code
     LEFT JOIN
       `warehouse` AS d
-    ON a.warehouse_code=d.code
+    ON z.warehouse_code=d.code
     LEFT JOIN
       (SELECT
         h.warehouse_code  AS `warehouse_code`,
@@ -68,7 +71,7 @@
         m.ia_no=\"\"
       GROUP BY
         h.warehouse_code, m.brand_code, m.model_no) AS e
-    ON a.warehouse_code=e.warehouse_code AND a.brand_code=e.brand_code AND a.model_no=e.model_no
+    ON z.warehouse_code=e.warehouse_code AND z.brand_code=e.brand_code AND z.model_no=e.model_no
     LEFT JOIN
       (SELECT
         brand_code,
@@ -80,16 +83,16 @@
         `transaction`
       GROUP BY
         brand_code, model_no, warehouse_code) AS f
-    ON a.brand_code=f.brand_code AND a.model_no=f.model_no AND a.warehouse_code=f.warehouse_code
+    ON z.warehouse_code=f.warehouse_code AND z.brand_code=f.brand_code AND z.model_no=f.model_no
     WHERE
       (a.qty > 0 OR
-      f.qty_on_loan > 0 OR
-      f.qty_on_borrow > 0)
+      f.qty_on_loan != 0 OR
+      f.qty_on_borrow != 0)
       $whereClause
     ORDER BY
-      a.warehouse_code ASC,
-      a.brand_code ASC,
-      a.model_no ASC
+      z.warehouse_code ASC,
+      z.brand_code ASC,
+      z.model_no ASC
   ");
 
   $stocks = array();
