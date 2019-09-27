@@ -35,7 +35,7 @@
 
   $urlPath = str_replace(SYSTEM_URL, "", CURRENT_URL);
 
-  if (strpos($urlPath, "inventory") === 0) {
+  if (strpos($urlPath, "inventory") === 0 || strpos($urlPath, "cu_inventory") !== false) {
     $sitemap = $SITEMAP["inventory"][getAccessLevel()];
   } else if (strpos($urlPath, "ar") === 0) {
     $sitemap = $SITEMAP["ar"][getAccessLevel()];

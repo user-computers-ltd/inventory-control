@@ -1,5 +1,5 @@
 <?php
-  define ("SYSTEM_PATH", '../../../inventory-control/systems/china-unique/');
+  define("SYSTEM_PATH", "");
   include_once SYSTEM_PATH . "includes/php/config.php";
   include_once ROOT_PATH. "includes/php/util.php";
   include_once SYSTEM_PATH . "includes/php/authentication.php";

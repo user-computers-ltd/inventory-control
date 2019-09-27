@@ -576,21 +576,21 @@
     }
 
     /* Update purchase order outstanding quantities. */
-    foreach ($poAllotments as $poAllotment) {
-      $poNo = $poAllotment["po_no"];
-      $brandCode = $poAllotment["brand_code"];
-      $modelNo = $poAllotment["model_no"];
-      $qty = $poAllotment["qty"];
-
-      array_push($queries, "
-        UPDATE
-          `po_model`
-        SET
-          qty_outstanding=qty_outstanding - $qty
-        WHERE
-          po_no=\"$poNo\" AND brand_code=\"$brandCode\" AND model_no=\"$modelNo\"
-      ");
-    }
+    // foreach ($poAllotments as $poAllotment) {
+    //   $poNo = $poAllotment["po_no"];
+    //   $brandCode = $poAllotment["brand_code"];
+    //   $modelNo = $poAllotment["model_no"];
+    //   $qty = $poAllotment["qty"];
+    //
+    //   array_push($queries, "
+    //     UPDATE
+    //       `po_model`
+    //     SET
+    //       qty_outstanding=qty_outstanding - $qty
+    //     WHERE
+    //       po_no=\"$poNo\" AND brand_code=\"$brandCode\" AND model_no=\"$modelNo\"
+    //   ");
+    // }
 
     /* Transfer all the sales incoming allotments to stock allotments. */
     $queries = concat($queries, transferIncomingAllotments($iaNo, $warehouseCode));
