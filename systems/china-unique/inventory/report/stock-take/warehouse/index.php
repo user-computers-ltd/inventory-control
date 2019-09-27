@@ -6,26 +6,29 @@
 
   $results = query("
     SELECT
-      CONCAT(b.code, \" - \", b.name)                 AS `warehouse`,
-      b.id                                            AS `warehouse_id`,
-      c.code                                          AS `brand_code`,
-      c.name                                          AS `brand_name`,
-      SUM(a.qty)                                      AS `qty`,
-      SUM(e.qty_on_reserve)                           AS `qty_on_reserve`,
-      SUM(ROUND(f.qty_on_loan * d.cost_average, 2))   AS `subtotal_loaned`,
-      SUM(ROUND(f.qty_on_borrow * d.cost_average, 2)) AS `subtotal_borrowed`,
-      SUM(ROUND(a.qty * d.cost_average, 2))           AS `subtotal`
+      CONCAT(b.code, \" - \", b.name)                  AS `warehouse`,
+      b.id                                             AS `warehouse_id`,
+      c.code                                           AS `brand_code`,
+      c.name                                           AS `brand_name`,
+      SUM(IFNULL(a.qty, 0))                            AS `qty`,
+      SUM(e.qty_on_reserve)                            AS `qty_on_reserve`,
+      SUM(ROUND(f.qty_on_loan * d.cost_average, 2))    AS `subtotal_loaned`,
+      SUM(ROUND(f.qty_on_borrow * d.cost_average, 2))  AS `subtotal_borrowed`,
+      SUM(ROUND(IFNULL(a.qty, 0) * d.cost_average, 2)) AS `subtotal`
     FROM
+      (SELECT x.brand_code, x.model_no, y.code AS `warehouse_code` FROM `model` AS x CROSS JOIN `warehouse` AS y) AS z
+    LEFT JOIN
       `stock` AS a
+    ON z.warehouse_code=a.warehouse_code AND z.brand_code=a.brand_code AND z.model_no=a.model_no
     LEFT JOIN
       `warehouse` AS b
-    ON a.warehouse_code=b.code
+    ON z.warehouse_code=b.code
     LEFT JOIN
       `brand` AS c
-    ON a.brand_code=c.code
+    ON z.brand_code=c.code
     LEFT JOIN
       `model` AS d
-    ON a.brand_code=d.brand_code AND a.model_no=d.model_no
+    ON z.brand_code=d.brand_code AND z.model_no=d.model_no
     LEFT JOIN
       (SELECT
         h.warehouse_code  AS `warehouse_code`,
@@ -42,7 +45,7 @@
         m.ia_no=\"\"
       GROUP BY
         h.warehouse_code, m.brand_code, m.model_no) AS e
-    ON a.warehouse_code=e.warehouse_code AND a.brand_code=e.brand_code AND a.model_no=e.model_no
+    ON z.warehouse_code=e.warehouse_code AND z.brand_code=e.brand_code AND z.model_no=e.model_no
     LEFT JOIN
       (SELECT
         brand_code,
@@ -54,16 +57,16 @@
         `transaction`
       GROUP BY
         brand_code, model_no, warehouse_code) AS f
-    ON a.brand_code=f.brand_code AND a.model_no=f.model_no AND a.warehouse_code=f.warehouse_code
+    ON z.warehouse_code=f.warehouse_code AND z.brand_code=f.brand_code AND z.model_no=f.model_no
     WHERE
       (a.qty > 0 OR
       f.qty_on_loan != 0 OR
       f.qty_on_borrow != 0)
     GROUP BY
-      a.warehouse_code, a.brand_code
+      z.warehouse_code, z.brand_code
     ORDER BY
-      a.warehouse_code ASC,
-      a.brand_code ASC
+      z.warehouse_code ASC,
+      z.brand_code ASC
   ");
 
   $stocks = array();
