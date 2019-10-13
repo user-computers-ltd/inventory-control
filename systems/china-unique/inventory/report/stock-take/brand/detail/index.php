@@ -19,12 +19,12 @@
 
   if (assigned($filterWarehouseCodes) && count($filterWarehouseCodes) > 0) {
     $whereClause = $whereClause . "
-      AND (" . join(" OR ", array_map(function ($i) { return "a.warehouse_code=\"$i\""; }, $filterWarehouseCodes)) . ")";
+      AND (" . join(" OR ", array_map(function ($i) { return "z.warehouse_code=\"$i\""; }, $filterWarehouseCodes)) . ")";
   }
 
   if (assigned($filterModelNos) && count($filterModelNos) > 0) {
     $whereClause = $whereClause . "
-      AND (" . join(" OR ", array_map(function ($i) { return "a.model_no=\"$i\""; }, $filterModelNos)) . ")";
+      AND (" . join(" OR ", array_map(function ($i) { return "z.model_no=\"$i\""; }, $filterModelNos)) . ")";
   }
 
   $results = query("

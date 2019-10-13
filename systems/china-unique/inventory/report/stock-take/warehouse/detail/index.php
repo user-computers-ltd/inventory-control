@@ -19,15 +19,83 @@
 
   if (assigned($filterBrandCodes) && count($filterBrandCodes) > 0) {
     $whereClause = $whereClause . "
-      AND (" . join(" OR ", array_map(function ($i) { return "a.brand_code=\"$i\""; }, $filterBrandCodes)) . ")";
+      AND (" . join(" OR ", array_map(function ($i) { return "z.brand_code=\"$i\""; }, $filterBrandCodes)) . ")";
   }
 
   if (assigned($filterModelNos) && count($filterModelNos) > 0) {
     $whereClause = $whereClause . "
-      AND (" . join(" OR ", array_map(function ($i) { return "a.model_no=\"$i\""; }, $filterModelNos)) . ")";
+      AND (" . join(" OR ", array_map(function ($i) { return "z.model_no=\"$i\""; }, $filterModelNos)) . ")";
   }
 
   $results = query("
+    SELECT
+      z.warehouse_code                            AS `warehouse_code`,
+      d.name                                      AS `warehouse_name`,
+      z.brand_code                                AS `brand_code`,
+      c.name                                      AS `brand_name`,
+      b.id                                        AS `model_id`,
+      z.model_no                                  AS `model_no`,
+      IFNULL(a.qty, 0)                            AS `qty`,
+      f.qty_on_loan                               AS `qty_on_loan`,
+      f.qty_on_borrow                             AS `qty_on_borrow`,
+      e.qty_on_reserve                            AS `qty_on_reserve`,
+      b.cost_average                              AS `cost_average`,
+      ROUND(a.qty * b.cost_average, 2)            AS `subtotal`
+    FROM
+      (SELECT x.brand_code, x.model_no, y.code AS `warehouse_code` FROM `model` AS x CROSS JOIN `warehouse` AS y) AS z
+    LEFT JOIN
+      `stock` AS a
+    ON z.warehouse_code=a.warehouse_code AND z.brand_code=a.brand_code AND z.model_no=a.model_no
+    LEFT JOIN
+      `model` AS b
+    ON z.brand_code=b.brand_code AND z.model_no=b.model_no
+    LEFT JOIN
+      `brand` AS c
+    ON z.brand_code=c.code
+    LEFT JOIN
+      `warehouse` AS d
+    ON z.warehouse_code=d.code
+    LEFT JOIN
+      (SELECT
+        h.warehouse_code  AS `warehouse_code`,
+        m.brand_code      AS `brand_code`,
+        m.model_no        AS `model_no`,
+        SUM(m.qty)        AS `qty_on_reserve`
+      FROM
+        `sdo_model` AS m
+      LEFT JOIN
+        `sdo_header` AS h
+      ON m.do_no=h.do_no
+      WHERE
+        h.status=\"SAVED\" AND
+        m.ia_no=\"\"
+      GROUP BY
+        h.warehouse_code, m.brand_code, m.model_no) AS e
+    ON z.warehouse_code=e.warehouse_code AND z.brand_code=e.brand_code AND z.model_no=e.model_no
+    LEFT JOIN
+      (SELECT
+        brand_code,
+        model_no,
+        warehouse_code,
+        SUM(IF(transaction_code=\"S7\", qty, 0)) - SUM(IF(transaction_code=\"R8\", qty, 0)) AS `qty_on_loan`,
+        SUM(IF(transaction_code=\"R7\", qty, 0)) - SUM(IF(transaction_code=\"S8\", qty, 0)) AS `qty_on_borrow`
+      FROM
+        `transaction`
+      GROUP BY
+        brand_code, model_no, warehouse_code) AS f
+    ON z.warehouse_code=f.warehouse_code AND z.brand_code=f.brand_code AND z.model_no=f.model_no
+    WHERE
+      (a.qty > 0 OR
+      f.qty_on_loan != 0 OR
+      f.qty_on_borrow != 0)
+      $whereClause
+    ORDER BY
+      z.warehouse_code ASC,
+      z.brand_code ASC,
+      z.model_no ASC
+  ");
+
+  consoleLog("
     SELECT
       z.warehouse_code                            AS `warehouse_code`,
       d.name                                      AS `warehouse_name`,
