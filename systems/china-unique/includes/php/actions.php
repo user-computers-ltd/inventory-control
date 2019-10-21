@@ -406,16 +406,27 @@
       $soNo = $allotment["so_no"];
       $brandCode = $allotment["brand_code"];
       $modelNo = $allotment["model_no"];
+      $qty = $allotment["qty"];
 
       array_push($queries, "
-        DELETE FROM
+        UPDATE
           `so_allotment`
+        SET
+          qty=qty-$qty
         WHERE
           ia_no=\"\" AND
           warehouse_code=\"$warehouseCode\" AND
           so_no=\"$soNo\" AND
           brand_code=\"$brandCode\" AND
-          model_no=\"$modelNo\"
+          model_no=\"$modelNo\" AND
+          qty>=$qty
+      ");
+
+      array_push($queries, "
+        DELETE FROM
+          `so_allotment`
+        WHERE
+          qty=0
       ");
     }
 
